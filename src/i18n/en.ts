@@ -340,7 +340,7 @@ export const en: Dict = {
     },
     {
       id: 'full-bloom',
-      name: 'All-round',
+      name: 'Modern',
       summary: 'For multi-location businesses ready to scale hard.',
       features: [
         'Everything in Standard',
