@@ -51,10 +51,12 @@ export type TemplateSummary = {
   name: string;
   tagline?: string;
   description?: string;
-  /** Added by the backend for real thumbnails; `previewImage` is the older
-   *  field. Either may be missing, so the picker always has a fallback. */
+  /**
+   * Root-relative path to a generated wireframe thumbnail
+   * (`/api/v1/templates/{code}/preview`). Resolve it with `assetUrl` rather
+   * than using it raw, and keep a fallback: it can be absent on older builds.
+   */
   previewUrl?: string | null;
-  previewImage?: string | null;
   demoUrl?: string | null;
   flagship?: boolean;
   sections?: string[];

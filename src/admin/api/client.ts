@@ -1,4 +1,4 @@
-import { request } from "../../api/http";
+import { API_BASE, request } from "../../api/http";
 import type {
   CreateSiteRequest,
   Page,
@@ -21,6 +21,19 @@ function authed<T>(token: string, path: string, init?: RequestInit) {
     ...init,
     headers: { Authorization: `Bearer ${token}`, ...init?.headers },
   });
+}
+
+/**
+ * Turns a path the API hands us — a template preview, a media file — into
+ * something an `<img src>` can use. The API returns these root-relative
+ * (`/api/v1/templates/{code}/preview`), which only works when the app is
+ * served from the same origin, so the `/api/v1` prefix is swapped for whatever
+ * `API_BASE` is pointing at. Absolute URLs are left alone.
+ */
+export function assetUrl(path: string): string {
+  if (/^(https?:)?\/\//i.test(path)) return path;
+  const suffix = path.startsWith("/api/v1") ? path.slice("/api/v1".length) : path;
+  return `${API_BASE}${suffix}`;
 }
 
 /** Staff sign-in. The token comes back as `token` — not `accessToken`. */

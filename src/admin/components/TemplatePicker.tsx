@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useI18n } from "../../i18n";
 import { adminStrings } from "../strings";
 import { TEMPLATE_CATEGORIES, TEMPLATE_TIERS } from "../api/types";
+import { assetUrl } from "../api/client";
 import type { TemplateSummary } from "../api/types";
 
 /**
@@ -13,7 +14,7 @@ const TIER_RANK = new Map<string, number>(
   TEMPLATE_TIERS.map((tier, index) => [tier, index]),
 );
 
-/** A tinted tile standing in for a screenshot the backend has not sent yet. */
+/** A tinted tile standing in for a preview the backend cannot give us. */
 function Placeholder({ code, label }: { code: string; label: string }) {
   return (
     <div className="flex h-full w-full flex-col items-center justify-center gap-2 bg-gradient-to-br from-tint to-tint-strong">
@@ -32,10 +33,10 @@ function Placeholder({ code, label }: { code: string; label: string }) {
 }
 
 function Thumbnail({ template, label }: { template: TemplateSummary; label: string }) {
-  // `previewUrl` is the field the backend is standardising on; `previewImage`
-  // is the older one. Either may be missing or dead, so a broken load falls
-  // back to the placeholder rather than showing a broken image icon.
-  const source = template.previewUrl ?? template.previewImage ?? null;
+  // A wireframe of the template's own layout and palette, drawn server-side.
+  // Older backends don't send one, and an image can always fail to load, so a
+  // broken load falls back to the placeholder rather than a broken-image icon.
+  const source = template.previewUrl ? assetUrl(template.previewUrl) : null;
   const [failed, setFailed] = useState(false);
 
   if (!source || failed) return <Placeholder code={template.code} label={label} />;
@@ -45,7 +46,9 @@ function Thumbnail({ template, label }: { template: TemplateSummary; label: stri
       src={source}
       alt=""
       loading="lazy"
-      className="h-full w-full object-cover"
+      width={1200}
+      height={900}
+      className="h-full w-full object-cover object-top"
       onError={() => setFailed(true)}
     />
   );
@@ -106,7 +109,7 @@ export default function TemplatePicker({
                         : "border-ink-100 hover:border-bloom-200 hover:shadow-lg hover:shadow-bloom-600/5",
                     ].join(" ")}
                   >
-                    <div className="relative aspect-[16/10] overflow-hidden bg-ink-50">
+                    <div className="relative aspect-[4/3] overflow-hidden bg-ink-50">
                       <Thumbnail template={template} label={t.wizard.noPreview} />
                       {template.flagship && (
                         <span className="absolute end-3 top-3 rounded-full bg-contrast/80 px-2.5 py-1 text-[11px] font-semibold text-white">
