@@ -60,6 +60,11 @@ export type AdminStrings = {
     templateHint: string;
     flagship: string;
     noPreview: string;
+    preview: string;
+    previewNote: string;
+    chooseTemplate: string;
+    closePreview: string;
+    selectedTemplate: string;
     businessTitle: string;
     businessName: string;
     businessNameHint: string;
@@ -226,6 +231,12 @@ const en: AdminStrings = {
       "Three levels of richness per category. Modern is the flagship.",
     flagship: "Flagship",
     noPreview: "Preview coming soon",
+    preview: "Preview",
+    previewNote:
+      "A sketch of the layout and colours. Your own text and photos replace the grey blocks.",
+    chooseTemplate: "Choose this template",
+    closePreview: "Close",
+    selectedTemplate: "Chosen template",
     businessTitle: "About the business",
     businessName: "Business name",
     businessNameHint: "Shown as the site's title.",
@@ -394,6 +405,12 @@ const ka: AdminStrings = {
       "თითო კატეგორიაში სამი დონეა. „თანამედროვე“ ყველაზე მდიდარია.",
     flagship: "საუკეთესო",
     noPreview: "სურათი მალე დაემატება",
+    preview: "გადახედვა",
+    previewNote:
+      "განლაგებისა და ფერების ესკიზი. ნაცრისფერი ბლოკების ადგილს თქვენი ტექსტი და ფოტოები დაიკავებს.",
+    chooseTemplate: "ამ შაბლონის არჩევა",
+    closePreview: "დახურვა",
+    selectedTemplate: "არჩეული შაბლონი",
     businessTitle: "ბიზნესის შესახებ",
     businessName: "ბიზნესის სახელი",
     businessNameHint: "გამოჩნდება საიტის სათაურად.",

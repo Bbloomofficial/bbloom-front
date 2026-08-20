@@ -9,6 +9,7 @@ import { createSite, fetchTemplates } from "../api/client";
 import { SITE_LANGUAGES } from "../api/types";
 import type { CreateSiteRequest, SiteLanguage } from "../api/types";
 import TemplatePicker from "../components/TemplatePicker";
+import { TemplatePreview } from "../components/TemplatePreview";
 import { SLUG_PATTERN, slugify } from "../format";
 import { adminStrings } from "../strings";
 
@@ -439,11 +440,39 @@ export default function NewSite() {
             </h2>
             <p className="mt-1 text-sm text-ink-600">{t.wizard.reviewHint}</p>
 
+            {template && (
+              <div className="mt-5 overflow-hidden rounded-3xl border border-ink-100 bg-surface">
+                <div className="aspect-[4/3] bg-ink-50">
+                  <TemplatePreview
+                    template={template}
+                    label={t.wizard.noPreview}
+                  />
+                </div>
+                <div className="flex items-baseline justify-between gap-2 p-4">
+                  <div>
+                    <p className="text-[11px] uppercase tracking-wide text-ink-400">
+                      {t.wizard.selectedTemplate}
+                    </p>
+                    <p className="font-bold text-ink-900">{template.name}</p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setStep(0)}
+                    className="text-sm font-semibold text-bloom-600 hover:underline"
+                  >
+                    {t.wizard.slugEdit}
+                  </button>
+                </div>
+              </div>
+            )}
+
             <dl className="mt-5 divide-y divide-ink-100 rounded-3xl border border-ink-100 bg-surface px-5">
               {[
                 [t.wizard.businessName, businessName],
                 [t.wizard.slug, `${effectiveSlug}.bbloom.co`],
-                [t.sites.template, template ? template.name : templateCode],
+                // Only named here when the preview card above is absent,
+                // which is the case if the catalog never loaded.
+                ...(template ? [] : [[t.sites.template, templateCode]]),
                 [
                   t.wizard.languages,
                   languages
