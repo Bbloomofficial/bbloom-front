@@ -312,7 +312,7 @@ export const en: Dict = {
   plans: [
     {
       id: 'starter',
-      name: 'Minimal',
+      name: 'Simple',
       summary: 'For businesses running their first serious campaigns.',
       features: [
         '1 advertising channel',
@@ -321,11 +321,11 @@ export const en: Dict = {
         'Monthly performance report',
         'Email support',
       ],
-      cta: 'Choose Minimal',
+      cta: 'Choose Simple',
     },
     {
       id: 'growth',
-      name: 'Standard',
+      name: 'Classic',
       summary: 'Our most complete plan — ads plus a site that converts.',
       features: [
         'Instagram + Facebook campaigns',
@@ -336,14 +336,14 @@ export const en: Dict = {
         'WhatsApp support',
       ],
       featured: true,
-      cta: 'Choose Standard',
+      cta: 'Choose Classic',
     },
     {
       id: 'full-bloom',
       name: 'Modern',
       summary: 'For multi-location businesses ready to scale hard.',
       features: [
-        'Everything in Standard',
+        'Everything in Classic',
         'Full multi-page website',
         'Monthly content shoot',
         'Dedicated growth manager',
