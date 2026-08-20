@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { ApiError } from "../../api/http";
 import { useI18n } from "../../i18n";
@@ -26,13 +26,25 @@ export default function SiteDetailPage() {
 
   const [busy, setBusy] = useState(false);
   const [publishError, setPublishError] = useState<string | null>(null);
+  /** Set after a successful toggle so the change is announced, not just implied. */
+  const [announced, setAnnounced] = useState<"published" | "unpublished" | null>(
+    null,
+  );
+
+  useEffect(() => {
+    if (!announced) return;
+    const timer = window.setTimeout(() => setAnnounced(null), 8000);
+    return () => window.clearTimeout(timer);
+  }, [announced]);
 
   async function togglePublished() {
     if (!site || busy) return;
+    const next = site.status !== "PUBLISHED";
     setBusy(true);
     setPublishError(null);
     try {
-      set(await setPublished(token, site.id, site.status !== "PUBLISHED"));
+      set(await setPublished(token, site.id, next));
+      setAnnounced(next ? "published" : "unpublished");
     } catch (caught) {
       setPublishError(
         caught instanceof ApiError ? caught.message : String(caught),
@@ -61,6 +73,9 @@ export default function SiteDetailPage() {
   // In development the renderer serves a site at /site/<slug>; the primary URL
   // is the production subdomain, which only resolves once DNS is in place.
   const previewHref = `/site/${site.slug}`;
+  // The address staff read out to the client, without the scheme.
+  const primaryUrl =
+    site.primaryUrl?.replace(/^https?:\/\//, "") ?? `${site.slug}.bbloom.co`;
 
   return (
     <div className="space-y-6">
@@ -123,6 +138,21 @@ export default function SiteDetailPage() {
         <p className="mt-2 text-xs text-ink-400">
           {published ? t.detail.unpublishHint : t.detail.publishHint}
         </p>
+        {announced && (
+          <p
+            role="status"
+            className={[
+              "mt-3 rounded-2xl px-4 py-3 text-sm font-semibold",
+              announced === "published"
+                ? "bg-tint text-tint-fg"
+                : "bg-ink-50 text-ink-600",
+            ].join(" ")}
+          >
+            {announced === "published"
+              ? t.detail.justPublished(primaryUrl)
+              : t.detail.justUnpublished}
+          </p>
+        )}
         {publishError && (
           <p role="alert" className="mt-2 text-sm font-semibold text-danger">
             {publishError}

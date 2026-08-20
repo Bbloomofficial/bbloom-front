@@ -99,6 +99,8 @@ export type AdminStrings = {
     unpublish: string;
     publishHint: string;
     unpublishHint: string;
+    justPublished: (address: string) => string;
+    justUnpublished: string;
     overview: string;
     template: string;
     products: string;
@@ -273,6 +275,8 @@ const en: AdminStrings = {
     unpublish: "Unpublish",
     publishHint: "Publishing makes the site visible to everyone.",
     unpublishHint: "The site is live.",
+    justPublished: (address) => `Published. The site is now live at ${address}`,
+    justUnpublished: "Unpublished. The site is no longer visible to the public.",
     overview: "Overview",
     template: "Template",
     products: "Products",
@@ -447,6 +451,9 @@ const ka: AdminStrings = {
     unpublish: "გამოქვეყნების გაუქმება",
     publishHint: "გამოქვეყნების შემდეგ საიტს ყველა დაინახავს.",
     unpublishHint: "საიტი გამოქვეყნებულია.",
+    justPublished: (address) =>
+      `გამოქვეყნდა. საიტი ხელმისაწვდომია მისამართზე ${address}`,
+    justUnpublished: "გამოქვეყნება გაუქმდა. საიტი აღარ ჩანს.",
     overview: "მიმოხილვა",
     template: "შაბლონი",
     products: "პროდუქტები",
