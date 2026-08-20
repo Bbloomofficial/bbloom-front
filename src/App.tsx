@@ -1,4 +1,5 @@
 import { Suspense, lazy } from "react";
+import type { ReactNode } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
@@ -12,16 +13,34 @@ import NotFound from "./pages/NotFound";
 import { resolveSiteHost } from "./site/host";
 
 // Client sites are a separate product from the marketing site, so visitors to
-// either only download the half they need.
+// either only download the half they need. The dashboard is a third audience —
+// clients signing in to read their messages — so it splits out too.
 const SitePage = lazy(() => import("./site/SitePage"));
+const DashboardApp = lazy(() => import("./dashboard/DashboardApp"));
 
-function Site({ mode }: { mode: "host" | "ref" }) {
+function Lazy({ children }: { children: ReactNode }) {
   return (
     <Suspense
       fallback={<div className="min-h-screen bg-white dark:bg-neutral-950" />}
     >
-      <SitePage mode={mode} />
+      {children}
     </Suspense>
+  );
+}
+
+function Site({ mode }: { mode: "host" | "ref" }) {
+  return (
+    <Lazy>
+      <SitePage mode={mode} />
+    </Lazy>
+  );
+}
+
+function Dashboard() {
+  return (
+    <Lazy>
+      <DashboardApp />
+    </Lazy>
   );
 }
 
@@ -62,6 +81,7 @@ export default function App() {
     <Routes>
       <Route path="/site/:slug" element={<Site mode="ref" />} />
       <Route path="/site/:slug/p/:productSlug" element={<Site mode="ref" />} />
+      <Route path="/dashboard/*" element={<Dashboard />} />
       <Route path="*" element={<MarketingApp />} />
     </Routes>
   );
