@@ -38,6 +38,8 @@ export type SiteDetail = {
   status: string;
   templateCode: string;
   templateName?: string;
+  templateNameKa?: string;
+  templateNameEn?: string;
   category?: string;
   tier?: string;
   defaultLanguage?: SiteLanguage;
@@ -84,6 +86,8 @@ export type Enquiry = {
   message?: string;
   productId?: string;
   productName?: string;
+  productNameKa?: string;
+  productNameEn?: string;
   reservationDate?: string;
   reservationTime?: string;
   partySize?: number;

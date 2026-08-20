@@ -12,11 +12,6 @@ export default defineConfig({
       "/api": {
         target: process.env.VITE_API_PROXY ?? "http://localhost:8080",
         changeOrigin: true,
-        // The API only whitelists a fixed dev origin; dropping the header keeps
-        // the proxy working whichever port Vite ends up on.
-        configure: (proxy) => {
-          proxy.on("proxyReq", (proxyReq) => proxyReq.removeHeader("origin"));
-        },
       },
     },
   },

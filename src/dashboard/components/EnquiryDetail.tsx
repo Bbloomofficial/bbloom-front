@@ -41,6 +41,11 @@ export default function EnquiryDetail({
   const [saving, setSaving] = useState<"status" | "note" | null>(null);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // The row carries both languages, so the product reads in the owner's own.
+  const productName =
+    (locale === "en" ? enquiry.productNameEn : enquiry.productNameKa) ??
+    enquiry.productName;
   const root = useRef<HTMLDivElement>(null);
 
   // On narrow screens the detail sits below the list, so bring it into view.
@@ -140,9 +145,7 @@ export default function EnquiryDetail({
         </Field>
       )}
 
-      {enquiry.productName && (
-        <Field label={t.detail.product}>{enquiry.productName}</Field>
-      )}
+      {productName && <Field label={t.detail.product}>{productName}</Field>}
 
       {(enquiry.reservationDate || enquiry.partySize) && (
         <Field label={t.detail.reservation}>

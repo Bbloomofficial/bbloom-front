@@ -163,11 +163,11 @@ export default function Overview() {
             <Row
               label={t.overview.template}
               value={
-                // The manage API has no `lang` parameter, so `templateName`
-                // always comes back in Georgian; English readers get the code.
-                locale === "en"
-                  ? titleCase(detail.templateCode)
-                  : (detail.templateName ?? titleCase(detail.templateCode))
+                (locale === "en"
+                  ? detail.templateNameEn
+                  : detail.templateNameKa) ??
+                detail.templateName ??
+                titleCase(detail.templateCode)
               }
             />
             <Row
