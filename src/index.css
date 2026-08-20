@@ -1,0 +1,175 @@
+@import 'tailwindcss';
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans: 'Plus Jakarta Sans', 'Noto Sans Georgian', ui-sans-serif, system-ui, sans-serif;
+
+  --color-bloom-50: #fdf2f8;
+  --color-bloom-100: #fce7f3;
+  --color-bloom-200: #fbcfe8;
+  --color-bloom-300: #f9a8d4;
+  --color-bloom-400: #f472b6;
+  --color-bloom-500: #ec4899;
+  --color-bloom-600: #db2777;
+  --color-bloom-700: #be185d;
+  --color-bloom-800: #9d174d;
+  --color-bloom-900: #831843;
+
+  --color-ink-50: #f6f7f9;
+  --color-ink-100: #eceef2;
+  --color-ink-400: #8b93a7;
+  --color-ink-600: #4b5468;
+  --color-ink-800: #232838;
+  --color-ink-900: #12151f;
+
+  /* Semantic tokens — these are what flip between light and dark. */
+  --color-canvas: #ffffff;
+  --color-surface: #ffffff;
+  --color-contrast: #12151f;
+  --color-tint: #fdf2f8;
+  --color-tint-strong: #fce7f3;
+  --color-tint-fg: #be185d;
+  --color-success: #059669;
+  --color-success-soft: #ecfdf5;
+  --color-success-border: #a7f3d0;
+  --color-danger: #dc2626;
+}
+
+/*
+ * Dark theme. Instead of sprinkling `dark:` on every element we re-point the
+ * neutral scale and the semantic tokens, so existing utilities adapt on their
+ * own. `contrast` stays dark in both themes because those bands are
+ * light-on-dark by design.
+ */
+.dark {
+  --color-ink-50: #171b28;
+  --color-ink-100: #262c3d;
+  --color-ink-400: #79809a;
+  --color-ink-600: #a3aabd;
+  --color-ink-800: #dfe3ec;
+  --color-ink-900: #f6f7fb;
+
+  --color-canvas: #0b0e17;
+  --color-surface: #141826;
+  --color-contrast: #05070d;
+  --color-tint: #2a1522;
+  --color-tint-strong: #3d1d2e;
+  --color-tint-fg: #f9a8d4;
+  --color-success: #34d399;
+  --color-success-soft: #0f2a21;
+  --color-success-border: #14532d;
+  --color-danger: #f87171;
+
+  color-scheme: dark;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-canvas font-sans text-ink-800 antialiased;
+    transition:
+      background-color 0.2s ease,
+      color 0.2s ease;
+  }
+
+  ::selection {
+    @apply bg-bloom-200 text-bloom-900;
+  }
+
+  .dark ::selection {
+    @apply bg-bloom-700 text-white;
+  }
+
+  /* Georgian needs a slightly looser line-height to breathe. */
+  html[lang='ka'] body {
+    line-height: 1.65;
+  }
+}
+
+@utility btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: --spacing(2);
+  border-radius: calc(infinity * 1px);
+  padding-inline: --spacing(6);
+  padding-block: --spacing(3);
+  font-size: var(--text-sm);
+  line-height: var(--text-sm--line-height);
+  font-weight: 600;
+  text-align: center;
+  transition-property: color, background-color, border-color, box-shadow, transform;
+  transition-timing-function: var(--default-transition-timing-function);
+  transition-duration: var(--default-transition-duration);
+}
+
+@layer components {
+  .container-page {
+    @apply mx-auto w-full max-w-6xl px-5 sm:px-8;
+  }
+
+  .btn:focus-visible {
+    @apply outline-2 outline-offset-2 outline-bloom-500;
+  }
+
+  .btn-primary {
+    @apply btn bg-bloom-600 text-white shadow-lg shadow-bloom-600/20 hover:bg-bloom-700 hover:shadow-bloom-700/25;
+  }
+
+  .btn-secondary {
+    @apply btn border border-ink-100 bg-surface text-ink-800 hover:border-bloom-200 hover:bg-tint dark:hover:border-bloom-700;
+  }
+
+  .card {
+    @apply rounded-3xl border border-ink-100 bg-surface p-6 break-words transition hover:border-bloom-200 hover:shadow-xl hover:shadow-bloom-600/5 sm:p-7 dark:hover:border-bloom-700;
+  }
+
+  .eyebrow {
+    @apply inline-flex items-center gap-2 rounded-full bg-tint px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-tint-fg;
+  }
+
+  .field {
+    @apply w-full rounded-2xl border border-ink-100 bg-surface px-4 py-3 text-sm text-ink-900 outline-none transition placeholder:text-ink-400 focus:border-bloom-400 focus:ring-4 focus:ring-tint-strong;
+  }
+
+  .label {
+    @apply mb-1.5 block text-sm font-semibold text-ink-800;
+  }
+
+  .icon-button {
+    @apply inline-flex h-10 w-10 items-center justify-center rounded-xl border border-ink-100 bg-surface text-ink-600 transition hover:border-bloom-300 hover:text-bloom-600;
+  }
+}
+
+@keyframes float-slow {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-14px);
+  }
+}
+
+.animate-float-slow {
+  animation: float-slow 7s ease-in-out infinite;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-rise {
+  animation: rise 0.6s ease-out both;
+}

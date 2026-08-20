@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="ka">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#ffffff" />
+    <title>bbloom — გაზარდე შენი მცირე ბიზნესი ონლაინში</title>
+    <meta
+      name="description"
+      content="bbloom ეხმარება მცირე ბიზნესებს მეტი მომხმარებლის მოზიდვაში Instagram-ისა და Facebook-ის რეკლამით და სწრაფი, გამყიდველი ვებგვერდებით."
+    />
+    <meta property="og:title" content="bbloom — გაზარდე შენი მცირე ბიზნესი ონლაინში" />
+    <meta
+      property="og:description"
+      content="სოციალური მედიის რეკლამა და ვებგვერდები, რომლებიც ყურადღებას რეალურ მომხმარებლად აქცევს."
+    />
+    <meta property="og:type" content="website" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Noto+Sans+Georgian:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <script>
+      // Apply theme and language before first paint to avoid a flash.
+      ;(function () {
+        try {
+          var theme = localStorage.getItem('bbloom:theme')
+          if (!theme) {
+            theme = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+          }
+          if (theme === 'dark') {
+            document.documentElement.classList.add('dark')
+            document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0b0e17')
+          }
+
+          var locale = localStorage.getItem('bbloom:locale')
+          if (locale !== 'en' && locale !== 'ka') locale = 'ka'
+          document.documentElement.lang = locale
+        } catch (error) {
+          /* storage blocked — fall back to defaults */
+        }
+      })()
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
