@@ -1,3 +1,5 @@
+import { Suspense, lazy } from 'react'
+import type { ReactNode } from 'react'
 import { Navigate, Route, Routes } from 'react-router-dom'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
@@ -9,7 +11,15 @@ import About from './pages/About'
 import Contact from './pages/Contact'
 import NotFound from './pages/NotFound'
 
-export default function App() {
+// The staff admin area is a separate audience from the marketing site, so
+// visitors to either only download the half they need.
+const AdminApp = lazy(() => import('./admin/AdminApp'))
+
+function Lazy({ children }: { children: ReactNode }) {
+  return <Suspense fallback={<div className="min-h-screen bg-canvas" />}>{children}</Suspense>
+}
+
+function MarketingApp() {
   return (
     <div className="flex min-h-screen flex-col">
       <ScrollToTop />
@@ -27,5 +37,21 @@ export default function App() {
       </main>
       <Footer />
     </div>
+  )
+}
+
+export default function App() {
+  return (
+    <Routes>
+      <Route
+        path="/admin/*"
+        element={
+          <Lazy>
+            <AdminApp />
+          </Lazy>
+        }
+      />
+      <Route path="*" element={<MarketingApp />} />
+    </Routes>
   )
 }
