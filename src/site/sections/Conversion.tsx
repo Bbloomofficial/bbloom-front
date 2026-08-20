@@ -103,6 +103,7 @@ export function ReservationFormPanel({ section }: { section: PublicSection }) {
   const { meta, t } = useSite();
   const glass = section.variant === "glass-form";
   const phoneNote = str(section.content, "phoneNote");
+  const media = image(section.content, "image");
 
   return (
     <Band
@@ -140,6 +141,16 @@ export function ReservationFormPanel({ section }: { section: PublicSection }) {
               <Icon name="phone" size={18} />
               {meta.contact.phone}
             </a>
+          ) : null}
+          {media ? (
+            <div className="mt-8 hidden lg:block">
+              <SiteImage
+                media={media}
+                alt=""
+                ratio="4 / 3"
+                className={glass ? "site-glass p-1.5" : undefined}
+              />
+            </div>
           ) : null}
         </div>
         <EnquiryForm

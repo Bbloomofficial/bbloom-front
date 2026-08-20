@@ -11,7 +11,7 @@ import type {
   SitePayload,
 } from "./api/types";
 import { formatMoney } from "./utils/money";
-import { stringsFor } from "./utils/strings";
+import { stringsFor, withLabels } from "./utils/strings";
 import type { SiteStrings } from "./utils/strings";
 
 type SiteContextValue = {
@@ -71,7 +71,7 @@ export function SiteProvider({
       categories: payload.categories ?? [],
       products,
       locale,
-      t: stringsFor(locale),
+      t: withLabels(stringsFor(locale), meta.labels, locale),
       features: meta.features ?? {},
       effects: meta.theme?.effects ?? {},
       isDark: meta.theme?.mode === "dark",

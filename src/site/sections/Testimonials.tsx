@@ -1,8 +1,9 @@
 import type { PublicSection } from "../api/types";
 import { Band, Reveal, SectionHeading } from "../components/layout";
 import { Icon } from "../components/Icon";
+import { SiteImage } from "../components/SiteImage";
 import { useSite } from "../context";
-import { itemNum, itemStr, list, str } from "../utils/content";
+import { itemNum, itemStr, list, str, toMedia } from "../utils/content";
 
 function Rating({ value }: { value?: number }) {
   const stars = Math.round(value ?? 0);
@@ -14,6 +15,32 @@ function Rating({ value }: { value?: number }) {
           <Icon name="star" size={16} filled={index < stars} />
         </span>
       ))}
+    </span>
+  );
+}
+
+/** Clients can clear an avatar, so the initial stands in when there is none. */
+function Avatar({ item, size = 40 }: { item: unknown; size?: number }) {
+  const media = toMedia((item as Record<string, unknown>)?.avatar);
+  const author = itemStr(item, "author") ?? "";
+  if (media) {
+    return (
+      <span
+        className="block shrink-0 overflow-hidden rounded-full"
+        style={{ width: size, height: size }}
+      >
+        <SiteImage media={media} alt={author} ratio="1 / 1" rounded={false} />
+      </span>
+    );
+  }
+  if (!author) return null;
+  return (
+    <span
+      className="site-heading flex shrink-0 items-center justify-center rounded-full bg-site-primary/12 text-site-primary"
+      style={{ width: size, height: size, fontSize: size * 0.4 }}
+      aria-hidden="true"
+    >
+      {author.slice(0, 1)}
     </span>
   );
 }
@@ -43,7 +70,8 @@ export function TestimonialsQuotes({ section }: { section: PublicSection }) {
               {effects.goldDividers ? (
                 <div className="site-divider w-12" />
               ) : null}
-              <figcaption className="site-heading text-sm text-site-muted">
+              <figcaption className="site-heading flex items-center gap-3 text-sm text-site-muted">
+                <Avatar item={item} size={36} />
                 {itemStr(item, "author")}
               </figcaption>
             </figure>
@@ -96,7 +124,8 @@ export function TestimonialsGlassCards({
                 </p>
               </blockquote>
               <div className="flex items-center justify-between gap-3 border-t border-site-border pt-4">
-                <figcaption className="site-heading text-sm text-site-text">
+                <figcaption className="site-heading flex items-center gap-3 text-sm text-site-text">
+                  <Avatar item={item} size={40} />
                   {itemStr(item, "author")}
                 </figcaption>
                 <Rating value={itemNum(item, "rating")} />

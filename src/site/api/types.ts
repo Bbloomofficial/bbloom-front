@@ -113,6 +113,8 @@ export type SiteMeta = {
     mapUrl: string | null;
   } | null;
   social: Record<string, string> | null;
+  /** Template wording for catalog chrome — a "product" may be a "dish". */
+  labels: { products?: string | null; categories?: string | null } | null;
   logo: MediaRef | null;
   favicon: MediaRef | null;
 };

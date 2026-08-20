@@ -197,3 +197,29 @@ export const siteStrings: Record<SiteLanguage, SiteStrings> = { ka, en };
 export function stringsFor(locale: SiteLanguage | undefined): SiteStrings {
   return locale === "en" ? en : ka;
 }
+
+function pluralise(word: string): string {
+  if (/(s|x|z|ch|sh)$/i.test(word)) return `${word}es`;
+  if (/[^aeiou]y$/i.test(word)) return `${word.slice(0, -1)}ies`;
+  return `${word}s`;
+}
+
+/**
+ * Templates name their catalog: a restaurant sells dishes, not products. The
+ * payload carries that wording, so the chrome borrows it where it reads naturally.
+ */
+export function withLabels(
+  base: SiteStrings,
+  labels: { products?: string | null } | null | undefined,
+  locale: SiteLanguage,
+): SiteStrings {
+  const noun = labels?.products?.trim();
+  if (!noun) return base;
+  const many = (locale === "en" ? pluralise(noun) : noun).toLocaleLowerCase();
+  return {
+    ...base,
+    itemsCount: many,
+    searchPlaceholder:
+      locale === "en" ? `Search ${many}…` : `მოძებნეთ ${many}…`,
+  };
+}

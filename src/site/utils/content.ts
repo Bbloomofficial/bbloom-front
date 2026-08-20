@@ -49,13 +49,15 @@ export function list<T = Record<string, unknown>>(
   return Array.isArray(value) ? (value as T[]) : [];
 }
 
-/** An image field may be a media ref object or a bare URL string. */
+/** An image field may be a media ref object, a wrapper around one, or a bare URL. */
 export function image(
   content: SectionContent | null | undefined,
   key: string,
 ): MediaRef | undefined {
   return toMedia(content?.[key]);
 }
+
+const MEDIA_KEYS = ["image", "media", "photo", "picture", "src"] as const;
 
 export function toMedia(value: unknown): MediaRef | undefined {
   if (!value) return undefined;
@@ -65,10 +67,7 @@ export function toMedia(value: unknown): MediaRef | undefined {
       : undefined;
   }
   if (typeof value === "object") {
-    const candidate = value as Partial<MediaRef> & {
-      src?: string;
-      image?: string;
-    };
+    const candidate = value as Record<string, unknown> & Partial<MediaRef>;
     const url = candidate.url ?? candidate.src ?? candidate.image;
     if (typeof url === "string" && url.trim()) {
       return {
@@ -78,6 +77,14 @@ export function toMedia(value: unknown): MediaRef | undefined {
         height: candidate.height ?? null,
         alt: candidate.alt ?? null,
       };
+    }
+    // Gallery and card items wrap the ref, e.g. { image: { url, … } }.
+    for (const key of MEDIA_KEYS) {
+      const nested = candidate[key];
+      if (nested && typeof nested === "object") {
+        const media = toMedia(nested);
+        if (media) return media;
+      }
     }
   }
   return undefined;
