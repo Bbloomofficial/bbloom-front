@@ -42,7 +42,7 @@ export default function Sites() {
   const [demoSlugs, setDemoSlugs] = useState<Set<string>>(new Set());
   useEffect(() => {
     let cancelled = false;
-    fetchTemplates(locale)
+    fetchTemplates()
       .then((templates) => {
         if (cancelled) return;
         setDemoSlugs(
@@ -58,7 +58,7 @@ export default function Sites() {
     return () => {
       cancelled = true;
     };
-  }, [locale]);
+  }, []);
 
   return (
     <div>

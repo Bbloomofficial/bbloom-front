@@ -1,4 +1,5 @@
 import type { Locale } from "../i18n";
+import type { TemplateSummary } from "./api/types";
 
 /** Formatting helpers shared by the admin screens. */
 
@@ -38,4 +39,26 @@ export function localised(
 ): string {
   const preferred = locale === "ka" ? ka : en;
   return preferred ?? ka ?? en ?? "";
+}
+
+/**
+ * The template catalog's copy, in the reader's language. It arrives both
+ * resolved and as `*Ka`/`*En` pairs; we read the pair so a language toggle
+ * costs nothing, and fall back to the resolved value.
+ */
+export function templateText(
+  template: TemplateSummary,
+  locale: Locale,
+): { name: string; tagline: string; description: string } {
+  return {
+    name: localised(template.nameKa, template.nameEn, locale) || template.name,
+    tagline:
+      localised(template.taglineKa, template.taglineEn, locale) ||
+      template.tagline ||
+      "",
+    description:
+      localised(template.descriptionKa, template.descriptionEn, locale) ||
+      template.description ||
+      "",
+  };
 }

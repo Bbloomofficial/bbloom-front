@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useI18n } from "../../i18n";
 import { adminStrings } from "../strings";
 import { assetUrl } from "../api/client";
+import { templateText } from "../format";
 import type { TemplateSummary } from "../api/types";
 
 /**
@@ -84,6 +85,7 @@ export function TemplatePreviewDialog({
   const t = adminStrings(locale);
   const closeRef = useRef<HTMLButtonElement>(null);
   const demo = demoHref(template);
+  const text = templateText(template, locale);
 
   useEffect(() => {
     closeRef.current?.focus();
@@ -104,7 +106,7 @@ export function TemplatePreviewDialog({
     <div
       role="dialog"
       aria-modal="true"
-      aria-label={template.name}
+      aria-label={text.name}
       className="fixed inset-0 z-50 flex items-center justify-center bg-contrast/60 p-4 backdrop-blur-sm"
       onClick={onClose}
     >
@@ -114,9 +116,9 @@ export function TemplatePreviewDialog({
       >
         <div className="flex items-start justify-between gap-4 border-b border-ink-100 p-5">
           <div>
-            <h3 className="text-lg font-bold text-ink-900">{template.name}</h3>
-            {template.tagline && (
-              <p className="mt-1 text-sm text-ink-600">{template.tagline}</p>
+            <h3 className="text-lg font-bold text-ink-900">{text.name}</h3>
+            {text.tagline && (
+              <p className="mt-1 text-sm text-ink-600">{text.tagline}</p>
             )}
           </div>
           <button
@@ -161,8 +163,8 @@ export function TemplatePreviewDialog({
             </a>
           )}
 
-          {template.description && (
-            <p className="text-sm text-ink-600">{template.description}</p>
+          {text.description && (
+            <p className="text-sm text-ink-600">{text.description}</p>
           )}
 
           {template.sections && template.sections.length > 0 && (

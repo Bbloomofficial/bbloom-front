@@ -55,11 +55,13 @@ export function fetchProfile(token: string): Promise<StaffProfile> {
 }
 
 /**
- * The template catalog is public and resolves one language server-side, so the
- * picker refetches when staff switch the interface language.
+ * The template catalog is public, and unusually for the public API it carries
+ * both languages as `*Ka`/`*En` pairs alongside the resolved strings. So we
+ * fetch it once and let the picker re-render from what it already holds when
+ * staff switch language, rather than dropping the grid into a loading state.
  */
-export function fetchTemplates(lang: string): Promise<TemplateSummary[]> {
-  return request<TemplateSummary[]>(`/templates?lang=${lang}`);
+export function fetchTemplates(): Promise<TemplateSummary[]> {
+  return request<TemplateSummary[]>("/templates");
 }
 
 export type SiteQuery = { q?: string; page?: number; size?: number };

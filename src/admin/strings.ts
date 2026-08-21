@@ -246,7 +246,7 @@ const en: AdminStrings = {
     noPreview: "Preview coming soon",
     preview: "Preview",
     previewNote:
-      "A sketch of the layout and colours. Your own text and photos replace the grey blocks.",
+      "The real layout, colours and sample photos. The grey bars are where your own text goes.",
     chooseTemplate: "Choose this template",
     closePreview: "Close",
     demo: "Live demo",
@@ -433,7 +433,7 @@ const ka: AdminStrings = {
     noPreview: "სურათი მალე დაემატება",
     preview: "გადახედვა",
     previewNote:
-      "განლაგებისა და ფერების ესკიზი. ნაცრისფერი ბლოკების ადგილს თქვენი ტექსტი და ფოტოები დაიკავებს.",
+      "ნამდვილი განლაგება, ფერები და სანიმუშო ფოტოები. ნაცრისფერი ზოლების ადგილს თქვენი ტექსტი დაიკავებს.",
     chooseTemplate: "ამ შაბლონის არჩევა",
     closePreview: "დახურვა",
     demo: "ცოცხალი დემო",

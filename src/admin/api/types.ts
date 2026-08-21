@@ -47,10 +47,20 @@ export type TemplateSummary = {
   code: string;
   category: string;
   tier: string;
-  /** Already resolved to the `lang` we asked for — this endpoint is public. */
+  /**
+   * Resolved to whatever `lang` the request asked for. Prefer the `*Ka`/`*En`
+   * pairs below and keep these as the fallback: reading the pair means a
+   * language toggle re-renders from data we already hold.
+   */
   name: string;
   tagline?: string;
   description?: string;
+  nameKa?: string;
+  nameEn?: string;
+  taglineKa?: string;
+  taglineEn?: string;
+  descriptionKa?: string;
+  descriptionEn?: string;
   /**
    * Root-relative path to a generated wireframe thumbnail
    * (`/api/v1/templates/{code}/preview`). Resolve it with `assetUrl` rather

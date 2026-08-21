@@ -10,7 +10,7 @@ import { SITE_LANGUAGES } from "../api/types";
 import type { CreateSiteRequest, SiteLanguage } from "../api/types";
 import TemplatePicker from "../components/TemplatePicker";
 import { TemplatePreview, demoHref } from "../components/TemplatePreview";
-import { SLUG_PATTERN, slugify } from "../format";
+import { SLUG_PATTERN, slugify, templateText } from "../format";
 import { adminStrings } from "../strings";
 
 type Step = 0 | 1 | 2 | 3;
@@ -21,9 +21,9 @@ export default function NewSite() {
   const { token } = useSession();
   const navigate = useNavigate();
 
-  // The catalog is public and resolves one language server-side, so it is
-  // refetched when staff switch the interface language.
-  const templatesState = useResource(() => fetchTemplates(locale), [locale]);
+  // The catalog carries both languages, so it is fetched once and re-read from
+  // memory when staff switch the interface language.
+  const templatesState = useResource(() => fetchTemplates(), []);
   const templates = useMemo(
     () => templatesState.data ?? [],
     [templatesState.data],
@@ -466,7 +466,9 @@ export default function NewSite() {
                     <p className="text-[11px] uppercase tracking-wide text-ink-400">
                       {t.wizard.selectedTemplate}
                     </p>
-                    <p className="font-bold text-ink-900">{template.name}</p>
+                    <p className="font-bold text-ink-900">
+                      {templateText(template, locale).name}
+                    </p>
                   </div>
                   <div className="flex shrink-0 items-baseline gap-3">
                     {demoHref(template) && (

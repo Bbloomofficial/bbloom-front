@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useI18n } from "../../i18n";
 import { adminStrings } from "../strings";
 import { TEMPLATE_CATEGORIES, TEMPLATE_TIERS } from "../api/types";
+import { templateText } from "../format";
 import { TemplatePreview, TemplatePreviewDialog, demoHref } from "./TemplatePreview";
 import type { TemplateSummary } from "../api/types";
 
@@ -59,6 +60,7 @@ export default function TemplatePicker({
               {group.map((template) => {
                 const active = template.code === selected;
                 const demo = demoHref(template);
+                const text = templateText(template, locale);
                 return (
                   <div
                     key={template.code}
@@ -89,14 +91,14 @@ export default function TemplatePicker({
 
                       <div className="p-4">
                         <div className="flex items-start justify-between gap-2">
-                          <h4 className="font-bold text-ink-900">{template.name}</h4>
+                          <h4 className="font-bold text-ink-900">{text.name}</h4>
                           <span className="shrink-0 rounded-full bg-tint px-2 py-0.5 text-[11px] font-semibold text-tint-fg">
                             {t.tiers[template.tier] ?? template.tier}
                           </span>
                         </div>
-                        {template.tagline && (
+                        {text.tagline && (
                           <p className="mt-1 text-sm text-ink-600">
-                            {template.tagline}
+                            {text.tagline}
                           </p>
                         )}
                         <p className="mt-2 text-[11px] text-ink-400" dir="ltr">
