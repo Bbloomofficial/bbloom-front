@@ -45,18 +45,33 @@ jobs:
           fi
 
       - name: Authorise the deploy key
+        # Passed as env rather than interpolated into the script, so the value
+        # is never parsed as shell.
+        env:
+          KEY_B64: ${{ secrets.DEPLOY_SSH_KEY_B64 }}
+          KEY_PEM: ${{ secrets.DEPLOY_SSH_KEY }}
         run: |
           mkdir -p ~/.ssh
-          # The secret holds the key base64-encoded on a single line. A
-          # multi-line PEM pasted into a browser field is easy to truncate --
-          # that is what "error in libcrypto" meant here the first time -- and a
-          # single line cannot lose one.
-          printf '%s' "${{ secrets.DEPLOY_SSH_KEY_B64 }}" | tr -d ' \r\n' | base64 -d > ~/.ssh/id_ed25519 2>/dev/null || true
+          K="$KEY_B64"
+          [ -n "$K" ] || K="$KEY_PEM"
+          [ -n "$K" ] || { echo "Neither DEPLOY_SSH_KEY_B64 nor DEPLOY_SSH_KEY is set on this repository."; exit 1; }
+
+          # Either form is accepted: single-line base64 (preferred -- a
+          # multi-line PEM pasted into a browser field is easy to truncate, which
+          # is what "error in libcrypto" meant here the first time) or the PEM
+          # itself. Try to decode; if that does not yield a usable key, take the
+          # value verbatim.
+          printf '%s' "$K" | tr -d ' \r\n' | base64 -d > ~/.ssh/id_ed25519 2>/dev/null || true
           chmod 600 ~/.ssh/id_ed25519 2>/dev/null || true
+          if ! ssh-keygen -y -f ~/.ssh/id_ed25519 >/dev/null 2>&1; then
+            printf '%s\n' "$K" | tr -d '\r' > ~/.ssh/id_ed25519
+            chmod 600 ~/.ssh/id_ed25519
+          fi
+
           # Fail here, naming the cause, rather than as an opaque
           # "Permission denied" at the deploy step.
-          ssh-keygen -y -f ~/.ssh/id_ed25519 > /dev/null 2>&1 \
-            || { echo "DEPLOY_SSH_KEY_B64 is missing or not a valid base64-encoded private key."; exit 1; }
+          ssh-keygen -y -f ~/.ssh/id_ed25519 >/dev/null 2>&1 \
+            || { echo "The deploy key is not usable: it is neither valid base64 nor a valid private key. Re-copy it whole."; exit 1; }
           printf '%s\n' "62.238.121.237 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPoPIOXz/kXlJyotqB43C1eotjCYazIkHTHHKyn/Y0wF" > ~/.ssh/known_hosts
 
       # The same restricted key as the API, told to run the web pipeline. The
