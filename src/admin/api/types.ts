@@ -118,6 +118,11 @@ export type SiteDetail = SiteSummary & {
   seoDescriptionKa?: string;
   seoDescriptionEn?: string;
   contactEmail?: string;
+  /**
+   * Where enquiry notifications are sent. Null means they go to
+   * `contactEmail` instead — it is a fallback, not "nobody is told".
+   */
+  notificationEmail?: string;
   contactPhone?: string;
   contactAddressKa?: string;
   contactAddressEn?: string;
@@ -170,6 +175,7 @@ export type UpdateSiteRequest = {
   seoDescriptionKa?: string | null;
   seoDescriptionEn?: string | null;
   contactEmail?: string | null;
+  notificationEmail?: string | null;
   contactPhone?: string | null;
   contactAddressKa?: string | null;
   contactAddressEn?: string | null;

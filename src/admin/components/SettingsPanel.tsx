@@ -20,6 +20,7 @@ type Draft = {
   languages: SiteLanguage[];
   currency: string;
   contactEmail: string;
+  notificationEmail: string;
   contactPhone: string;
   contactAddressKa: string;
   contactAddressEn: string;
@@ -33,6 +34,7 @@ type Draft = {
 const TEXT_FIELDS = [
   "currency",
   "contactEmail",
+  "notificationEmail",
   "contactPhone",
   "contactAddressKa",
   "contactAddressEn",
@@ -43,12 +45,16 @@ const TEXT_FIELDS = [
   "seoDescriptionEn",
 ] as const;
 
+const EMAIL_FIELDS = ["contactEmail", "notificationEmail"] as const;
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 function toDraft(site: SiteDetail): Draft {
   return {
     businessName: site.businessName ?? "",
     languages: site.languages?.length ? site.languages : ["ka"],
     currency: site.currency ?? "",
     contactEmail: site.contactEmail ?? "",
+    notificationEmail: site.notificationEmail ?? "",
     contactPhone: site.contactPhone ?? "",
     contactAddressKa: site.contactAddressKa ?? "",
     contactAddressEn: site.contactAddressEn ?? "",
@@ -108,9 +114,22 @@ export default function SettingsPanel({
   const changes = useMemo(() => diff(site, draft), [site, draft]);
   const dirty = Object.keys(changes).length > 0;
 
+  // Null notificationEmail falls back to the contact address, so the hint
+  // tracks the unsaved draft: editing the contact field above updates who
+  // the form says will actually be told.
+  const fallbackRecipient = draft.contactEmail.trim();
+
   function set<K extends keyof Draft>(key: K, value: Draft[K]) {
     setDraft((current) => ({ ...current, [key]: value }));
     setSaved(false);
+    // Retyping a rejected field should clear its complaint, not leave it
+    // contradicting what is now in the box.
+    setFieldErrors((current) => {
+      if (!(key in current)) return current;
+      const next = { ...current };
+      delete next[key as string];
+      return next;
+    });
   }
 
   function toggleLanguage(language: SiteLanguage) {
@@ -123,6 +142,22 @@ export default function SettingsPanel({
   async function onSubmit(event: FormEvent) {
     event.preventDefault();
     if (saving || !dirty) return;
+
+    // The API rejects a malformed address with an English message naming the
+    // raw field, so catch it here and say so on the field itself instead.
+    const badEmails: Record<string, string> = {};
+    for (const field of EMAIL_FIELDS) {
+      const value = draft[field].trim();
+      if (value && !EMAIL_PATTERN.test(value)) {
+        badEmails[field] = t.detail.invalidEmail;
+      }
+    }
+    if (Object.keys(badEmails).length > 0) {
+      setFieldErrors(badEmails);
+      setError(null);
+      return;
+    }
+
     setSaving(true);
     setError(null);
     setFieldErrors({});
@@ -146,7 +181,13 @@ export default function SettingsPanel({
   function textField(
     key: (typeof TEXT_FIELDS)[number] | "businessName",
     label: string,
-    options: { ltr?: boolean; type?: string; textarea?: boolean } = {},
+    options: {
+      ltr?: boolean;
+      type?: string;
+      textarea?: boolean;
+      placeholder?: string;
+      hint?: string;
+    } = {},
   ) {
     const id = `site-${key}`;
     return (
@@ -168,9 +209,13 @@ export default function SettingsPanel({
             type={options.type ?? "text"}
             dir={options.ltr ? "ltr" : undefined}
             className="field"
+            placeholder={options.placeholder}
             value={draft[key]}
             onChange={(event) => set(key, event.target.value)}
           />
+        )}
+        {options.hint && !fieldErrors[key] && (
+          <p className="mt-1.5 text-xs text-ink-400">{options.hint}</p>
         )}
         {fieldErrors[key] && (
           <p className="mt-1.5 text-xs font-semibold text-danger">
@@ -262,6 +307,25 @@ export default function SettingsPanel({
           {textField("mapUrl", t.detail.mapUrl, { ltr: true })}
           {textField("contactAddressKa", t.detail.addressKa)}
           {textField("contactAddressEn", t.detail.addressEn)}
+        </div>
+
+        <div>
+          <h3 className="text-sm font-bold uppercase tracking-wide text-ink-400">
+            {t.detail.notifications}
+          </h3>
+          <p className="mt-1 text-xs text-ink-400">{t.detail.notificationsHint}</p>
+          <div className="mt-3 sm:max-w-sm">
+            {textField("notificationEmail", t.detail.notificationEmail, {
+              ltr: true,
+              type: "email",
+              placeholder: fallbackRecipient || undefined,
+              hint: draft.notificationEmail.trim()
+                ? undefined
+                : fallbackRecipient
+                  ? t.detail.notificationFallback(fallbackRecipient)
+                  : t.detail.notificationNobody,
+            })}
+          </div>
         </div>
 
         <div>
