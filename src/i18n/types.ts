@@ -19,10 +19,18 @@ export type Plan = {
 
 export type Faq = { question: string; answer: string }
 
+/**
+ * Sales copy for a website template, keyed by the backend's template code. The
+ * API describes each template in Georgian only, so the bilingual marketing site
+ * keeps its own pitch and falls back to the API text for anything new.
+ */
+export type TemplateCopy = { name: string; tagline: string; description: string }
+
 export type Dict = {
   meta: { title: string; description: string }
   nav: {
     services: string
+    templates: string
     pricing: string
     about: string
     contact: string
@@ -87,6 +95,23 @@ export type Dict = {
     pricePending: string
     note: string
   }
+  templatesPage: {
+    eyebrow: string
+    title: string
+    description: string
+    filterAll: string
+    flagship: string
+    viewDemo: string
+    demoPending: string
+    previewAlt: string
+    loading: string
+    error: string
+    retry: string
+    note: string
+    categories: Record<string, string>
+    tiers: Record<string, string>
+  }
+
   aboutPage: {
     eyebrow: string
     title: string
@@ -115,6 +140,7 @@ export type Dict = {
     contactTitle: string
     about: string
     pricing: string
+    templates: string
     contact: string
     rights: string
     tagline: string
@@ -123,4 +149,5 @@ export type Dict = {
   steps: Step[]
   plans: Plan[]
   faqs: Faq[]
+  templateCopy: Record<string, TemplateCopy>
 }

@@ -13,6 +13,7 @@ export default function Navbar() {
 
   const links = [
     { to: '/services', label: t.nav.services },
+    { to: '/templates', label: t.nav.templates },
     { to: '/pricing', label: t.nav.pricing },
     { to: '/about', label: t.nav.about },
     { to: '/contact', label: t.nav.contact },
