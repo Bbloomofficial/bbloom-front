@@ -25,15 +25,18 @@ function authed<T>(token: string, path: string, init?: RequestInit) {
 
 /**
  * Turns a path the API hands us — a template preview, a media file — into
- * something an `<img src>` can use. The API returns these root-relative
- * (`/api/v1/templates/{code}/preview`), which only works when the app is
- * served from the same origin, so the `/api/v1` prefix is swapped for whatever
- * `API_BASE` is pointing at. Absolute URLs are left alone.
+ * something an `<img src>` can use. These arrive root-relative and already
+ * complete (`/api/v1/templates/{code}/preview`), so they resolve against the
+ * API's *origin*, not against `API_BASE`, which already carries the prefix.
+ * Absolute URLs are left alone, and so is a same-origin `API_BASE`, where the
+ * path already works untouched.
  */
 export function assetUrl(path: string): string {
   if (/^(https?:)?\/\//i.test(path)) return path;
-  const suffix = path.startsWith("/api/v1") ? path.slice("/api/v1".length) : path;
-  return `${API_BASE}${suffix}`;
+  const origin = /^(https?:)?\/\//i.test(API_BASE)
+    ? new URL(API_BASE).origin
+    : "";
+  return `${origin}${path}`;
 }
 
 /** Staff sign-in. The token comes back as `token` — not `accessToken`. */

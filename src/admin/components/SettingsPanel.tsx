@@ -10,12 +10,9 @@ import { adminStrings } from "../strings";
 
 /**
  * PATCH is a true partial update, so this form diffs against what was loaded
- * and sends only the keys that actually changed.
- *
- * Clearing a field sends "" rather than the documented `null`: the backend
- * currently ignores an explicit null on PATCH /manage/sites/{id} (reported to
- * the backend session), while "" does clear the value. "" clears the field
- * either way, so this stays correct once that is fixed.
+ * and sends only the keys that actually changed. Clearing a field sends an
+ * explicit `null`, which is how the API distinguishes "erase this" from
+ * "leave it alone".
  */
 
 type Draft = {
@@ -84,8 +81,8 @@ function diff(site: SiteDetail, draft: Draft): UpdateSiteRequest {
   for (const field of TEXT_FIELDS) {
     const next = draft[field].trim();
     if (next === original[field].trim()) continue;
-    // See the note above: "" clears, an explicit null is currently ignored.
-    changes[field] = next;
+    // An emptied field is a request to clear it, which `null` says explicitly.
+    changes[field] = next === "" ? null : next;
   }
 
   return changes;

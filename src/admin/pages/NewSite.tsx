@@ -94,10 +94,18 @@ export default function NewSite() {
       navigate(`/admin/sites/${site.id}`, { replace: true });
     } catch (caught) {
       if (caught instanceof ApiError) {
-        setError(caught.message || t.wizard.failed);
-        setFieldErrors(caught.fields);
-        // Validation complaints belong to the details step, not the review.
-        if (Object.keys(caught.fields).length > 0) setStep(1);
+        // A slug we sent explicitly is honoured or refused, never altered, so
+        // a clash comes back as 409 and belongs on the address field alone —
+        // a banner saying the same thing twice is just noise.
+        if (caught.status === 409) {
+          setFieldErrors({ slug: t.wizard.slugTaken });
+          setStep(1);
+        } else {
+          setError(caught.message || t.wizard.failed);
+          setFieldErrors(caught.fields);
+          // Validation complaints belong to the details step, not the review.
+          if (Object.keys(caught.fields).length > 0) setStep(1);
+        }
       } else {
         setError(t.wizard.failed);
       }
@@ -259,6 +267,11 @@ export default function NewSite() {
                     onChange={(event) => {
                       setSlugTouched(true);
                       setSlug(event.target.value);
+                      // The clash was about the old value; stop claiming it.
+                      if (fieldErrors.slug) {
+                        setFieldErrors(({ slug: _slug, ...rest }) => rest);
+                        setError(null);
+                      }
                     }}
                   />
                 </div>

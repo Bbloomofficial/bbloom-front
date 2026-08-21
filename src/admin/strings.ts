@@ -77,6 +77,7 @@ export type AdminStrings = {
     slugAuto: string;
     slugEdit: string;
     slugInvalid: string;
+    slugTaken: string;
     optionsTitle: string;
     languages: string;
     languagesHint: string;
@@ -260,6 +261,7 @@ const en: AdminStrings = {
     slugAuto: "Derived from the business name",
     slugEdit: "Edit",
     slugInvalid: "Use lowercase letters, numbers and dashes only.",
+    slugTaken: "That address is already taken. Choose another one.",
     optionsTitle: "How the site works",
     languages: "Languages",
     languagesHint: "Which languages the website is available in.",
@@ -446,6 +448,7 @@ const ka: AdminStrings = {
     slugAuto: "ავტომატურად ბიზნესის სახელიდან",
     slugEdit: "შეცვლა",
     slugInvalid: "გამოიყენეთ პატარა ლათინური ასოები, ციფრები და დეფისი.",
+    slugTaken: "ეს მისამართი დაკავებულია. აირჩიეთ სხვა.",
     optionsTitle: "როგორ იმუშავებს საიტი",
     languages: "ენები",
     languagesHint: "რომელ ენებზე იქნება ხელმისაწვდომი ვებგვერდი.",
