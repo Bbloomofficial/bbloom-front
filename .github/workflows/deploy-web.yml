@@ -1,0 +1,67 @@
+name: Deploy client sites
+
+# This ships the bundle that Caddy serves on *.bbloom.ge -- the public client
+# sites, the dashboard and the staff admin. It is not the marketing site: that
+# is Vercel's copy of the same repo, deployed separately from the same commit.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-web
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Build and deploy to Hetzner
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - run: npm ci
+
+      # Baked in at build time, because Vite substitutes VITE_* into the bundle.
+      # It must be absolute: on a client's own domain the API is a different
+      # origin, so a relative /api/v1 would ask the client's host for it.
+      - name: Build
+        env:
+          VITE_API_BASE_URL: https://api.bbloom.ge/api/v1
+        run: npm run build
+
+      # Cheap insurance against shipping a bundle that talks to a laptop. Both
+      # have happened in this project's history.
+      - name: Check the bundle points at production
+        run: |
+          grep -rq "api.bbloom.ge" dist/assets \
+            || { echo "the API base URL was not baked into the bundle"; exit 1; }
+          if grep -rq "localhost:8080" dist/assets; then
+            echo "the bundle still references localhost"; exit 1
+          fi
+
+      - name: Authorise the deploy key
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "${{ secrets.DEPLOY_SSH_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          printf '%s\n' "62.238.121.237 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPoPIOXz/kXlJyotqB43C1eotjCYazIkHTHHKyn/Y0wF" > ~/.ssh/known_hosts
+
+      # The same restricted key as the API, told to run the web pipeline. The
+      # server updates www in place: Caddy bind-mounts that directory and would
+      # follow the old inode if it were swapped.
+      - name: Ship the bundle
+        run: |
+          echo "${{ github.sha }}" > dist/.deploy-sha
+          tar czf - -C dist . \
+            | ssh -i ~/.ssh/id_ed25519 -o BatchMode=yes root@62.238.121.237 web
+
+      - name: Check a client site from the internet
+        run: |
+          curl -fsS --retry 5 --retry-delay 3 https://demo-shop-modern.bbloom.ge/ \
+            | grep -qi "<div id=\"root\"" \
+            || { echo "the client site did not serve the app shell"; exit 1; }
