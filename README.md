@@ -103,7 +103,7 @@ Georgian uses **Noto Sans Georgian**, which is already loaded as a fallback in t
 - The contact page lists email, phone and hours only — there is no form yet. Email and phone live in
   `src/data/contact.ts` and are shared by the contact page and the footer, so update them in one
   place. The labels and opening hours are in the dictionaries under `contactPage`.
-- Social links in `Footer.tsx` still point at generic Instagram/Facebook URLs.
+- Social links in `Footer.tsx` point at the live bbloom Instagram and Facebook profiles.
 - The site deliberately makes **no performance claims** — there are no statistics, case studies or
   testimonials, since there is nothing real to cite yet. Add them only with figures you can back up.
 - The pricing figures in `src/i18n/*.ts` (`plans`) are placeholders — confirm them before launch.

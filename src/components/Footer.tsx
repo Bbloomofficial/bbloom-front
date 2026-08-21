@@ -70,7 +70,7 @@ export default function Footer() {
           </ul>
           <div className="mt-4 flex gap-2">
             <a
-              href="https://instagram.com"
+              href="https://www.instagram.com/bbloom2620/"
               target="_blank"
               rel="noreferrer"
               aria-label="Instagram"
@@ -79,7 +79,7 @@ export default function Footer() {
               <InstagramIcon className="h-5 w-5" />
             </a>
             <a
-              href="https://facebook.com"
+              href="https://www.facebook.com/profile.php?id=61593673766383"
               target="_blank"
               rel="noreferrer"
               aria-label="Facebook"
