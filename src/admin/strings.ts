@@ -46,6 +46,8 @@ export type AdminStrings = {
     emptyFiltered: string;
     demo: string;
     demoHint: string;
+    pending: string;
+    pendingHint: string;
     results: (total: number) => string;
     prev: string;
     next: string;
@@ -222,6 +224,9 @@ const en: AdminStrings = {
     emptyFiltered: "Nothing matches that search.",
     demo: "Demo",
     demoHint: "A bbloom showcase site, not a client's.",
+    pending: "Unpublished edits",
+    pendingHint:
+      "Page edits are saved, but visitors still see the previous version. Product and image changes are live immediately and are not counted here.",
     results: (total) => `${total} site${total === 1 ? "" : "s"}`,
     prev: "Previous",
     next: "Next",
@@ -408,6 +413,9 @@ const ka: AdminStrings = {
     emptyFiltered: "ამ ძიებას არაფერი შეესაბამება.",
     demo: "დემო",
     demoHint: "bbloom-ის საჩვენებელი საიტია, არა კლიენტის.",
+    pending: "გამოუქვეყნებელი ცვლილებები",
+    pendingHint:
+      "გვერდის ცვლილებები შენახულია, მაგრამ ვიზიტორები ჯერ ისევ წინა ვერსიას ხედავენ. პროდუქტებისა და სურათების ცვლილებები მაშინვე ქვეყნდება და აქ არ ითვლება.",
     results: (total) => `${total} საიტი`,
     prev: "წინა",
     next: "შემდეგი",

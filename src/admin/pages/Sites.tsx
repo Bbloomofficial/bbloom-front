@@ -5,7 +5,12 @@ import { useSession } from "../auth";
 import { useResource } from "../hooks";
 import { fetchSites, fetchTemplates } from "../api/client";
 import { formatDate, localised } from "../format";
-import { StatusBadge, TierBadge, MutedBadge } from "../components/Badges";
+import {
+  StatusBadge,
+  TierBadge,
+  MutedBadge,
+  PendingBadge,
+} from "../components/Badges";
 import { adminStrings } from "../strings";
 
 const PAGE_SIZE = 20;
@@ -175,10 +180,20 @@ export default function Sites() {
                     </div>
                   </td>
                   <td className="px-5 py-4">
-                    <StatusBadge
-                      status={site.status}
-                      label={t.statuses[site.status] ?? site.status}
-                    />
+                    <div className="flex flex-wrap items-center gap-2">
+                      <StatusBadge
+                        status={site.status}
+                        label={t.statuses[site.status] ?? site.status}
+                      />
+                      {/* Only a live site can diverge from what visitors see;
+                          on a draft there is nothing public to be behind. */}
+                      {site.status === "PUBLISHED" &&
+                        site.hasUnpublishedChanges && (
+                          <span title={t.sites.pendingHint}>
+                            <PendingBadge label={t.sites.pending} />
+                          </span>
+                        )}
+                    </div>
                   </td>
                   <td className="hidden max-w-56 truncate px-5 py-4 lg:table-cell">
                     {site.primaryUrl ? (

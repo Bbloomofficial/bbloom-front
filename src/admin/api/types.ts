@@ -93,6 +93,12 @@ export type SiteSummary = {
   primaryUrl?: string;
   publishedAt?: string;
   updatedAt?: string;
+  /**
+   * Page edits are saved but not yet public. Resolved for the whole page in
+   * one query, so badging every row costs no more than badging one. It covers
+   * *section* edits only — catalog and media changes apply immediately.
+   */
+  hasUnpublishedChanges?: boolean;
 };
 
 export type SiteDomain = {
@@ -120,7 +126,7 @@ export type SiteDetail = SiteSummary & {
   /**
    * True when section edits are saved but not yet published — the site is
    * live, yet visitors still see the previous version. Publishing clears it.
-   * Detail only: the list summary does not carry this field.
+   * The list summary carries the same flag.
    */
   hasUnpublishedChanges?: boolean;
   productCount?: number;

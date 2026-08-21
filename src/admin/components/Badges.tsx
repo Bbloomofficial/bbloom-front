@@ -47,8 +47,17 @@ export function TierBadge({ label }: { label: string }) {
   return <Pill className="bg-tint text-tint-fg">{label}</Pill>;
 }
 
-export function MutedBadge({ label }: { label: string }) {
+/**
+ * A live site whose saved page edits visitors cannot see yet. Bordered so it
+ * reads as a state rather than the plain label a tier badge is.
+ */
+export function PendingBadge({ label }: { label: string }) {
   return (
+    <Pill className="border border-bloom-200 bg-tint text-tint-fg">{label}</Pill>
+  );
+}
+
+export function MutedBadge({ label }: { label: string }) {  return (
     <Pill className="border border-ink-100 bg-surface text-ink-600">
       {label}
     </Pill>
