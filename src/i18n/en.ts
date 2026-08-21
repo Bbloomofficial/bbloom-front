@@ -9,6 +9,7 @@ export const en: Dict = {
 
   nav: {
     services: 'Services',
+    templates: 'Templates',
     pricing: 'Pricing',
     about: 'About',
     contact: 'Contact',
@@ -136,6 +137,31 @@ export const en: Dict = {
     note: 'Your advertising budget is separate and paid directly to Meta. Contact us for a quote tailored to your business.',
   },
 
+  templatesPage: {
+    eyebrow: 'Templates',
+    title: 'Six websites. Pick the one that fits.',
+    description:
+      'Every template below is a real, working website — not a mockup. Open any demo, scroll it, filter the catalogue, try it on your phone. Yours is built on the same foundation with your products, photos and words.',
+    filterAll: 'All templates',
+    flagship: 'Our best work',
+    viewDemo: 'Open live demo',
+    demoPending: 'Demo coming soon',
+    previewAlt: 'Preview of the {name} template',
+    loading: 'Loading templates…',
+    error: 'We could not load the templates just now.',
+    retry: 'Try again',
+    note: 'Colours, fonts and photography are yours — each template adapts to your brand rather than the other way round.',
+    categories: {
+      SHOP: 'Shops',
+      RESTAURANT: 'Restaurants & cafés',
+    },
+    tiers: {
+      SIMPLE: 'Simple',
+      CLASSIC: 'Classic',
+      MODERN: 'Modern',
+    },
+  },
+
   aboutPage: {
     eyebrow: 'About bbloom',
     title: 'We help small businesses bloom',
@@ -196,6 +222,7 @@ export const en: Dict = {
     contactTitle: 'Get in touch',
     about: 'About us',
     pricing: 'Pricing',
+    templates: 'Templates',
     contact: 'Contact',
     rights: 'All rights reserved.',
     tagline: 'Grow your business, win more customers.',
@@ -380,4 +407,43 @@ export const en: Dict = {
         'We focus on local and small businesses: cafés, salons, clinics, trades, boutiques and small online brands. If we are not the right fit, we will tell you up front.',
     },
   ],
+
+  templateCopy: {
+    'shop-simple': {
+      name: 'Simple shop',
+      tagline: 'Clean, quick, straight to the point',
+      description:
+        'Your products in a clear grid, with prices and an enquiry form. Nothing to distract from what you sell — ideal for a small range you want online fast.',
+    },
+    'shop-classic': {
+      name: 'Classic shop',
+      tagline: 'Warm and trustworthy',
+      description:
+        'Categories, a story about your workshop, a gallery and customer reviews. Built for makers whose craft is half the reason people buy.',
+    },
+    'shop-modern': {
+      name: 'Modern shop',
+      tagline: 'Our most powerful template',
+      description:
+        'Search, category filters, sorting, a gallery, reviews and an FAQ — a full dark-mode experience with tasteful motion, designed to turn traffic from your ads into customers.',
+    },
+    'restaurant-simple': {
+      name: 'Simple restaurant',
+      tagline: 'Your menu, always up to date',
+      description:
+        'The menu, opening hours and directions on one clear page. Everything a hungry visitor checks on their phone before deciding where to eat.',
+    },
+    'restaurant-classic': {
+      name: 'Classic restaurant',
+      tagline: 'Traditional and welcoming',
+      description:
+        'A full menu with sections, your story, a gallery of the room and a table reservation form. Warm and familiar, the way a Georgian table should feel.',
+    },
+    'restaurant-modern': {
+      name: 'Modern restaurant',
+      tagline: 'A restaurant that looks the part',
+      description:
+        "Chef's picks, a menu with sticky section tabs and dietary tags, an events calendar, reviews and reservations — the full experience, on a dark, cinematic canvas.",
+    },
+  },
 }

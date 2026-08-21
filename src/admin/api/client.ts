@@ -1,4 +1,4 @@
-import { API_BASE, request } from "../../api/http";
+import { request } from "../../api/http";
 import type {
   CreateSiteRequest,
   Page,
@@ -24,20 +24,11 @@ function authed<T>(token: string, path: string, init?: RequestInit) {
 }
 
 /**
- * Turns a path the API hands us — a template preview, a media file — into
- * something an `<img src>` can use. These arrive root-relative and already
- * complete (`/api/v1/templates/{code}/preview`), so they resolve against the
- * API's *origin*, not against `API_BASE`, which already carries the prefix.
- * Absolute URLs are left alone, and so is a same-origin `API_BASE`, where the
- * path already works untouched.
+ * Turns a path the API hands us into something an `<img src>` can use.
+ * Re-exported from the shared HTTP layer so the admin, the renderer and the
+ * marketing site all resolve these the same way.
  */
-export function assetUrl(path: string): string {
-  if (/^(https?:)?\/\//i.test(path)) return path;
-  const origin = /^(https?:)?\/\//i.test(API_BASE)
-    ? new URL(API_BASE).origin
-    : "";
-  return `${origin}${path}`;
-}
+export { assetUrl } from "../../api/http";
 
 /** Staff sign-in. The token comes back as `token` — not `accessToken`. */
 export function login(
