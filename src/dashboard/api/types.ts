@@ -52,9 +52,65 @@ export type SiteDetail = {
   domains?: SiteDomain[];
   primaryUrl?: string;
   productCount?: number;
+  hasUnpublishedChanges?: boolean;
   publishedAt?: string;
   createdAt?: string;
   updatedAt?: string;
+};
+
+/** A localised value in the raw (unresolved) content the editor works with. */
+export type LocalizedText = Partial<Record<SiteLanguage, string>>;
+
+export type FieldType =
+  | "text"
+  | "textarea"
+  | "richtext"
+  | "link"
+  | "boolean"
+  | "number"
+  | "select"
+  | "image"
+  | "list";
+
+export type FieldSchema = {
+  key: string;
+  type: FieldType;
+  label?: LocalizedText;
+  hint?: LocalizedText;
+  required?: boolean;
+  localized?: boolean;
+  options?: string[];
+  itemFields?: FieldSchema[];
+};
+
+export type SectionDto = {
+  id: string;
+  key: string;
+  type: string;
+  variant?: string;
+  label?: LocalizedText;
+  sortOrder: number;
+  visible: boolean;
+  content: Record<string, unknown>;
+  fields?: FieldSchema[];
+  /** True while the section holds edits that are not live yet. */
+  hasDraft: boolean;
+  updatedAt?: string;
+};
+
+export type DraftState = { hasDraft: boolean; sectionsChanged: number };
+
+export type MediaItem = {
+  id: string;
+  url: string;
+  contentType?: string;
+  sizeBytes?: number;
+  width?: number;
+  height?: number;
+  altTextKa?: string;
+  altTextEn?: string;
+  originalFilename?: string;
+  createdAt?: string;
 };
 
 export const ENQUIRY_TYPES = [

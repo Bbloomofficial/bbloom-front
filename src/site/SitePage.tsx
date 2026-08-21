@@ -68,7 +68,8 @@ function SiteHead({ payload }: { payload: SitePayload }) {
   return null;
 }
 
-function SiteBody({
+/** Renders a resolved payload. Shared by the public route and the editor preview. */
+export function SiteBody({
   payload,
   siteRef,
   onLanguageChange,

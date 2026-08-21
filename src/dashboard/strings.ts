@@ -7,7 +7,7 @@ import type { Locale } from "../i18n";
  */
 export type DashboardStrings = {
   brand: string;
-  nav: { overview: string; inbox: string };
+  nav: { overview: string; inbox: string; page: string };
   signedInAs: string;
   signOut: string;
   viewSite: string;
@@ -94,7 +94,7 @@ export type DashboardStrings = {
 
 const en: DashboardStrings = {
   brand: "bbloom",
-  nav: { overview: "Overview", inbox: "Inbox" },
+  nav: { overview: "Overview", inbox: "Inbox", page: "Page" },
   signedInAs: "Signed in as",
   signOut: "Sign out",
   viewSite: "View site",
@@ -192,7 +192,7 @@ const en: DashboardStrings = {
 
 const ka: DashboardStrings = {
   brand: "bbloom",
-  nav: { overview: "მიმოხილვა", inbox: "შემოსული" },
+  nav: { overview: "მიმოხილვა", inbox: "შემოსული", page: "გვერდი" },
   signedInAs: "შესული ხართ როგორც",
   signOut: "გამოსვლა",
   viewSite: "საიტის ნახვა",

@@ -50,11 +50,13 @@ async function toError(response: Response): Promise<ApiError> {
 }
 
 export async function request<T>(path: string, init?: RequestInit): Promise<T> {
+  // FormData sets its own multipart content type, boundary included.
+  const isJsonBody = init?.body != null && !(init.body instanceof FormData);
   const response = await fetch(`${API_BASE}${path}`, {
     ...init,
     headers: {
       Accept: "application/json",
-      ...(init?.body ? { "Content-Type": "application/json" } : {}),
+      ...(isJsonBody ? { "Content-Type": "application/json" } : {}),
       ...init?.headers,
     },
   });

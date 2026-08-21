@@ -1,8 +1,11 @@
 import { request } from "../../api/http";
 import type {
+  DraftState,
   Enquiry,
   EnquiryStats,
+  MediaItem,
   Page,
+  SectionDto,
   SiteDetail,
   SiteLoginResponse,
   SiteUserProfile,
@@ -104,5 +107,108 @@ export function updateEnquiry(
     token,
     `/manage/sites/${siteId}/enquiries/${enquiryId}`,
     { method: "PATCH", body: JSON.stringify(changes) },
+  );
+}
+
+/**
+ * Page editor. Section writes land in a draft: the public page only changes
+ * when the draft is published.
+ */
+
+export function fetchSections(
+  token: string,
+  siteId: string,
+): Promise<SectionDto[]> {
+  return authed<SectionDto[]>(token, `/manage/sites/${siteId}/sections`);
+}
+
+export function updateSection(
+  token: string,
+  siteId: string,
+  key: string,
+  changes: { content?: Record<string, unknown>; visible?: boolean },
+): Promise<SectionDto> {
+  return authed<SectionDto>(token, `/manage/sites/${siteId}/sections/${key}`, {
+    method: "PATCH",
+    body: JSON.stringify(changes),
+  });
+}
+
+export function resetSection(
+  token: string,
+  siteId: string,
+  key: string,
+): Promise<SectionDto> {
+  return authed<SectionDto>(
+    token,
+    `/manage/sites/${siteId}/sections/${key}/reset`,
+    { method: "POST" },
+  );
+}
+
+export function reorderSections(
+  token: string,
+  siteId: string,
+  keys: string[],
+): Promise<SectionDto[]> {
+  return authed<SectionDto[]>(
+    token,
+    `/manage/sites/${siteId}/sections/reorder`,
+    { method: "POST", body: JSON.stringify({ keys }) },
+  );
+}
+
+export function publishSections(
+  token: string,
+  siteId: string,
+): Promise<DraftState> {
+  return authed<DraftState>(
+    token,
+    `/manage/sites/${siteId}/sections/publish`,
+    { method: "POST" },
+  );
+}
+
+export function discardSections(
+  token: string,
+  siteId: string,
+): Promise<DraftState> {
+  return authed<DraftState>(
+    token,
+    `/manage/sites/${siteId}/sections/discard`,
+    { method: "POST" },
+  );
+}
+
+export function fetchMedia(
+  token: string,
+  siteId: string,
+  query: { page?: number; size?: number } = {},
+): Promise<Page<MediaItem>> {
+  const params = new URLSearchParams();
+  params.set("page", String(query.page ?? 0));
+  params.set("size", String(query.size ?? 40));
+  return authed<Page<MediaItem>>(
+    token,
+    `/manage/sites/${siteId}/media?${params}`,
+  );
+}
+
+export function uploadMedia(
+  token: string,
+  siteId: string,
+  file: File,
+  alt: { ka?: string; en?: string } = {},
+): Promise<MediaItem> {
+  const body = new FormData();
+  body.append("file", file);
+  const params = new URLSearchParams();
+  if (alt.ka) params.set("altTextKa", alt.ka);
+  if (alt.en) params.set("altTextEn", alt.en);
+  const query = params.toString();
+  return authed<MediaItem>(
+    token,
+    `/manage/sites/${siteId}/media${query ? `?${query}` : ""}`,
+    { method: "POST", body },
   );
 }

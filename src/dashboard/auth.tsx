@@ -33,6 +33,11 @@ function readSession(): StoredSession | null {
   }
 }
 
+/** Reads the persisted token without mounting the provider (used by the preview frame). */
+export function readStoredToken(): string | null {
+  return readSession()?.token ?? null;
+}
+
 type AuthValue = {
   token: string | null;
   user: SiteUserProfile | null;

@@ -18,6 +18,7 @@ import { resolveSiteHost } from "./site/host";
 // clients signing in to read their messages — so it splits out too.
 const SitePage = lazy(() => import("./site/SitePage"));
 const DashboardApp = lazy(() => import("./dashboard/DashboardApp"));
+const PreviewPage = lazy(() => import("./dashboard/editor/PreviewPage"));
 
 function Lazy({ children }: { children: ReactNode }) {
   return (
@@ -84,6 +85,14 @@ export default function App() {
       <Route path="/site/:slug" element={<Site mode="ref" />} />
       <Route path="/site/:slug/p/:productSlug" element={<Site mode="ref" />} />
       <Route path="/dashboard/*" element={<Dashboard />} />
+      <Route
+        path="/preview/:siteId"
+        element={
+          <Lazy>
+            <PreviewPage />
+          </Lazy>
+        }
+      />
       <Route path="*" element={<MarketingApp />} />
     </Routes>
   );

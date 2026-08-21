@@ -6,6 +6,7 @@ import Layout from "./components/Layout";
 import Login from "./pages/Login";
 import Overview from "./pages/Overview";
 import Inbox from "./pages/Inbox";
+import Editor from "./editor/Editor";
 import { dashboardStrings } from "./strings";
 
 function Shell() {
@@ -34,6 +35,7 @@ function Shell() {
       <Routes>
         <Route index element={<Overview />} />
         <Route path="inbox" element={<Inbox />} />
+        <Route path="page" element={<Editor />} />
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Routes>
     </Layout>

@@ -41,6 +41,9 @@ export default function Layout({ children }: { children: ReactNode }) {
             <NavLink to="/dashboard" end className={navClass}>
               {t.nav.overview}
             </NavLink>
+            <NavLink to="/dashboard/page" className={navClass}>
+              {t.nav.page}
+            </NavLink>
             <NavLink to="/dashboard/inbox" className={navClass}>
               {t.nav.inbox}
             </NavLink>
@@ -70,6 +73,9 @@ export default function Layout({ children }: { children: ReactNode }) {
         <nav className="container-page flex items-center gap-1 border-t border-ink-100 py-2 sm:hidden">
           <NavLink to="/dashboard" end className={navClass}>
             {t.nav.overview}
+          </NavLink>
+          <NavLink to="/dashboard/page" className={navClass}>
+            {t.nav.page}
           </NavLink>
           <NavLink to="/dashboard/inbox" className={navClass}>
             {t.nav.inbox}
