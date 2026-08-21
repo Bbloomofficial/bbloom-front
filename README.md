@@ -107,3 +107,39 @@ Georgian uses **Noto Sans Georgian**, which is already loaded as a fallback in t
 - The site deliberately makes **no performance claims** — there are no statistics, case studies or
   testimonials, since there is nothing real to cite yet. Add them only with figures you can back up.
 - The pricing figures in `src/i18n/*.ts` (`plans`) are placeholders — confirm them before launch.
+
+## Deployment
+
+The same commit is deployed twice, to two places, because it serves two different audiences:
+
+| Host                          | Served by | What it is                                        |
+| ----------------------------- | --------- | ------------------------------------------------- |
+| `bbloom.ge`, `www.bbloom.ge`  | Vercel    | The marketing site                                |
+| `*.bbloom.ge`, client domains | Hetzner   | Client sites, the dashboard and the staff admin   |
+
+Hetzner is deployed by `.github/workflows/deploy-web.yml` on every push to `main`. Vercel deploys
+itself from the same push.
+
+### `VITE_API_BASE_URL`
+
+Set it to `https://api.bbloom.ge/api/v1` in **both** places -- the workflow sets it for Hetzner, and
+it must also exist in the Vercel project's environment variables.
+
+Vite substitutes `VITE_*` into the bundle **at build time**, so adding or changing it does nothing
+until something rebuilds. Setting the variable and not redeploying is the failure to expect, and it
+looks like this: with nothing compiled in, the code falls back to a same-origin `/api/v1`, so the
+app asks its own host for the API. On Vercel that returns the SPA's own HTML instead of JSON, and
+`/admin` breaks while the marketing pages look perfectly fine.
+
+To confirm a deployed bundle is pointing at production, `api.bbloom.ge` should appear in
+`dist/assets/index-*.js`. The workflow fails the build if it does not.
+
+### Media and asset URLs
+
+The API returns media as root-relative paths like `/api/v1/media/{id}`. **Resolve them against the
+API's origin, never the frontend's, and never by string-stripping the prefix.** `assetUrl()` in
+`src/api/http.ts` is the one implementation -- use it rather than writing another.
+
+This only misbehaves in production. In development the Vite proxy forwards `/api` to the backend,
+so a path used unchanged works by accident; it breaks the moment the API is a different origin,
+which it always is on a client's own domain. Three separate bugs here have had this same cause.
