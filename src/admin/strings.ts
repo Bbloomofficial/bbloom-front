@@ -129,6 +129,12 @@ export type AdminStrings = {
     addressKa: string;
     addressEn: string;
     mapUrl: string;
+    notifications: string;
+    notificationsHint: string;
+    notificationEmail: string;
+    notificationFallback: (email: string) => string;
+    notificationNobody: string;
+    invalidEmail: string;
     seo: string;
     seoTitleKa: string;
     seoTitleEn: string;
@@ -319,6 +325,14 @@ const en: AdminStrings = {
     addressKa: "Address (Georgian)",
     addressEn: "Address (English)",
     mapUrl: "Map link",
+    notifications: "Enquiry notifications",
+    notificationsHint:
+      "Who is emailed when an enquiry or reservation arrives. The email is written in the site's own language, so the owner always reads it in the same one, and replying answers the customer directly.",
+    notificationEmail: "Notification email",
+    notificationFallback: (email) => `Empty, so enquiries go to ${email}.`,
+    notificationNobody:
+      "Empty, and there is no contact email either — nobody is told when an enquiry arrives.",
+    invalidEmail: "That does not look like an email address.",
     seo: "Search engines",
     seoTitleKa: "Title (Georgian)",
     seoTitleEn: "Title (English)",
@@ -510,6 +524,15 @@ const ka: AdminStrings = {
     addressKa: "მისამართი (ქართულად)",
     addressEn: "მისამართი (ინგლისურად)",
     mapUrl: "რუკის ბმული",
+    notifications: "შეტყობინებები მოთხოვნებზე",
+    notificationsHint:
+      "ვის ეგზავნება წერილი, როცა შემოვა მოთხოვნა ან ჯავშანი. წერილი იწერება საიტის ენაზე, ამიტომ მფლობელი ყოველთვის ერთსა და იმავე ენაზე კითხულობს, პასუხი კი პირდაპირ მომხმარებელს მიდის.",
+    notificationEmail: "შეტყობინების ელფოსტა",
+    notificationFallback: (email) =>
+      `ცარიელია, ამიტომ მოთხოვნები მიდის მისამართზე ${email}.`,
+    notificationNobody:
+      "ცარიელია და საკონტაქტო ელფოსტაც არ არის — მოთხოვნის შემოსვლისას ვერავინ გაიგებს.",
+    invalidEmail: "ეს ელფოსტის მისამართს არ ჰგავს.",
     seo: "საძიებო სისტემები",
     seoTitleKa: "სათაური (ქართულად)",
     seoTitleEn: "სათაური (ინგლისურად)",
