@@ -27,9 +27,9 @@ export default function SiteDetailPage() {
   const [busy, setBusy] = useState(false);
   const [publishError, setPublishError] = useState<string | null>(null);
   /** Set after a successful toggle so the change is announced, not just implied. */
-  const [announced, setAnnounced] = useState<"published" | "unpublished" | null>(
-    null,
-  );
+  const [announced, setAnnounced] = useState<
+    "published" | "unpublished" | "changes" | null
+  >(null);
 
   useEffect(() => {
     if (!announced) return;
@@ -45,6 +45,23 @@ export default function SiteDetailPage() {
     try {
       set(await setPublished(token, site.id, next));
       setAnnounced(next ? "published" : "unpublished");
+    } catch (caught) {
+      setPublishError(
+        caught instanceof ApiError ? caught.message : String(caught),
+      );
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  /** Publishing an already-live site is how pending page edits go out. */
+  async function publishChanges() {
+    if (!site || busy) return;
+    setBusy(true);
+    setPublishError(null);
+    try {
+      set(await setPublished(token, site.id, true));
+      setAnnounced("changes");
     } catch (caught) {
       setPublishError(
         caught instanceof ApiError ? caught.message : String(caught),
@@ -143,20 +160,45 @@ export default function SiteDetailPage() {
             role="status"
             className={[
               "mt-3 rounded-2xl px-4 py-3 text-sm font-semibold",
-              announced === "published"
-                ? "bg-tint text-tint-fg"
-                : "bg-ink-50 text-ink-600",
+              announced === "unpublished"
+                ? "bg-ink-50 text-ink-600"
+                : "bg-tint text-tint-fg",
             ].join(" ")}
           >
             {announced === "published"
               ? t.detail.justPublished(primaryUrl)
-              : t.detail.justUnpublished}
+              : announced === "changes"
+                ? t.detail.justPublishedChanges
+                : t.detail.justUnpublished}
           </p>
         )}
         {publishError && (
           <p role="alert" className="mt-2 text-sm font-semibold text-danger">
             {publishError}
           </p>
+        )}
+
+        {/* Only meaningful on a live site: on a draft nothing is public yet,
+            so pending edits are not a state anyone needs warning about. */}
+        {published && site.hasUnpublishedChanges && (
+          <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-tint-strong bg-tint px-4 py-3">
+            <div>
+              <p className="text-sm font-bold text-tint-fg">
+                {t.detail.pendingTitle}
+              </p>
+              <p className="mt-0.5 text-xs text-ink-600">
+                {t.detail.pendingHint}
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={publishChanges}
+              disabled={busy}
+              className="btn-primary"
+            >
+              {t.detail.publishChanges}
+            </button>
+          </div>
         )}
       </div>
 

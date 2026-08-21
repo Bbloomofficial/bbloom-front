@@ -107,6 +107,12 @@ export type SiteDetail = SiteSummary & {
   contactAddressEn?: string;
   mapUrl?: string;
   domains?: SiteDomain[];
+  /**
+   * True when section edits are saved but not yet published — the site is
+   * live, yet visitors still see the previous version. Publishing clears it.
+   * Detail only: the list summary does not carry this field.
+   */
+  hasUnpublishedChanges?: boolean;
   productCount?: number;
   createdAt?: string;
 };

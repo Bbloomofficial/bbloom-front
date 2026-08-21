@@ -105,6 +105,10 @@ export type AdminStrings = {
     unpublishHint: string;
     justPublished: (address: string) => string;
     justUnpublished: string;
+    pendingTitle: string;
+    pendingHint: string;
+    publishChanges: string;
+    justPublishedChanges: string;
     overview: string;
     template: string;
     products: string;
@@ -286,6 +290,11 @@ const en: AdminStrings = {
     unpublishHint: "The site is live.",
     justPublished: (address) => `Published. The site is now live at ${address}`,
     justUnpublished: "Unpublished. The site is no longer visible to the public.",
+    pendingTitle: "Unpublished changes",
+    pendingHint:
+      "Page edits are saved, but visitors still see the previous version.",
+    publishChanges: "Publish changes",
+    justPublishedChanges: "The changes are now live.",
     overview: "Overview",
     template: "Template",
     products: "Products",
@@ -468,6 +477,11 @@ const ka: AdminStrings = {
     justPublished: (address) =>
       `გამოქვეყნდა. საიტი ხელმისაწვდომია მისამართზე ${address}`,
     justUnpublished: "გამოქვეყნება გაუქმდა. საიტი აღარ ჩანს.",
+    pendingTitle: "გამოუქვეყნებელი ცვლილებები",
+    pendingHint:
+      "გვერდის ცვლილებები შენახულია, მაგრამ ვიზიტორები ჯერ ისევ წინა ვერსიას ხედავენ.",
+    publishChanges: "ცვლილებების გამოქვეყნება",
+    justPublishedChanges: "ცვლილებები გამოქვეყნდა.",
     overview: "მიმოხილვა",
     template: "შაბლონი",
     products: "პროდუქტები",
