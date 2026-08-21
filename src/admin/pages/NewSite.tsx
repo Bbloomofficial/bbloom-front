@@ -9,7 +9,7 @@ import { createSite, fetchTemplates } from "../api/client";
 import { SITE_LANGUAGES } from "../api/types";
 import type { CreateSiteRequest, SiteLanguage } from "../api/types";
 import TemplatePicker from "../components/TemplatePicker";
-import { TemplatePreview } from "../components/TemplatePreview";
+import { TemplatePreview, demoHref } from "../components/TemplatePreview";
 import { SLUG_PATTERN, slugify } from "../format";
 import { adminStrings } from "../strings";
 
@@ -455,13 +455,25 @@ export default function NewSite() {
                     </p>
                     <p className="font-bold text-ink-900">{template.name}</p>
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => setStep(0)}
-                    className="text-sm font-semibold text-bloom-600 hover:underline"
-                  >
-                    {t.wizard.slugEdit}
-                  </button>
+                  <div className="flex shrink-0 items-baseline gap-3">
+                    {demoHref(template) && (
+                      <a
+                        href={demoHref(template) as string}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-sm font-semibold text-bloom-600 hover:underline"
+                      >
+                        {t.wizard.demo}
+                      </a>
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => setStep(0)}
+                      className="text-sm font-semibold text-bloom-600 hover:underline"
+                    >
+                      {t.wizard.slugEdit}
+                    </button>
+                  </div>
                 </div>
               </div>
             )}

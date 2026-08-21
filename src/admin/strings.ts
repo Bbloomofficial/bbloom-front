@@ -44,6 +44,8 @@ export type AdminStrings = {
     updated: string;
     empty: string;
     emptyFiltered: string;
+    demo: string;
+    demoHint: string;
     results: (total: number) => string;
     prev: string;
     next: string;
@@ -64,6 +66,8 @@ export type AdminStrings = {
     previewNote: string;
     chooseTemplate: string;
     closePreview: string;
+    demo: string;
+    demoNote: string;
     selectedTemplate: string;
     businessTitle: string;
     businessName: string;
@@ -211,6 +215,8 @@ const en: AdminStrings = {
     updated: "Updated",
     empty: "No sites yet. Create the first one.",
     emptyFiltered: "Nothing matches that search.",
+    demo: "Demo",
+    demoHint: "A bbloom showcase site, not a client's.",
     results: (total) => `${total} site${total === 1 ? "" : "s"}`,
     prev: "Previous",
     next: "Next",
@@ -238,6 +244,9 @@ const en: AdminStrings = {
       "A sketch of the layout and colours. Your own text and photos replace the grey blocks.",
     chooseTemplate: "Choose this template",
     closePreview: "Close",
+    demo: "Live demo",
+    demoNote:
+      "Opens a real, finished site built from this template — the best thing to show a client.",
     selectedTemplate: "Chosen template",
     businessTitle: "About the business",
     businessName: "Business name",
@@ -386,6 +395,8 @@ const ka: AdminStrings = {
     updated: "განახლდა",
     empty: "საიტები ჯერ არ არის. შექმენით პირველი.",
     emptyFiltered: "ამ ძიებას არაფერი შეესაბამება.",
+    demo: "დემო",
+    demoHint: "bbloom-ის საჩვენებელი საიტია, არა კლიენტის.",
     results: (total) => `${total} საიტი`,
     prev: "წინა",
     next: "შემდეგი",
@@ -414,6 +425,9 @@ const ka: AdminStrings = {
       "განლაგებისა და ფერების ესკიზი. ნაცრისფერი ბლოკების ადგილს თქვენი ტექსტი და ფოტოები დაიკავებს.",
     chooseTemplate: "ამ შაბლონის არჩევა",
     closePreview: "დახურვა",
+    demo: "ცოცხალი დემო",
+    demoNote:
+      "იხსნება ამ შაბლონით აწყობილი ნამდვილი, დასრულებული საიტი — საუკეთესო საჩვენებელი კლიენტისთვის.",
     selectedTemplate: "არჩეული შაბლონი",
     businessTitle: "ბიზნესის შესახებ",
     businessName: "ბიზნესის სახელი",

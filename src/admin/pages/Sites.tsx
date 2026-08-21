@@ -3,9 +3,9 @@ import { Link } from "react-router-dom";
 import { useI18n } from "../../i18n";
 import { useSession } from "../auth";
 import { useResource } from "../hooks";
-import { fetchSites } from "../api/client";
+import { fetchSites, fetchTemplates } from "../api/client";
 import { formatDate, localised } from "../format";
-import { StatusBadge, TierBadge } from "../components/Badges";
+import { StatusBadge, TierBadge, MutedBadge } from "../components/Badges";
 import { adminStrings } from "../strings";
 
 const PAGE_SIZE = 20;
@@ -35,6 +35,30 @@ export default function Sites() {
 
   const sites = data?.items ?? [];
   const totalPages = Math.max(data?.totalPages ?? 1, 1);
+
+  // The backend provisions a showcase site per template, and they sit in this
+  // list next to real clients. Match them against the catalog's own demoSlugs
+  // rather than sniffing the `demo-` prefix, which a client could also use.
+  const [demoSlugs, setDemoSlugs] = useState<Set<string>>(new Set());
+  useEffect(() => {
+    let cancelled = false;
+    fetchTemplates(locale)
+      .then((templates) => {
+        if (cancelled) return;
+        setDemoSlugs(
+          new Set(
+            templates
+              .map((template) => template.demoSlug)
+              .filter((slug): slug is string => Boolean(slug)),
+          ),
+        );
+      })
+      // Only a label is at stake, so a failure here must not disturb the list.
+      .catch(() => undefined);
+    return () => {
+      cancelled = true;
+    };
+  }, [locale]);
 
   return (
     <div>
@@ -124,8 +148,16 @@ export default function Sites() {
                     >
                       {site.businessName}
                     </Link>
-                    <div className="text-xs text-ink-400" dir="ltr">
-                      {site.slug}
+                    <div
+                      className="flex flex-wrap items-center gap-2 text-xs text-ink-400"
+                      dir="ltr"
+                    >
+                      <span>{site.slug}</span>
+                      {demoSlugs.has(site.slug) && (
+                        <span title={t.sites.demoHint}>
+                          <MutedBadge label={t.sites.demo} />
+                        </span>
+                      )}
                     </div>
                   </td>
                   <td className="hidden px-5 py-4 md:table-cell">

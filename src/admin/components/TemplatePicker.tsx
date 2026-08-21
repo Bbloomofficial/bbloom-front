@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useI18n } from "../../i18n";
 import { adminStrings } from "../strings";
 import { TEMPLATE_CATEGORIES, TEMPLATE_TIERS } from "../api/types";
-import { TemplatePreview, TemplatePreviewDialog } from "./TemplatePreview";
+import { TemplatePreview, TemplatePreviewDialog, demoHref } from "./TemplatePreview";
 import type { TemplateSummary } from "../api/types";
 
 /**
@@ -58,6 +58,7 @@ export default function TemplatePicker({
             <div className="mt-3 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {group.map((template) => {
                 const active = template.code === selected;
+                const demo = demoHref(template);
                 return (
                   <div
                     key={template.code}
@@ -104,15 +105,27 @@ export default function TemplatePicker({
                       </div>
                     </button>
 
-                    {/* A sibling of the select button, not a child: nesting
-                        buttons is invalid and swallows the click. */}
-                    <button
-                      type="button"
-                      onClick={() => setPreviewing(template.code)}
-                      className="absolute start-3 top-3 rounded-full bg-contrast/70 px-3 py-1.5 text-[11px] font-semibold text-white opacity-100 transition sm:opacity-0 sm:focus:opacity-100 sm:group-hover:opacity-100"
-                    >
-                      {t.wizard.preview}
-                    </button>
+                    {/* Siblings of the select button, not children: nesting
+                        interactive elements is invalid and swallows the click. */}
+                    <div className="absolute start-3 top-3 flex flex-wrap gap-2 opacity-100 transition sm:opacity-0 sm:group-focus-within:opacity-100 sm:group-hover:opacity-100">
+                      <button
+                        type="button"
+                        onClick={() => setPreviewing(template.code)}
+                        className="rounded-full bg-contrast/70 px-3 py-1.5 text-[11px] font-semibold text-white"
+                      >
+                        {t.wizard.preview}
+                      </button>
+                      {demo && (
+                        <a
+                          href={demo}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="rounded-full bg-white/85 px-3 py-1.5 text-[11px] font-semibold text-ink-900 hover:bg-white"
+                        >
+                          {t.wizard.demo}
+                        </a>
+                      )}
+                    </div>
                   </div>
                 );
               })}

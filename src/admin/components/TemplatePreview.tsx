@@ -10,6 +10,15 @@ import type { TemplateSummary } from "../api/types";
  * wireframe of the template's own layout and palette drawn by the backend.
  */
 
+/**
+ * Where the renderer serves the template's live demo, or null when the backend
+ * has not provisioned one. The wireframe shows the shape of a template; this
+ * shows the finished article, which is what actually sells it to a client.
+ */
+export function demoHref(template: TemplateSummary): string | null {
+  return template.demoSlug ? `/site/${template.demoSlug}` : null;
+}
+
 /** Stands in when there is no image, or when the one we were given fails. */
 function Placeholder({ code, label }: { code: string; label: string }) {
   return (
@@ -74,6 +83,7 @@ export function TemplatePreviewDialog({
   const { locale } = useI18n();
   const t = adminStrings(locale);
   const closeRef = useRef<HTMLButtonElement>(null);
+  const demo = demoHref(template);
 
   useEffect(() => {
     closeRef.current?.focus();
@@ -129,6 +139,27 @@ export function TemplatePreviewDialog({
 
         <div className="space-y-4 p-5">
           <p className="text-xs text-ink-400">{t.wizard.previewNote}</p>
+
+          {demo && (
+            <a
+              href={demo}
+              target="_blank"
+              rel="noreferrer"
+              className="flex items-start gap-3 rounded-2xl border border-bloom-200 bg-tint p-3 transition hover:border-bloom-400"
+            >
+              <span aria-hidden className="text-lg leading-none">
+                ↗
+              </span>
+              <span>
+                <span className="block text-sm font-bold text-tint-fg">
+                  {t.wizard.demo}
+                </span>
+                <span className="mt-0.5 block text-xs text-ink-600">
+                  {t.wizard.demoNote}
+                </span>
+              </span>
+            </a>
+          )}
 
           {template.description && (
             <p className="text-sm text-ink-600">{template.description}</p>

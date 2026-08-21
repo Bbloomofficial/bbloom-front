@@ -57,7 +57,12 @@ export type TemplateSummary = {
    * than using it raw, and keep a fallback: it can be absent on older builds.
    */
   previewUrl?: string | null;
-  demoUrl?: string | null;
+  /**
+   * Slug of a live, published site built from this template. The wireframe
+   * says what the layout is; this says what it actually looks like, so it is
+   * worth linking wherever there is room. Absent on older builds.
+   */
+  demoSlug?: string | null;
   flagship?: boolean;
   sections?: string[];
 };
