@@ -20,9 +20,15 @@ export const API_BASE = import.meta.env.VITE_API_BASE_URL ?? "/api/v1";
  *
  * Absolute URLs are passed through, and so is a same-origin `API_BASE`, where
  * the path already resolves correctly on its own.
+ *
+ * So is anything that is not a path at all. The anonymous editor previews a
+ * freshly picked logo as a `data:` URL — that image never went near the API,
+ * and prefixing it with the API's origin turned a valid picture into a broken
+ * one that still looked right in the panel thumbnail beside it.
  */
 export function assetUrl(path: string): string {
-  if (/^(https?:)?\/\//i.test(path)) return path;
+  if (!path.startsWith("/")) return path;
+  if (path.startsWith("//")) return path;
   const origin = /^(https?:)?\/\//i.test(API_BASE)
     ? new URL(API_BASE).origin
     : "";

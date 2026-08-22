@@ -57,7 +57,7 @@ export default function TryStart() {
       </div>
 
       {resumable ? (
-        <div className="mx-auto mt-10 flex max-w-2xl flex-col gap-3 rounded-2xl border border-bloom-200 bg-bloom-50/60 p-5 sm:flex-row sm:items-center sm:justify-between">
+        <div className="mx-auto mt-10 flex max-w-2xl flex-col gap-3 rounded-2xl border border-tint-strong bg-tint p-5 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="text-sm font-bold text-ink-900">{t.resume}</p>
             <p className="mt-1 text-sm text-ink-600">{t.resumeBody}</p>

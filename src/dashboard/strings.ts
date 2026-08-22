@@ -220,6 +220,19 @@ export type DashboardStrings = {
     viewAll: string;
     empty: string;
   };
+  contact: {
+    title: string;
+    subtitle: string;
+    phone: string;
+    email: string;
+    address: string;
+    mapUrl: string;
+    mapHint: string;
+    social: string;
+    save: string;
+    saved: string;
+    error: string;
+  };
   inbox: {
     title: string;
     subtitle: string;
@@ -512,6 +525,20 @@ const en: DashboardStrings = {
     recent: "Latest messages",
     viewAll: "Open inbox",
     empty: "No messages yet. They will appear here as soon as someone writes.",
+  },
+  contact: {
+    title: "Contact details",
+    subtitle:
+      "Shown on your website — visitors call, write and find you with these.",
+    phone: "Phone",
+    email: "Email",
+    address: "Address",
+    mapUrl: "Map link",
+    mapHint: "Paste a Google Maps link to your location.",
+    social: "Social links",
+    save: "Save",
+    saved: "Saved",
+    error: "Could not save. Please try again.",
   },
   inbox: {
     title: "Inbox",
@@ -815,6 +842,20 @@ const ka: DashboardStrings = {
     recent: "ბოლო შეტყობინებები",
     viewAll: "შემოსულების გახსნა",
     empty: "ჯერ არაფერია. შეტყობინებები აქ გამოჩნდება.",
+  },
+  contact: {
+    title: "საკონტაქტო ინფორმაცია",
+    subtitle:
+      "ჩანს თქვენს ვებგვერდზე — ამით დაგირეკავენ, მოგწერენ და გიპოვიან.",
+    phone: "ტელეფონი",
+    email: "ელფოსტა",
+    address: "მისამართი",
+    mapUrl: "რუკის ბმული",
+    mapHint: "ჩასვით Google Maps-ის ბმული თქვენს მდებარეობაზე.",
+    social: "სოციალური ბმულები",
+    save: "შენახვა",
+    saved: "შენახულია",
+    error: "ვერ შეინახა. სცადეთ თავიდან.",
   },
   inbox: {
     title: "შემოსული",

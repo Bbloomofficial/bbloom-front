@@ -1,14 +1,22 @@
 import type { PublicSection } from "../api/types";
 import { Band, Reveal, SectionHeading } from "../components/layout";
 import { Cta } from "../components/SiteButton";
-import { EnquiryForm, NewsletterForm } from "../components/EnquiryForm";
+import { ContactPanel, SocialLinks } from "../components/ContactPanel";
 import { Icon } from "../components/Icon";
 import { MapEmbed } from "../components/MapEmbed";
 import { SiteImage } from "../components/SiteImage";
 import { useSite } from "../context";
-import { image, itemStr, list, num, str } from "../utils/content";
+import { image, itemStr, list, str } from "../utils/content";
 
+/**
+ * Was a newsletter sign-up. Collecting addresses needs a list to put them in,
+ * so the band now points visitors at the channels the client already runs.
+ */
 export function NewsletterBand({ section }: { section: PublicSection }) {
+  const { meta, t } = useSite();
+  const phone = meta.contact?.phone;
+  const hasSocial = Object.values(meta.social ?? {}).some(Boolean);
+
   return (
     <Band id={section.key} tone="surface">
       <div className="grid items-center gap-8 lg:grid-cols-2">
@@ -22,18 +30,40 @@ export function NewsletterBand({ section }: { section: PublicSection }) {
             </p>
           ) : null}
         </div>
-        <NewsletterForm buttonLabel={str(section.content, "buttonLabel")} />
+        <div className="flex flex-col gap-4 lg:items-end">
+          {phone ? (
+            <a
+              href={`tel:${phone.replace(/\s+/g, "")}`}
+              className="site-heading inline-flex items-center gap-2 whitespace-nowrap text-site-primary"
+            >
+              <Icon name="phone" size={18} />
+              {phone}
+            </a>
+          ) : null}
+          {hasSocial ? (
+            <div className="lg:text-right">
+              <p className="mb-3 text-xs tracking-wide text-site-muted uppercase">
+                {t.followUs}
+              </p>
+              <SocialLinks className="lg:justify-end" />
+            </div>
+          ) : null}
+        </div>
       </div>
     </Band>
   );
 }
 
-/** Gradient panel with a soft glow — the flagship newsletter. */
+/** Gradient panel with a soft glow — the flagship closing band. */
 export function NewsletterGradientPanel({
   section,
 }: {
   section: PublicSection;
 }) {
+  const { meta, t } = useSite();
+  const phone = meta.contact?.phone;
+  const hasSocial = Object.values(meta.social ?? {}).some(Boolean);
+
   return (
     <Band id={section.key}>
       <Reveal>
@@ -45,11 +75,23 @@ export function NewsletterGradientPanel({
             {str(section.content, "text") ? (
               <p className="text-white/80">{str(section.content, "text")}</p>
             ) : null}
-            <div className="mt-4 w-full max-w-lg">
-              <NewsletterForm
-                buttonLabel={str(section.content, "buttonLabel")}
-              />
-            </div>
+            {phone ? (
+              <a
+                href={`tel:${phone.replace(/\s+/g, "")}`}
+                className="site-heading mt-2 inline-flex items-center gap-2 rounded-site-pill bg-white px-6 py-3 whitespace-nowrap text-site-text"
+              >
+                <Icon name="phone" size={18} />
+                {phone}
+              </a>
+            ) : null}
+            {hasSocial ? (
+              <div className="mt-2">
+                <p className="mb-3 text-xs tracking-wide text-white/70 uppercase">
+                  {t.followUs}
+                </p>
+                <SocialLinks className="justify-center [&_a]:border-white/40 [&_a]:text-white [&_a:hover]:border-white [&_a:hover]:text-white" />
+              </div>
+            ) : null}
           </div>
         </div>
       </Reveal>
@@ -98,9 +140,9 @@ export function CtaSplitImageGradient({ section }: { section: PublicSection }) {
   );
 }
 
-/** Table booking. Posts a RESERVATION enquiry. */
+/** Table booking — by phone, since there is no reservation inbox to post into. */
 export function ReservationFormPanel({ section }: { section: PublicSection }) {
-  const { meta, t } = useSite();
+  const { meta } = useSite();
   const glass = section.variant === "glass-form";
   const phoneNote = str(section.content, "phoneNote");
   const media = image(section.content, "image");
@@ -153,12 +195,7 @@ export function ReservationFormPanel({ section }: { section: PublicSection }) {
             </div>
           ) : null}
         </div>
-        <EnquiryForm
-          type="RESERVATION"
-          glass={glass}
-          maxGuests={num(section.content, "maxGuests", 12)}
-          buttonLabel={str(section.content, "buttonLabel") ?? t.send}
-        />
+        <ContactPanel glass={glass} />
       </div>
     </Band>
   );

@@ -1,6 +1,7 @@
 import type { PublicSection } from "../api/types";
 import { Container } from "../components/layout";
-import { Icon, SOCIAL_ICONS } from "../components/Icon";
+import { Icon } from "../components/Icon";
+import { SocialLinks } from "../components/ContactPanel";
 import { useSite } from "../context";
 import { PoweredBy } from "../components/PoweredBy";
 import { bool, itemStr, list, str } from "../utils/content";
@@ -8,28 +9,7 @@ import { bool, itemStr, list, str } from "../utils/content";
 type Link = { label?: string; href?: string };
 
 function Socials() {
-  const { meta } = useSite();
-  const entries = Object.entries(meta.social ?? {}).filter(([, href]) =>
-    Boolean(href),
-  );
-  if (entries.length === 0) return null;
-
-  return (
-    <div className="flex flex-wrap items-center gap-2">
-      {entries.map(([network, href]) => (
-        <a
-          key={network}
-          href={href}
-          target="_blank"
-          rel="noreferrer noopener"
-          aria-label={network}
-          className="rounded-full border border-site-border p-2.5 text-site-muted transition hover:border-site-primary hover:text-site-primary"
-        >
-          <Icon name={SOCIAL_ICONS[network] ?? "website"} size={18} />
-        </a>
-      ))}
-    </div>
-  );
+  return <SocialLinks />;
 }
 
 function Colophon({

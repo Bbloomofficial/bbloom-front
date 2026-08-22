@@ -201,6 +201,8 @@ export type SiteDetail = {
   contactPhone?: string;
   contactAddressKa?: string;
   contactAddressEn?: string;
+  mapUrl?: string;
+  social?: Record<string, string>;
   domains?: SiteDomain[];
   primaryUrl?: string;
   productCount?: number;

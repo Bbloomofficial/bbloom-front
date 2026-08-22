@@ -4,12 +4,15 @@ import {
   publishSections,
   setPublished,
   updateSection,
+  updateSiteSettings,
   uploadMedia,
 } from "../dashboard/api/client";
+import type { SiteSettingsPatch } from "../dashboard/api/client";
 import { createSite } from "../dashboard/api/account";
 import type { SectionDto } from "../dashboard/api/types";
 import type { TryDraft } from "./draft";
 import { readPath, writePath } from "./draft";
+import { SITE_SCOPE } from "./siteFields";
 
 /**
  * Turning an anonymous draft into a real website, once an account exists.
@@ -82,10 +85,11 @@ export async function applyDraftToNewSite(
     sections.map((section) => [section.key, section]),
   );
 
-  const editedKeys = new Set([
-    ...Object.keys(draft.text),
-    ...Object.keys(draft.images),
-  ]);
+  const editedKeys = new Set(
+    [...Object.keys(draft.text), ...Object.keys(draft.images)].filter(
+      (key) => key !== SITE_SCOPE,
+    ),
+  );
   const total = Math.max(editedKeys.size, 1);
   let done = 0;
 
@@ -137,6 +141,36 @@ export async function applyDraftToNewSite(
   }
 
   report(0.85, "publishing");
+
+  // Contact details and social links are site settings rather than section
+  // content, so they take their own write. It is not worth losing the whole
+  // signup over: the site and its content already exist at this point.
+  const siteEdits = draft.text[SITE_SCOPE] ?? {};
+  if (Object.keys(siteEdits).length > 0) {
+    const patch: SiteSettingsPatch = {};
+    const social: Record<string, string> = {};
+    for (const [path, raw] of Object.entries(siteEdits)) {
+      const value = raw.trim();
+      if (path === "contact.phone") patch.contactPhone = value || null;
+      else if (path === "contact.email") patch.contactEmail = value || null;
+      else if (path === "contact.address") {
+        // The address is stored per language; the draft only has the one the
+        // client typed in.
+        if (draft.lang === "en") patch.contactAddressEn = value || null;
+        else patch.contactAddressKa = value || null;
+      } else if (path === "contact.mapUrl") patch.mapUrl = value || null;
+      else if (path.startsWith("social.") && value) {
+        social[path.slice("social.".length)] = value;
+      }
+    }
+    if (Object.keys(social).length > 0) patch.social = social;
+    try {
+      await updateSiteSettings(token, site.id, patch);
+    } catch {
+      /* Reported by the site itself missing a phone number, not by a crash. */
+    }
+  }
+
   // Section edits land in the draft layer, so they have to be published before
   // the site is, or the new site would go online showing template defaults.
   await publishSections(token, site.id);

@@ -28,6 +28,7 @@ import {
 import type { TryDraft } from "../try/draft";
 import { deriveFields, itemSummary, sectionLabel } from "../try/schema";
 import type { EditableField } from "../try/schema";
+import { SITE_SCOPE, siteSection, siteSectionLabel } from "../try/siteFields";
 import { fileToDraftImage, ImageTooLargeError } from "../try/image";
 import { applyDraftToNewSite } from "../try/apply";
 import type { ApplyProgress } from "../try/apply";
@@ -212,12 +213,25 @@ export default function TryEditor() {
     [payload, draft],
   );
 
+  /**
+   * The sections on the page plus one synthetic "contact & links" section for
+   * the details that live on the site rather than in any section.
+   */
+  const editable = useMemo<PublicSection[]>(
+    () => (preview ? [...preview.sections, siteSection(preview)] : []),
+    [preview],
+  );
+
   const section: PublicSection | null = useMemo(
     () =>
-      preview?.sections.find((item) => item.key === selected) ??
-      preview?.sections[0] ??
-      null,
-    [preview, selected],
+      editable.find((item) => item.key === selected) ?? editable[0] ?? null,
+    [editable, selected],
+  );
+
+  const labelOf = useCallback(
+    (item: PublicSection) =>
+      item.key === SITE_SCOPE ? siteSectionLabel(lang) : sectionLabel(item, lang),
+    [lang],
   );
 
   const fields = useMemo(
@@ -246,12 +260,12 @@ export default function TryEditor() {
   const totalEdits = useMemo(
     () =>
       draft
-        ? (preview?.sections ?? []).reduce(
+        ? editable.reduce(
             (sum, item) => sum + sectionEditCount(draft, item.key),
             0,
           ) + (draft.businessName.trim() ? 1 : 0)
         : 0,
-    [draft, preview],
+    [draft, editable],
   );
 
   // Collapsed by default beyond the first block: six menu entries expanded at
@@ -265,9 +279,8 @@ export default function TryEditor() {
    * finds the field for it.
    */
   const targets = useMemo<HotspotTarget[]>(() => {
-    if (!preview) return [];
     const list: HotspotTarget[] = [];
-    for (const item of preview.sections) {
+    for (const item of editable) {
       for (const field of deriveFields(item, lang)) {
         const raw = readPath(item.content ?? {}, field.path);
         const value =
@@ -283,12 +296,12 @@ export default function TryEditor() {
       }
     }
     return list;
-  }, [preview, lang]);
+  }, [editable, lang]);
 
   const onSelectHotspot = useCallback(
     (id: string) => {
       const [sectionKey, path] = id.split("::");
-      const target = preview?.sections.find((item) => item.key === sectionKey);
+      const target = editable.find((item) => item.key === sectionKey);
       if (!target) return;
       const field = deriveFields(target, lang).find(
         (item) => item.path === path,
@@ -303,7 +316,7 @@ export default function TryEditor() {
       if (field?.kind === "image") setImagePick({ sectionKey, path });
       else setFocusField(id);
     },
-    [preview, lang],
+    [editable, lang],
   );
 
   useEffect(() => {
@@ -476,7 +489,7 @@ export default function TryEditor() {
             ) : null}
           </div>
           <div className="mt-2 flex flex-wrap gap-1.5">
-            {preview.sections.map((item) => {
+            {editable.map((item) => {
               const active = item.key === section?.key;
               const edits = sectionEditCount(draft, item.key);
               return (
@@ -491,7 +504,7 @@ export default function TryEditor() {
                       : "text-ink-500 hover:bg-ink-50 hover:text-ink-900"
                   }`}
                 >
-                  {sectionLabel(item, lang)}
+                  {labelOf(item)}
                   {edits > 0 ? (
                     <span
                       aria-label={t.edits}
@@ -666,7 +679,7 @@ export default function TryEditor() {
 
         <div className="border-t border-ink-100 bg-canvas p-4">
           {notice ? (
-            <p className="mb-3 rounded-xl bg-amber-50 px-3 py-2 text-xs text-amber-800">
+            <p className="mb-3 rounded-xl bg-amber-50 px-3 py-2 text-xs text-amber-800 dark:bg-amber-950/40 dark:text-amber-100">
               {notice === "large"
                 ? t.imageTooLarge
                 : notice === "full"

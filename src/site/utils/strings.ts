@@ -52,6 +52,8 @@ export type SiteStrings = {
   callUs: string;
   writeUs: string;
   findUs: string;
+  getInTouch: string;
+  followUs: string;
   openInMaps: string;
   whatsapp: string;
   gallery: string;
@@ -124,6 +126,8 @@ const en: SiteStrings = {
   callUs: "Call",
   writeUs: "Email",
   findUs: "Address",
+  getInTouch: "Get in touch",
+  followUs: "Follow us",
   openInMaps: "Open in maps",
   whatsapp: "WhatsApp",
   gallery: "Gallery",
@@ -195,6 +199,8 @@ const ka: SiteStrings = {
   callUs: "დარეკვა",
   writeUs: "მოგვწერეთ",
   findUs: "მისამართი",
+  getInTouch: "დაგვიკავშირდით",
+  followUs: "გამოგვყევით",
   openInMaps: "რუკაზე ნახვა",
   whatsapp: "WhatsApp",
   gallery: "გალერეა",

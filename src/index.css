@@ -19,8 +19,12 @@
 
   --color-ink-50: #f6f7f9;
   --color-ink-100: #eceef2;
+  --color-ink-200: #dfe3ec;
+  --color-ink-300: #c3c9d8;
   --color-ink-400: #8b93a7;
+  --color-ink-500: #666e83;
   --color-ink-600: #4b5468;
+  --color-ink-700: #343b4f;
   --color-ink-800: #232838;
   --color-ink-900: #12151f;
 
@@ -46,8 +50,12 @@
 .dark {
   --color-ink-50: #171b28;
   --color-ink-100: #262c3d;
+  --color-ink-200: #343b50;
+  --color-ink-300: #5c6379;
   --color-ink-400: #79809a;
+  --color-ink-500: #8e95ab;
   --color-ink-600: #a3aabd;
+  --color-ink-700: #c1c7d5;
   --color-ink-800: #dfe3ec;
   --color-ink-900: #f6f7fb;
 

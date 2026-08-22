@@ -55,6 +55,31 @@ export function fetchSiteDetail(
   return authed<SiteDetail>(token, `/manage/sites/${siteId}`);
 }
 
+/**
+ * Site settings. Verified against production: `contactPhone`, `contactEmail`,
+ * `contactAddressKa`/`contactAddressEn`, `mapUrl` and `social` are accepted.
+ */
+export type SiteSettingsPatch = {
+  businessName?: string;
+  contactPhone?: string | null;
+  contactEmail?: string | null;
+  contactAddressKa?: string | null;
+  contactAddressEn?: string | null;
+  mapUrl?: string | null;
+  social?: Record<string, string>;
+};
+
+export function updateSiteSettings(
+  token: string,
+  siteId: string,
+  patch: SiteSettingsPatch,
+): Promise<SiteDetail> {
+  return authed<SiteDetail>(token, `/manage/sites/${siteId}`, {
+    method: "PATCH",
+    body: JSON.stringify(patch),
+  });
+}
+
 export function setPublished(
   token: string,
   siteId: string,

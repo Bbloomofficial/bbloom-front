@@ -1,27 +1,25 @@
 import { useEffect, useState } from "react";
 import { useSite } from "../context";
 import { useLockScroll } from "../hooks/useLockScroll";
-import { EnquiryForm } from "./EnquiryForm";
+import { WhatsappButton } from "./ContactPanel";
 import { Icon } from "./Icon";
 import { DietaryTags, Price } from "./ProductCard";
 import { RichText } from "./RichText";
 import { SiteImage } from "./SiteImage";
 
 /**
- * Catalog-only detail view: gallery, description and an enquiry form. Opened
- * from a card and addressable at `/site/:slug/p/:productSlug`.
+ * Catalog-only detail view: gallery, description and the ways to ask about the
+ * item. Opened from a card and addressable at `/site/:slug/p/:productSlug`.
  */
 export function ProductModal({ slug }: { slug: string }) {
-  const { productBySlug, closeProduct, t, effects } = useSite();
+  const { productBySlug, closeProduct, t, effects, meta } = useSite();
   const product = productBySlug(slug);
   const [active, setActive] = useState(0);
-  const [asking, setAsking] = useState(false);
 
   useLockScroll(Boolean(product));
 
   useEffect(() => {
     setActive(0);
-    setAsking(false);
   }, [slug]);
 
   useEffect(() => {
@@ -126,26 +124,31 @@ export function ProductModal({ slug }: { slug: string }) {
               />
             ) : null}
 
-            {asking ? (
-              <EnquiryForm
-                type="PRODUCT"
-                compact
-                subject={`${t.productSubject}: ${product.name ?? product.slug}`}
-                productSlug={product.slug}
-                className="mt-2"
-              />
-            ) : (
-              <button
-                type="button"
-                onClick={() => setAsking(true)}
-                className="site-btn mt-2 self-start"
-                data-tone="primary"
-                data-shape="pill"
-              >
-                {t.enquire}
-                <Icon name="arrow" size={16} />
-              </button>
-            )}
+            <div className="mt-2 flex flex-wrap items-center gap-3">
+              {meta.contact?.phone ? (
+                <a
+                  href={`tel:${meta.contact.phone.replace(/\s+/g, "")}`}
+                  className="site-btn"
+                  data-tone="primary"
+                  data-shape="pill"
+                >
+                  <Icon name="phone" size={16} />
+                  {t.callUs}
+                </a>
+              ) : null}
+              {meta.contact?.email ? (
+                <a
+                  href={`mailto:${meta.contact.email}?subject=${encodeURIComponent(
+                    `${t.productSubject}: ${product.name ?? product.slug}`,
+                  )}`}
+                  className="inline-flex items-center gap-2 rounded-site-pill border border-site-border px-4 py-2 text-sm font-semibold whitespace-nowrap text-site-text transition hover:border-site-primary hover:text-site-primary"
+                >
+                  <Icon name="mail" size={16} />
+                  {t.writeUs}
+                </a>
+              ) : null}
+              <WhatsappButton />
+            </div>
           </div>
         </div>
       </div>

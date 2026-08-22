@@ -14,6 +14,7 @@ import type { SiteDetail } from "../api/types";
 import { useResource } from "../hooks";
 import { dashboardStrings, formatDate, formatDateTime } from "../strings";
 import { SiteStatusBadge, StatusBadge, TypeBadge } from "../components/Badges";
+import { ContactSettings } from "../components/ContactSettings";
 import { useActiveSite, useIsOwner } from "../site";
 import { canPublish, publishBlocks, publishErrorMessage } from "../gate";
 
@@ -257,6 +258,10 @@ export default function Overview() {
           <p className="mt-4 text-xs text-ink-400">{t.overview.publishHint}</p>
         )}
       </section>
+
+      {detail ? (
+        <ContactSettings site={detail} onSaved={() => reloadSite()} />
+      ) : null}
 
       <section>
         <h2 className="text-lg font-bold text-ink-900">

@@ -1,4 +1,5 @@
 import type { SitePayload } from "../site/api/types";
+import { SITE_SCOPE } from "./siteFields";
 
 /**
  * The draft of a website someone is building *before* they have an account.
@@ -269,9 +270,17 @@ export function applyDraftToPayload(
   });
 
   const businessName = draft.businessName.trim();
+  // Contact details and social links live on the site, not in a section, and
+  // are stored in the draft under a reserved key (see `siteFields.ts`).
+  let site = payload.site as unknown as Record<string, unknown>;
+  for (const [path, value] of Object.entries(draft.text[SITE_SCOPE] ?? {})) {
+    site = writePath(site, path, value.trim() ? value : null);
+  }
+  if (businessName) site = { ...site, businessName };
+
   return {
     ...payload,
     sections,
-    site: businessName ? { ...payload.site, businessName } : payload.site,
+    site: site as unknown as SitePayload["site"],
   };
 }

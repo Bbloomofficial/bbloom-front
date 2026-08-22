@@ -65,6 +65,14 @@ const LABELS: Record<string, { ka: string; en: string }> = {
   day: { ka: "დღე", en: "Day" },
   value: { ka: "მნიშვნელობა", en: "Value" },
   tagline: { ka: "სლოგანი", en: "Tagline" },
+  mapUrl: { ka: "რუკის ბმული", en: "Map link" },
+  contact: { ka: "კონტაქტი", en: "Contact" },
+  social: { ka: "სოციალური ქსელები", en: "Social" },
+  facebook: { ka: "Facebook", en: "Facebook" },
+  instagram: { ka: "Instagram", en: "Instagram" },
+  tiktok: { ka: "TikTok", en: "TikTok" },
+  youtube: { ka: "YouTube", en: "YouTube" },
+  telegram: { ka: "Telegram", en: "Telegram" },
   // Keys that name a *repeated block*. They surface as group headings, so a
   // missing one reads as raw English ("MENU 1") in a Georgian-first editor.
   menu: { ka: "მენიუ", en: "Menu" },

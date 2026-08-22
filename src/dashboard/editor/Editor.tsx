@@ -382,8 +382,8 @@ export default function Editor() {
           <span
             className={`rounded-full px-3 py-1 text-xs font-bold ${
               hasDraft
-                ? "bg-amber-100 text-amber-700"
-                : "bg-emerald-50 text-emerald-700"
+                ? "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-100"
+                : "bg-emerald-50 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-100"
             }`}
           >
             {hasDraft ? t.unpublished : t.allPublished}
@@ -408,7 +408,7 @@ export default function Editor() {
       </header>
 
       {error ? (
-        <p className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">
+        <p className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700 dark:bg-red-950/40 dark:text-red-200">
           {error}
         </p>
       ) : null}

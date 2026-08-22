@@ -1,72 +1,22 @@
 import type { PublicSection } from "../api/types";
 import { Band, Reveal, SectionHeading } from "../components/layout";
-import { EnquiryForm } from "../components/EnquiryForm";
+import {
+  ContactRows,
+  SocialLinks,
+  WhatsappButton,
+} from "../components/ContactPanel";
 import { Icon } from "../components/Icon";
 import { MapEmbed } from "../components/MapEmbed";
 import { useSite } from "../context";
 import { bool, itemStr, list, str } from "../utils/content";
 
-function whatsappHref(phone: string) {
-  return `https://wa.me/${phone.replace(/[^\d]/g, "")}`;
-}
-
 function ContactDetails({ section }: { section: PublicSection }) {
-  const { meta, t } = useSite();
-  const contact = meta.contact;
   const rows = list(section.content, "rows");
   const hours = str(section.content, "hours");
-  const showWhatsapp =
-    bool(section.content, "showWhatsapp", false) && Boolean(contact?.phone);
 
   return (
     <div className="flex flex-col gap-5">
-      {contact?.phone ? (
-        <a
-          href={`tel:${contact.phone.replace(/\s+/g, "")}`}
-          className="flex items-start gap-3 text-site-text transition hover:text-site-primary"
-        >
-          <span className="mt-0.5 text-site-primary">
-            <Icon name="phone" size={18} />
-          </span>
-          <span>
-            <span className="block text-xs tracking-wide text-site-muted uppercase">
-              {t.callUs}
-            </span>
-            <span className="site-heading">{contact.phone}</span>
-          </span>
-        </a>
-      ) : null}
-
-      {contact?.email ? (
-        <a
-          href={`mailto:${contact.email}`}
-          className="flex items-start gap-3 text-site-text transition hover:text-site-primary"
-        >
-          <span className="mt-0.5 text-site-primary">
-            <Icon name="mail" size={18} />
-          </span>
-          <span>
-            <span className="block text-xs tracking-wide text-site-muted uppercase">
-              {t.writeUs}
-            </span>
-            <span className="site-heading break-all">{contact.email}</span>
-          </span>
-        </a>
-      ) : null}
-
-      {contact?.address ? (
-        <div className="flex items-start gap-3 text-site-text">
-          <span className="mt-0.5 text-site-primary">
-            <Icon name="map" size={18} />
-          </span>
-          <span>
-            <span className="block text-xs tracking-wide text-site-muted uppercase">
-              {t.findUs}
-            </span>
-            <span className="site-heading">{contact.address}</span>
-          </span>
-        </div>
-      ) : null}
+      <ContactRows />
 
       {hours ? (
         <div className="flex items-start gap-3 text-site-text">
@@ -95,33 +45,45 @@ function ContactDetails({ section }: { section: PublicSection }) {
         </dl>
       ) : null}
 
-      {showWhatsapp && contact?.phone ? (
-        <a
-          href={whatsappHref(contact.phone)}
-          target="_blank"
-          rel="noreferrer noopener"
-          className="inline-flex items-center gap-2 self-start rounded-site-pill border border-site-border px-4 py-2 text-sm font-semibold text-site-text transition hover:border-site-primary hover:text-site-primary"
-        >
-          <Icon name="whatsapp" size={18} />
-          {t.whatsapp}
-        </a>
+      {bool(section.content, "showWhatsapp", false) ? (
+        <WhatsappButton className="self-start" />
       ) : null}
     </div>
   );
 }
 
 /**
- * All four contact variants share one body; the variant decides the layout and
- * whether the form sits on glass.
+ * All four contact variants share one body; the variant decides the layout.
+ *
+ * There is no message form: a form promises a reply from a mailbox this site
+ * does not have. Visitors get the channels the client actually answers on, plus
+ * a map.
  */
 export function Contact({ section }: { section: PublicSection }) {
-  const { meta, features } = useSite();
+  const { meta, t } = useSite();
   const variant = section.variant ?? "simple";
-  const showForm =
-    bool(section.content, "showForm", true) && features.enquiryForm !== false;
-  const showMap =
-    bool(section.content, "showMap", false) && Boolean(meta.contact?.mapUrl);
+  const hasSocial = Object.values(meta.social ?? {}).some(Boolean);
+  const showMap = Boolean(meta.contact?.mapUrl || meta.contact?.address);
   const glass = variant === "split-glass-form";
+
+  const aside = (
+    <div
+      className={`${
+        glass ? "site-glass rounded-site-lg" : "site-card"
+      } flex flex-col gap-6 p-6 sm:p-8`}
+    >
+      {hasSocial ? (
+        <div>
+          <p className="mb-3 text-xs tracking-wide text-site-muted uppercase">
+            {t.followUs}
+          </p>
+          <SocialLinks />
+        </div>
+      ) : null}
+      {showMap ? <MapEmbed /> : null}
+    </div>
+  );
+  const hasAside = hasSocial || showMap;
 
   const heading = (
     <SectionHeading
@@ -136,12 +98,11 @@ export function Contact({ section }: { section: PublicSection }) {
     return (
       <Band id={section.key} tone="surface">
         {heading}
-        <div className="mt-10 grid gap-10 lg:grid-cols-2">
-          <div className="flex flex-col gap-8">
-            <ContactDetails section={section} />
-            {showMap ? <MapEmbed /> : null}
-          </div>
-          {showForm ? <EnquiryForm /> : null}
+        <div
+          className={`mt-10 grid gap-10 ${hasAside ? "lg:grid-cols-2" : ""}`}
+        >
+          <ContactDetails section={section} />
+          {hasAside ? aside : null}
         </div>
       </Band>
     );
@@ -164,23 +125,17 @@ export function Contact({ section }: { section: PublicSection }) {
         />
       ) : null}
 
-      <div className="grid gap-10 lg:grid-cols-2 lg:gap-16">
+      <div
+        className={`grid gap-10 ${hasAside ? "lg:grid-cols-2 lg:gap-16" : ""}`}
+      >
         <Reveal>
           {heading}
           <div className="mt-8">
             <ContactDetails section={section} />
           </div>
-          {showMap && variant === "split-map" ? (
-            <MapEmbed className="mt-8" />
-          ) : null}
         </Reveal>
 
-        <Reveal delay={120}>
-          {showForm ? <EnquiryForm glass={glass} /> : null}
-          {showMap && variant !== "split-map" ? (
-            <MapEmbed className={showForm ? "mt-6" : ""} />
-          ) : null}
-        </Reveal>
+        {hasAside ? <Reveal delay={120}>{aside}</Reveal> : null}
       </div>
     </Band>
   );
