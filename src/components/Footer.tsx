@@ -51,6 +51,11 @@ export default function Footer() {
                 {t.footer.contact}
               </Link>
             </li>
+            <li>
+              <Link to="/dashboard/login" className="hover:text-tint-fg">
+                {t.nav.signIn}
+              </Link>
+            </li>
           </ul>
         </div>
 

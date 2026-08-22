@@ -35,6 +35,8 @@ export type Dict = {
     about: string
     contact: string
     cta: string
+    signIn: string
+    start: string
     openMenu: string
     closeMenu: string
     home: string

@@ -58,8 +58,16 @@ export default function Navbar() {
         <div className="flex items-center gap-2">
           <LanguageSwitcher />
           <ThemeToggle />
-          <Link to="/contact" className="btn-primary hidden lg:inline-flex">
-            {t.nav.cta}
+          {/* The panel is the product now, so signing in has to be reachable
+              from every marketing page, not only from a plan card. */}
+          <Link
+            to="/dashboard/login"
+            className="hidden rounded-full px-4 py-2 text-sm font-semibold text-ink-600 transition hover:text-ink-900 lg:inline-flex"
+          >
+            {t.nav.signIn}
+          </Link>
+          <Link to="/dashboard/register" className="btn-primary hidden lg:inline-flex">
+            {t.nav.start}
           </Link>
 
           <button
@@ -102,8 +110,14 @@ export default function Navbar() {
                 {link.label}
               </NavLink>
             ))}
-            <Link to="/contact" className="btn-primary mt-2">
-              {t.nav.cta}
+            <Link to="/dashboard/register" className="btn-primary mt-2">
+              {t.nav.start}
+            </Link>
+            <Link
+              to="/dashboard/login"
+              className="rounded-xl px-4 py-3 text-center text-sm font-semibold text-ink-600"
+            >
+              {t.nav.signIn}
             </Link>
           </div>
         </div>

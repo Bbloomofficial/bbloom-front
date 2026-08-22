@@ -14,6 +14,8 @@ export const ka: Dict = {
     about: 'ჩვენ შესახებ',
     contact: 'კონტაქტი',
     cta: 'დაგვიკავშირდი',
+    signIn: 'შესვლა',
+    start: 'ვებგვერდის შექმნა',
     openMenu: 'მენიუს გახსნა',
     closeMenu: 'მენიუს დახურვა',
     home: 'bbloom მთავარი',

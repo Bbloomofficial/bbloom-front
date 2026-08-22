@@ -91,11 +91,11 @@ export default function Home() {
             </p>
 
             <div className="mt-8 flex flex-col items-stretch gap-3 sm:flex-row sm:items-center">
-              <Link to="/contact" className="btn-primary w-full sm:w-auto">
-                {t.hero.primaryCta}
+              <Link to="/dashboard/register" className="btn-primary w-full sm:w-auto">
+                {t.nav.start}
               </Link>
-              <Link to="/services" className="btn-secondary w-full sm:w-auto">
-                {t.hero.secondaryCta}
+              <Link to="/contact" className="btn-secondary w-full sm:w-auto">
+                {t.hero.primaryCta}
               </Link>
             </div>
 
