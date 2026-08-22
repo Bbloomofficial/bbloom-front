@@ -18,6 +18,9 @@ export default function Pricing() {
             title={t.pricingPage.title}
             description={t.pricingPage.description}
           />
+          <p className="mx-auto mt-6 max-w-2xl text-center text-sm text-ink-500">
+            {t.pricingPage.freeTierIntro}
+          </p>
         </div>
       </section>
 

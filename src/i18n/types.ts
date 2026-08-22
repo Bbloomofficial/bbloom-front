@@ -93,6 +93,7 @@ export type Dict = {
     eyebrow: string
     title: string
     description: string
+    freeTierIntro: string
     mostPopular: string
     perMonth: string
     perYear: string

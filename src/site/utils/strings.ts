@@ -64,6 +64,14 @@ export type SiteStrings = {
   language: string;
   backToTop: string;
   productSubject: string;
+  /** Upgrade prompt for free-tier sites */
+  upgradePrompt: {
+    title: string;
+    body: string;
+    createOwn: string;
+    seePricing: string;
+    dismiss: string;
+  };
 };
 
 const en: SiteStrings = {
@@ -127,6 +135,13 @@ const en: SiteStrings = {
   language: "Language",
   backToTop: "Back to top",
   productSubject: "Enquiry about",
+  upgradePrompt: {
+    title: "This is a free bbloom website",
+    body: "Want your own website like this? Create one in minutes — free to build, free to publish.",
+    createOwn: "Create your own",
+    seePricing: "See pricing",
+    dismiss: "Dismiss",
+  },
 };
 
 const ka: SiteStrings = {
@@ -190,6 +205,13 @@ const ka: SiteStrings = {
   language: "ენა",
   backToTop: "დასაწყისში",
   productSubject: "კითხვა პროდუქტზე",
+  upgradePrompt: {
+    title: "ეს უფასო bbloom ვებგვერდია",
+    body: "გინდა მსგავსი ვებგვერდი? შექმენი წუთებში — აწყობა და გამოქვეყნება უფასოა.",
+    createOwn: "შექმენი საკუთარი",
+    seePricing: "ფასების ნახვა",
+    dismiss: "დახურვა",
+  },
 };
 
 export const siteStrings: Record<SiteLanguage, SiteStrings> = { ka, en };

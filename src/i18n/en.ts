@@ -131,9 +131,11 @@ export const en: Dict = {
 
   pricingPage: {
     eyebrow: 'Pricing',
-    title: 'Packages built around results',
+    title: 'Build free. Pay when you grow.',
     description:
-      'Build your website first and pay when you want it online. Every package below is a monthly hosting plan — you can edit your site for free until you are happy with it.',
+      'Create your website and publish it free at bbloom.ge — no card required. Upgrade when you want your own domain or features like order management and customer accounts.',
+    freeTierIntro:
+      'Every website starts free. Pick a template, fill in your products and photos, and go live on a bbloom.ge address in minutes. Upgrade when you need more.',
     mostPopular: 'Most popular',
     perMonth: 'per month',
     perYear: 'per year',
