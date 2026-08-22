@@ -3,6 +3,7 @@ import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import type { SiteLanguage, SitePayload } from "./api/types";
 import { ApiError } from "./api/client";
 import { ProductModal } from "./components/ProductModal";
+import { UpgradePrompt } from "./components/UpgradePrompt";
 import { SiteProvider } from "./context";
 import { useSitePayload } from "./hooks/useSitePayload";
 import { SectionRenderer } from "./sections/registry";
@@ -76,6 +77,7 @@ export function SiteBody({
   productSlug,
   onOpenProduct,
   onCloseProduct,
+  showUpgradePrompt = false,
 }: {
   payload: SitePayload;
   siteRef: string;
@@ -83,6 +85,8 @@ export function SiteBody({
   productSlug?: string;
   onOpenProduct: (slug: string) => void;
   onCloseProduct: () => void;
+  /** Override for showing the upgrade prompt (for testing or backend flag). */
+  showUpgradePrompt?: boolean;
 }) {
   const theme = payload.site.theme;
   const style = useMemo(() => themeToCssVars(theme), [theme]);
@@ -110,6 +114,7 @@ export function SiteBody({
           <SectionRenderer key={section.key} section={section} />
         ))}
         {productSlug ? <ProductModal slug={productSlug} /> : null}
+        <UpgradePrompt show={showUpgradePrompt} />
       </div>
     </SiteProvider>
   );
@@ -159,6 +164,13 @@ export function SitePage({ mode }: { mode: "ref" | "host" }) {
 
   const t = stringsFor(data?.site.locale ?? lang);
 
+  // Determine if upgrade prompt should show:
+  // 1. Query string override `?upgradePrompt=1` for testing
+  // 2. Backend flag `site.branding.showUpgradePrompt` (absent means false)
+  const upgradePromptOverride = search.get("upgradePrompt") === "1";
+  const backendFlag = data?.site.branding?.showUpgradePrompt === true;
+  const showUpgradePrompt = upgradePromptOverride || backendFlag;
+
   if (loading && !data) {
     return (
       <Centered>
@@ -202,6 +214,7 @@ export function SitePage({ mode }: { mode: "ref" | "host" }) {
       productSlug={params.productSlug}
       onOpenProduct={onOpenProduct}
       onCloseProduct={onCloseProduct}
+      showUpgradePrompt={showUpgradePrompt}
     />
   );
 }

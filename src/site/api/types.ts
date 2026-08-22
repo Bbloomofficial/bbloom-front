@@ -117,6 +117,11 @@ export type SiteMeta = {
   labels: { products?: string | null; categories?: string | null } | null;
   logo: MediaRef | null;
   favicon: MediaRef | null;
+  /** Branding flags set by the backend. */
+  branding?: {
+    /** When true, the site should show the free-tier upgrade prompt to visitors. */
+    showUpgradePrompt?: boolean;
+  };
 };
 
 /** Section content is free-form JSON authored by the client, so it stays loose. */
