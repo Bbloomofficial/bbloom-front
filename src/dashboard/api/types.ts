@@ -159,10 +159,18 @@ export type SiteMember = {
  */
 export type VerificationTicket = {
   email: string;
+  /** When the emailed *link* expires — three days, not the code's fifteen minutes. */
   expiresAt?: string;
+  /** When the six-digit code expires. This is the one a countdown should follow. */
+  codeExpiresAt?: string;
   /** Legacy name for `resendAvailableAt`; both are read. */
   retryAfter?: string;
   resendAvailableAt?: string;
+  /**
+   * False when the server has no mail configured, in which case nothing was
+   * actually sent and telling the client to check their inbox would be a lie.
+   */
+  emailDelivery?: boolean;
   /**
    * Only present while mail delivery was unwired. Never render it: once the
    * backend actually sends the email this field goes away, and a screen that

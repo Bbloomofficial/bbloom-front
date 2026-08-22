@@ -3,6 +3,7 @@ import { Link, useSearchParams } from "react-router-dom";
 import Logo from "../components/Logo";
 import LanguageSwitcher from "../components/LanguageSwitcher";
 import VerifyCodeForm from "../dashboard/components/VerifyCodeForm";
+import { ApiError } from "../api/http";
 import { confirmVerification } from "../dashboard/api/account";
 import { readStoredAccount } from "../dashboard/auth";
 import { dashboardStrings } from "../dashboard/strings";
@@ -50,6 +51,13 @@ export default function Verify() {
       })
       .catch((error: Error) => {
         if (cancelled) return;
+        // Confirming an address that is already confirmed is the state the
+        // client wanted. Showing it as a failure would send someone hunting
+        // for a problem that does not exist.
+        if (error instanceof ApiError && error.code === "ALREADY_VERIFIED") {
+          setState("done");
+          return;
+        }
         setState("failed");
         setDetail(error.message);
       });

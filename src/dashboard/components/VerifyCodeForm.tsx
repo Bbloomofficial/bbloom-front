@@ -41,7 +41,7 @@ type Props = {
    * token the resend button is hidden rather than offered and then refused.
    */
   token?: string | null;
-  onVerified: (profile: AccountProfile) => void;
+  onVerified: (profile?: AccountProfile) => void;
   /** Renders on the amber banner instead of on a plain surface. */
   tone?: "surface" | "warning";
 };
@@ -103,33 +103,61 @@ export default function VerifyCodeForm({
           setError(t.verify.codeFailed);
           return;
         }
-        // 404 means this backend has no typed-code path at all; 405 means the
-        // shape was not recognised. A 400 complaining that `token` is missing
-        // is the same thing said differently — it is the current production
-        // response, and it means the endpoint only understands links. In every
-        // case the code box is a dead end here, so say so instead of blaming
-        // the digits the client just typed correctly.
+
+        // An address already confirmed is not a failure worth showing as one:
+        // the client asked for a state the account is already in, and the only
+        // honest response is to move on.
+        if (caught.code === "ALREADY_VERIFIED") {
+          onVerified();
+          return;
+        }
+
+        // 404/405 mean this backend has no typed-code path at all. A 400
+        // complaining that `token` is missing was the same thing said
+        // differently by the build that shipped before codes existed. Either
+        // way the box is a dead end, so say so rather than blaming digits the
+        // client typed correctly.
+        //
+        // A response carrying a `code` is from a build that does understand
+        // them, and must never be read this way.
         const rejectsShape =
-          caught.status === 404 ||
-          caught.status === 405 ||
-          (caught.status === 400 && Boolean(caught.fields.token));
+          !caught.code &&
+          (caught.status === 404 ||
+            caught.status === 405 ||
+            (caught.status === 400 && Boolean(caught.fields.token)));
         if (rejectsShape) {
           setCodeUnsupported(true);
           return;
         }
-        if (caught.status === 429) {
-          setError(t.verify.codeTooManyAttempts);
-          return;
-        }
 
-        // The backend's `detail` is written to be shown, but the three cases
-        // read very differently to a client — "you mistyped" versus "start
-        // again" — so they are told apart before falling back to its words.
-        const detail = caught.message ?? "";
-        if (/expir|ვად/i.test(detail)) setError(t.verify.codeExpired);
-        else if (/attempt|many|ცდ/i.test(detail))
-          setError(t.verify.codeTooManyAttempts);
-        else setError(detail || t.verify.codeWrong);
+        switch (caught.code) {
+          case "CODE_EXPIRED":
+            setError(t.verify.codeExpired);
+            return;
+          case "TOO_MANY_ATTEMPTS":
+            setError(t.verify.codeTooManyAttempts);
+            return;
+          case "CODE_INVALID": {
+            // Saying how many tries are left turns a dead end into a decision:
+            // look at the email again, or ask for a new code before the last
+            // attempt burns this one.
+            const left = caught.problem.attemptsRemaining;
+            setError(
+              typeof left === "number" && left > 0
+                ? t.verify.codeAttemptsLeft(left)
+                : t.verify.codeWrong,
+            );
+            return;
+          }
+          default:
+            if (caught.status === 429) {
+              setError(t.verify.codeTooManyAttempts);
+              return;
+            }
+            // An unrecognised failure still has the server's own words, which
+            // are written to be shown.
+            setError(caught.message || t.verify.codeWrong);
+        }
       } finally {
         inFlight.current = false;
         setSubmitting(false);
@@ -222,7 +250,6 @@ export default function VerifyCodeForm({
     setNotice(null);
     try {
       const ticket = await requestVerification(token, locale);
-      setNotice(t.verify.resent);
       setCodeUnsupported(false);
       setDigits(Array(LENGTH).fill(""));
       focusBox(0);
@@ -231,10 +258,26 @@ export default function VerifyCodeForm({
       setCooldown(
         secondsUntil(ticket.resendAvailableAt ?? ticket.retryAfter) || 60,
       );
+      // `emailDelivery: false` means the server has no mail configured and
+      // nothing left the building. Telling someone to check an inbox that will
+      // stay empty wastes their time and makes them doubt the address they
+      // typed, so it says what actually happened instead.
+      setNotice(
+        ticket.emailDelivery === false
+          ? t.verify.deliveryOff
+          : t.verify.resent,
+      );
     } catch (caught) {
       if (caught instanceof ApiError && caught.status === 429) {
-        setError(t.verify.resendTooSoon);
-        setCooldown(60);
+        const until = caught.problem.resendAvailableAt;
+        setCooldown(
+          (typeof until === "string" ? secondsUntil(until) : 0) || 60,
+        );
+        setError(
+          caught.code === "DAILY_LIMIT"
+            ? t.verify.resendDailyLimit
+            : t.verify.resendTooSoon,
+        );
       } else {
         setError(t.verify.resendFailed);
       }

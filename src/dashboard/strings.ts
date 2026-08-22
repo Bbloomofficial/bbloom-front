@@ -101,10 +101,13 @@ export type DashboardStrings = {
     codeSubmit: string;
     codeChecking: string;
     codeWrong: string;
+    codeAttemptsLeft: (remaining: number) => string;
     codeExpired: string;
     codeTooManyAttempts: string;
     codeFailed: string;
     codeSentTo: string;
+    deliveryOff: string;
+    resendDailyLimit: string;
     linkOnly: string;
     pageTitle: string;
     pageBody: string;
@@ -389,11 +392,19 @@ const en: DashboardStrings = {
     codeSubmit: "Confirm",
     codeChecking: "Checking…",
     codeWrong: "That code is not right. Check it and try again.",
+    codeAttemptsLeft: (remaining) =>
+      remaining === 1
+        ? "That code is not right. One more try before you need a new one."
+        : `That code is not right. ${remaining} tries left.`,
     codeExpired: "That code has expired. Send yourself a new one.",
     codeTooManyAttempts:
       "Too many attempts. Send yourself a new code and try again.",
     codeFailed: "We could not check that code. Try again shortly.",
     codeSentTo: "We sent a code to",
+    deliveryOff:
+      "Email sending is not switched on yet, so nothing was sent. Tell us and we will confirm your address for you.",
+    resendDailyLimit:
+      "That's as many codes as we can send today. Try again tomorrow, or write to hello@bbloom.ge.",
     linkOnly:
       "Open the link in the email we sent you to confirm your address.",
     pageTitle: "Confirm your email address",
@@ -725,11 +736,19 @@ const ka: DashboardStrings = {
     codeSubmit: "დადასტურება",
     codeChecking: "მოწმდება…",
     codeWrong: "კოდი არასწორია. გადაამოწმეთ და სცადეთ ხელახლა.",
+    codeAttemptsLeft: (remaining) =>
+      remaining === 1
+        ? "კოდი არასწორია. დარჩა ერთი ცდა, შემდეგ ახალი კოდი დაგჭირდებათ."
+        : `კოდი არასწორია. დარჩა ${remaining} ცდა.`,
     codeExpired: "კოდს ვადა გაუვიდა. გამოიგზავნეთ ახალი.",
     codeTooManyAttempts:
       "ცდების რაოდენობა ამოიწურა. გამოიგზავნეთ ახალი კოდი და სცადეთ ხელახლა.",
     codeFailed: "კოდი ვერ შევამოწმეთ. სცადეთ ცოტა ხანში.",
     codeSentTo: "კოდი გამოგზავნილია მისამართზე",
+    deliveryOff:
+      "ელფოსტის გაგზავნა ჯერ არ არის ჩართული, ამიტომ წერილი არ გასულა. მოგვწერეთ და ჩვენ დაგიდასტურებთ მისამართს.",
+    resendDailyLimit:
+      "დღეს კოდების გაგზავნის ლიმიტი ამოიწურა. სცადეთ ხვალ ან მოგვწერეთ hello@bbloom.ge-ზე.",
     linkOnly:
       "დასადასტურებლად გახსენით ბმული, რომელიც ელფოსტაზე გამოგიგზავნეთ.",
     pageTitle: "დაადასტურეთ ელფოსტა",

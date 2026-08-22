@@ -38,22 +38,43 @@ export function assetUrl(path: string): string {
 export class ApiError extends Error {
   readonly status: number;
   readonly fields: Record<string, string>;
+  /**
+   * The backend's stable machine-readable reason, where it has one — the
+   * `code` of an RFC 9457 problem detail, such as `CODE_EXPIRED`.
+   *
+   * Worth keeping separate from `message`: `detail` is prose written to be
+   * shown to a client and may be reworded at any time, so branching on it is
+   * branching on copy. `code` is the contract.
+   */
+  readonly code?: string;
+  /**
+   * The rest of the problem body. Some failures carry extra facts that only
+   * make sense for that failure — how many attempts remain, when a throttle
+   * lifts — and inventing a typed field per case would be worse than keeping
+   * the payload and reading it where it is understood.
+   */
+  readonly problem: Record<string, unknown>;
 
   constructor(
     message: string,
     status: number,
     fields: Record<string, string> = {},
+    problem: Record<string, unknown> = {},
   ) {
     super(message);
     this.name = "ApiError";
     this.status = status;
     this.fields = fields;
+    this.problem = problem;
+    const code = problem.code;
+    this.code = typeof code === "string" ? code : undefined;
   }
 }
 
 type ProblemDetail = {
   title?: string;
   detail?: string;
+  code?: string;
   errors?: Record<string, string> | { field: string; message: string }[];
 };
 
@@ -74,7 +95,12 @@ async function toError(response: Response): Promise<ApiError> {
 
   const message =
     problem.detail ?? problem.title ?? response.statusText ?? "Request failed";
-  return new ApiError(message, response.status, fields);
+  return new ApiError(
+    message,
+    response.status,
+    fields,
+    problem as Record<string, unknown>,
+  );
 }
 
 export async function request<T>(path: string, init?: RequestInit): Promise<T> {
