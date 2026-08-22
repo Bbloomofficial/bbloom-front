@@ -129,6 +129,12 @@
     @apply btn border border-ink-100 bg-surface text-ink-800 hover:border-bloom-200 hover:bg-tint dark:hover:border-bloom-700;
   }
 
+  /* Buttons inside a dense editing panel, where a full-size pill would take
+     more room than the field it belongs to. */
+  .btn-sm {
+    @apply px-4 py-2 text-xs;
+  }
+
   .card {
     @apply rounded-3xl border border-ink-100 bg-surface p-6 break-words transition hover:border-bloom-200 hover:shadow-xl hover:shadow-bloom-600/5 sm:p-7 dark:hover:border-bloom-700;
   }

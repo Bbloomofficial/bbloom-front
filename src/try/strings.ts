@@ -29,6 +29,12 @@ export type TryStrings = {
   imageFailed: string;
   draftFull: string;
   savedLocally: string;
+  reset: string;
+  resetAll: string;
+  resetAllConfirm: string;
+  noFields: string;
+  edits: string;
+  content: string;
 
   saveCta: string;
   saveTitle: string;
@@ -86,6 +92,12 @@ const en: TryStrings = {
   draftFull:
     "No room left in this browser for more images. Create your account to keep them safely.",
   savedLocally: "Saved in this browser",
+  reset: "Undo",
+  resetAll: "Undo all changes",
+  resetAllConfirm: "Undo every change and start from the original design?",
+  noFields: "Nothing to edit in this part.",
+  edits: "changed",
+  content: "Content",
 
   saveCta: "Save my website",
   saveTitle: "Create your account to keep it",
@@ -147,6 +159,13 @@ const ka: TryStrings = {
   draftFull:
     "ამ ბრაუზერში მეტ სურათს ვეღარ შევინახავთ. შექმენით ანგარიში, რომ უსაფრთხოდ შეინახოთ.",
   savedLocally: "შენახულია ამ ბრაუზერში",
+  reset: "დაბრუნება",
+  resetAll: "ყველა ცვლილების გაუქმება",
+  resetAllConfirm:
+    "გავაუქმოთ ყველა ცვლილება და დავუბრუნდეთ საწყის დიზაინს?",
+  noFields: "ამ ნაწილში სარედაქტირებელი არაფერია.",
+  edits: "შეცვლილი",
+  content: "შიგთავსი",
 
   saveCta: "ვებგვერდის შენახვა",
   saveTitle: "შესანახად შექმენით ანგარიში",

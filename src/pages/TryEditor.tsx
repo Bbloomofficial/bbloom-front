@@ -11,16 +11,19 @@ import { storeSession, readStoredAccount } from "../dashboard/auth";
 import {
   applyDraftToPayload,
   clearDraft,
+  clearField,
   DraftTooLargeError,
   emptyDraft,
+  isFieldEdited,
   readDraft,
   readPath,
+  sectionEditCount,
   setImage,
   setText,
   writeDraft,
 } from "../try/draft";
 import type { TryDraft } from "../try/draft";
-import { deriveFields, sectionLabel } from "../try/schema";
+import { deriveFields, itemSummary, sectionLabel } from "../try/schema";
 import type { EditableField } from "../try/schema";
 import { fileToDraftImage, ImageTooLargeError } from "../try/image";
 import { applyDraftToNewSite } from "../try/apply";
@@ -42,35 +45,54 @@ const inputClass =
 function FieldInput({
   field,
   value,
+  edited,
   onText,
   onImage,
+  onReset,
   t,
 }: {
   field: EditableField;
   value: string;
+  edited: boolean;
   onText: (next: string) => void;
   onImage: (file: File) => void;
+  onReset: () => void;
   t: TryStrings;
 }) {
   const picker = useRef<HTMLInputElement>(null);
 
+  // The draft is an overlay, so "undo" restores the design's own value exactly
+  // rather than guessing at what was there — worth offering per field.
+  const label = (
+    <span className="flex items-center justify-between gap-2">
+      <span className="text-xs font-semibold text-ink-500">{field.label}</span>
+      {edited ? (
+        <button
+          type="button"
+          onClick={onReset}
+          className="shrink-0 text-xs font-semibold text-ink-400 transition hover:text-ink-900"
+        >
+          ↺ {t.reset}
+        </button>
+      ) : null}
+    </span>
+  );
+
   if (field.kind === "image") {
     return (
       <div>
-        <span className="text-xs font-semibold text-ink-500">
-          {field.label}
-        </span>
+        {label}
         <div className="mt-2 flex items-center gap-3">
           {value ? (
             <img
               src={value}
               alt=""
-              className="h-16 w-24 shrink-0 rounded-lg border border-ink-100 bg-ink-50 object-cover"
+              className="h-14 w-20 shrink-0 rounded-lg border border-ink-100 bg-ink-50 object-cover"
             />
           ) : null}
           <button
             type="button"
-            className="btn-secondary"
+            className="btn-secondary btn-sm"
             onClick={() => picker.current?.click()}
           >
             {t.replaceImage}
@@ -93,7 +115,7 @@ function FieldInput({
 
   return (
     <label className="block">
-      <span className="text-xs font-semibold text-ink-500">{field.label}</span>
+      {label}
       {field.kind === "textarea" ? (
         <textarea
           className={`${inputClass} mt-1.5 min-h-24`}
@@ -134,6 +156,7 @@ export default function TryEditor() {
   const [save, setSave] = useState<SaveState>({ phase: "idle" });
   const [formError, setFormError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [open, setOpen] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     let cancelled = false;
@@ -195,15 +218,38 @@ export default function TryEditor() {
   );
 
   const grouped = useMemo(() => {
-    const groups = new Map<string, EditableField[]>();
+    const groups = new Map<
+      string,
+      { label: string; groupPath?: string; fields: EditableField[] }
+    >();
     for (const field of fields) {
       const key = field.group ?? "";
-      const list = groups.get(key) ?? [];
-      list.push(field);
-      groups.set(key, list);
+      const group = groups.get(key) ?? {
+        label: key,
+        groupPath: field.groupPath,
+        fields: [],
+      };
+      group.fields.push(field);
+      groups.set(key, group);
     }
-    return [...groups.entries()];
+    return [...groups.entries()].map(([key, group]) => ({ key, ...group }));
   }, [fields]);
+
+  const totalEdits = useMemo(
+    () =>
+      draft
+        ? (preview?.sections ?? []).reduce(
+            (sum, item) => sum + sectionEditCount(draft, item.key),
+            0,
+          ) + (draft.businessName.trim() ? 1 : 0)
+        : 0,
+    [draft, preview],
+  );
+
+  // Collapsed by default beyond the first block: six menu entries expanded at
+  // once buries the rest of the section under a scroll.
+  const isOpen = (key: string, index: number) =>
+    open[`${section?.key}:${key}`] ?? index === 0;
 
   async function onPickImage(sectionKey: string, path: string, file: File) {
     if (!draft) return;
@@ -288,104 +334,216 @@ export default function TryEditor() {
 
   return (
     <div className="grid min-h-screen grid-rows-[auto_1fr] lg:grid-cols-[380px_1fr] lg:grid-rows-1">
-      <aside className="flex max-h-screen flex-col gap-4 overflow-y-auto border-b border-ink-100 bg-canvas p-5 lg:border-b-0 lg:border-r">
-        <div className="flex items-center justify-between">
-          <Link
-            to="/try"
-            className="text-sm font-semibold text-ink-500 hover:text-ink-900"
-          >
-            ← {t.editorBack}
-          </Link>
-          <span className="text-xs text-ink-400">{t.savedLocally}</span>
+      <aside className="flex max-h-[65vh] flex-col border-b border-ink-100 bg-canvas lg:max-h-screen lg:border-b-0 lg:border-r">
+        <div className="flex flex-col gap-3 border-b border-ink-100 p-4">
+          <div className="flex items-center justify-between gap-2">
+            <Link
+              to="/try"
+              className="whitespace-nowrap text-sm font-semibold text-ink-500 transition hover:text-ink-900"
+            >
+              ← {t.editorBack}
+            </Link>
+            <span className="inline-flex items-center gap-1.5 whitespace-nowrap text-xs text-ink-400">
+              <span
+                aria-hidden
+                className="h-1.5 w-1.5 rounded-full bg-emerald-500"
+              />
+              {t.savedLocally}
+            </span>
+          </div>
+
+          <label className="block">
+            <span className="text-xs font-semibold text-ink-500">
+              {t.businessName}
+            </span>
+            <input
+              className={`${inputClass} mt-1.5`}
+              value={draft.businessName}
+              placeholder={preview.site.businessName}
+              onChange={(event) =>
+                commit({ ...draft, businessName: event.target.value })
+              }
+            />
+            <span className="mt-1 block text-xs text-ink-400">
+              {t.businessNameHint}
+            </span>
+          </label>
         </div>
 
-        <label className="block">
-          <span className="text-xs font-semibold text-ink-500">
-            {t.businessName}
-          </span>
-          <input
-            className={`${inputClass} mt-1.5`}
-            value={draft.businessName}
-            onChange={(event) =>
-              commit({ ...draft, businessName: event.target.value })
-            }
-          />
-          <span className="mt-1 block text-xs text-ink-400">
-            {t.businessNameHint}
-          </span>
-        </label>
-
-        <div>
-          <span className="text-xs font-semibold text-ink-500">
-            {t.sections}
-          </span>
-          <div className="mt-2 flex flex-wrap gap-1.5">
-            {preview.sections.map((item) => (
+        <div className="border-b border-ink-100 px-4 py-3">
+          <div className="flex items-center justify-between gap-2">
+            <span className="text-xs font-semibold uppercase tracking-wide text-ink-400">
+              {t.sections}
+            </span>
+            {totalEdits > 0 ? (
               <button
-                key={item.key}
                 type="button"
-                onClick={() => setSelected(item.key)}
-                className={`rounded-lg px-2.5 py-1 text-xs font-semibold transition ${
-                  item.key === section?.key
-                    ? "bg-tint text-tint-fg"
-                    : "text-ink-500 hover:text-ink-900"
-                }`}
+                className="whitespace-nowrap text-xs font-semibold text-ink-400 transition hover:text-ink-900"
+                onClick={() => {
+                  if (window.confirm(t.resetAllConfirm)) {
+                    commit(emptyDraft(draft.templateCode, draft.demoRef, lang));
+                  }
+                }}
               >
-                {sectionLabel(item, lang)}
+                ↺ {t.resetAll}
               </button>
-            ))}
+            ) : null}
+          </div>
+          <div className="mt-2 flex flex-wrap gap-1.5">
+            {preview.sections.map((item) => {
+              const active = item.key === section?.key;
+              const edits = sectionEditCount(draft, item.key);
+              return (
+                <button
+                  key={item.key}
+                  type="button"
+                  onClick={() => setSelected(item.key)}
+                  aria-current={active}
+                  className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-lg px-2.5 py-1 text-xs font-semibold transition ${
+                    active
+                      ? "bg-tint text-tint-fg"
+                      : "text-ink-500 hover:bg-ink-50 hover:text-ink-900"
+                  }`}
+                >
+                  {sectionLabel(item, lang)}
+                  {edits > 0 ? (
+                    <span
+                      aria-label={t.edits}
+                      className="h-1.5 w-1.5 rounded-full bg-bloom-500"
+                    />
+                  ) : null}
+                </button>
+              );
+            })}
           </div>
         </div>
 
-        <div className="flex flex-col gap-4">
-          {grouped.map(([group, list]) => (
-            <div key={group || "root"} className="flex flex-col gap-3">
-              {group ? (
-                <span className="text-xs font-bold uppercase tracking-wide text-ink-400">
-                  {group}
-                </span>
-              ) : null}
-              {list.map((field) => (
-                <FieldInput
-                  key={field.path}
-                  field={field}
-                  t={t}
-                  value={
-                    field.kind === "image"
-                      ? ((
-                          readPath(
-                            section?.content ?? {},
-                            field.path,
-                          ) as Record<string, unknown> | null
-                        )?.url as string) ?? ""
-                      : String(
-                          readPath(section?.content ?? {}, field.path) ?? "",
-                        )
-                  }
-                  onText={(next) =>
-                    section &&
-                    commit(setText(draft, section.key, field.path, next))
-                  }
-                  onImage={(file) =>
-                    section && onPickImage(section.key, field.path, file)
-                  }
-                />
-              ))}
+        <div className="flex-1 overflow-y-auto p-4">
+          {fields.length === 0 ? (
+            <p className="text-sm text-ink-400">{t.noFields}</p>
+          ) : (
+            <div className="flex flex-col gap-4">
+              {grouped.map((group, index) => {
+                const inputs = group.fields.map((field) => (
+                  <FieldInput
+                    key={field.path}
+                    field={field}
+                    t={t}
+                    edited={
+                      !!section && isFieldEdited(draft, section.key, field.path)
+                    }
+                    value={
+                      field.kind === "image"
+                        ? ((
+                            readPath(
+                              section?.content ?? {},
+                              field.path,
+                            ) as Record<string, unknown> | null
+                          )?.url as string) ?? ""
+                        : String(
+                            readPath(section?.content ?? {}, field.path) ?? "",
+                          )
+                    }
+                    onText={(next) =>
+                      section &&
+                      commit(setText(draft, section.key, field.path, next))
+                    }
+                    onImage={(file) =>
+                      section && onPickImage(section.key, field.path, file)
+                    }
+                    onReset={() =>
+                      section && commit(clearField(draft, section.key, field.path))
+                    }
+                  />
+                ));
+
+                if (!group.key) {
+                  return (
+                    <div key="root" className="flex flex-col gap-3">
+                      {inputs}
+                    </div>
+                  );
+                }
+
+                const opened = isOpen(
+                  group.key,
+                  grouped.slice(0, index).filter((item) => item.key).length,
+                );
+                const item = group.groupPath
+                  ? (readPath(section?.content ?? {}, group.groupPath) as Record<
+                      string,
+                      unknown
+                    > | null)
+                  : null;
+                const summary = item ? itemSummary(item) : "";
+                const touched = group.fields.some(
+                  (field) =>
+                    !!section && isFieldEdited(draft, section.key, field.path),
+                );
+
+                return (
+                  <div
+                    key={group.key}
+                    className="overflow-hidden rounded-xl border border-ink-100"
+                  >
+                    <button
+                      type="button"
+                      aria-expanded={opened}
+                      onClick={() =>
+                        setOpen((current) => ({
+                          ...current,
+                          [`${section?.key}:${group.key}`]: !opened,
+                        }))
+                      }
+                      className="flex w-full items-center gap-2 bg-ink-50/60 px-3 py-2 text-left transition hover:bg-ink-50"
+                    >
+                      <span
+                        aria-hidden
+                        className={`shrink-0 text-xs text-ink-400 transition ${
+                          opened ? "rotate-90" : ""
+                        }`}
+                      >
+                        ▶
+                      </span>
+                      <span className="min-w-0 flex-1">
+                        <span className="block truncate text-xs font-semibold text-ink-700">
+                          {group.label}
+                        </span>
+                        {summary ? (
+                          <span className="block truncate text-xs text-ink-400">
+                            {summary}
+                          </span>
+                        ) : null}
+                      </span>
+                      {touched ? (
+                        <span
+                          aria-label={t.edits}
+                          className="h-1.5 w-1.5 shrink-0 rounded-full bg-bloom-500"
+                        />
+                      ) : null}
+                    </button>
+                    {opened ? (
+                      <div className="flex flex-col gap-3 border-t border-ink-100 p-3">
+                        {inputs}
+                      </div>
+                    ) : null}
+                  </div>
+                );
+              })}
             </div>
-          ))}
+          )}
         </div>
 
-        {notice ? (
-          <p className="rounded-xl bg-amber-50 px-3 py-2 text-xs text-amber-800">
-            {notice === "large"
-              ? t.imageTooLarge
-              : notice === "full"
-                ? t.draftFull
-                : t.imageFailed}
-          </p>
-        ) : null}
-
-        <div className="sticky bottom-0 mt-auto bg-canvas pt-3">
+        <div className="border-t border-ink-100 bg-canvas p-4">
+          {notice ? (
+            <p className="mb-3 rounded-xl bg-amber-50 px-3 py-2 text-xs text-amber-800">
+              {notice === "large"
+                ? t.imageTooLarge
+                : notice === "full"
+                  ? t.draftFull
+                  : t.imageFailed}
+            </p>
+          ) : null}
           <button
             type="button"
             className="btn-primary w-full"

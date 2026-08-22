@@ -23,6 +23,8 @@ export type EditableField = {
   label: string;
   /** Set for fields inside a repeated block, so the UI can group them. */
   group?: string;
+  /** Path of the repeated item itself, e.g. `menu.0`, for summarising it. */
+  groupPath?: string;
 };
 
 type Lang = "ka" | "en";
@@ -63,7 +65,43 @@ const LABELS: Record<string, { ka: string; en: string }> = {
   day: { ka: "დღე", en: "Day" },
   value: { ka: "მნიშვნელობა", en: "Value" },
   tagline: { ka: "სლოგანი", en: "Tagline" },
+  // Keys that name a *repeated block*. They surface as group headings, so a
+  // missing one reads as raw English ("MENU 1") in a Georgian-first editor.
+  menu: { ka: "მენიუ", en: "Menu" },
+  nav: { ka: "მენიუ", en: "Menu" },
+  links: { ka: "ბმული", en: "Link" },
+  items: { ka: "ერთეული", en: "Item" },
+  products: { ka: "პროდუქტი", en: "Product" },
+  cards: { ka: "ბარათი", en: "Card" },
+  features: { ka: "უპირატესობა", en: "Feature" },
+  services: { ka: "სერვისი", en: "Service" },
+  steps: { ka: "საფეხური", en: "Step" },
+  slides: { ka: "სლაიდი", en: "Slide" },
+  photos: { ka: "ფოტო", en: "Photo" },
+  images: { ka: "სურათი", en: "Image" },
+  gallery: { ka: "სურათი", en: "Image" },
+  categories: { ka: "კატეგორია", en: "Category" },
+  events: { ka: "ღონისძიება", en: "Event" },
+  testimonials: { ka: "შეფასება", en: "Review" },
+  faqs: { ka: "კითხვა", en: "Question" },
+  socials: { ka: "სოციალური ბმული", en: "Social link" },
+  stats: { ka: "მაჩვენებელი", en: "Stat" },
+  team: { ka: "თანამშრომელი", en: "Team member" },
 };
+
+/**
+ * The text most likely to identify a repeated item at a glance, so a collapsed
+ * group can say *which* menu entry it is rather than only that it is the third.
+ */
+const SUMMARY_KEYS = ["label", "title", "name", "heading", "question", "day"];
+
+export function itemSummary(item: Record<string, unknown>): string {
+  for (const key of SUMMARY_KEYS) {
+    const value = item[key];
+    if (typeof value === "string" && value.trim()) return value.trim();
+  }
+  return "";
+}
 
 const SECTION_LABELS: Record<string, { ka: string; en: string }> = {
   header: { ka: "თავსართი", en: "Header" },
@@ -158,6 +196,7 @@ export function deriveFields(
     path: string,
     key: string,
     group: string | undefined,
+    groupPath: string | undefined,
     depth: number,
   ) => {
     if (SKIP.has(key)) return;
@@ -170,12 +209,19 @@ export function deriveFields(
         kind: kindFor(key, value),
         label: labelFor(key, lang),
         group,
+        groupPath,
       });
       return;
     }
 
     if (isImage(value)) {
-      fields.push({ path, kind: "image", label: labelFor(key, lang), group });
+      fields.push({
+        path,
+        kind: "image",
+        label: labelFor(key, lang),
+        group,
+        groupPath,
+      });
       return;
     }
 
@@ -192,6 +238,7 @@ export function deriveFields(
             `${path}.${index}.${childKey}`,
             childKey,
             groupLabel,
+            `${path}.${index}`,
             depth + 1,
           );
         }
@@ -204,13 +251,20 @@ export function deriveFields(
       for (const [childKey, childValue] of Object.entries(
         value as Record<string, unknown>,
       )) {
-        walk(childValue, `${path}.${childKey}`, childKey, group, depth + 1);
+        walk(
+          childValue,
+          `${path}.${childKey}`,
+          childKey,
+          group,
+          groupPath,
+          depth + 1,
+        );
       }
     }
   };
 
   for (const [key, value] of Object.entries(section.content ?? {})) {
-    walk(value, key, key, undefined, 0);
+    walk(value, key, key, undefined, undefined, 0);
   }
 
   return fields;

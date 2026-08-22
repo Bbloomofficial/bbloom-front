@@ -147,6 +147,45 @@ export function setImage(
   };
 }
 
+/**
+ * Dropping an edit restores the template's own value, because the draft is an
+ * overlay: removing the key is genuinely "as it came", not a guess at what it
+ * used to be.
+ */
+export function clearField(
+  draft: TryDraft,
+  sectionKey: string,
+  path: string,
+): TryDraft {
+  const text = { ...(draft.text[sectionKey] ?? {}) };
+  const images = { ...(draft.images[sectionKey] ?? {}) };
+  delete text[path];
+  delete images[path];
+  return {
+    ...draft,
+    text: { ...draft.text, [sectionKey]: text },
+    images: { ...draft.images, [sectionKey]: images },
+  };
+}
+
+export function isFieldEdited(
+  draft: TryDraft,
+  sectionKey: string,
+  path: string,
+): boolean {
+  return (
+    draft.text[sectionKey]?.[path] !== undefined ||
+    draft.images[sectionKey]?.[path] !== undefined
+  );
+}
+
+export function sectionEditCount(draft: TryDraft, sectionKey: string): number {
+  return (
+    Object.keys(draft.text[sectionKey] ?? {}).length +
+    Object.keys(draft.images[sectionKey] ?? {}).length
+  );
+}
+
 /* Reading and writing a dotted path inside free-form section content. */
 
 export function readPath(
