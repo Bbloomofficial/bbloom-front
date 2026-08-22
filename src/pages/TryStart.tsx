@@ -77,7 +77,7 @@ export default function TryStart() {
               to={`/try/${resumable.templateCode}`}
               className="btn-primary"
             >
-              {t.resume}
+              {t.resumeCta}
             </Link>
           </div>
         </div>

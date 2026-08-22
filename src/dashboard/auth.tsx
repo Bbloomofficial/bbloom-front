@@ -52,6 +52,19 @@ export function readStoredToken(): string | null {
 }
 
 /**
+ * The signed-in account, for surfaces outside the provider.
+ *
+ * The build-before-you-sign-up flow needs to know whether it is talking to a
+ * stranger or to someone who already has websites here, because asking a
+ * returning client to "create an account" to save their second site is both
+ * wrong and impossible.
+ */
+export function readStoredAccount(): { token: string; email: string } | null {
+  const session = readSession();
+  return session ? { token: session.token, email: session.user.email } : null;
+}
+
+/**
  * Starts a session from outside the provider.
  *
  * The build-before-you-sign-up flow lives on the marketing side of the app,

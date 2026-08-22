@@ -10,6 +10,7 @@ export type TryStrings = {
   galleryHint: string;
   choose: string;
   resume: string;
+  resumeCta: string;
   resumeBody: string;
   startOver: string;
   loading: string;
@@ -32,6 +33,11 @@ export type TryStrings = {
   saveCta: string;
   saveTitle: string;
   saveBody: string;
+  saveSignedInTitle: string;
+  /** `{email}` is replaced with the signed-in address. */
+  saveSignedInBody: string;
+  saveConfirm: string;
+  useAnother: string;
   fullName: string;
   email: string;
   password: string;
@@ -60,6 +66,7 @@ const en: TryStrings = {
   galleryHint: "Your website is free on a bbloom.ge address. Pay only for your own domain and features that need a server.",
   choose: "Use this design",
   resume: "Continue where you left off",
+  resumeCta: "Continue",
   resumeBody: "You have an unsaved website in this browser.",
   startOver: "Start again",
   loading: "Loading…",
@@ -84,6 +91,11 @@ const en: TryStrings = {
   saveTitle: "Create your account to keep it",
   saveBody:
     "Your website goes online straight away, free, at a bbloom.ge address.",
+  saveSignedInTitle: "Save this website",
+  saveSignedInBody:
+    "It will be added to {email} as a new website, free, at a bbloom.ge address.",
+  saveConfirm: "Save and publish",
+  useAnother: "Use a different account",
   fullName: "Your name",
   email: "Email",
   password: "Password",
@@ -115,6 +127,7 @@ const ka: TryStrings = {
     "ვებგვერდი უფასოა bbloom.ge მისამართზე. გადახდა მხოლოდ საკუთარ დომენსა და სერვერზე დამოკიდებულ ფუნქციებზეა საჭირო.",
   choose: "ამ დიზაინით დაწყება",
   resume: "გააგრძელეთ იქიდან, სადაც შეჩერდით",
+  resumeCta: "გაგრძელება",
   resumeBody: "ამ ბრაუზერში გაქვთ შეუნახავი ვებგვერდი.",
   startOver: "თავიდან დაწყება",
   loading: "იტვირთება…",
@@ -139,6 +152,11 @@ const ka: TryStrings = {
   saveTitle: "შესანახად შექმენით ანგარიში",
   saveBody:
     "ვებგვერდი მაშინვე გამოქვეყნდება, უფასოდ, bbloom.ge მისამართზე.",
+  saveSignedInTitle: "შეინახეთ ეს ვებგვერდი",
+  saveSignedInBody:
+    "დაემატება {email}-ს როგორც ახალი ვებგვერდი, უფასოდ, bbloom.ge მისამართზე.",
+  saveConfirm: "შენახვა და გამოქვეყნება",
+  useAnother: "სხვა ანგარიშით შესვლა",
   fullName: "თქვენი სახელი",
   email: "ელფოსტა",
   password: "პაროლი",

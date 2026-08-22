@@ -7,7 +7,7 @@ import { fetchSite } from "../site/api/client";
 import type { PublicSection, SitePayload } from "../site/api/types";
 import { SiteBody } from "../site/SitePage";
 import { loginAccount, registerAccount } from "../dashboard/api/account";
-import { storeSession } from "../dashboard/auth";
+import { storeSession, readStoredAccount } from "../dashboard/auth";
 import {
   applyDraftToPayload,
   clearDraft,
@@ -113,6 +113,7 @@ function FieldInput({
 
 type SaveState =
   | { phase: "idle" }
+  | { phase: "signedIn"; token: string; email: string }
   | { phase: "form"; mode: "register" | "signin" }
   | { phase: "working"; progress: ApplyProgress }
   | { phase: "done"; slug: string; siteId: string; publishError: string | null };
@@ -214,7 +215,7 @@ export default function TryEditor() {
     }
   }
 
-  async function finish(token: string) {
+  async function finish(token: string, back: SaveState) {
     if (!draft) return;
     setSave({
       phase: "working",
@@ -235,7 +236,7 @@ export default function TryEditor() {
       setFormError(
         error instanceof ApiError ? error.message : String(error),
       );
-      setSave({ phase: "form", mode: "register" });
+      setSave(back);
     }
   }
 
@@ -258,7 +259,7 @@ export default function TryEditor() {
               String(data.get("password") ?? ""),
             );
       storeSession(response);
-      await finish(response.token);
+      await finish(response.token, save);
     } catch (error) {
       setFormError(error instanceof ApiError ? error.message : String(error));
     } finally {
@@ -388,7 +389,16 @@ export default function TryEditor() {
           <button
             type="button"
             className="btn-primary w-full"
-            onClick={() => setSave({ phase: "form", mode: "register" })}
+            onClick={() => {
+              // A returning client already has an account, and several websites
+              // on one account is a supported thing rather than an edge case.
+              const account = readStoredAccount();
+              setSave(
+                account
+                  ? { phase: "signedIn", ...account }
+                  : { phase: "form", mode: "register" },
+              );
+            }}
           >
             {t.saveCta}
           </button>
@@ -436,6 +446,45 @@ export default function TryEditor() {
       {save.phase !== "idle" ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink-900/40 p-4">
           <div className="w-full max-w-md rounded-2xl border border-ink-100 bg-canvas p-6 shadow-xl">
+            {save.phase === "signedIn" ? (
+              <div className="flex flex-col gap-3">
+                <h2 className="text-lg font-extrabold text-ink-900">
+                  {t.saveSignedInTitle}
+                </h2>
+                <p className="text-sm text-ink-600">
+                  {t.saveSignedInBody.replace("{email}", save.email)}
+                </p>
+                {formError ? (
+                  <p className="rounded-xl bg-rose-50 px-3 py-2 text-sm text-rose-700">
+                    {formError}
+                  </p>
+                ) : null}
+                <button
+                  type="button"
+                  className="btn-primary mt-1"
+                  onClick={() => finish(save.token, save)}
+                >
+                  {t.saveConfirm}
+                </button>
+                <div className="flex items-center justify-between text-sm">
+                  <button
+                    type="button"
+                    className="text-ink-500 hover:text-ink-900"
+                    onClick={() => setSave({ phase: "idle" })}
+                  >
+                    {t.cancel}
+                  </button>
+                  <button
+                    type="button"
+                    className="font-semibold text-bloom-600"
+                    onClick={() => setSave({ phase: "form", mode: "signin" })}
+                  >
+                    {t.useAnother}
+                  </button>
+                </div>
+              </div>
+            ) : null}
+
             {save.phase === "form" ? (
               <form onSubmit={onSubmitAccount} className="flex flex-col gap-3">
                 <h2 className="text-lg font-extrabold text-ink-900">
@@ -503,7 +552,11 @@ export default function TryEditor() {
                   className="btn-primary mt-1"
                   disabled={busy}
                 >
-                  {busy ? t.working : t.createAccount}
+                  {busy
+                    ? t.working
+                    : save.mode === "register"
+                      ? t.createAccount
+                      : t.signIn}
                 </button>
 
                 <div className="flex items-center justify-between text-sm">
