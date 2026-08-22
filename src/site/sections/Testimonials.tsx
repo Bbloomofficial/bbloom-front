@@ -123,12 +123,16 @@ export function TestimonialsGlassCards({
                   {itemStr(item, "quote")}
                 </p>
               </blockquote>
-              <div className="flex items-center justify-between gap-3 border-t border-site-border pt-4">
-                <figcaption className="site-heading flex items-center gap-3 text-sm text-site-text">
+              <div className="flex flex-wrap items-center justify-between gap-3 border-t border-site-border pt-4">
+                <figcaption className="site-heading flex min-w-0 items-center gap-3 text-sm text-site-text">
                   <Avatar item={item} size={40} />
-                  {itemStr(item, "author")}
+                  <span className="min-w-0 break-words">
+                    {itemStr(item, "author")}
+                  </span>
                 </figcaption>
-                <Rating value={itemNum(item, "rating")} />
+                <span className="shrink-0">
+                  <Rating value={itemNum(item, "rating")} />
+                </span>
               </div>
             </figure>
           </Reveal>

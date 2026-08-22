@@ -106,6 +106,7 @@ export default function Editor() {
   const [hasDraft, setHasDraft] = useState(false);
   const [mode, setMode] = useState<"edit" | "review">("edit");
   const [focusPath, setFocusPath] = useState<string | null>(null);
+  const [activePath, setActivePath] = useState<string | null>(null);
 
   /**
    * Pictures chosen but not uploaded. A ref rather than state: it must survive
@@ -508,7 +509,24 @@ export default function Editor() {
                 </div>
               ) : null}
 
-              <div className="max-h-[60vh] overflow-y-auto pe-1">
+              <div
+                className="max-h-[60vh] overflow-y-auto pe-1"
+                onFocusCapture={(event) => {
+                  const wrapper = (event.target as HTMLElement).closest(
+                    "[data-field-path]",
+                  );
+                  const path = wrapper?.getAttribute("data-field-path");
+                  setActivePath(path ? `${selected.key}::${path}` : null);
+                }}
+                onBlurCapture={(event) => {
+                  // Only clear when focus leaves the field list altogether, so
+                  // tabbing between inputs does not flicker the highlight.
+                  const next = event.relatedTarget as Node | null;
+                  if (!next || !event.currentTarget.contains(next)) {
+                    setActivePath(null);
+                  }
+                }}
+              >
                 <FieldList
                   fields={selected.fields ?? []}
                   content={draftContent}
@@ -591,6 +609,7 @@ export default function Editor() {
                 onSelectHotspot={onSelectHotspot}
                 hotspotTextLabel={t.hotspotText}
                 hotspotImageLabel={t.hotspotImage}
+                activeHotspot={activePath}
               />
             ) : null}
           </div>

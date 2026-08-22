@@ -47,18 +47,18 @@ function SiteSwitcher({ active }: { active: AccountSite | null }) {
   const label = active?.businessName ?? t.nav.sites;
 
   return (
-    <div className="relative min-w-0" ref={wrap}>
+    <div className="relative min-w-0 shrink" ref={wrap}>
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
         aria-haspopup="menu"
         aria-expanded={open}
-        className="flex min-w-0 items-center gap-3 rounded-2xl px-2 py-1.5 text-start transition hover:bg-ink-50"
+        className="flex w-full min-w-0 items-center gap-2.5 rounded-2xl px-2 py-1.5 text-start transition hover:bg-ink-50 sm:gap-3"
       >
         <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-bloom-500 to-bloom-700 text-sm font-extrabold text-white shadow-lg shadow-bloom-600/25">
           {initial(label)}
         </span>
-        <span className="min-w-0">
+        <span className="hidden min-w-0 flex-1 sm:block">
           <span className="block truncate text-sm font-bold text-ink-900">
             {label}
           </span>
@@ -175,9 +175,9 @@ export default function Layout({
         <div className="container-page flex h-16 items-center gap-3">
           <SiteSwitcher active={active} />
 
-          <nav className="ms-2 hidden items-center gap-1 lg:flex">{nav}</nav>
+          <nav className="ms-2 hidden items-center gap-1 xl:flex">{nav}</nav>
 
-          <div className="ms-auto flex items-center gap-2">
+          <div className="ms-auto flex shrink-0 items-center gap-2">
             {/* `publicUrl` is the site's real address; guessing it from the
                 slug went wrong the moment custom domains existed. */}
             {active && (
@@ -209,7 +209,7 @@ export default function Layout({
           </div>
         </div>
 
-        <nav className="container-page flex flex-wrap items-center gap-1 border-t border-ink-100 py-2 lg:hidden">
+        <nav className="container-page flex flex-wrap items-center gap-1 border-t border-ink-100 py-2 xl:hidden">
           {nav}
         </nav>
       </header>

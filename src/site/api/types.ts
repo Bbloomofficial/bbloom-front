@@ -121,6 +121,11 @@ export type SiteMeta = {
   branding?: {
     /** When true, the site should show the free-tier upgrade prompt to visitors. */
     showUpgradePrompt?: boolean;
+    /**
+     * Set once a plan pays for its own branding. Absent means "show it" — a
+     * free site carries the credit, which is what makes it free.
+     */
+    hidePoweredBy?: boolean;
   };
 };
 

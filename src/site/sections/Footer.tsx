@@ -2,6 +2,7 @@ import type { PublicSection } from "../api/types";
 import { Container } from "../components/layout";
 import { Icon, SOCIAL_ICONS } from "../components/Icon";
 import { useSite } from "../context";
+import { PoweredBy } from "../components/PoweredBy";
 import { bool, itemStr, list, str } from "../utils/content";
 
 type Link = { label?: string; href?: string };
@@ -45,19 +46,20 @@ function Colophon({
         © {new Date().getFullYear()} {meta.businessName}
         {note ? ` · ${note}` : ""}
       </p>
-      <div className="flex items-center gap-4">
+      <div className="flex flex-wrap items-center justify-center gap-3 sm:justify-end sm:gap-4">
         {payments ? (
-          <span className="flex items-center gap-2">
+          <span className="flex flex-wrap items-center justify-center gap-2">
             {["Visa", "Mastercard", "Apple Pay"].map((method) => (
               <span
                 key={method}
-                className="rounded-site border border-site-border px-2.5 py-1 text-[0.68rem] font-semibold tracking-wide uppercase"
+                className="rounded-site border border-site-border px-2.5 py-1 text-[0.68rem] font-semibold tracking-wide whitespace-nowrap uppercase"
               >
                 {method}
               </span>
             ))}
           </span>
         ) : null}
+        <PoweredBy />
         <a href="#top" className="site-link inline-flex items-center gap-1">
           {t.backToTop}
           <span className="rotate-[-90deg]">

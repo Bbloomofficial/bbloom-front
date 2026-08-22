@@ -63,6 +63,7 @@ export type SiteStrings = {
   retry: string;
   language: string;
   backToTop: string;
+  poweredBy: string;
   productSubject: string;
   /** Upgrade prompt for free-tier sites */
   upgradePrompt: {
@@ -134,6 +135,7 @@ const en: SiteStrings = {
   retry: "Try again",
   language: "Language",
   backToTop: "Back to top",
+  poweredBy: "Made with bbloom",
   productSubject: "Enquiry about",
   upgradePrompt: {
     title: "This is a free bbloom website",
@@ -204,6 +206,7 @@ const ka: SiteStrings = {
   retry: "თავიდან ცდა",
   language: "ენა",
   backToTop: "დასაწყისში",
+  poweredBy: "შექმნილია bbloom-ით",
   productSubject: "კითხვა პროდუქტზე",
   upgradePrompt: {
     title: "ეს უფასო bbloom ვებგვერდია",

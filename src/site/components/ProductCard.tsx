@@ -182,7 +182,7 @@ export function MenuRow({
 
       <div className="min-w-0 flex-1">
         <div className="flex items-baseline gap-3">
-          <h3 className="site-heading site-h4 shrink-0 text-site-text">
+          <h3 className="site-heading site-h4 min-w-0 text-site-text">
             {product.name}
           </h3>
           <span

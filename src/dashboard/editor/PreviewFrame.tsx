@@ -1,6 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import type { SiteLanguage } from "../api/types";
-import { attachHotspots, type HotspotTarget } from "../../site/editing/hotspots";
+import {
+  attachHotspots,
+  highlightHotspot,
+  type HotspotTarget,
+} from "../../site/editing/hotspots";
 
 /**
  * The preview is an iframe rather than an inline render: a client site brings
@@ -31,6 +35,8 @@ type Props = {
   onSelectHotspot?: (id: string) => void;
   hotspotTextLabel?: string;
   hotspotImageLabel?: string;
+  /** Hotspot to light up because its field has the cursor. */
+  activeHotspot?: string | null;
 };
 
 export function PreviewFrame({
@@ -45,6 +51,7 @@ export function PreviewFrame({
   onSelectHotspot,
   hotspotTextLabel = "",
   hotspotImageLabel = "",
+  activeHotspot = null,
 }: Props) {
   const frame = useRef<HTMLIFrameElement>(null);
   const [ready, setReady] = useState(false);
@@ -110,6 +117,13 @@ export function PreviewFrame({
     hotspotImageLabel,
     revision,
   ]);
+
+  // The other direction: the field with the cursor lights up on the page.
+  useEffect(() => {
+    const doc = frame.current?.contentDocument;
+    if (!ready || !doc?.body) return;
+    highlightHotspot(doc.body, hotspots ? activeHotspot : null);
+  }, [ready, activeHotspot, hotspots, revision]);
 
   return (
     <div className="flex h-full min-h-0 justify-center overflow-hidden bg-ink-50/60 p-3">

@@ -6,7 +6,7 @@ import { fetchTemplates } from "../api/templates";
 import { fetchSite } from "../site/api/client";
 import type { PublicSection, SitePayload } from "../site/api/types";
 import { SiteBody } from "../site/SitePage";
-import { attachHotspots } from "../site/editing/hotspots";
+import { attachHotspots, highlightHotspot } from "../site/editing/hotspots";
 import type { HotspotTarget } from "../site/editing/hotspots";
 import { ImagePicker } from "../site/editing/ImagePicker";
 import { loginAccount, registerAccount } from "../dashboard/api/account";
@@ -88,7 +88,7 @@ function FieldInput({
 
   if (field.kind === "image") {
     return (
-      <div>
+      <div data-field-path={field.path}>
         {label}
         <div className="mt-2 flex items-center gap-3">
           {value ? (
@@ -112,7 +112,7 @@ function FieldInput({
   }
 
   return (
-    <label className="block">
+    <label className="block" data-field-path={field.path}>
       {label}
       {field.kind === "textarea" ? (
         <textarea
@@ -163,6 +163,7 @@ export default function TryEditor() {
     path: string;
   } | null>(null);
   const [focusField, setFocusField] = useState<string | null>(null);
+  const [activeField, setActiveField] = useState<string | null>(null);
   const previewRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -314,6 +315,13 @@ export default function TryEditor() {
       imageLabel: t.hotspotImage,
     });
   }, [targets, mode, onSelectHotspot, t.hotspotText, t.hotspotImage]);
+
+  // The other direction: the field with the cursor lights up on the page.
+  useEffect(() => {
+    const root = previewRef.current;
+    if (!root) return;
+    highlightHotspot(root, mode === "edit" ? activeField : null);
+  }, [activeField, mode, targets]);
 
   // The panel has to have re-rendered with the clicked section before its input
   // exists to be focused.
@@ -496,7 +504,24 @@ export default function TryEditor() {
           </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-4">
+        <div
+          className="flex-1 overflow-y-auto p-4"
+          onFocusCapture={(event) => {
+            const wrapper = (event.target as HTMLElement).closest(
+              "[data-field-path]",
+            );
+            const path = wrapper?.getAttribute("data-field-path");
+            setActiveField(
+              path && section ? `${section.key}::${path}` : null,
+            );
+          }}
+          onBlurCapture={(event) => {
+            const next = event.relatedTarget as Node | null;
+            if (!next || !event.currentTarget.contains(next)) {
+              setActiveField(null);
+            }
+          }}
+        >
           {fields.length === 0 ? (
             <p className="text-sm text-ink-400">{t.noFields}</p>
           ) : (

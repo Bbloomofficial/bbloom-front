@@ -41,6 +41,7 @@ export type HotspotOptions = {
 
 const MARK = "data-bb-edit";
 const KIND = "data-bb-edit-kind";
+const ACTIVE = "data-bb-edit-active";
 const STYLE_ID = "bb-edit-style";
 const CHIP_ID = "bb-edit-chip";
 
@@ -56,6 +57,19 @@ const CSS = `
 [${MARK}]:hover {
   outline: 2px solid rgb(99, 102, 241);
   background-color: rgba(99, 102, 241, 0.08);
+}
+[${ACTIVE}] {
+  outline: 2px solid rgb(79, 70, 229);
+  outline-offset: 3px;
+  background-color: rgba(99, 102, 241, 0.12);
+  animation: bb-edit-pulse 1.2s ease-out 1;
+}
+@keyframes bb-edit-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(79, 70, 229, 0.45); }
+  100% { box-shadow: 0 0 0 14px rgba(79, 70, 229, 0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  [${ACTIVE}] { animation: none; }
 }
 #${CHIP_ID} {
   position: absolute;
@@ -75,6 +89,11 @@ const CSS = `
 
 function normalise(value: string): string {
   return value.replace(/\s+/g, " ").trim();
+}
+
+/** `CSS` is taken by the stylesheet above, so the escape is spelled out. */
+function cssEscape(value: string): string {
+  return value.replace(/["\\]/g, "\\$&");
 }
 
 /** `/api/v1/media/abc` and `https://host/api/v1/media/abc` are one image. */
@@ -100,6 +119,31 @@ export function clearHotspots(root: HTMLElement | Document): void {
   for (const element of scope.querySelectorAll(`[${MARK}]`)) {
     element.removeAttribute(MARK);
     element.removeAttribute(KIND);
+    element.removeAttribute(ACTIVE);
+  }
+}
+
+/**
+ * Lights up the element a field produces, so the traffic runs both ways: click
+ * the page to reach the field, or put the cursor in a field to see what on the
+ * page it will change. Passing `null` clears the highlight.
+ */
+export function highlightHotspot(
+  root: HTMLElement | Document,
+  id: string | null,
+  options: { scroll?: boolean } = {},
+): void {
+  const scope = scopeOf(root);
+  if (!scope) return;
+  for (const element of scope.querySelectorAll(`[${ACTIVE}]`)) {
+    element.removeAttribute(ACTIVE);
+  }
+  if (!id) return;
+  const element = scope.querySelector(`[${MARK}="${cssEscape(id)}"]`);
+  if (!element) return;
+  element.setAttribute(ACTIVE, "");
+  if (options.scroll !== false) {
+    element.scrollIntoView({ block: "center", behavior: "smooth" });
   }
 }
 
