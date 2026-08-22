@@ -47,12 +47,16 @@ function TemplateCard({ template }: { template: SiteTemplate }) {
         <p className="mt-3 flex-1 text-sm leading-relaxed text-ink-600">{description}</p>
 
         {template.demoSlug ? (
-          <Link
-            to={`/site/${template.demoSlug}`}
-            target="_blank"
-            rel="noreferrer"
-            className="btn-secondary mt-6"
-          >
+          <div className="mt-6 flex flex-col gap-2">
+            <Link to={`/try/${template.code}`} className="btn-primary">
+              {t.templatesPage.useTemplate}
+            </Link>
+            <Link
+              to={`/site/${template.demoSlug}`}
+              target="_blank"
+              rel="noreferrer"
+              className="btn-secondary"
+            >
             {t.templatesPage.viewDemo}
             <svg
               viewBox="0 0 20 20"
@@ -62,7 +66,8 @@ function TemplateCard({ template }: { template: SiteTemplate }) {
             >
               <path d="M12 3a1 1 0 0 0 0 2h1.6l-5.3 5.3a1 1 0 0 0 1.4 1.4L15 6.4V8a1 1 0 1 0 2 0V4a1 1 0 0 0-1-1h-4ZM5 5a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-3a1 1 0 1 0-2 0v3H5V7h3a1 1 0 0 0 0-2H5Z" />
             </svg>
-          </Link>
+            </Link>
+          </div>
         ) : (
           <span className="mt-6 inline-flex items-center justify-center rounded-full border border-dashed border-ink-200 px-4 py-2.5 text-sm font-semibold text-ink-400">
             {t.templatesPage.demoPending}

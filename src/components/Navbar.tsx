@@ -66,7 +66,7 @@ export default function Navbar() {
           >
             {t.nav.signIn}
           </Link>
-          <Link to="/dashboard/register" className="btn-primary hidden lg:inline-flex">
+          <Link to="/try" className="btn-primary hidden lg:inline-flex">
             {t.nav.start}
           </Link>
 
@@ -110,7 +110,7 @@ export default function Navbar() {
                 {link.label}
               </NavLink>
             ))}
-            <Link to="/dashboard/register" className="btn-primary mt-2">
+            <Link to="/try" className="btn-primary mt-2">
               {t.nav.start}
             </Link>
             <Link

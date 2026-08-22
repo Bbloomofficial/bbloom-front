@@ -155,6 +155,7 @@ export const ka: Dict = {
     filterAll: 'ყველა შაბლონი',
     flagship: 'ჩვენი საუკეთესო',
     viewDemo: 'ცოცხალი დემოს ნახვა',
+    useTemplate: 'ამ შაბლონით დაწყება',
     demoPending: 'დემო მალე',
     previewAlt: 'შაბლონის „{name}“ გადახედვა',
     loading: 'შაბლონები იტვირთება…',

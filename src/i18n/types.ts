@@ -108,6 +108,7 @@ export type Dict = {
     filterAll: string
     flagship: string
     viewDemo: string
+    useTemplate: string
     demoPending: string
     previewAlt: string
     loading: string

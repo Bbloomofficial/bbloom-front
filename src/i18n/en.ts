@@ -151,6 +151,7 @@ export const en: Dict = {
     filterAll: 'All templates',
     flagship: 'Our best work',
     viewDemo: 'Open live demo',
+    useTemplate: 'Start with this template',
     demoPending: 'Demo coming soon',
     previewAlt: 'Preview of the {name} template',
     loading: 'Loading templates…',

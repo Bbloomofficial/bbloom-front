@@ -22,6 +22,8 @@ const DashboardApp = lazy(() => import("./dashboard/DashboardApp"));
 const PreviewPage = lazy(() => import("./dashboard/editor/PreviewPage"));
 const AdminApp = lazy(() => import("./admin/AdminApp"));
 const Verify = lazy(() => import("./pages/Verify"));
+const TryStart = lazy(() => import("./pages/TryStart"));
+const TryEditor = lazy(() => import("./pages/TryEditor"));
 
 function Lazy({ children }: { children: ReactNode }) {
   return (
@@ -69,6 +71,14 @@ function MarketingApp() {
           <Route path="/templates" element={<Templates />} />
           <Route path="/work" element={<Navigate to="/services" replace />} />
           <Route path="/pricing" element={<Pricing />} />
+          <Route
+            path="/try"
+            element={
+              <Lazy>
+                <TryStart />
+              </Lazy>
+            }
+          />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="*" element={<NotFound />} />
@@ -98,6 +108,16 @@ export default function App() {
       <Route path="/site/:slug" element={<Site mode="ref" />} />
       <Route path="/site/:slug/p/:productSlug" element={<Site mode="ref" />} />
       <Route path="/dashboard/*" element={<Dashboard />} />
+      {/* The editor is its own full-height workspace, so it sits outside the
+          marketing chrome rather than inside a page with a navbar. */}
+      <Route
+        path="/try/:code"
+        element={
+          <Lazy>
+            <TryEditor />
+          </Lazy>
+        }
+      />
       <Route path="/admin/*" element={<Admin />} />
       {/* Unauthenticated on purpose — the confirmation link is opened by
           whatever browser the mail client picks, not necessarily the one

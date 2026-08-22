@@ -52,6 +52,26 @@ export function readStoredToken(): string | null {
 }
 
 /**
+ * Starts a session from outside the provider.
+ *
+ * The build-before-you-sign-up flow lives on the marketing side of the app,
+ * where `AuthProvider` is not mounted, but it registers a real account and must
+ * leave the client signed in — otherwise finishing a signup would dump them on
+ * a login form asking for the password they typed a second ago.
+ */
+export function storeSession(response: {
+  token: string;
+  expiresAt: string;
+  user: AccountProfile;
+}): void {
+  writeSession({
+    token: response.token,
+    expiresAt: response.expiresAt,
+    user: response.user,
+  });
+}
+
+/**
  * A session restored from before this release predates `sites`, and a failed
  * revalidation can leave us on that older copy, so the list is never assumed.
  */
