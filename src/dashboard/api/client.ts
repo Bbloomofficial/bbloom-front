@@ -194,6 +194,16 @@ export function fetchMedia(
   );
 }
 
+export function deleteMedia(
+  token: string,
+  siteId: string,
+  mediaId: string,
+): Promise<void> {
+  return authed<void>(token, `/manage/sites/${siteId}/media/${mediaId}`, {
+    method: "DELETE",
+  });
+}
+
 export function uploadMedia(
   token: string,
   siteId: string,

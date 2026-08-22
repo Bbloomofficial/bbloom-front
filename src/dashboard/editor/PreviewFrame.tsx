@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import type { SiteLanguage } from "../api/types";
+import { attachHotspots, type HotspotTarget } from "../../site/editing/hotspots";
 
 /**
  * The preview is an iframe rather than an inline render: a client site brings
@@ -22,6 +23,14 @@ type Props = {
   /** Scrolls the preview to a section without reloading it. */
   focusKey?: string;
   title: string;
+  /**
+   * Editable values to mark on the rendered page. Absent means review mode —
+   * the preview behaves exactly as a visitor's browser would.
+   */
+  hotspots?: HotspotTarget[];
+  onSelectHotspot?: (id: string) => void;
+  hotspotTextLabel?: string;
+  hotspotImageLabel?: string;
 };
 
 export function PreviewFrame({
@@ -32,6 +41,10 @@ export function PreviewFrame({
   revision,
   focusKey,
   title,
+  hotspots,
+  onSelectHotspot,
+  hotspotTextLabel = "",
+  hotspotImageLabel = "",
 }: Props) {
   const frame = useRef<HTMLIFrameElement>(null);
   const [ready, setReady] = useState(false);
@@ -55,6 +68,48 @@ export function PreviewFrame({
       window.location.origin,
     );
   }, [ready, focusKey, revision]);
+
+  // The preview is same-origin, so the hotspot layer can be attached to the
+  // iframe's own document — the same code the anonymous editor uses inline.
+  //
+  // `load` fires when the document arrives, which is before the site app has
+  // rendered anything into it, so the first attempt would match nothing. The
+  // attach is therefore retried until the page has content to mark.
+  useEffect(() => {
+    if (!ready || !hotspots || !onSelectHotspot) return;
+    const doc = frame.current?.contentDocument;
+    if (!doc?.body) return;
+
+    let cleanup: (() => void) | null = null;
+    let timer = 0;
+    let tries = 0;
+
+    const attempt = () => {
+      cleanup?.();
+      cleanup = attachHotspots(doc.body, hotspots, {
+        onSelect: onSelectHotspot,
+        textLabel: hotspotTextLabel,
+        imageLabel: hotspotImageLabel,
+      });
+      const marked = doc.querySelectorAll("[data-bb-edit]").length;
+      if (marked === 0 && tries++ < 25) {
+        timer = window.setTimeout(attempt, 300);
+      }
+    };
+    attempt();
+
+    return () => {
+      window.clearTimeout(timer);
+      cleanup?.();
+    };
+  }, [
+    ready,
+    hotspots,
+    onSelectHotspot,
+    hotspotTextLabel,
+    hotspotImageLabel,
+    revision,
+  ]);
 
   return (
     <div className="flex h-full min-h-0 justify-center overflow-hidden bg-ink-50/60 p-3">

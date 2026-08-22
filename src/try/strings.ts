@@ -35,6 +35,18 @@ export type TryStrings = {
   noFields: string;
   edits: string;
   content: string;
+  modeEdit: string;
+  modeReview: string;
+  hotspotText: string;
+  hotspotImage: string;
+  imageTitle: string;
+  imageFromFile: string;
+  imageFromLink: string;
+  imageLinkPlaceholder: string;
+  imageLinkUse: string;
+  imageLinkFailed: string;
+  imageNotSavedYet: string;
+  dismiss: string;
 
   saveCta: string;
   saveTitle: string;
@@ -98,6 +110,20 @@ const en: TryStrings = {
   noFields: "Nothing to edit in this part.",
   edits: "changed",
   content: "Content",
+  modeEdit: "Editing",
+  modeReview: "Preview",
+  hotspotText: "Click to edit",
+  hotspotImage: "Click to change the picture",
+  imageTitle: "Change the picture",
+  imageFromFile: "Choose a file",
+  imageFromLink: "Or paste a link to a picture",
+  imageLinkPlaceholder: "https://…",
+  imageLinkUse: "Use this link",
+  imageLinkFailed:
+    "That link could not be loaded. Save the picture to your device and choose the file instead.",
+  imageNotSavedYet:
+    "Pictures are uploaded when you save your website, not before.",
+  dismiss: "Cancel",
 
   saveCta: "Save my website",
   saveTitle: "Create your account to keep it",
@@ -166,6 +192,20 @@ const ka: TryStrings = {
   noFields: "ამ ნაწილში სარედაქტირებელი არაფერია.",
   edits: "შეცვლილი",
   content: "შიგთავსი",
+  modeEdit: "რედაქტირება",
+  modeReview: "დათვალიერება",
+  hotspotText: "დააჭირეთ შესაცვლელად",
+  hotspotImage: "დააჭირეთ სურათის შესაცვლელად",
+  imageTitle: "სურათის შეცვლა",
+  imageFromFile: "ფაილის არჩევა",
+  imageFromLink: "ან ჩასვით სურათის ბმული",
+  imageLinkPlaceholder: "https://…",
+  imageLinkUse: "ამ ბმულის გამოყენება",
+  imageLinkFailed:
+    "ბმული ვერ ჩაიტვირთა. შეინახეთ სურათი მოწყობილობაზე და აირჩიეთ ფაილი.",
+  imageNotSavedYet:
+    "სურათები აიტვირთება ვებგვერდის შენახვისას და არა ადრე.",
+  dismiss: "გაუქმება",
 
   saveCta: "ვებგვერდის შენახვა",
   saveTitle: "შესანახად შექმენით ანგარიში",

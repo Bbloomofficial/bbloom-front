@@ -6,6 +6,9 @@ import { fetchTemplates } from "../api/templates";
 import { fetchSite } from "../site/api/client";
 import type { PublicSection, SitePayload } from "../site/api/types";
 import { SiteBody } from "../site/SitePage";
+import { attachHotspots } from "../site/editing/hotspots";
+import type { HotspotTarget } from "../site/editing/hotspots";
+import { ImagePicker } from "../site/editing/ImagePicker";
 import { loginAccount, registerAccount } from "../dashboard/api/account";
 import { storeSession, readStoredAccount } from "../dashboard/auth";
 import {
@@ -42,8 +45,14 @@ import type { TryStrings } from "../try/strings";
 const inputClass =
   "w-full rounded-xl border border-ink-100 bg-surface px-3 py-2 text-sm text-ink-900 outline-none transition focus:border-bloom-400 focus:ring-2 focus:ring-bloom-200";
 
+/** Stable, valid element id for a field, so a click in the preview can focus it. */
+function fieldDomId(sectionKey: string, path: string): string {
+  return `bb-field-${sectionKey}-${path}`.replace(/[^a-zA-Z0-9_-]/g, "-");
+}
+
 function FieldInput({
   field,
+  domId,
   value,
   edited,
   onText,
@@ -52,15 +61,14 @@ function FieldInput({
   t,
 }: {
   field: EditableField;
+  domId: string;
   value: string;
   edited: boolean;
   onText: (next: string) => void;
-  onImage: (file: File) => void;
+  onImage: () => void;
   onReset: () => void;
   t: TryStrings;
 }) {
-  const picker = useRef<HTMLInputElement>(null);
-
   // The draft is an overlay, so "undo" restores the design's own value exactly
   // rather than guessing at what was there — worth offering per field.
   const label = (
@@ -92,22 +100,12 @@ function FieldInput({
           ) : null}
           <button
             type="button"
+            id={domId}
             className="btn-secondary btn-sm"
-            onClick={() => picker.current?.click()}
+            onClick={onImage}
           >
             {t.replaceImage}
           </button>
-          <input
-            ref={picker}
-            type="file"
-            accept="image/*"
-            className="hidden"
-            onChange={(event) => {
-              const file = event.target.files?.[0];
-              event.target.value = "";
-              if (file) onImage(file);
-            }}
-          />
         </div>
       </div>
     );
@@ -118,12 +116,14 @@ function FieldInput({
       {label}
       {field.kind === "textarea" ? (
         <textarea
+          id={domId}
           className={`${inputClass} mt-1.5 min-h-24`}
           value={value}
           onChange={(event) => onText(event.target.value)}
         />
       ) : (
         <input
+          id={domId}
           className={`${inputClass} mt-1.5`}
           value={value}
           onChange={(event) => onText(event.target.value)}
@@ -157,6 +157,13 @@ export default function TryEditor() {
   const [formError, setFormError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [open, setOpen] = useState<Record<string, boolean>>({});
+  const [mode, setMode] = useState<"edit" | "review">("edit");
+  const [imagePick, setImagePick] = useState<{
+    sectionKey: string;
+    path: string;
+  } | null>(null);
+  const [focusField, setFocusField] = useState<string | null>(null);
+  const previewRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -250,6 +257,77 @@ export default function TryEditor() {
   // once buries the rest of the section under a scroll.
   const isOpen = (key: string, index: number) =>
     open[`${section?.key}:${key}`] ?? index === 0;
+
+  /**
+   * Every editable value on the page, not just the section on screen in the
+   * panel — clicking a heading three sections down is exactly how someone
+   * finds the field for it.
+   */
+  const targets = useMemo<HotspotTarget[]>(() => {
+    if (!preview) return [];
+    const list: HotspotTarget[] = [];
+    for (const item of preview.sections) {
+      for (const field of deriveFields(item, lang)) {
+        const raw = readPath(item.content ?? {}, field.path);
+        const value =
+          field.kind === "image"
+            ? ((raw as Record<string, unknown> | null)?.url as string) ?? ""
+            : String(raw ?? "");
+        if (!value) continue;
+        list.push({
+          id: `${item.key}::${field.path}`,
+          kind: field.kind === "image" ? "image" : "text",
+          value,
+        });
+      }
+    }
+    return list;
+  }, [preview, lang]);
+
+  const onSelectHotspot = useCallback(
+    (id: string) => {
+      const [sectionKey, path] = id.split("::");
+      const target = preview?.sections.find((item) => item.key === sectionKey);
+      if (!target) return;
+      const field = deriveFields(target, lang).find(
+        (item) => item.path === path,
+      );
+      setSelected(sectionKey);
+      if (field?.group) {
+        setOpen((current) => ({
+          ...current,
+          [`${sectionKey}:${field.group}`]: true,
+        }));
+      }
+      if (field?.kind === "image") setImagePick({ sectionKey, path });
+      else setFocusField(id);
+    },
+    [preview, lang],
+  );
+
+  useEffect(() => {
+    const root = previewRef.current;
+    if (!root || mode !== "edit") return;
+    return attachHotspots(root, targets, {
+      onSelect: onSelectHotspot,
+      textLabel: t.hotspotText,
+      imageLabel: t.hotspotImage,
+    });
+  }, [targets, mode, onSelectHotspot, t.hotspotText, t.hotspotImage]);
+
+  // The panel has to have re-rendered with the clicked section before its input
+  // exists to be focused.
+  useEffect(() => {
+    if (!focusField) return;
+    const [sectionKey, path] = focusField.split("::");
+    const frame = requestAnimationFrame(() => {
+      const element = document.getElementById(fieldDomId(sectionKey, path));
+      element?.scrollIntoView({ block: "center", behavior: "smooth" });
+      (element as HTMLInputElement | null)?.focus?.();
+      setFocusField(null);
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [focusField, section]);
 
   async function onPickImage(sectionKey: string, path: string, file: File) {
     if (!draft) return;
@@ -428,6 +506,7 @@ export default function TryEditor() {
                   <FieldInput
                     key={field.path}
                     field={field}
+                    domId={fieldDomId(section?.key ?? "", field.path)}
                     t={t}
                     edited={
                       !!section && isFieldEdited(draft, section.key, field.path)
@@ -448,8 +527,12 @@ export default function TryEditor() {
                       section &&
                       commit(setText(draft, section.key, field.path, next))
                     }
-                    onImage={(file) =>
-                      section && onPickImage(section.key, field.path, file)
+                    onImage={() =>
+                      section &&
+                      setImagePick({
+                        sectionKey: section.key,
+                        path: field.path,
+                      })
                     }
                     onReset={() =>
                       section && commit(clearField(draft, section.key, field.path))
@@ -565,29 +648,49 @@ export default function TryEditor() {
       </aside>
 
       <section className="flex max-h-screen flex-col overflow-hidden bg-ink-50/60">
-        <div className="flex items-center justify-end gap-2 border-b border-ink-100 bg-canvas px-4 py-2">
-          {(["desktop", "mobile"] as const).map((option) => (
-            <button
-              key={option}
-              type="button"
-              onClick={() => setDevice(option)}
-              aria-pressed={device === option}
-              className={`rounded-lg px-2.5 py-1 text-xs font-semibold transition ${
-                device === option
-                  ? "bg-tint text-tint-fg"
-                  : "text-ink-500 hover:text-ink-900"
-              }`}
-            >
-              {option === "desktop" ? t.desktop : t.mobile}
-            </button>
-          ))}
+        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-ink-100 bg-canvas px-4 py-2">
+          <div className="flex items-center gap-1 rounded-xl border border-ink-100 bg-surface p-0.5">
+            {(["edit", "review"] as const).map((option) => (
+              <button
+                key={option}
+                type="button"
+                onClick={() => setMode(option)}
+                aria-pressed={mode === option}
+                className={`whitespace-nowrap rounded-lg px-2.5 py-1 text-xs font-semibold transition ${
+                  mode === option
+                    ? "bg-tint text-tint-fg"
+                    : "text-ink-500 hover:text-ink-900"
+                }`}
+              >
+                {option === "edit" ? t.modeEdit : t.modeReview}
+              </button>
+            ))}
+          </div>
+          <div className="flex items-center gap-2">
+            {(["desktop", "mobile"] as const).map((option) => (
+              <button
+                key={option}
+                type="button"
+                onClick={() => setDevice(option)}
+                aria-pressed={device === option}
+                className={`whitespace-nowrap rounded-lg px-2.5 py-1 text-xs font-semibold transition ${
+                  device === option
+                    ? "bg-tint text-tint-fg"
+                    : "text-ink-500 hover:text-ink-900"
+                }`}
+              >
+                {option === "desktop" ? t.desktop : t.mobile}
+              </button>
+            ))}
+          </div>
         </div>
         <div className="flex-1 overflow-y-auto">
           <div
+            ref={previewRef}
             className={
               device === "mobile"
-                ? "mx-auto my-4 w-[390px] max-w-full overflow-hidden rounded-2xl border border-ink-100 bg-white shadow-sm"
-                : "min-h-full bg-white"
+                ? "relative mx-auto my-4 w-[390px] max-w-full overflow-hidden rounded-2xl border border-ink-100 bg-white shadow-sm"
+                : "relative min-h-full bg-white"
             }
           >
             <SiteBody
@@ -600,6 +703,27 @@ export default function TryEditor() {
           </div>
         </div>
       </section>
+
+      {imagePick ? (
+        <ImagePicker
+          labels={{
+            title: t.imageTitle,
+            fromFile: t.imageFromFile,
+            fromLink: t.imageFromLink,
+            linkPlaceholder: t.imageLinkPlaceholder,
+            linkUse: t.imageLinkUse,
+            linkFailed: t.imageLinkFailed,
+            cancel: t.dismiss,
+            note: t.imageNotSavedYet,
+          }}
+          onClose={() => setImagePick(null)}
+          onPick={async (file) => {
+            const { sectionKey, path } = imagePick;
+            setImagePick(null);
+            await onPickImage(sectionKey, path, file);
+          }}
+        />
+      ) : null}
 
       {save.phase !== "idle" ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink-900/40 p-4">

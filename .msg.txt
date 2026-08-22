@@ -1,0 +1,30 @@
+Let clients edit by clicking the page itself
+
+Editing through a list of labelled inputs asks the client to hold a map in
+their head: which of the eleven text boxes is the heading they can see. So both
+editors gain an edit/review switch. In edit mode every value that can be
+changed is marked on the preview, and clicking one selects its section and
+focuses its field.
+
+The site renderers are untouched. They are the components visitors are served,
+and threading editor wiring through all of them would put an editing concern
+into the public product, so values are matched back onto the DOM after render.
+A value that cannot be matched simply gets no hotspot and stays editable in the
+panel - a better failure than a preview that lies.
+
+Pictures are no longer uploaded the moment they are picked, which made the
+media library a record of everything a client ever considered. A pick is held
+locally, shown from a blob URL and marked "not uploaded yet"; the upload
+happens on save. A file or an image link both work, and a link is fetched into
+a real file rather than kept as someone else's URL.
+
+Saving also deletes the picture that was replaced, so a client swapping a photo
+ten times does not leave ten behind - but only after checking every other
+section, because the same logo legitimately appears in the header and the
+footer.
+
+Verified against production with the probe account: 76 hotspots marked, click
+focused the right field, a deferred picture uploaded on save and its
+predecessor was gone from the media library afterwards.
+
+Co-authored-by: Copilot App <223556219+Copilot@users.noreply.github.com>

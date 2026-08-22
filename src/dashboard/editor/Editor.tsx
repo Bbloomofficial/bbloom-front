@@ -1,9 +1,10 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useI18n } from "../../i18n";
 import { useSession } from "../auth";
 import { useActiveSite } from "../site";
 import { useResource } from "../hooks";
 import {
+  deleteMedia,
   discardSections,
   fetchSections,
   fetchSiteDetail,
@@ -11,6 +12,7 @@ import {
   reorderSections,
   resetSection,
   updateSection,
+  uploadMedia,
 } from "../api/client";
 import type { SectionDto, SiteLanguage } from "../api/types";
 import { FieldList } from "./fields";
@@ -18,6 +20,13 @@ import type { FieldContext } from "./fields";
 import { PreviewFrame } from "./PreviewFrame";
 import type { PreviewDevice } from "./PreviewFrame";
 import { editorStrings } from "./strings";
+import { ImagePicker } from "../../site/editing/ImagePicker";
+import { sectionTargets, splitTargetId } from "./targets";
+import {
+  collectMediaIds,
+  resolvePending,
+  type PendingImage,
+} from "./pending";
 
 /**
  * The page editor. Every write goes into the section draft, so a client can
@@ -95,6 +104,18 @@ export default function Editor() {
   const [device, setDevice] = useState<PreviewDevice>("desktop");
   const [showDraft, setShowDraft] = useState(true);
   const [hasDraft, setHasDraft] = useState(false);
+  const [mode, setMode] = useState<"edit" | "review">("edit");
+  const [focusPath, setFocusPath] = useState<string | null>(null);
+
+  /**
+   * Pictures chosen but not uploaded. A ref rather than state: it must survive
+   * every keystroke re-render, and nothing renders from it directly except
+   * through `pendingUrl`.
+   */
+  const pending = useRef(new Map<string, PendingImage>());
+  const [pickResolve, setPickResolve] = useState<
+    ((value: unknown) => void) | null
+  >(null);
 
   const languages = useMemo<SiteLanguage[]>(() => {
     const listed = site.data?.languages ?? [];
@@ -147,19 +168,71 @@ export default function Editor() {
     setRevision((value) => value + 1);
   }, []);
 
+  /**
+   * A picture that no field points at any more is dead weight in the client's
+   * media library and on our disk, so replacing one deletes the old file. It is
+   * checked against every other section first: the same logo legitimately
+   * appears in the header and the footer, and deleting it because one of them
+   * changed would break the other.
+   */
+  async function dropUnusedMedia(
+    sectionKey: string,
+    before: Record<string, unknown>,
+    after: unknown,
+  ) {
+    const removed = collectMediaIds(before);
+    for (const id of collectMediaIds(after)) removed.delete(id);
+    if (removed.size === 0) return;
+
+    const elsewhere = new Set<string>();
+    for (const section of sections) {
+      if (section.key === sectionKey) continue;
+      collectMediaIds(section.content, elsewhere);
+    }
+
+    for (const id of removed) {
+      if (elsewhere.has(id)) continue;
+      try {
+        await deleteMedia(token, siteId, id);
+      } catch {
+        // A picture we failed to delete is untidy, not broken — the client's
+        // edit is already saved and telling them about our housekeeping would
+        // only be noise.
+      }
+    }
+  }
+
   async function save() {
     if (!selected) return;
     setSaving(true);
     setError(null);
     try {
+      const resolved = (await resolvePending(
+        draftContent,
+        async (image) => {
+          const media = await uploadMedia(token, siteId, image.file, {
+            [activeLang]: image.file.name,
+          });
+          return media.id;
+        },
+        pending.current,
+      )) as Record<string, unknown>;
+
+      const previous = selected.content ?? {};
       const updated = await updateSection(token, siteId, selected.key, {
-        content: draftContent,
+        content: resolved,
       });
       applySection(updated);
+      setDraftContent(updated.content ?? resolved);
+      for (const image of pending.current.values()) {
+        URL.revokeObjectURL(image.url);
+      }
+      pending.current.clear();
       setHasDraft(true);
       setDirty(false);
       setSavedAt(Date.now());
       refreshPreview();
+      await dropUnusedMedia(selected.key, previous, resolved);
     } catch (cause) {
       handleError(cause);
       setError(cause instanceof Error ? cause.message : t.saveFailed);
@@ -243,7 +316,39 @@ export default function Editor() {
     languages,
     siteId,
     token,
+    requestImage: () =>
+      new Promise<unknown>((resolve) => {
+        setPickResolve(() => resolve);
+      }),
+    pendingUrl: (key) => pending.current.get(key)?.url ?? null,
   };
+
+  const targets = useMemo(
+    () => sectionTargets(sections, activeLang),
+    [sections, activeLang],
+  );
+
+  const onSelectHotspot = useCallback((id: string) => {    const found = splitTargetId(id);
+    if (!found) return;
+    setSelectedKey(found.sectionKey);
+    setFocusPath(found.path);
+  }, []);
+
+  // Runs after the panel has re-rendered for the newly selected section, which
+  // is why it waits on `focusPath` rather than doing this inside the click.
+  useEffect(() => {
+    if (!focusPath) return;
+    const wrapper = document.querySelector(
+      `[data-field-path="${CSS.escape(focusPath)}"]`,
+    );
+    if (!wrapper) return;
+    wrapper.scrollIntoView({ block: "center", behavior: "smooth" });
+    const input = wrapper.querySelector<HTMLElement>(
+      "input, textarea, select, button",
+    );
+    input?.focus();
+    setFocusPath(null);
+  }, [focusPath, selectedKey, draftContent]);
 
   if (loaded.loading && sections.length === 0) {
     return <p className="text-sm text-ink-400">{t.loading}</p>;
@@ -447,6 +552,14 @@ export default function Editor() {
             </h2>
             <div className="ms-auto flex flex-wrap gap-2">
               <Toggle
+                value={mode}
+                onChange={setMode}
+                options={[
+                  { value: "edit" as const, label: t.modeEdit },
+                  { value: "review" as const, label: t.modeReview },
+                ]}
+              />
+              <Toggle
                 value={showDraft ? "draft" : "live"}
                 onChange={(next) => setShowDraft(next === "draft")}
                 options={[
@@ -474,11 +587,46 @@ export default function Editor() {
                 revision={revision}
                 focusKey={selectedKey ?? undefined}
                 title={t.preview}
+                hotspots={mode === "edit" && showDraft ? targets : undefined}
+                onSelectHotspot={onSelectHotspot}
+                hotspotTextLabel={t.hotspotText}
+                hotspotImageLabel={t.hotspotImage}
               />
             ) : null}
           </div>
+          {mode === "edit" ? (
+            <p className="border-t border-ink-100 px-3 py-2 text-xs text-ink-400">
+              {showDraft ? t.editModeHint : t.editModeLiveHint}
+            </p>
+          ) : null}
         </section>
       </div>
+
+      {pickResolve ? (
+        <ImagePicker
+          labels={{
+            title: t.imageTitle,
+            fromFile: t.imageFromFile,
+            fromLink: t.imageFromLink,
+            linkPlaceholder: t.imageLinkPlaceholder,
+            linkUse: t.imageLinkUse,
+            linkFailed: t.imageLinkFailed,
+            cancel: t.cancel,
+            note: t.imagePending,
+          }}
+          onPick={(file) => {
+            const key = `p${Date.now()}-${Math.random().toString(36).slice(2)}`;
+            pending.current.set(key, { file, url: URL.createObjectURL(file) });
+            pickResolve({ pendingUpload: key });
+            setPickResolve(null);
+            setDirty(true);
+          }}
+          onClose={() => {
+            pickResolve(null);
+            setPickResolve(null);
+          }}
+        />
+      ) : null}
     </div>
   );
 }

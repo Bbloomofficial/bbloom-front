@@ -49,6 +49,20 @@ export type EditorStrings = {
   removeImage: string;
   noImage: string;
   uploadFailed: string;
+  cancel: string;
+  modeEdit: string;
+  modeReview: string;
+  editModeHint: string;
+  editModeLiveHint: string;
+  hotspotText: string;
+  hotspotImage: string;
+  imageTitle: string;
+  imageFromFile: string;
+  imageFromLink: string;
+  imageLinkPlaceholder: string;
+  imageLinkUse: string;
+  imageLinkFailed: string;
+  imagePending: string;
 };
 
 const en: EditorStrings = {
@@ -96,6 +110,23 @@ const en: EditorStrings = {
   removeImage: "Remove",
   noImage: "No image",
   uploadFailed: "We could not upload that image.",
+  cancel: "Cancel",
+  modeEdit: "Edit",
+  modeReview: "Review",
+  editModeHint:
+    "Click anything marked on the preview to jump to the field that changes it.",
+  editModeLiveHint:
+    "Switch the preview to your draft to click text and images on the page.",
+  hotspotText: "Click to edit this text",
+  hotspotImage: "Click to change this image",
+  imageTitle: "Change image",
+  imageFromFile: "Choose a file",
+  imageFromLink: "Or paste an image link",
+  imageLinkPlaceholder: "https://…",
+  imageLinkUse: "Use this link",
+  imageLinkFailed:
+    "That link could not be fetched. Download the image and upload the file instead.",
+  imagePending: "Not uploaded yet — it is saved when you press Save.",
 };
 
 const ka: EditorStrings = {
@@ -142,6 +173,23 @@ const ka: EditorStrings = {
   removeImage: "წაშლა",
   noImage: "სურათი არ არის",
   uploadFailed: "სურათის ატვირთვა ვერ მოხერხდა.",
+  cancel: "გაუქმება",
+  modeEdit: "რედაქტირება",
+  modeReview: "დათვალიერება",
+  editModeHint:
+    "დააჭირეთ პრევიუზე მონიშნულ ნებისმიერ ელემენტს და გადახვალთ შესაბამის ველზე.",
+  editModeLiveHint:
+    "ტექსტსა და სურათებზე დასაჭერად პრევიუ გადართეთ თქვენს ვერსიაზე.",
+  hotspotText: "დააჭირეთ ტექსტის შესაცვლელად",
+  hotspotImage: "დააჭირეთ სურათის შესაცვლელად",
+  imageTitle: "სურათის შეცვლა",
+  imageFromFile: "აირჩიეთ ფაილი",
+  imageFromLink: "ან ჩასვით სურათის ბმული",
+  imageLinkPlaceholder: "https://…",
+  imageLinkUse: "ბმულის გამოყენება",
+  imageLinkFailed:
+    "ბმულის ჩამოტვირთვა ვერ მოხერხდა. ჩამოტვირთეთ სურათი და ატვირთეთ ფაილად.",
+  imagePending: "ჯერ არ არის ატვირთული — შეინახება „შენახვაზე“ დაჭერისას.",
 };
 
 export function editorStrings(locale: Locale): EditorStrings {

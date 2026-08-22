@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { API_BASE } from "../../api/http";
-import { uploadMedia } from "../api/client";
 import type { FieldSchema, SiteLanguage } from "../api/types";
 import type { EditorStrings } from "./strings";
+import { isPendingMarker, mediaIdOf, PENDING_KEY } from "./pending";
 
 /**
  * Section content is free-form JSON described by a per-section `fields` schema,
@@ -21,6 +21,14 @@ type Ctx = {
   languages: SiteLanguage[];
   siteId: string;
   token: string;
+  /**
+   * Opens the picture dialog and resolves with the value to store: a pending
+   * marker, or null if the client backed out. Nothing is uploaded here — that
+   * happens when they save.
+   */
+  requestImage: () => Promise<Json | null>;
+  /** Local preview URL for a picture chosen but not yet uploaded. */
+  pendingUrl: (token: string) => string | null;
 };
 
 function label(field: FieldSchema, lang: SiteLanguage) {
@@ -67,10 +75,10 @@ function writeValue(
   return { ...asRecord(current), [lang]: next };
 }
 
-function MediaThumb({ mediaId, alt }: { mediaId: string; alt: string }) {
+function MediaThumb({ src, alt }: { src: string; alt: string }) {
   return (
     <img
-      src={`${API_BASE}/media/${mediaId}`}
+      src={src}
       alt={alt}
       className="h-20 w-28 shrink-0 rounded-lg border border-ink-100 bg-ink-50 object-cover"
       loading="lazy"
@@ -90,38 +98,29 @@ function ImageField({
   ctx: Ctx;
   name: string;
 }) {
-  const input = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const record = asRecord(value);
-  const mediaId =
-    typeof record.mediaId === "string"
-      ? record.mediaId
-      : typeof record.id === "string"
-        ? record.id
-        : null;
+  const mediaId = mediaIdOf(value);
+  const pendingToken = isPendingMarker(value) ? value[PENDING_KEY] : null;
+  const src = pendingToken
+    ? ctx.pendingUrl(pendingToken)
+    : mediaId
+      ? `${API_BASE}/media/${mediaId}`
+      : null;
 
-  async function onPick(file: File | undefined) {
-    if (!file) return;
+  async function pick() {
     setBusy(true);
-    setError(null);
     try {
-      const media = await uploadMedia(ctx.token, ctx.siteId, file, {
-        [ctx.editLang]: name,
-      });
-      onChange({ mediaId: media.id });
-    } catch (cause) {
-      setError(cause instanceof Error ? cause.message : ctx.t.uploadFailed);
+      const next = await ctx.requestImage();
+      if (next !== null) onChange(next);
     } finally {
       setBusy(false);
-      if (input.current) input.current.value = "";
     }
   }
 
   return (
     <div className="flex flex-wrap items-center gap-3">
-      {mediaId ? (
-        <MediaThumb mediaId={mediaId} alt={name} />
+      {src ? (
+        <MediaThumb src={src} alt={name} />
       ) : (
         <span className="grid h-20 w-28 shrink-0 place-items-center rounded-lg border border-dashed border-ink-200 text-xs text-ink-400">
           {ctx.t.noImage}
@@ -131,12 +130,12 @@ function ImageField({
         <button
           type="button"
           disabled={busy}
-          onClick={() => input.current?.click()}
+          onClick={() => void pick()}
           className="rounded-lg border border-ink-100 bg-surface px-3 py-1.5 text-xs font-semibold text-ink-600 transition hover:border-bloom-300 hover:text-bloom-600 disabled:opacity-50"
         >
-          {busy ? ctx.t.uploading : mediaId ? ctx.t.replaceImage : ctx.t.upload}
+          {src ? ctx.t.replaceImage : ctx.t.upload}
         </button>
-        {mediaId ? (
+        {src ? (
           <button
             type="button"
             onClick={() => onChange(null)}
@@ -146,14 +145,9 @@ function ImageField({
           </button>
         ) : null}
       </div>
-      <input
-        ref={input}
-        type="file"
-        accept="image/*"
-        className="hidden"
-        onChange={(event) => void onPick(event.target.files?.[0])}
-      />
-      {error ? <p className="w-full text-xs text-red-600">{error}</p> : null}
+      {pendingToken ? (
+        <p className="w-full text-xs text-ink-400">{ctx.t.imagePending}</p>
+      ) : null}
     </div>
   );
 }
@@ -164,12 +158,14 @@ function ListField({
   onChange,
   ctx,
   depth,
+  path,
 }: {
   field: FieldSchema;
   value: Json;
   onChange: (next: Json) => void;
   ctx: Ctx;
   depth: number;
+  path: string;
 }) {
   const items = Array.isArray(value) ? (value as Record<string, unknown>[]) : [];
   const itemFields = field.itemFields ?? [];
@@ -236,6 +232,7 @@ function ListField({
             }
             ctx={ctx}
             depth={depth + 1}
+            path={`${path}.${index}`}
           />
         </div>
       ))}
@@ -257,12 +254,14 @@ function Field({
   onChange,
   ctx,
   depth,
+  path,
 }: {
   field: FieldSchema;
   content: Record<string, unknown>;
   onChange: (next: Record<string, unknown>) => void;
   ctx: Ctx;
   depth: number;
+  path: string;
 }) {
   const raw = content[field.key];
   const value = readValue(field, raw, ctx.editLang);
@@ -278,7 +277,7 @@ function Field({
 
   if (field.type === "boolean") {
     return (
-      <label className="flex items-start gap-2.5" data-field={field.key}>
+      <label className="flex items-start gap-2.5" data-field-path={path}>
         <input
           type="checkbox"
           checked={value === true}
@@ -319,6 +318,7 @@ function Field({
           onChange={(next) => onChange({ ...content, [field.key]: next })}
           ctx={ctx}
           depth={depth}
+          path={path}
         />
       );
       break;
@@ -383,7 +383,7 @@ function Field({
   }
 
   return (
-    <div data-field={field.key}>
+    <div data-field-path={path}>
       {heading}
       {control}
       {help && field.type !== "list" ? (
@@ -399,12 +399,14 @@ export function FieldList({
   onChange,
   ctx,
   depth = 0,
+  path = "",
 }: {
   fields: FieldSchema[];
   content: Record<string, unknown>;
   onChange: (next: Record<string, unknown>) => void;
   ctx: Ctx;
   depth?: number;
+  path?: string;
 }) {
   if (fields.length === 0) {
     return <p className="text-sm text-ink-400">{ctx.t.noFields}</p>;
@@ -419,6 +421,7 @@ export function FieldList({
           onChange={onChange}
           ctx={ctx}
           depth={depth}
+          path={path ? `${path}.${field.key}` : field.key}
         />
       ))}
     </div>
