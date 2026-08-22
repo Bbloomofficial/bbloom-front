@@ -130,9 +130,20 @@ function kindFor(key: string, value: string): "text" | "textarea" {
 
 /**
  * Fields the client should never be handed: internal wiring that looks like
- * ordinary text but breaks the page when typed into.
+ * ordinary text but breaks the page when typed into. `href` is here because the
+ * navigation links are in-page anchors the template generates for itself —
+ * offering them for editing invites someone to break their own menu.
  */
-const SKIP = new Set(["id", "key", "slug", "icon", "variant", "anchor", "type"]);
+const SKIP = new Set([
+  "id",
+  "key",
+  "slug",
+  "icon",
+  "variant",
+  "anchor",
+  "type",
+  "href",
+]);
 
 const MAX_ITEMS = 12;
 
