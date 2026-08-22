@@ -527,10 +527,19 @@ export default function TryEditor() {
           ) : (
             <div className="flex flex-col gap-4">
               {grouped.map((group, index) => {
+                // A group of one is a heading with nothing under it: the item's
+                // name and its only field say the same thing twice, and the
+                // client has to open a drawer to reach a single input. Those
+                // render as the input itself, labelled with both names.
+                const single = !!group.key && group.fields.length === 1;
                 const inputs = group.fields.map((field) => (
                   <FieldInput
                     key={field.path}
-                    field={field}
+                    field={
+                      single && group.label && group.label !== field.label
+                        ? { ...field, label: `${group.label} · ${field.label}` }
+                        : field
+                    }
                     domId={fieldDomId(section?.key ?? "", field.path)}
                     t={t}
                     edited={
@@ -573,9 +582,22 @@ export default function TryEditor() {
                   );
                 }
 
+                if (single) {
+                  return (
+                    <div
+                      key={group.key}
+                      className="rounded-xl border border-ink-100 p-3"
+                    >
+                      {inputs}
+                    </div>
+                  );
+                }
+
                 const opened = isOpen(
                   group.key,
-                  grouped.slice(0, index).filter((item) => item.key).length,
+                  grouped
+                    .slice(0, index)
+                    .filter((item) => item.key && item.fields.length > 1).length,
                 );
                 const item = group.groupPath
                   ? (readPath(section?.content ?? {}, group.groupPath) as Record<
