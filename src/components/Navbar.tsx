@@ -39,13 +39,13 @@ export default function Navbar() {
           <Logo />
         </Link>
 
-        <nav className="hidden items-center gap-1 lg:flex">
+        <nav className="hidden items-center gap-1 xl:flex">
           {links.map((link) => (
             <NavLink
               key={link.to}
               to={link.to}
               className={({ isActive }) =>
-                `rounded-full px-4 py-2 text-sm font-semibold transition ${
+                `rounded-full px-3 py-2 text-sm font-semibold whitespace-nowrap transition ${
                   isActive ? 'bg-tint text-tint-fg' : 'text-ink-600 hover:text-ink-900'
                 }`
               }
@@ -62,11 +62,11 @@ export default function Navbar() {
               from every marketing page, not only from a plan card. */}
           <Link
             to="/dashboard/login"
-            className="hidden rounded-full px-4 py-2 text-sm font-semibold text-ink-600 transition hover:text-ink-900 lg:inline-flex"
+            className="hidden rounded-full px-3 py-2 text-sm font-semibold whitespace-nowrap text-ink-600 transition hover:text-ink-900 xl:inline-flex"
           >
             {t.nav.signIn}
           </Link>
-          <Link to="/try" className="btn-primary hidden lg:inline-flex">
+          <Link to="/try" className="btn-primary hidden xl:inline-flex">
             {t.nav.start}
           </Link>
 
@@ -75,7 +75,7 @@ export default function Navbar() {
             onClick={() => setOpen((v) => !v)}
             aria-label={open ? t.nav.closeMenu : t.nav.openMenu}
             aria-expanded={open}
-            className="icon-button lg:hidden"
+            className="icon-button xl:hidden"
           >
             <svg
               viewBox="0 0 24 24"
@@ -95,7 +95,7 @@ export default function Navbar() {
       </div>
 
       {open && (
-        <div className="border-t border-ink-100 bg-canvas lg:hidden">
+        <div className="border-t border-ink-100 bg-canvas xl:hidden">
           <div className="container-page flex flex-col gap-1 py-4">
             {links.map((link) => (
               <NavLink

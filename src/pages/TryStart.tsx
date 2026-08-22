@@ -114,7 +114,7 @@ export default function TryStart() {
                 {template.name}
               </h2>
               <p className="mt-1 text-sm text-ink-600">{template.tagline}</p>
-              <div className="mt-4 flex items-center gap-2">
+              <div className="mt-4 flex flex-wrap items-center gap-2">
                 <button
                   type="button"
                   className="btn-primary"

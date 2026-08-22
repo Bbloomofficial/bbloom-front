@@ -97,6 +97,10 @@
   justify-content: center;
   gap: --spacing(2);
   border-radius: calc(infinity * 1px);
+  /* Georgian labels are long, and a pill that wraps its label onto two or
+     three lines stops reading as a button. Buttons keep their label on one
+     line; where space is tight the surrounding layout wraps instead. */
+  white-space: nowrap;
   padding-inline: --spacing(6);
   padding-block: --spacing(3);
   font-size: var(--text-sm);
