@@ -12,6 +12,17 @@ export default defineConfig({
       "/api": {
         target: process.env.VITE_API_PROXY ?? "http://localhost:8080",
         changeOrigin: true,
+        // `changeOrigin` only rewrites Host. A deployed backend also checks
+        // Origin and rejects `localhost` outright, so pointing the proxy at a
+        // real environment needs the browser's Origin rewritten to match too.
+        configure(proxy) {
+          proxy.on("proxyReq", (proxyReq) => {
+            const target = process.env.VITE_API_PROXY;
+            if (target && proxyReq.getHeader("origin")) {
+              proxyReq.setHeader("origin", new URL(target).origin);
+            }
+          });
+        },
       },
     },
   },

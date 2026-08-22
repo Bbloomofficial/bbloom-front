@@ -131,10 +131,14 @@ export const en: Dict = {
     eyebrow: 'Pricing',
     title: 'Packages built around results',
     description:
-      'Here is what each package includes. We are still finalising our public price list — get in touch and we will put together a quote for your business.',
+      'Build your website first and pay when you want it online. Every package below is a monthly hosting plan — you can edit your site for free until you are happy with it.',
     mostPopular: 'Most popular',
-    pricePending: 'Pricing coming soon',
-    note: 'Your advertising budget is separate and paid directly to Meta. Contact us for a quote tailored to your business.',
+    perMonth: 'per month',
+    perYear: 'per year',
+    signUp: 'Get started',
+    loading: 'Loading plans…',
+    loadFailed: 'We could not load the plans just now. Please try again shortly.',
+    note: 'Your advertising budget is separate and paid directly to Meta. Contact us if you would like us to build the site for you.',
   },
 
   templatesPage: {

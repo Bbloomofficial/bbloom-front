@@ -1,10 +1,14 @@
-import { NavLink } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
 import type { ReactNode } from "react";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import LanguageSwitcher from "../../components/LanguageSwitcher";
 import ThemeToggle from "../../components/ThemeToggle";
 import { useI18n } from "../../i18n";
-import { useSession } from "../auth";
+import type { AccountSite } from "../api/types";
+import { sitesOf, useSession } from "../auth";
 import { dashboardStrings } from "../strings";
+import { SiteStatusBadge } from "./Badges";
+import VerifyBanner from "./VerifyBanner";
 
 function navClass({ isActive }: { isActive: boolean }) {
   return `rounded-xl px-3 py-2 text-sm font-semibold transition ${
@@ -14,50 +18,185 @@ function navClass({ isActive }: { isActive: boolean }) {
   }`;
 }
 
-export default function Layout({ children }: { children: ReactNode }) {
+function initial(name: string) {
+  return name.trim().charAt(0).toUpperCase() || "b";
+}
+
+/**
+ * The switcher is the whole difference between "your website" and "your
+ * account": one login can now hold sites in different roles, so the site being
+ * worked on has to be a visible, changeable thing rather than an assumption.
+ */
+function SiteSwitcher({ active }: { active: AccountSite | null }) {
+  const { locale } = useI18n();
+  const t = dashboardStrings(locale);
+  const { user } = useSession();
+  const sites = sitesOf(user);
+  const [open, setOpen] = useState(false);
+  const wrap = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    function onDown(event: MouseEvent) {
+      if (!wrap.current?.contains(event.target as Node)) setOpen(false);
+    }
+    document.addEventListener("mousedown", onDown);
+    return () => document.removeEventListener("mousedown", onDown);
+  }, [open]);
+
+  const label = active?.businessName ?? t.nav.sites;
+
+  return (
+    <div className="relative min-w-0" ref={wrap}>
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        aria-haspopup="menu"
+        aria-expanded={open}
+        className="flex min-w-0 items-center gap-3 rounded-2xl px-2 py-1.5 text-start transition hover:bg-ink-50"
+      >
+        <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-bloom-500 to-bloom-700 text-sm font-extrabold text-white shadow-lg shadow-bloom-600/25">
+          {initial(label)}
+        </span>
+        <span className="min-w-0">
+          <span className="block truncate text-sm font-bold text-ink-900">
+            {label}
+          </span>
+          <span className="block truncate text-xs text-ink-400" dir="ltr">
+            {active?.primaryDomain ?? active?.slug ?? user.email}
+          </span>
+        </span>
+        <svg
+          viewBox="0 0 20 20"
+          className="h-4 w-4 shrink-0 text-ink-400"
+          fill="currentColor"
+          aria-hidden="true"
+        >
+          <path d="M5.3 7.3a1 1 0 0 1 1.4 0L10 10.6l3.3-3.3a1 1 0 1 1 1.4 1.4l-4 4a1 1 0 0 1-1.4 0l-4-4a1 1 0 0 1 0-1.4Z" />
+        </svg>
+      </button>
+
+      {open && (
+        <div
+          role="menu"
+          className="absolute start-0 top-full z-50 mt-2 w-72 overflow-hidden rounded-2xl border border-ink-100 bg-surface p-1.5 shadow-xl shadow-ink-900/10"
+        >
+          <p className="px-3 pb-1 pt-2 text-xs font-bold uppercase tracking-wide text-ink-400">
+            {t.sites.switcher}
+          </p>
+          {sites.map((site) => (
+            <Link
+              key={site.id}
+              to={`/dashboard/s/${site.id}`}
+              onClick={() => setOpen(false)}
+              className={`flex items-center gap-2 rounded-xl px-3 py-2 text-sm transition hover:bg-ink-50 ${
+                site.id === active?.id ? "bg-tint" : ""
+              }`}
+            >
+              <span className="min-w-0 flex-1">
+                <span className="block truncate font-semibold text-ink-900">
+                  {site.businessName}
+                </span>
+                <span className="block truncate text-xs text-ink-400" dir="ltr">
+                  {site.slug}
+                </span>
+              </span>
+              <SiteStatusBadge status={site.status} />
+            </Link>
+          ))}
+          <Link
+            to="/dashboard/new"
+            onClick={() => setOpen(false)}
+            className="mt-1 block rounded-xl px-3 py-2 text-sm font-semibold text-tint-fg transition hover:bg-ink-50"
+          >
+            + {t.sites.addAnother}
+          </Link>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default function Layout({
+  children,
+  site,
+}: {
+  children: ReactNode;
+  /** Absent on the account-level screens, which are not about one website. */
+  site?: AccountSite | null;
+}) {
   const { locale } = useI18n();
   const t = dashboardStrings(locale);
   const { user, signOut } = useSession();
+  const navigate = useNavigate();
+  const active = site ?? null;
+
+  const links = active
+    ? [
+        { to: `/dashboard/s/${active.id}`, label: t.nav.overview, end: true },
+        { to: `/dashboard/s/${active.id}/page`, label: t.nav.page, end: false },
+        { to: `/dashboard/s/${active.id}/inbox`, label: t.nav.inbox, end: false },
+        {
+          to: `/dashboard/s/${active.id}/billing`,
+          label: t.nav.billing,
+          end: false,
+        },
+        // Listing members is owner-only on the backend, so offering an editor
+        // the tab would only take them to a refusal. Billing stays visible:
+        // why the site is offline is not an owner-only fact.
+        ...(active.role === "SITE_OWNER"
+          ? [
+              {
+                to: `/dashboard/s/${active.id}/team`,
+                label: t.nav.team,
+                end: false,
+              },
+            ]
+          : []),
+      ]
+    : [
+        { to: "/dashboard", label: t.nav.sites, end: true },
+        { to: "/dashboard/account", label: t.nav.account, end: false },
+      ];
+
+  const nav = (
+    <>
+      {links.map((link) => (
+        <NavLink key={link.to} to={link.to} end={link.end} className={navClass}>
+          {link.label}
+        </NavLink>
+      ))}
+    </>
+  );
 
   return (
     <div className="flex min-h-screen flex-col bg-canvas">
       <header className="sticky top-0 z-40 border-b border-ink-100 bg-surface/90 backdrop-blur">
         <div className="container-page flex h-16 items-center gap-3">
-          <div className="flex min-w-0 items-center gap-3">
-            <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-bloom-500 to-bloom-700 text-sm font-extrabold text-white shadow-lg shadow-bloom-600/25">
-              {user.businessName.trim().charAt(0).toUpperCase() || "b"}
-            </span>
-            <span className="min-w-0">
-              <span className="block truncate text-sm font-bold text-ink-900">
-                {user.businessName}
-              </span>
-              <span className="block truncate text-xs text-ink-400">
-                {user.siteSlug}.bbloom.co
-              </span>
-            </span>
-          </div>
+          <SiteSwitcher active={active} />
 
-          <nav className="ms-2 hidden items-center gap-1 sm:flex">
-            <NavLink to="/dashboard" end className={navClass}>
-              {t.nav.overview}
-            </NavLink>
-            <NavLink to="/dashboard/page" className={navClass}>
-              {t.nav.page}
-            </NavLink>
-            <NavLink to="/dashboard/inbox" className={navClass}>
-              {t.nav.inbox}
-            </NavLink>
-          </nav>
+          <nav className="ms-2 hidden items-center gap-1 lg:flex">{nav}</nav>
 
           <div className="ms-auto flex items-center gap-2">
-            <a
-              href={`/site/${user.siteSlug}`}
-              target="_blank"
-              rel="noreferrer"
+            {/* `publicUrl` is the site's real address; guessing it from the
+                slug went wrong the moment custom domains existed. */}
+            {active && (
+              <a
+                href={active.publicUrl ?? `/site/${active.slug}`}
+                target="_blank"
+                rel="noreferrer"
+                className="hidden rounded-xl border border-ink-100 bg-surface px-3 py-2 text-sm font-semibold text-ink-600 transition hover:border-bloom-300 hover:text-bloom-600 md:inline-flex"
+              >
+                {t.viewSite}
+              </a>
+            )}
+            <button
+              type="button"
+              onClick={() => navigate("/dashboard/account")}
               className="hidden rounded-xl border border-ink-100 bg-surface px-3 py-2 text-sm font-semibold text-ink-600 transition hover:border-bloom-300 hover:text-bloom-600 md:inline-flex"
             >
-              {t.viewSite}
-            </a>
+              {t.nav.account}
+            </button>
             <LanguageSwitcher />
             <ThemeToggle />
             <button
@@ -70,20 +209,15 @@ export default function Layout({ children }: { children: ReactNode }) {
           </div>
         </div>
 
-        <nav className="container-page flex items-center gap-1 border-t border-ink-100 py-2 sm:hidden">
-          <NavLink to="/dashboard" end className={navClass}>
-            {t.nav.overview}
-          </NavLink>
-          <NavLink to="/dashboard/page" className={navClass}>
-            {t.nav.page}
-          </NavLink>
-          <NavLink to="/dashboard/inbox" className={navClass}>
-            {t.nav.inbox}
-          </NavLink>
+        <nav className="container-page flex flex-wrap items-center gap-1 border-t border-ink-100 py-2 lg:hidden">
+          {nav}
         </nav>
       </header>
 
-      <main className="container-page flex-1 py-8 sm:py-10">{children}</main>
+      <main className="container-page flex-1 space-y-6 py-8 sm:py-10">
+        <VerifyBanner />
+        {children}
+      </main>
 
       <footer className="border-t border-ink-100 py-6">
         <div className="container-page flex flex-wrap items-center justify-between gap-3 text-xs text-ink-400">

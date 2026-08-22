@@ -9,6 +9,7 @@ import { useResource } from "../hooks";
 import { dashboardStrings, formatDateTime } from "../strings";
 import { StatusBadge, TypeBadge } from "../components/Badges";
 import EnquiryDetail from "../components/EnquiryDetail";
+import { useActiveSite } from "../site";
 
 const PAGE_SIZE = 20;
 
@@ -53,7 +54,8 @@ function FilterPills({
 export default function Inbox() {
   const { locale } = useI18n();
   const t = dashboardStrings(locale);
-  const { token, user } = useSession();
+  const { token } = useSession();
+  const siteId = useActiveSite().id;
 
   // Filters live in the URL so the overview can deep-link into a filtered view
   // and a client can bookmark or share one.
@@ -65,13 +67,13 @@ export default function Inbox() {
 
   const list = useResource(
     () =>
-      fetchEnquiries(token, user.siteId, {
+      fetchEnquiries(token, siteId, {
         type: type || undefined,
         status: status || undefined,
         page,
         size: PAGE_SIZE,
       }),
-    [token, user.siteId, type, status, page],
+    [token, siteId, type, status, page],
   );
 
   // Patched rows are kept locally so the list reflects a status change without
