@@ -90,10 +90,10 @@ const en: TryStrings = {
   saveCta: "Save my website",
   saveTitle: "Create your account to keep it",
   saveBody:
-    "Your website goes online straight away, free, at a bbloom.ge address.",
+    "Your work is kept on your account, free, on a bbloom.ge address.",
   saveSignedInTitle: "Save this website",
   saveSignedInBody:
-    "It will be added to {email} as a new website, free, at a bbloom.ge address.",
+    "It will be added to {email} as a new website, free, on a bbloom.ge address.",
   saveConfirm: "Save and publish",
   useAnother: "Use a different account",
   fullName: "Your name",
@@ -151,7 +151,7 @@ const ka: TryStrings = {
   saveCta: "ვებგვერდის შენახვა",
   saveTitle: "შესანახად შექმენით ანგარიში",
   saveBody:
-    "ვებგვერდი მაშინვე გამოქვეყნდება, უფასოდ, bbloom.ge მისამართზე.",
+    "თქვენი ნამუშევარი შეინახება თქვენს ანგარიშზე, უფასოდ, bbloom.ge მისამართზე.",
   saveSignedInTitle: "შეინახეთ ეს ვებგვერდი",
   saveSignedInBody:
     "დაემატება {email}-ს როგორც ახალი ვებგვერდი, უფასოდ, bbloom.ge მისამართზე.",
