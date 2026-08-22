@@ -135,7 +135,7 @@ export function UpgradePrompt({ show }: { show: boolean }) {
 
           <div className="site-upgrade-actions">
             <a
-              href={`${base}/`}
+              href={`${base}/try`}
               className="site-btn site-upgrade-cta-primary"
               data-tone="primary"
             >
