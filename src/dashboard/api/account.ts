@@ -4,6 +4,7 @@ import type {
   AccountSite,
   CheckoutResponse,
   CreateSiteRequest,
+  EmailLanguage,
   MemberRole,
   SiteDetail,
   SiteLoginResponse,
@@ -39,6 +40,14 @@ export function registerAccount(body: {
   email: string;
   fullName: string;
   password: string;
+  /**
+   * Which language to write the confirmation email in. Optional on the wire so
+   * an older backend simply ignores it, but we always send it: the account has
+   * no stored preference yet at the moment it is created, and guessing from an
+   * IP address or an `Accept-Language` header is worse than reading the
+   * language the client is visibly using right now.
+   */
+  language?: EmailLanguage;
 }): Promise<SiteLoginResponse> {
   return request<SiteLoginResponse>("/account/register", {
     method: "POST",
@@ -76,15 +85,20 @@ export function changeAccountPassword(
 }
 
 /**
- * Issues a fresh confirmation token. The response currently carries the token
- * itself because email delivery is not wired up yet — that is temporary, and no
- * screen may rely on being able to read it.
+ * Sends a fresh confirmation email — one message carrying both a short code and
+ * a link, so it can be finished either by typing or by tapping.
+ *
+ * The language travels with the request rather than being read from the stored
+ * preference, because switching the panel to English is the clearest possible
+ * statement of which language the next email should be in.
  */
 export function requestVerification(
   token: string,
+  language?: EmailLanguage,
 ): Promise<VerificationTicket> {
   return authed<VerificationTicket>(token, "/account/verification", {
     method: "POST",
+    body: JSON.stringify(language ? { language } : {}),
   });
 }
 
@@ -98,6 +112,25 @@ export function confirmVerification(
   return request<AccountProfile>("/account/verification/confirm", {
     method: "POST",
     body: JSON.stringify({ token: verificationToken }),
+  });
+}
+
+/**
+ * The typed-code half of the same endpoint, and unauthenticated for a second
+ * reason beyond the link's: someone who reads mail on their phone and signed up
+ * on a laptop has the code in one place and the session in another. Requiring a
+ * token here would mean the code only worked on the device that asked for it,
+ * which defeats the point of having a code at all.
+ *
+ * The email is needed because there is no session to identify the account.
+ */
+export function confirmVerificationCode(
+  email: string,
+  code: string,
+): Promise<AccountProfile> {
+  return request<AccountProfile>("/account/verification/confirm", {
+    method: "POST",
+    body: JSON.stringify({ email, code: code.trim() }),
   });
 }
 

@@ -160,9 +160,23 @@ export type SiteMember = {
 export type VerificationTicket = {
   email: string;
   expiresAt?: string;
+  /** Legacy name for `resendAvailableAt`; both are read. */
   retryAfter?: string;
+  resendAvailableAt?: string;
+  /**
+   * Only present while mail delivery was unwired. Never render it: once the
+   * backend actually sends the email this field goes away, and a screen that
+   * depended on it would break silently.
+   */
   token?: string;
 };
+
+/**
+ * The language an email should be written in. Sent explicitly on every call
+ * that causes mail to leave the building, because the account's stored
+ * preference cannot know that the client just switched the panel to English.
+ */
+export type EmailLanguage = "ka" | "en";
 
 export type CreateSiteRequest = {
   businessName: string;

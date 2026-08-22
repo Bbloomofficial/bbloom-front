@@ -9,7 +9,7 @@ import {
 import type { ReactNode } from "react";
 import { ApiError } from "../api/http";
 import { fetchAccount, loginAccount, registerAccount } from "./api/account";
-import type { AccountProfile, AccountSite } from "./api/types";
+import type { AccountProfile, AccountSite, EmailLanguage } from "./api/types";
 
 /**
  * The client session. It belongs to an *account*, not to a website: one account
@@ -102,6 +102,7 @@ type AuthValue = {
     email: string;
     fullName: string;
     password: string;
+    language?: EmailLanguage;
   }) => Promise<void>;
   signOut: () => void;
   /** Re-reads the profile; the site list moves under several flows. */
@@ -172,9 +173,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   );
 
   // Registration answers with a session, so a new client goes straight into the
-  // panel instead of being bounced to a login form they just filled in.
+  // panel instead of being bounced to a login form they just filled in. The
+  // panel then asks for the emailed code — which is a prompt inside a working
+  // account, not a gate in front of one.
   const signUp = useCallback(
-    async (input: { email: string; fullName: string; password: string }) => {
+    async (input: {
+      email: string;
+      fullName: string;
+      password: string;
+      language?: EmailLanguage;
+    }) => {
       start(await registerAccount(input));
     },
     [start],

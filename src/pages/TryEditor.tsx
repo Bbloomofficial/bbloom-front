@@ -398,6 +398,7 @@ export default function TryEditor() {
               fullName: String(data.get("fullName") ?? ""),
               email: String(data.get("email") ?? ""),
               password: String(data.get("password") ?? ""),
+              language: locale,
             })
           : await loginAccount(
               String(data.get("email") ?? ""),

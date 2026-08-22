@@ -44,7 +44,16 @@ export default function Register() {
     try {
       // Registering signs them in, so there is nowhere to navigate to: the
       // shell re-renders into the panel as soon as the session lands.
-      await signUp({ email: email.trim(), fullName: fullName.trim(), password });
+      //
+      // `language` decides which language the confirmation email is written in.
+      // The panel's current language is the best evidence we have, and it is
+      // better evidence than anything the server could infer.
+      await signUp({
+        email: email.trim(),
+        fullName: fullName.trim(),
+        password,
+        language: locale,
+      });
     } catch (caught) {
       // A duplicate email or a password the backend rejects both come back
       // with a detail worth reading, so they are shown rather than flattened.

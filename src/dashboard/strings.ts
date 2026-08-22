@@ -90,11 +90,25 @@ export type DashboardStrings = {
     bannerTitle: string;
     bannerBody: string;
     resend: string;
+    resendCode: string;
     resending: string;
     resent: string;
     resendFailed: string;
     resendWait: (seconds: number) => string;
     resendTooSoon: string;
+    codeLabel: string;
+    codeDigit: (position: number) => string;
+    codeSubmit: string;
+    codeChecking: string;
+    codeWrong: string;
+    codeExpired: string;
+    codeTooManyAttempts: string;
+    codeFailed: string;
+    codeSentTo: string;
+    linkOnly: string;
+    pageTitle: string;
+    pageBody: string;
+    pageNoEmail: string;
     pageChecking: string;
     pageSuccessTitle: string;
     pageSuccessBody: string;
@@ -362,13 +376,31 @@ const en: DashboardStrings = {
   verify: {
     bannerTitle: "Confirm your email address",
     bannerBody:
-      "It only takes a moment. Until you do, you can edit everything — you just cannot put a website online.",
-    resend: "Send the link again",
+      "We sent you a six-digit code. Until you enter it you can edit everything — you just cannot put a website online.",
+    resend: "Send the email again",
+    resendCode: "Send a new code",
     resending: "Sending…",
     resent: "Sent. Check your inbox.",
     resendFailed: "We could not send it. Try again shortly.",
     resendWait: (seconds) => `Send again in ${seconds}s`,
     resendTooSoon: "We just sent one. Give it a moment.",
+    codeLabel: "Enter the six-digit code",
+    codeDigit: (position) => `Digit ${position}`,
+    codeSubmit: "Confirm",
+    codeChecking: "Checking…",
+    codeWrong: "That code is not right. Check it and try again.",
+    codeExpired: "That code has expired. Send yourself a new one.",
+    codeTooManyAttempts:
+      "Too many attempts. Send yourself a new code and try again.",
+    codeFailed: "We could not check that code. Try again shortly.",
+    codeSentTo: "We sent a code to",
+    linkOnly:
+      "Open the link in the email we sent you to confirm your address.",
+    pageTitle: "Confirm your email address",
+    pageBody:
+      "Enter the six-digit code from the email, or open the link it contains.",
+    pageNoEmail:
+      "Sign in and we will send you a new confirmation email.",
     pageChecking: "Confirming your email…",
     pageSuccessTitle: "Your email is confirmed",
     pageSuccessBody: "That's the last thing between you and a website online.",
@@ -680,13 +712,30 @@ const ka: DashboardStrings = {
   verify: {
     bannerTitle: "დაადასტურეთ ელფოსტა",
     bannerBody:
-      "ერთი წუთის საქმეა. მანამდე ყველაფრის რედაქტირება შეგიძლიათ — უბრალოდ ვებგვერდს ვერ გამოაქვეყნებთ.",
-    resend: "ბმულის ხელახლა გაგზავნა",
+      "გამოგიგზავნეთ ექვსნიშნა კოდი. მის შეყვანამდე ყველაფრის რედაქტირება შეგიძლიათ — უბრალოდ ვებგვერდს ვერ გამოაქვეყნებთ.",
+    resend: "წერილის ხელახლა გაგზავნა",
+    resendCode: "ახალი კოდის გამოგზავნა",
     resending: "იგზავნება…",
     resent: "გაიგზავნა. შეამოწმეთ ელფოსტა.",
     resendFailed: "ვერ გავაგზავნეთ. სცადეთ ცოტა ხანში.",
     resendWait: (seconds) => `ხელახლა გაგზავნა ${seconds} წმ-ში`,
     resendTooSoon: "ახლახან გავგზავნეთ. მოიცადეთ ცოტა.",
+    codeLabel: "შეიყვანეთ ექვსნიშნა კოდი",
+    codeDigit: (position) => `ციფრი ${position}`,
+    codeSubmit: "დადასტურება",
+    codeChecking: "მოწმდება…",
+    codeWrong: "კოდი არასწორია. გადაამოწმეთ და სცადეთ ხელახლა.",
+    codeExpired: "კოდს ვადა გაუვიდა. გამოიგზავნეთ ახალი.",
+    codeTooManyAttempts:
+      "ცდების რაოდენობა ამოიწურა. გამოიგზავნეთ ახალი კოდი და სცადეთ ხელახლა.",
+    codeFailed: "კოდი ვერ შევამოწმეთ. სცადეთ ცოტა ხანში.",
+    codeSentTo: "კოდი გამოგზავნილია მისამართზე",
+    linkOnly:
+      "დასადასტურებლად გახსენით ბმული, რომელიც ელფოსტაზე გამოგიგზავნეთ.",
+    pageTitle: "დაადასტურეთ ელფოსტა",
+    pageBody:
+      "შეიყვანეთ ექვსნიშნა კოდი წერილიდან ან გახსენით მასში მითითებული ბმული.",
+    pageNoEmail: "შედით ანგარიშში და ახალ წერილს გამოგიგზავნით.",
     pageChecking: "მიმდინარეობს ელფოსტის დადასტურება…",
     pageSuccessTitle: "ელფოსტა დადასტურებულია",
     pageSuccessBody: "ეს იყო უკანასკნელი ნაბიჯი ვებგვერდის გამოქვეყნებამდე.",
