@@ -7,6 +7,7 @@ import { ENQUIRY_STATUSES } from "../api/types";
 import type { Enquiry } from "../api/types";
 import { dashboardStrings, formatDate, formatDateTime } from "../strings";
 import { StatusBadge, TypeBadge } from "./Badges";
+import { useActiveSite } from "../site";
 
 function Field({ label, children }: { label: string; children: ReactNode }) {
   return (
@@ -35,7 +36,8 @@ export default function EnquiryDetail({
 }) {
   const { locale } = useI18n();
   const t = dashboardStrings(locale);
-  const { token, user, handleError } = useSession();
+  const { token, handleError } = useSession();
+  const site = useActiveSite();
 
   const [note, setNote] = useState(enquiry.internalNote ?? "");
   const [saving, setSaving] = useState<"status" | "note" | null>(null);
@@ -69,7 +71,7 @@ export default function EnquiryDetail({
     try {
       const updated = await updateEnquiry(
         token,
-        user.siteId,
+        site.id,
         enquiry.id,
         changes,
       );
@@ -251,7 +253,7 @@ export default function EnquiryDetail({
       {enquiry.email && (
         <a
           href={`mailto:${enquiry.email}?subject=${encodeURIComponent(
-            enquiry.subject ?? user.businessName,
+            enquiry.subject ?? site.businessName,
           )}`}
           className="btn-primary w-full"
         >

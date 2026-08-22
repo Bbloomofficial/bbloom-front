@@ -8,12 +8,20 @@ import {
 } from "react";
 import type { ReactNode } from "react";
 import { ApiError } from "../api/http";
-import { fetchProfile, login as loginRequest } from "./api/client";
-import type { SiteUserProfile } from "./api/types";
+import { fetchAccount, loginAccount, registerAccount } from "./api/account";
+import type { AccountProfile, AccountSite } from "./api/types";
 
+/**
+ * The client session. It belongs to an *account*, not to a website: one account
+ * can own several sites and hold a different role on each, and a freshly
+ * registered account owns none at all.
+ *
+ * The storage key is unchanged on purpose, so clients who were signed in before
+ * this shipped stay signed in through the deploy.
+ */
 const STORAGE_KEY = "bbloom:site-session";
 
-type StoredSession = { token: string; expiresAt: string; user: SiteUserProfile };
+type StoredSession = { token: string; expiresAt: string; user: AccountProfile };
 
 function readSession(): StoredSession | null {
   if (typeof window === "undefined") return null;
@@ -21,8 +29,9 @@ function readSession(): StoredSession | null {
   if (!raw) return null;
   try {
     const session = JSON.parse(raw) as StoredSession;
-    if (!session?.token || !session.user?.siteId) return null;
-    // A token past its expiry is worth nothing; drop it before any request.
+    // An account with no website is a legitimate state — the only thing that
+    // makes a stored session worthless is a missing or expired token.
+    if (!session?.token || !session.user?.id) return null;
     if (session.expiresAt && Date.parse(session.expiresAt) < Date.now()) {
       window.localStorage.removeItem(STORAGE_KEY);
       return null;
@@ -33,19 +42,38 @@ function readSession(): StoredSession | null {
   }
 }
 
+function writeSession(session: StoredSession) {
+  window.localStorage.setItem(STORAGE_KEY, JSON.stringify(session));
+}
+
 /** Reads the persisted token without mounting the provider (used by the preview frame). */
 export function readStoredToken(): string | null {
   return readSession()?.token ?? null;
 }
 
+/**
+ * A session restored from before this release predates `sites`, and a failed
+ * revalidation can leave us on that older copy, so the list is never assumed.
+ */
+export function sitesOf(user: AccountProfile | null): AccountSite[] {
+  return user?.sites ?? [];
+}
+
 type AuthValue = {
   token: string | null;
-  user: SiteUserProfile | null;
+  user: AccountProfile | null;
   /** True until the stored session has been checked against the backend. */
   restoring: boolean;
   signIn: (email: string, password: string) => Promise<void>;
+  signUp: (input: {
+    email: string;
+    fullName: string;
+    password: string;
+  }) => Promise<void>;
   signOut: () => void;
-  /** Signs out on an expired or rejected token, otherwise rethrows. */
+  /** Re-reads the profile; the site list moves under several flows. */
+  refresh: () => Promise<AccountProfile | null>;
+  /** Signs out on a rejected token, otherwise does nothing. */
   handleError: (error: unknown) => void;
 };
 
@@ -62,15 +90,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   // Revalidate a restored token once, so a revoked or expired session lands on
-  // the login screen rather than on a dashboard full of failed requests.
+  // the login screen rather than on a panel full of failed requests.
   useEffect(() => {
     if (!session || !restoring) return;
     let cancelled = false;
 
-    fetchProfile(session.token)
+    fetchAccount(session.token)
       .then((user) => {
         if (cancelled) return;
-        setSession((current) => (current ? { ...current, user } : current));
+        setSession((current) => {
+          if (!current) return current;
+          const next = { ...current, user };
+          writeSession(next);
+          return next;
+        });
         setRestoring(false);
       })
       .catch((error: unknown) => {
@@ -84,26 +117,60 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
   }, [session, restoring, signOut]);
 
-  const signIn = useCallback(async (email: string, password: string) => {
-    const response = await loginRequest(email, password);
-    const next: StoredSession = {
-      token: response.token,
-      expiresAt: response.expiresAt,
-      user: response.user,
-    };
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-    setSession(next);
-    setRestoring(false);
-  }, []);
+  const start = useCallback(
+    (response: { token: string; expiresAt: string; user: AccountProfile }) => {
+      const next: StoredSession = {
+        token: response.token,
+        expiresAt: response.expiresAt,
+        user: response.user,
+      };
+      writeSession(next);
+      setSession(next);
+      setRestoring(false);
+    },
+    [],
+  );
+
+  const signIn = useCallback(
+    async (email: string, password: string) => {
+      start(await loginAccount(email, password));
+    },
+    [start],
+  );
+
+  // Registration answers with a session, so a new client goes straight into the
+  // panel instead of being bounced to a login form they just filled in.
+  const signUp = useCallback(
+    async (input: { email: string; fullName: string; password: string }) => {
+      start(await registerAccount(input));
+    },
+    [start],
+  );
+
+  const refresh = useCallback(async () => {
+    const token = session?.token;
+    if (!token) return null;
+    try {
+      const user = await fetchAccount(token);
+      setSession((current) => {
+        if (!current) return current;
+        const next = { ...current, user };
+        writeSession(next);
+        return next;
+      });
+      return user;
+    } catch (error) {
+      if (error instanceof ApiError && error.status === 401) signOut();
+      return null;
+    }
+  }, [session?.token, signOut]);
 
   const handleError = useCallback(
     (error: unknown) => {
-      if (
-        error instanceof ApiError &&
-        (error.status === 401 || error.status === 403)
-      ) {
-        signOut();
-      }
+      // A 403 is no longer proof of a dead session: an editor who reaches an
+      // owner-only endpoint gets one too, and signing them out for it would be
+      // absurd. Only an outright rejected token ends the session.
+      if (error instanceof ApiError && error.status === 401) signOut();
     },
     [signOut],
   );
@@ -114,10 +181,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       user: session?.user ?? null,
       restoring,
       signIn,
+      signUp,
       signOut,
+      refresh,
       handleError,
     }),
-    [session, restoring, signIn, signOut, handleError],
+    [session, restoring, signIn, signUp, signOut, refresh, handleError],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -92,7 +92,11 @@ export type Dict = {
     title: string
     description: string
     mostPopular: string
-    pricePending: string
+    perMonth: string
+    perYear: string
+    signUp: string
+    loading: string
+    loadFailed: string
     note: string
   }
   templatesPage: {

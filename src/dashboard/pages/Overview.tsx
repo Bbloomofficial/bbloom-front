@@ -13,7 +13,9 @@ import { ENQUIRY_TYPES } from "../api/types";
 import type { SiteDetail } from "../api/types";
 import { useResource } from "../hooks";
 import { dashboardStrings, formatDate, formatDateTime } from "../strings";
-import { StatusBadge, TypeBadge } from "../components/Badges";
+import { SiteStatusBadge, StatusBadge, TypeBadge } from "../components/Badges";
+import { useActiveSite, useIsOwner } from "../site";
+import { canPublish, publishBlocks, publishErrorMessage } from "../gate";
 
 /** `MODERN` / `shop-modern` read better as words in a client-facing UI. */
 function titleCase(value: string) {
@@ -51,19 +53,22 @@ function Row({ label, value }: { label: string; value: ReactNode }) {
 export default function Overview() {
   const { locale } = useI18n();
   const t = dashboardStrings(locale);
-  const { token, user, handleError } = useSession();
+  const { token, user, handleError, refresh } = useSession();
+  const active = useActiveSite();
+  const isOwner = useIsOwner();
+  const siteId = active.id;
 
   const site = useResource<SiteDetail>(
-    () => fetchSiteDetail(token, user.siteId),
-    [token, user.siteId],
+    () => fetchSiteDetail(token, siteId),
+    [token, siteId],
   );
   const stats = useResource(
-    () => fetchEnquiryStats(token, user.siteId),
-    [token, user.siteId],
+    () => fetchEnquiryStats(token, siteId),
+    [token, siteId],
   );
   const recent = useResource(
-    () => fetchEnquiries(token, user.siteId, { size: 5 }),
-    [token, user.siteId],
+    () => fetchEnquiries(token, siteId, { size: 5 }),
+    [token, siteId],
   );
 
   const [publishing, setPublishing] = useState(false);
@@ -75,27 +80,35 @@ export default function Overview() {
       setPublishing(true);
       setPublishError(null);
       try {
-        await setPublished(token, user.siteId, next);
+        await setPublished(token, siteId, next);
         reloadSite();
+        // Publishing changes the site's status, which the switcher and the
+        // site list read from the profile rather than from this screen.
+        await refresh();
       } catch (error) {
         handleError(error);
-        setPublishError((error as Error).message);
+        // A refusal is a 409 with an English, deliberately actionable message.
+        // Known reasons are re-said in the client's own language.
+        setPublishError(
+          publishErrorMessage(error, active, user.emailVerified, t.gate.blocked),
+        );
       } finally {
         setPublishing(false);
       }
     },
-    [token, user.siteId, handleError, reloadSite],
+    [token, siteId, handleError, reloadSite, refresh, active, user.emailVerified, t],
   );
 
   const detail = site.data;
-  const isOwner = user.role === "SITE_OWNER";
   const published = detail?.status === "PUBLISHED";
+  const blocks = publishBlocks(active, user.emailVerified);
+  const publishable = canPublish(active, user.emailVerified);
 
   return (
     <div className="space-y-8">
       <div>
         <h1 className="text-2xl font-extrabold tracking-tight text-ink-900 sm:text-3xl">
-          {t.overview.greeting(user.fullName || user.businessName)}
+          {t.overview.greeting(user.fullName || active.businessName)}
         </h1>
         <p className="mt-1 text-sm text-ink-600">{t.overview.subtitle}</p>
       </div>
@@ -106,34 +119,22 @@ export default function Overview() {
             <h2 className="text-lg font-bold text-ink-900">
               {t.overview.siteTitle}
             </h2>
-            <p className="mt-1 text-sm text-ink-600">{user.businessName}</p>
+            <p className="mt-1 text-sm text-ink-600">{active.businessName}</p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
-            {detail && (
-              <span
-                className={`inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-semibold ${
-                  published
-                    ? "bg-success-soft text-success"
-                    : "bg-ink-100 text-ink-600"
-                }`}
-              >
-                <span
-                  className={`h-2 w-2 rounded-full ${published ? "bg-success" : "bg-ink-400"}`}
-                />
-                {published
-                  ? t.overview.published
-                  : (detail.status ?? "").toLowerCase()}
-              </span>
-            )}
+            {detail && <SiteStatusBadge status={detail.status} />}
             <a
-              href={`/site/${user.siteSlug}`}
+              href={active.publicUrl ?? `/site/${active.slug}`}
               target="_blank"
               rel="noreferrer"
               className="btn-secondary"
             >
               {t.viewSite}
             </a>
-            {isOwner && detail && (
+            {/* Publishing is gated on payment, so the button either works or
+                is replaced by the thing that would make it work — never a
+                button that exists only to fail. */}
+            {isOwner && detail && (published || publishable) && (
               <button
                 type="button"
                 onClick={() => void togglePublished(!published)}
@@ -149,6 +150,36 @@ export default function Overview() {
             )}
           </div>
         </div>
+
+        {!published && blocks.length > 0 && (
+          <div className="mt-5 rounded-2xl border border-ink-100 bg-canvas p-4">
+            <p className="text-sm font-bold text-ink-900">{t.gate.title}</p>
+            <ul className="mt-2 space-y-1">
+              {blocks.map((block) => (
+                <li key={block} className="text-sm text-ink-600">
+                  {t.gate.blocked[block]}
+                </li>
+              ))}
+            </ul>
+            <div className="mt-3 flex flex-wrap gap-2">
+              {blocks.some((block) => block !== "EMAIL_UNVERIFIED") &&
+                (isOwner ? (
+                  <Link
+                    to={`/dashboard/s/${siteId}/billing`}
+                    className="btn-primary"
+                  >
+                    {t.gate.choosePlan}
+                  </Link>
+                ) : (
+                  // An editor cannot buy, but telling them who can beats
+                  // leaving them with a reason and no way forward.
+                  <p className="text-sm font-semibold text-ink-600">
+                    {t.gate.askOwner}
+                  </p>
+                ))}
+            </div>
+          </div>
+        )}
 
         {publishError && (
           <p role="alert" className="mt-4 text-sm font-semibold text-danger">
@@ -248,7 +279,7 @@ export default function Overview() {
             ).map((type) => (
               <Link
                 key={type}
-                to={`/dashboard/inbox?type=${type}`}
+                to={`/dashboard/s/${siteId}/inbox?type=${type}`}
                 className="inline-flex items-center gap-2 rounded-full border border-ink-100 bg-surface px-3 py-1.5 text-xs font-semibold text-ink-600 transition hover:border-bloom-300 hover:text-bloom-600"
               >
                 {t.types[type]}
@@ -263,7 +294,7 @@ export default function Overview() {
         <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
           <h2 className="text-lg font-bold text-ink-900">{t.overview.recent}</h2>
           <Link
-            to="/dashboard/inbox"
+            to={`/dashboard/s/${siteId}/inbox`}
             className="text-sm font-semibold text-tint-fg hover:underline"
           >
             {t.overview.viewAll}
@@ -278,7 +309,7 @@ export default function Overview() {
               {recent.data.items.map((enquiry) => (
                 <li key={enquiry.id} className="border-t border-ink-100 first:border-0">
                   <Link
-                    to={`/dashboard/inbox?selected=${enquiry.id}`}
+                    to={`/dashboard/s/${siteId}/inbox?selected=${enquiry.id}`}
                     className="flex flex-wrap items-center gap-3 px-5 py-4 transition hover:bg-ink-50"
                   >
                     <span className="min-w-0 flex-1">

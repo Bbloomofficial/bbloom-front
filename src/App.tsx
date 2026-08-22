@@ -21,6 +21,7 @@ const SitePage = lazy(() => import("./site/SitePage"));
 const DashboardApp = lazy(() => import("./dashboard/DashboardApp"));
 const PreviewPage = lazy(() => import("./dashboard/editor/PreviewPage"));
 const AdminApp = lazy(() => import("./admin/AdminApp"));
+const Verify = lazy(() => import("./pages/Verify"));
 
 function Lazy({ children }: { children: ReactNode }) {
   return (
@@ -98,6 +99,17 @@ export default function App() {
       <Route path="/site/:slug/p/:productSlug" element={<Site mode="ref" />} />
       <Route path="/dashboard/*" element={<Dashboard />} />
       <Route path="/admin/*" element={<Admin />} />
+      {/* Unauthenticated on purpose — the confirmation link is opened by
+          whatever browser the mail client picks, not necessarily the one
+          holding the session. */}
+      <Route
+        path="/verify"
+        element={
+          <Lazy>
+            <Verify />
+          </Lazy>
+        }
+      />
       <Route
         path="/preview/:siteId"
         element={

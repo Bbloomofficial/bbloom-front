@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useI18n } from "../../i18n";
 import { useSession } from "../auth";
+import { useActiveSite } from "../site";
 import { useResource } from "../hooks";
 import {
   discardSections,
@@ -69,8 +70,8 @@ function Toggle<T extends string>({
 export default function Editor() {
   const { locale } = useI18n();
   const t = editorStrings(locale);
-  const { token, user, handleError } = useSession();
-  const siteId = user.siteId;
+  const { token, handleError } = useSession();
+  const siteId = useActiveSite().id;
   const uiLang: SiteLanguage = locale === "en" ? "en" : "ka";
 
   const site = useResource(
