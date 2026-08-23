@@ -40,7 +40,15 @@ export function peopleWaitingIsFloor(mail: {
  *
  *  `owedTotal` is tallied separately from the rows, so it stays exact when the
  *  list is truncated. Counting the rows is only a fallback for a backend that
- *  predates the field, where the answer can only ever be a floor. */
+ *  predates the field, where the answer can only ever be a floor.
+ *
+ *  One caveat, unreachable at our scale but silent and directional if it ever
+ *  is reached: the backend's tally saturates at 10,000 distinct recipients and
+ *  stops counting new people past that. It therefore under-states and never
+ *  over-states. Deliberately not hedged in the UI — a caveat rendered for a
+ *  number that cannot occur is a caveat an admin learns to skip, and this
+ *  screen's other hedges need to be read. If the figure is ever seen stuck at
+ *  exactly 10,000 during an incident, that is the cap and not a plateau. */
 export function peopleOwed(mail: {
   owedTotal?: number;
   unresolved?: MailFailure[];

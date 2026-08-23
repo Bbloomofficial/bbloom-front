@@ -253,6 +253,9 @@ export type MailHealth = {
    *
    * One row per person, holding their *first* failure, oldest first. An entry
    * disappears when that person receives something, not when anybody does.
+   * Because the timestamp is their first failure rather than their latest, it
+   * marks when they *started* waiting — which is what makes "longest wait"
+   * meaningful rather than a guess at when they gave up.
    *
    * Capped at 20, and evicted from the **opposite end to `recentFailures`**:
    * this list drops the *oldest* row to admit a new person, so that a stale
@@ -262,6 +265,12 @@ export type MailHealth = {
    * who have been waiting *longest*, not the ones who have just joined. An
    * admin working top-down through the visible rows is not starting with the
    * worst case; they are starting with the worst case still on the screen.
+   *
+   * Two claims live in the truncation copy and must not be collapsed into one
+   * by a future edit: the *visible* rows really are longest-wait-first, and
+   * the *missing* ones have waited longer than any of them. Both are true and
+   * they pull in opposite directions, which is precisely why the sentence
+   * cannot be shortened without becoming false.
    */
   unresolved?: MailFailure[];
   /**
