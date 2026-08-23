@@ -448,7 +448,19 @@ export default function TryEditor() {
           nothing below about 830px of viewport. A client on a 16-section
           template inside Instagram's browser had no visible field at all.
           Capping by viewport height only works where the chrome is a small
-          fraction of it, which is the desktop case and only that. */}
+          fraction of it, which is the desktop case and only that.
+
+          **Do not "fix" a cramped pane here by switching vh to dvh or svh.**
+          That is the reflex, it is wrong, and it was measured rather than
+          reasoned about. The pane is a *remainder* — viewport minus fixed
+          chrome — so it shrinks as the unit resolves smaller. dvh and svh
+          resolve to the visible height *with* the browser's bars, which is
+          smaller than vh, so on the in-app browser where this was reported
+          they would have taken the last 18 pixels to zero. The relationship
+          is monotonically increasing in the unit: vh was the most generous
+          option available and was already not enough. The fix for a
+          remainder that is too small is to stop computing it as a remainder,
+          which is what the lg: gating above does. */}
       <aside className="flex flex-col border-b border-ink-100 bg-canvas lg:max-h-screen lg:border-b-0 lg:border-r">
         <div className="flex flex-col gap-3 border-b border-ink-100 p-4">
           <div className="flex items-center justify-between gap-2">

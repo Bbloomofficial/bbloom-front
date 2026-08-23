@@ -537,7 +537,12 @@ export default function Editor() {
                   that already scrolls fights the native gesture, and it is the
                   same shape as the try-editor bug. It also has to go for the
                   sticky save bar below to engage — a short section never
-                  scrolls, so the bar would never travel with you. */}
+                  scrolls, so the bar would never travel with you.
+
+                  If this pane ever looks cramped on a phone again, do not
+                  reach for dvh or svh: they resolve smaller than vh, so on a
+                  pane sized as a remainder they make the symptom worse. The
+                  long version of that argument is in TryEditor.tsx. */}
               <div
                 ref={fieldsPaneRef}
                 className="pe-1 lg:max-h-[60vh] lg:overflow-y-auto"
