@@ -29,7 +29,7 @@
  * rather than a permanent state of affairs.
  */
 
-import { ApiError } from "./http";
+import { ApiError, type FieldLimits } from "./http";
 
 /**
  * The localised copy this module needs. Each surface owns its own dictionary —
@@ -56,6 +56,8 @@ export type ProblemStrings = {
   fieldTooLong: (max: number) => string;
   /** Text outside a length the backend insists on at both ends. */
   fieldLengthRange: (min: number, max: number) => string;
+  /** Text shorter than the backend accepts, with no upper bound worth naming. */
+  fieldTooShort: (min: number) => string;
   /** A value in the wrong shape — the web address of a site, for instance. */
   fieldPattern: string;
   /** A number that has to be larger than it is. */
@@ -79,11 +81,37 @@ export type ProblemStrings = {
 /**
  * `size must be between 8 and 72` — the limits, not the sentence. Returns null
  * rather than guessing if the shape is not the one we know.
+ *
+ * Kept only for a backend that does not yet send `fieldLimits`, and expected to
+ * stop matching the moment the backend localises its validation messages, which
+ * it intends to. That is exactly why it is no longer the primary source: the
+ * numbers would have disappeared out of this sentence on the day the rest of it
+ * finally arrived in Georgian.
  */
 function sizeLimits(raw: string): { min: number; max: number } | null {
   const match = /between (\d+) and (\d+)/.exec(raw);
   if (!match) return null;
   return { min: Number(match[1]), max: Number(match[2]) };
+}
+
+/**
+ * The sentence for a length violation, given whatever bounds we have.
+ *
+ * Either bound may be missing — the backend omits one it does not consider
+ * meaningful, so a field with only a maximum arrives with no `min` key at all —
+ * so this says only what it can stand behind, rather than naming a limit it had
+ * to invent. "At least 0 characters" is worse than saying nothing.
+ */
+function lengthMessage(limits: FieldLimits, strings: ProblemStrings): string {
+  const { min, max } = limits;
+  // A minimum of one is "not empty" wearing a different hat, and someone who
+  // left a field blank is better served by being told to fill it in.
+  const floor = min !== undefined && min > 1 ? min : undefined;
+  if (floor !== undefined && max !== undefined)
+    return strings.fieldLengthRange(floor, max);
+  if (max !== undefined) return strings.fieldTooLong(max);
+  if (floor !== undefined) return strings.fieldTooShort(floor);
+  return strings.fieldInvalid;
 }
 
 /**
@@ -98,6 +126,7 @@ function fieldMessage(
   field: string,
   raw: string,
   constraint: string | undefined,
+  limits: FieldLimits | undefined,
   strings: ProblemStrings,
 ): string {
   switch (constraint) {
@@ -118,11 +147,7 @@ function fieldMessage(
       // A password is the one length a client is asked to *reach* rather than
       // stay under, and it deserves the sentence that says so.
       if (/password/i.test(field)) return strings.fieldPasswordLength;
-      const limits = sizeLimits(raw);
-      if (!limits) return strings.fieldInvalid;
-      return limits.min > 1
-        ? strings.fieldLengthRange(limits.min, limits.max)
-        : strings.fieldTooLong(limits.max);
+      return lengthMessage(limits ?? sizeLimits(raw) ?? {}, strings);
     }
   }
 
@@ -146,7 +171,13 @@ export function describeField(
   if (!(caught instanceof ApiError)) return undefined;
   const raw = caught.fields[field];
   if (!raw) return undefined;
-  return fieldMessage(field, raw, caught.fieldCodes[field], strings);
+  return fieldMessage(
+    field,
+    raw,
+    caught.fieldCodes[field],
+    caught.fieldLimits[field],
+    strings,
+  );
 }
 
 /**
@@ -160,7 +191,13 @@ export function describeFields(
   if (!(caught instanceof ApiError)) return {};
   const out: Record<string, string> = {};
   for (const [field, message] of Object.entries(caught.fields)) {
-    out[field] = fieldMessage(field, message, caught.fieldCodes[field], strings);
+    out[field] = fieldMessage(
+      field,
+      message,
+      caught.fieldCodes[field],
+      caught.fieldLimits[field],
+      strings,
+    );
   }
   return out;
 }
@@ -205,7 +242,13 @@ export function describeProblem(
       const entries = Object.entries(caught.fields);
       if (entries.length === 1) {
         const [field, message] = entries[0];
-        return fieldMessage(field, message, caught.fieldCodes[field], strings);
+        return fieldMessage(
+          field,
+          message,
+          caught.fieldCodes[field],
+          caught.fieldLimits[field],
+          strings,
+        );
       }
       if (entries.length > 1) return strings.validation;
       // A 400 we have no code for and no fields on. The server's sentence is

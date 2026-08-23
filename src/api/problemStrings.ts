@@ -22,6 +22,7 @@ const en: ProblemStrings = {
   fieldTooLong: (max) => `This is too long — ${max} characters at most.`,
   fieldLengthRange: (min, max) =>
     `This needs to be between ${min} and ${max} characters.`,
+  fieldTooShort: (min) => `This needs at least ${min} characters.`,
   fieldPattern: "This isn't in the right format.",
   fieldNumber: "Enter a larger number.",
   credentials: "Wrong email or password.",
@@ -44,6 +45,7 @@ const ka: ProblemStrings = {
   fieldPasswordLength: "პაროლი მინიმუმ 8 სიმბოლოსგან უნდა შედგებოდეს.",
   fieldTooLong: (max) => `ძალიან გრძელია — მაქსიმუმ ${max} სიმბოლო.`,
   fieldLengthRange: (min, max) => `უნდა იყოს ${min}–${max} სიმბოლო.`,
+  fieldTooShort: (min) => `მინიმუმ ${min} სიმბოლო უნდა იყოს.`,
   fieldPattern: "ფორმატი არასწორია.",
   fieldNumber: "შეიყვანეთ უფრო დიდი რიცხვი.",
   credentials: "ელფოსტა ან პაროლი არასწორია.",

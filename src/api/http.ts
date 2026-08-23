@@ -35,6 +35,30 @@ export function assetUrl(path: string): string {
   return `${origin}${path}`;
 }
 
+export type FieldLimits = { min?: number; max?: number };
+
+/**
+ * Pulls the length bounds off a problem body, keeping only what is actually a
+ * number. This arrives over the network, so a bound that is a string, a null or
+ * missing entirely has to read as "no bound" rather than as `NaN`, which would
+ * otherwise reach a client as "at most NaN characters".
+ */
+function readFieldLimits(problem: Record<string, unknown>) {
+  const raw = problem.fieldLimits;
+  if (!raw || typeof raw !== "object") return {};
+  const out: Record<string, FieldLimits> = {};
+  for (const [field, bounds] of Object.entries(raw)) {
+    if (!bounds || typeof bounds !== "object") continue;
+    const { min, max } = bounds as Record<string, unknown>;
+    const limits: FieldLimits = {};
+    if (typeof min === "number" && Number.isFinite(min)) limits.min = min;
+    if (typeof max === "number" && Number.isFinite(max)) limits.max = max;
+    if (limits.min !== undefined || limits.max !== undefined)
+      out[field] = limits;
+  }
+  return out;
+}
+
 export class ApiError extends Error {
   readonly status: number;
   readonly fields: Record<string, string>;
@@ -57,6 +81,22 @@ export class ApiError extends Error {
    */
   readonly fieldCodes: Record<string, string>;
   /**
+   * The numbers behind a length constraint — `{ password: { min: 8, max: 72 } }`
+   * — keyed as `fields` is.
+   *
+   * These used to be read out of the digits in `size must be between 8 and 72`,
+   * for want of anywhere else to learn them. That was a fuse with a date on it:
+   * the message belongs to Bean Validation, the backend intends to localise its
+   * errors, and the day it did, the pattern would stop matching and the limit
+   * would silently vanish out of the sentence. Taken from the annotation
+   * instead, the number survives the backend changing language.
+   *
+   * A bound the backend does not consider meaningful is absent rather than
+   * present-and-default, so `min` is frequently missing. `@Size` defaults `min`
+   * to 0 and `max` to 2147483647, and no client should ever be told either.
+   */
+  readonly fieldLimits: Record<string, FieldLimits>;
+  /**
    * The rest of the problem body. Some failures carry extra facts that only
    * make sense for that failure — how many attempts remain, when a throttle
    * lifts — and inventing a typed field per case would be worse than keeping
@@ -76,6 +116,7 @@ export class ApiError extends Error {
     this.status = status;
     this.fields = fields;
     this.fieldCodes = fieldCodes;
+    this.fieldLimits = readFieldLimits(problem);
     this.problem = problem;
     const code = problem.code;
     this.code = typeof code === "string" ? code : undefined;
@@ -88,6 +129,7 @@ type ProblemDetail = {
   code?: string;
   errors?: Record<string, string> | { field: string; message: string }[];
   fieldCodes?: Record<string, string>;
+  fieldLimits?: Record<string, { min?: number; max?: number }>;
 };
 
 async function toError(response: Response): Promise<ApiError> {
