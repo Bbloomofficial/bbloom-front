@@ -32,6 +32,14 @@ type StoredSession = {
    * in memory would be forgotten in exactly the flow most people arrive by.
    */
   mail?: { at: number; sent?: boolean | null };
+  /**
+   * When the server said it would accept another confirmation email, verbatim.
+   *
+   * Separate from `mail` because it is true of the account rather than of a
+   * send we watched: signing in reports it for an email somebody else's tab
+   * triggered, or that registration sent an hour ago.
+   */
+  resendAt?: string;
 };
 
 /**
@@ -167,9 +175,11 @@ const AuthContext = createContext<AuthValue | null>(null);
  * How long the backend makes a client wait between confirmation emails.
  *
  * A mirror of a server rule, which is normally a thing to avoid — but it is
- * only ever used to grey out a button early. The server's own `resendAvailableAt`
- * overrides it the first time it disagrees, so the two cannot drift into a
- * client that lets someone press a button the server will refuse.
+ * only ever used to grey out a button early, and only when the server has not
+ * told us its own deadline. `resendAvailableAt` on the register and login
+ * responses is preferred wherever it exists, and the 429 overrides both the
+ * first time they disagree, so the two cannot drift into a client that lets
+ * someone press a button the server will refuse.
  */
 const RESEND_INTERVAL_MS = 60_000;
 
@@ -180,15 +190,32 @@ export function AuthProvider({ children }: { children: ReactNode }) {
    * When the confirmation email we know about was sent, in ms.
    *
    * Registration mails a code itself, so the resend button is refused the
-   * moment the new client arrives in the panel. The server has the real
-   * deadline but does not put it on the register response — only on the 429 —
-   * so this is a local floor derived from an event we watched happen, not a
-   * claim about server state. Getting it wrong is harmless in both directions:
-   * too short and the 429 handler sets the real figure, too long and the client
-   * waits a few extra seconds for a mail they have already been sent.
+   * moment the new client arrives in the panel. This is a local floor derived
+   * from an event we watched happen, not a claim about server state, and it is
+   * now only the fallback: the server does put `resendAvailableAt` on the
+   * register and login responses, which the comment here previously denied.
+   * Measured against production rather than assumed. Getting the floor wrong is
+   * harmless in both directions: too short and the 429 handler sets the real
+   * figure, too long and the client waits a few extra seconds for a mail they
+   * have already been sent.
    */
   const [mailedAt, setMailedAt] = useState<number | null>(
     () => readSession()?.mail?.at ?? null,
+  );
+  /**
+   * The server's own answer to "when will you accept another one", when it has
+   * given us one.
+   *
+   * Preferred over the mirror below because it is the only thing that covers
+   * signing in. Registration mails a code and then hands over a session, so a
+   * client who closes the tab and signs in ten seconds later gets a form that
+   * knows about no send at all — measured against production, the button was
+   * live and the server answered 429. The deadline is a property of the
+   * account, not of a send this tab watched, which is why signing in reports it
+   * even though signing in mails nothing.
+   */
+  const [resendAt, setResendAt] = useState<string | null>(
+    () => readSession()?.resendAt ?? null,
   );
   /**
    * Whether that send actually left. `false` is the case this exists for: the
@@ -241,6 +268,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         expiresAt: string;
         user: AccountProfile;
         mailSent?: boolean | null;
+        /**
+         * The server's own deadline for the next confirmation email. Present on
+         * both register and login — verified against production — which is what
+         * makes the local mirror below a fallback rather than the source.
+         */
+        resendAvailableAt?: string | null;
       },
       /** Whether this response is one that caused an email to be sent. */
       mailed: boolean,
@@ -256,10 +289,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         expiresAt: response.expiresAt,
         user: response.user,
         mail,
+        resendAt: response.resendAvailableAt ?? undefined,
       };
       writeSession(next);
       setSession(next);
       setMailedAt(mail?.at ?? null);
+      setResendAt(response.resendAvailableAt ?? null);
       setMailSent(mail?.sent);
       setRestoring(false);
     },
@@ -368,9 +403,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         mailedAt !== null &&
         Date.now() - mailedAt < MAIL_FACT_TTL_MS,
       resendAvailableAt:
-        mailedAt === null
+        resendAt ??
+        (mailedAt === null
           ? null
-          : new Date(mailedAt + RESEND_INTERVAL_MS).toISOString(),
+          : new Date(mailedAt + RESEND_INTERVAL_MS).toISOString()),
     }),
     [
       session,
@@ -383,6 +419,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       noteSend,
       mailedAt,
       mailSent,
+      resendAt,
     ],
   );
 

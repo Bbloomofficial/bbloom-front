@@ -96,6 +96,7 @@ export type DashboardStrings = {
     resendCode: string;
     resending: string;
     resent: string;
+    resentAgain: string;
     resendFailed: string;
     resendWait: (seconds: number) => string;
     resendTooSoon: string;
@@ -428,6 +429,8 @@ const en: DashboardStrings = {
     resendCode: "Send a new code",
     resending: "Sending…",
     resent: "Sent. Check your inbox, including spam.",
+    resentAgain:
+      "Sent again. If none of them have arrived, the problem is at our end and not with the address you typed. Write to hello@bbloom.ge and we will confirm you by hand.",
     resendFailed: "We could not send it. Try again shortly.",
     resendWait: (seconds) => `Send again in ${seconds}s`,
     resendTooSoon: "We just sent one. Give it a moment.",
@@ -802,6 +805,8 @@ const ka: DashboardStrings = {
     resendCode: "ახალი კოდის გამოგზავნა",
     resending: "იგზავნება…",
     resent: "გაიგზავნა. შეამოწმეთ ელფოსტა, სპამის საქაღალდის ჩათვლით.",
+    resentAgain:
+      "ხელახლა გაიგზავნა. თუ არცერთი წერილი არ მოვიდა, პრობლემა ჩვენს მხარესაა და არა თქვენს მისამართში. მოგვწერეთ hello@bbloom.ge-ზე და ხელით დაგადასტურებთ.",
     resendFailed: "ვერ გავაგზავნეთ. სცადეთ ცოტა ხანში.",
     resendWait: (seconds) => `ხელახლა გაგზავნა ${seconds} წმ-ში`,
     resendTooSoon: "ახლახან გავგზავნეთ. მოიცადეთ ცოტა.",

@@ -56,6 +56,7 @@ type Message =
   | { kind: "deliveryOff" }
   | { kind: "sendFailed" }
   | { kind: "resent" }
+  | { kind: "resentAgain" }
   | { kind: "server"; text: string };
 
 type Props = {
@@ -125,6 +126,8 @@ export default function VerifyCodeForm({
           return t.verify.sendFailed;
         case "resent":
           return t.verify.resent;
+        case "resentAgain":
+          return t.verify.resentAgain;
         case "server":
           return message.text;
       }
@@ -152,6 +155,33 @@ export default function VerifyCodeForm({
   // The submit is fired from a change handler, so it must not fire twice for
   // the same code while the first request is still in the air.
   const inFlight = useRef(false);
+
+  /**
+   * How many times this person has asked for another code.
+   *
+   * A real client asked three times in 28 minutes during an outage, and each
+   * time we answered with the same sentence: "Sent. Check your inbox." That
+   * reply is correct about the request and silent about the thing they were
+   * reporting, which is that the last one never arrived. Repeating it verbatim
+   * tells someone their third attempt looks, to us, exactly like their first —
+   * so the natural conclusion is that they mistyped their own address, which is
+   * the one explanation that is usually wrong and always demoralising.
+   *
+   * Asking twice is the signal. Once is ordinary impatience or a slow relay.
+   *
+   * Deliberately counts *asks* and states no total. The obvious version named
+   * how many emails had been sent, and it was measured wrong against
+   * production: registration sends one itself, but this form can only infer
+   * that from a cooldown still running when it mounts, and a client who signs
+   * in later — which is exactly what someone chasing a missing email does —
+   * mounts it with the cooldown long expired. It said "2" where the truth was
+   * 3. The count would also reset on reload and differ across devices. None of
+   * that is worth fixing, because the number was never the point: the value is
+   * acknowledging that this is not their first attempt and giving them a way
+   * out. A figure that can be wrong in three directions buys nothing and costs
+   * the credibility of the sentence carrying it.
+   */
+  const asks = useRef(0);
 
   const code = useMemo(() => digits.join(""), [digits]);
 
@@ -360,12 +390,15 @@ export default function VerifyCodeForm({
       // Absent or null is unknown and must stay optimistic; claiming a failure
       // while the send is still in flight is the same lie reversed.
       onSendResult?.(ticket.mailSent);
+      asks.current += 1;
       setNotice(
         ticket.emailDelivery === false
           ? { kind: "deliveryOff" }
           : ticket.mailSent === false
             ? { kind: "sendFailed" }
-            : { kind: "resent" },
+            : asks.current >= 2
+              ? { kind: "resentAgain" }
+              : { kind: "resent" },
       );
     } catch (caught) {
       if (caught instanceof ApiError && caught.status === 429) {
