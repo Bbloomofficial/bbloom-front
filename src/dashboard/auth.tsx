@@ -119,13 +119,40 @@ type AuthValue = {
   refresh: () => Promise<AccountProfile | null>;
   /** Signs out on a rejected token, otherwise does nothing. */
   handleError: (error: unknown) => void;
+  /**
+   * Earliest a resend should be offered, ISO, when we know a code has just
+   * been sent by something other than the resend button itself.
+   */
+  resendAvailableAt: string | null;
 };
 
 const AuthContext = createContext<AuthValue | null>(null);
 
+/**
+ * How long the backend makes a client wait between confirmation emails.
+ *
+ * A mirror of a server rule, which is normally a thing to avoid — but it is
+ * only ever used to grey out a button early. The server's own `resendAvailableAt`
+ * overrides it the first time it disagrees, so the two cannot drift into a
+ * client that lets someone press a button the server will refuse.
+ */
+const RESEND_INTERVAL_MS = 60_000;
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<StoredSession | null>(readSession);
   const [restoring, setRestoring] = useState(session !== null);
+  /**
+   * When the confirmation email we know about was sent, in ms.
+   *
+   * Registration mails a code itself, so the resend button is refused the
+   * moment the new client arrives in the panel. The server has the real
+   * deadline but does not put it on the register response — only on the 429 —
+   * so this is a local floor derived from an event we watched happen, not a
+   * claim about server state. Getting it wrong is harmless in both directions:
+   * too short and the 429 handler sets the real figure, too long and the client
+   * waits a few extra seconds for a mail they have already been sent.
+   */
+  const [mailedAt, setMailedAt] = useState<number | null>(null);
 
   const signOut = useCallback(() => {
     window.localStorage.removeItem(STORAGE_KEY);
@@ -194,6 +221,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       language?: EmailLanguage;
     }) => {
       start(await registerAccount(input));
+      setMailedAt(Date.now());
     },
     [start],
   );
@@ -236,8 +264,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       signOut,
       refresh,
       handleError,
+      resendAvailableAt:
+        mailedAt === null
+          ? null
+          : new Date(mailedAt + RESEND_INTERVAL_MS).toISOString(),
     }),
-    [session, restoring, signIn, signUp, signOut, refresh, handleError],
+    [
+      session,
+      restoring,
+      signIn,
+      signUp,
+      signOut,
+      refresh,
+      handleError,
+      mailedAt,
+    ],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

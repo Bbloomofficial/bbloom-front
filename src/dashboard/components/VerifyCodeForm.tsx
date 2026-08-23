@@ -73,6 +73,13 @@ type Props = {
   emailDelivery?: boolean;
   /** Renders on the amber banner instead of on a plain surface. */
   tone?: "surface" | "warning";
+  /**
+   * When the next resend will be accepted, if a code has just been sent by
+   * something other than this form — registration now mails one itself. Without
+   * it the button is live the instant the page renders and the client learns
+   * about the rate limit by being refused by it, which reads as a fault.
+   */
+  resendAvailableAt?: string | null;
 };
 
 export default function VerifyCodeForm({
@@ -81,6 +88,7 @@ export default function VerifyCodeForm({
   onVerified,
   emailDelivery,
   tone = "surface",
+  resendAvailableAt,
 }: Props) {
   const { locale } = useI18n();
   const t = dashboardStrings(locale);
@@ -120,7 +128,9 @@ export default function VerifyCodeForm({
   const [error, setError] = useState<Message | null>(null);
   const [notice, setNotice] = useState<Message | null>(null);
   const [resending, setResending] = useState(false);
-  const [cooldown, setCooldown] = useState(0);
+  const [cooldown, setCooldown] = useState(() =>
+    secondsUntil(resendAvailableAt ?? undefined),
+  );
   /**
    * Set when the backend does not understand a typed code yet. The frontend can
    * ship before the backend does, and when it has, the honest thing to show is
@@ -141,6 +151,14 @@ export default function VerifyCodeForm({
     const id = window.setTimeout(() => setCooldown((n) => n - 1), 1000);
     return () => window.clearTimeout(id);
   }, [cooldown]);
+
+  // The caller can learn when the next send is allowed after this form has
+  // already mounted. Only ever extends the wait — never shortens one already
+  // running, which would hand the client a live button the server will refuse.
+  useEffect(() => {
+    const seconds = secondsUntil(resendAvailableAt ?? undefined);
+    if (seconds > 0) setCooldown((current) => Math.max(current, seconds));
+  }, [resendAvailableAt]);
 
   const focusBox = useCallback((index: number) => {
     boxes.current[Math.max(0, Math.min(LENGTH - 1, index))]?.focus();

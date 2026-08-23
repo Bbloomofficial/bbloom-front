@@ -2,56 +2,42 @@ import { ApiError } from "../api/http";
 import type { AccountSite, SiteSubscriptionSummary } from "./api/types";
 
 /**
- * The hosting gate. A client may edit their website from the moment they create
- * it, but it only goes public once it is paid for — so every "publish" affordance
- * has to be able to say *why* it will not work, before it is pressed.
+ * What a client is and is not allowed to do with a website they have not paid
+ * for.
+ *
+ * This used to be the hosting gate: a website stayed private until it was paid
+ * for. That is no longer the deal. Publishing at a `bbloom.ge` address is free
+ * and permanent, and a lapsed subscription never takes a website off the
+ * internet. So the only thing standing between a new client and a public
+ * website is confirming they own the email address they signed up with, which
+ * is an anti-abuse check rather than a commercial one.
+ *
+ * Money now buys three things instead: our badge comes off the page, a custom
+ * domain resolves, and enquiries are emailed out rather than only appearing in
+ * the dashboard. Those are gated on `allowsPaidFeatures`.
+ *
+ * The distinction matters for what we say to a client whose subscription
+ * lapses. Nothing goes dark. Their website is still up, still theirs, still
+ * taking enquiries — the badge is back and their own domain has gone quiet.
+ * "Your website is offline" is no longer a state that exists, and telling
+ * someone it is would send them into a panic about a shop that is serving fine.
  */
 
-/** Why publishing is refused. `null` means it should go through. */
-export type PublishBlock =
-  | "TRIAL"
-  | "EXPIRED"
-  | "CANCELLED"
-  | "NO_SUBSCRIPTION"
-  | "EMAIL_UNVERIFIED";
-
 /**
- * The subscription reason, derived from `allowsHosting` rather than from the
- * status name — the backend owns that rule and only it is authoritative.
- * `TRIALING` not allowing hosting is the whole point of the feature, not a bug.
+ * Why publishing is refused. `null` means it should go through.
+ *
+ * One member, and that is the point: every commercial reason is gone.
  */
-function subscriptionBlock(
-  subscription: SiteSubscriptionSummary | undefined,
-): PublishBlock | null {
-  if (!subscription) return "NO_SUBSCRIPTION";
-  if (subscription.allowsHosting) return null;
-  switch (subscription.status) {
-    case "TRIALING":
-      return "TRIAL";
-    case "EXPIRED":
-      return "EXPIRED";
-    case "CANCELLED":
-      return "CANCELLED";
-    default:
-      return "NO_SUBSCRIPTION";
-  }
-}
+export type PublishBlock = "EMAIL_UNVERIFIED";
 
 /**
- * Every reason publishing would be refused, most substantive first. Both a
- * lapsed subscription and an unconfirmed email can be true at once, and a
- * client who fixes only the one we happened to mention would be back where
- * they started.
+ * Every reason publishing would be refused, most substantive first.
  */
 export function publishBlocks(
-  site: Pick<AccountSite, "subscription">,
+  _site: Pick<AccountSite, "subscription">,
   emailVerified: boolean,
 ): PublishBlock[] {
-  const blocks: PublishBlock[] = [];
-  const subscription = subscriptionBlock(site.subscription);
-  if (subscription) blocks.push(subscription);
-  if (!emailVerified) blocks.push("EMAIL_UNVERIFIED");
-  return blocks;
+  return emailVerified ? [] : ["EMAIL_UNVERIFIED"];
 }
 
 export function canPublish(
@@ -60,6 +46,48 @@ export function canPublish(
 ): boolean {
   return publishBlocks(site, emailVerified).length === 0;
 }
+
+/**
+ * Whether the paid extras are live for this website.
+ *
+ * Absent means no, deliberately. The flag is new, and a client on a build that
+ * predates it should see the free experience — which is accurate, since a badge
+ * we fail to render is consideration we fail to collect, whereas a plan we
+ * wrongly treat as free only shows an upgrade prompt to someone who has already
+ * upgraded. One of those errors costs us money and the other costs a click.
+ */
+export function hasPaidFeatures(
+  site: Pick<AccountSite, "subscription">,
+): boolean {
+  return site.subscription?.allowsPaidFeatures === true;
+}
+
+/**
+ * Why a paid-only action was refused. `null` means it should go through.
+ */
+export type PaidBlock = "FREE_PLAN" | "LAPSED";
+
+/**
+ * Which sentence a client needs when they reach for something they have not
+ * paid for.
+ *
+ * Someone who has never subscribed needs to be sold to; someone whose
+ * subscription lapsed needs to be reassured before they are sold to, because
+ * "expired" reads as "my shop is down" and it is not.
+ */
+export function paidBlock(
+  site: Pick<AccountSite, "subscription">,
+): PaidBlock | null {
+  if (hasPaidFeatures(site)) return null;
+  return lapsedStatuses.has(site.subscription?.status ?? "")
+    ? "LAPSED"
+    : "FREE_PLAN";
+}
+
+const lapsedStatuses = new Set<SiteSubscriptionSummary["status"]>([
+  "EXPIRED",
+  "CANCELLED",
+]);
 
 /**
  * Turns a refused publish into something a Georgian-speaking client can act on.
@@ -83,3 +111,25 @@ export function publishErrorMessage(
   if (otherwise) return otherwise();
   return error instanceof Error ? error.message : String(error);
 }
+
+/**
+ * The same, for a paid-only action — today, connecting a custom domain.
+ *
+ * Derived from state rather than from the server's prose for the same reason
+ * publishing is: these two 409s carry no `code` to branch on, and the sentences
+ * are English.
+ */
+export function paidErrorMessage(
+  error: unknown,
+  site: Pick<AccountSite, "subscription">,
+  copy: Record<PaidBlock, string>,
+  otherwise?: () => string,
+): string {
+  if (error instanceof ApiError && error.status === 409) {
+    const block = paidBlock(site);
+    if (block) return copy[block];
+  }
+  if (otherwise) return otherwise();
+  return error instanceof Error ? error.message : String(error);
+}
+

@@ -139,9 +139,9 @@ export default function Overview() {
             >
               {t.viewSite}
             </a>
-            {/* Publishing is gated on payment, so the button either works or
-                is replaced by the thing that would make it work — never a
-                button that exists only to fail. */}
+            {/* Publishing is free now, so the button is only ever missing for
+                an unconfirmed email — never a button that exists only to
+                fail. */}
             {isOwner && detail && (published || publishable) && (
               <button
                 type="button"
@@ -169,23 +169,9 @@ export default function Overview() {
                 </li>
               ))}
             </ul>
-            <div className="mt-3 flex flex-wrap gap-2">
-              {blocks.some((block) => block !== "EMAIL_UNVERIFIED") &&
-                (isOwner ? (
-                  <Link
-                    to={`/dashboard/s/${siteId}/billing`}
-                    className="btn-primary"
-                  >
-                    {t.gate.choosePlan}
-                  </Link>
-                ) : (
-                  // An editor cannot buy, but telling them who can beats
-                  // leaving them with a reason and no way forward.
-                  <p className="text-sm font-semibold text-ink-600">
-                    {t.gate.askOwner}
-                  </p>
-                ))}
-            </div>
+            {/* The confirmation box itself is in the banner at the top of every
+                dashboard page, so there is nothing to link to — saying it twice
+                here and sending them upwards would be the detour. */}
           </div>
         )}
 

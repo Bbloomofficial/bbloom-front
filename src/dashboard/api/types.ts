@@ -23,13 +23,30 @@ export type SubscriptionStatus =
   | "CANCELLED";
 
 /**
- * Hosting is allowed for `ACTIVE` and `GRACE` only. `TRIALING` explicitly does
- * not host: a trial buys full editing and no public website. Never infer this
- * from the status here — read `allowsHosting`, which is the backend's answer.
+ * What a subscription currently entitles a website to.
+ *
+ * There are two separate questions here and they used to be one. Hosting is no
+ * longer sold: a website is published free, permanently, at its `bbloom.ge`
+ * address, and hosting is never withdrawn for billing reasons — so
+ * `allowsHosting` is now always true and is worthless as a signal. Anything
+ * asking "may this go online?" is asking a question with only one answer, and
+ * would pass silently forever.
+ *
+ * `allowsPaidFeatures` is the real one: our badge coming off the page, a custom
+ * domain resolving, enquiries being emailed out. Read it for every upgrade
+ * prompt and every paid affordance.
+ *
+ * Never infer either from the status name. `TRIALING` hosts happily now.
  */
 export type SiteSubscriptionSummary = {
   status: SubscriptionStatus | string;
+  /**
+   * @deprecated Always true. Kept only because the API still sends it; reading
+   * it to gate anything is a condition that can no longer fail.
+   */
   allowsHosting: boolean;
+  /** Whether the paid extras are currently active. This is the one to read. */
+  allowsPaidFeatures?: boolean;
   trialEndsAt?: string;
   currentPeriodEnd?: string;
   graceUntil?: string;
@@ -116,18 +133,21 @@ export type SubscriptionDetail = {
   status: SubscriptionStatus | string;
   provider?: string;
   planCode?: string;
+  /** @deprecated Always true. See `SiteSubscriptionSummary`. */
   allowsHosting: boolean;
+  /** Whether the paid extras are currently active. */
+  allowsPaidFeatures?: boolean;
   trialEndsAt?: string;
   currentPeriodEnd?: string;
   graceUntil?: string;
   cancelAtPeriodEnd?: boolean;
   /**
    * An amount we have asked for and not yet seen — `null` when nothing is
-   * outstanding. It emphatically does not mean the money has arrived: hosting
-   * stays gated on `allowsHosting`, and a site with a transfer in flight is
-   * still offline. Starting another checkout replaces this row rather than
-   * adding to it, and activation settles this very row, so there is never a
-   * stray pending payment left beside a successful one.
+   * outstanding. It emphatically does not mean the money has arrived: the paid
+   * extras stay gated on `allowsPaidFeatures`, so a site with a transfer in
+   * flight still carries our badge. Starting another checkout replaces this row
+   * rather than adding to it, and activation settles this very row, so there is
+   * never a stray pending payment left beside a successful one.
    */
   pendingPayment?: SubscriptionPayment | null;
   payments?: SubscriptionPayment[];

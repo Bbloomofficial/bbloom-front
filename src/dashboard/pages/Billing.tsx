@@ -11,15 +11,16 @@ import {
 import type { CheckoutResponse, SubscriptionDetail } from "../api/types";
 import { useSession } from "../auth";
 import { SubscriptionBadge } from "../components/Badges";
+import { paidBlock } from "../gate";
 import { useActiveSite, useIsOwner } from "../site";
 import { dashboardStrings, formatDate } from "../strings";
 
 /**
  * Plan and billing for one website.
  *
- * An editor sees all of this read-only rather than nothing: "why is my website
- * offline" is not an owner-only fact, and "ask the owner to choose a plan" is a
- * far better answer than a missing page.
+ * An editor sees all of this read-only rather than nothing: what a website's
+ * plan does and does not include is not an owner-only fact, and "ask the owner"
+ * is a far better answer than a missing page.
  */
 
 function Row({ label, value }: { label: string; value: React.ReactNode }) {
@@ -86,6 +87,10 @@ export default function Billing() {
 
   const date = (iso?: string) => formatDate(iso, locale);
   const pending = subscription?.pendingPayment ?? null;
+  // Read off the freshly fetched subscription rather than the summary in the
+  // session, so a client who just paid does not sit looking at an upgrade
+  // pitch for a plan they already own.
+  const paid = subscription ? paidBlock({ subscription }) : null;
 
   async function choose(planCode: string) {
     if (busy) return;
@@ -184,9 +189,33 @@ export default function Billing() {
         )}
       </section>
 
+      {/* What money actually buys, said plainly and to everyone — including
+          editors, who cannot buy it but will be the ones asked why the badge is
+          there. The lapsed wording leads with the reassurance because "expired"
+          otherwise reads as "my shop is down", and it is not: nothing about a
+          bbloom.ge address is withdrawn for billing reasons. */}
+      {paid && (
+        <section className="rounded-3xl border border-ink-100 bg-canvas p-5 sm:p-6">
+          <h2 className="text-sm font-bold text-ink-900">
+            {t.billing.paidTitle[paid]}
+          </h2>
+          <p className="mt-1 text-sm text-ink-600">{t.billing.paidBody[paid]}</p>
+          <ul className="mt-3 space-y-1.5">
+            {t.billing.paidPerks.map((perk) => (
+              <li key={perk} className="flex gap-2 text-sm text-ink-600">
+                <span aria-hidden className="text-accent">
+                  ✓
+                </span>
+                <span>{perk}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
       {/* An outstanding transfer is not a payment. The wording keeps that
           straight, because a client who believes they have paid and finds the
-          site still private will assume we broke it. */}
+          badge still on their pages will assume we broke it. */}
       {pending && (
         <section className="rounded-3xl border border-amber-200 bg-amber-50 p-5 dark:border-amber-900/60 dark:bg-amber-950/30">
           <p className="font-bold text-amber-900 dark:text-amber-100">
@@ -296,7 +325,11 @@ export default function Billing() {
             </div>
           )}
 
-          {subscription.allowsHosting && !subscription.cancelAtPeriodEnd && (
+          {/* Only offer to stop something that is actually running. This used
+              to read `allowsHosting`, which is now true for everyone, so it
+              would have offered to cancel a free trial that costs nothing and
+              has nothing to stop. */}
+          {subscription.allowsPaidFeatures && !subscription.cancelAtPeriodEnd && (
             <div className="mt-6 flex flex-wrap items-center gap-3">
               <button
                 type="button"

@@ -117,15 +117,34 @@ export type SiteMeta = {
   labels: { products?: string | null; categories?: string | null } | null;
   logo: MediaRef | null;
   favicon: MediaRef | null;
-  /** Branding flags set by the backend. */
+  /**
+   * What credit this site owes us, decided by the backend.
+   *
+   * A free website is published at its `bbloom.ge` address permanently and is
+   * never taken down for billing reasons; carrying our credit is the entire
+   * consideration for that. So `badge` is not decoration, it is the price, and
+   * a paid plan is what turns it off.
+   *
+   * `label` and `url` come with it, already localised to the language the site
+   * is being rendered in — print them rather than translating again, or a
+   * backend rewording lands in one language only. They are *absent* rather than
+   * null when there is no badge, and we keep our own copy as a fallback so a
+   * missing label can never silently become no credit at all.
+   */
   branding?: {
-    /** When true, the site should show the free-tier upgrade prompt to visitors. */
-    showUpgradePrompt?: boolean;
+    badge?: boolean;
+    label?: string | null;
+    url?: string | null;
     /**
-     * Set once a plan pays for its own branding. Absent means "show it" — a
-     * free site carries the credit, which is what makes it free.
+     * The previous shape, before hosting stopped being the thing being sold.
+     * Read only when `badge` is absent, so this keeps working against a backend
+     * that predates the change.
+     *
+     * @deprecated Replaced by `badge`.
      */
     hidePoweredBy?: boolean;
+    /** @deprecated No longer sent. Visitor-facing marketing, not the credit. */
+    showUpgradePrompt?: boolean;
   };
 };
 

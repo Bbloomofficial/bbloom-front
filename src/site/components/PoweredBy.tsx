@@ -6,18 +6,36 @@ import { useSite } from "../context";
  * It sits in the colophon of every template rather than in each one separately,
  * so a new template cannot ship without it by omission. It is styled from the
  * site's own tokens, which means it inherits the client's colours and reads as
- * part of their footer instead of an advert stapled to it.
+ * part of their footer instead of an advert stapled to it — deliberately, since
+ * a free site is still a real business's shopfront and a strip bolted across it
+ * would cost them customers to make a point.
  *
- * `branding.hidePoweredBy` turns it off for a plan that has paid to remove it.
- * Absent means shown — the honest default while every published site is free.
+ * The backend decides whether it appears, and sends the wording already
+ * localised to the language the page is being rendered in. We print that rather
+ * than translating it again, so a rewording on their side cannot land in one
+ * language only. Our own copy stays as a fallback: a label that failed to
+ * arrive must not quietly become no credit at all, because this is the entire
+ * consideration for free hosting.
  */
 export function PoweredBy() {
   const { meta, t } = useSite();
-  if (meta.branding?.hidePoweredBy) return null;
+  const branding = meta.branding;
+
+  // `badge` is the current answer. Where it is absent — a backend older than
+  // the free-hosting change — fall back to the flag that used to carry it, and
+  // failing both, show the credit. Every default here errs towards showing it.
+  const show =
+    typeof branding?.badge === "boolean"
+      ? branding.badge
+      : branding?.hidePoweredBy !== true;
+  if (!show) return null;
+
+  const label = branding?.label || t.poweredBy;
+  const href = branding?.url || "https://bbloom.ge/";
 
   return (
     <a
-      href="https://bbloom.ge/"
+      href={href}
       target="_blank"
       rel="noreferrer noopener"
       className="inline-flex shrink-0 items-center gap-1.5 rounded-site border border-site-border px-2.5 py-1 text-xs font-semibold whitespace-nowrap text-site-muted transition hover:border-site-primary hover:text-site-primary"
@@ -34,7 +52,7 @@ export function PoweredBy() {
           strokeLinecap="round"
         />
       </svg>
-      {t.poweredBy}
+      {label}
     </a>
   );
 }

@@ -164,6 +164,9 @@ export type DashboardStrings = {
     pendingNotPaid: string;
     pendingReplace: string;
     pendingSince: (date: string) => string;
+    paidTitle: Record<"FREE_PLAN" | "LAPSED", string>;
+    paidBody: Record<"FREE_PLAN" | "LAPSED", string>;
+    paidPerks: string[];
   };
   plans: {
     monthly: string;
@@ -217,8 +220,6 @@ export type DashboardStrings = {
   gate: {
     blocked: Record<PublishBlock, string>;
     title: string;
-    choosePlan: string;
-    askOwner: string;
     verifyEmail: string;
     ready: string;
   };
@@ -361,14 +362,14 @@ const en: DashboardStrings = {
     haveAccount: "Already have an account?",
     signIn: "Sign in",
     terms:
-      "You can edit everything straight away. You only pay when you want your website online.",
+      "You can edit everything straight away. Your website is free to publish at a bbloom.ge address — you only pay to drop our badge or use your own domain.",
   },
   sites: {
     title: "Your websites",
     subtitle: "Everything you own or help edit.",
     emptyTitle: "Let's build your first website",
     emptyBody:
-      "Pick a design, name your business, and start editing. Nothing goes public until you choose a plan.",
+      "Pick a design, name your business, and start editing. Publishing is free — just confirm your email first.",
     create: "Create a website",
     open: "Open",
     manage: "Manage",
@@ -377,7 +378,7 @@ const en: DashboardStrings = {
     draftChanges: "Unpublished edits",
     trialEnds: (date) => `Trial ends ${date}`,
     renewsOn: (date) => `Renews ${date}`,
-    graceUntil: (date) => `Payment overdue — offline after ${date}`,
+    graceUntil: (date) => `Payment overdue — extras end ${date}`,
     endsOn: (date) => `Ends ${date}`,
   },
   newSite: {
@@ -401,7 +402,7 @@ const en: DashboardStrings = {
     preview: "Preview",
     demo: "Live demo",
     afterHint:
-      "Your website starts private. Choose a plan when you want it online.",
+      "Your website starts private. Publish it for free whenever you are ready.",
   },
   verify: {
     bannerTitle: "Confirm your email address",
@@ -455,16 +456,18 @@ const en: DashboardStrings = {
   },
   billing: {
     title: "Plan and billing",
-    subtitle: "Your website goes online once a plan is paid for.",
+    subtitle:
+      "Your website is online for free. A plan drops our badge and lets you use your own domain.",
     status: "Status",
     plan: "Plan",
-    noPlan: "No plan yet",
+    noPlan: "Free plan",
     provider: "Payment method",
     trialEnds: "Trial ends",
     renews: "Renews",
-    graceEnds: "Offline after",
+    graceEnds: "Extras end",
     cancelAtPeriodEnd: "Stops at the end of this period",
-    cancelAtPeriodEndOn: (date) => `Your website stays online until ${date}.`,
+    cancelAtPeriodEndOn: (date) =>
+      `Your plan runs until ${date}. Your website stays online after that.`,
     choosePlan: "Choose a plan",
     changePlan: "Change plan",
     payments: "Payments",
@@ -472,7 +475,7 @@ const en: DashboardStrings = {
     cancelPlan: "Stop renewing",
     cancelling: "Stopping…",
     cancelConfirm:
-      "Your website stays online until the end of the period you have paid for, then goes offline. Continue?",
+      "Your plan runs until the end of the period you have paid for. Your website stays online either way — our badge comes back and your own domain stops working. Continue?",
     cancelHint: "You keep everything you have edited either way.",
     ownerOnly: "Only the website's owner can change the plan.",
     periods: "How long",
@@ -482,17 +485,32 @@ const en: DashboardStrings = {
     checkoutFailed: "We couldn't start the payment. Please try again.",
     cancelFailed: "We couldn't cancel the renewal. Please try again.",
     bankTitle: "Bank transfer",
-    bankHint: "Your website goes online as soon as the payment reaches us.",
+    bankHint: "Your plan starts as soon as the payment reaches us.",
     redirecting: "Taking you to the payment page…",
     done: "Done",
     pendingTitle: "Waiting for your payment",
     pendingBody: (amount, plan) =>
-      `We are waiting for ${amount} for the ${plan} plan. Your website goes online once it reaches us.`,
+      `We are waiting for ${amount} for the ${plan} plan. It starts once the money reaches us.`,
     pendingNotPaid:
-      "We have not received it yet, so your website is still private.",
+      "We have not received it yet, so your website is still on the free plan.",
     pendingReplace:
       "Choosing a different plan replaces this — you will never be asked for both.",
     pendingSince: (date) => `Requested ${date}`,
+    paidTitle: {
+      FREE_PLAN: "You are on the free plan",
+      LAPSED: "Your plan has ended",
+    },
+    paidBody: {
+      FREE_PLAN:
+        "Your website is online and stays online, for free, at its bbloom.ge address. A plan adds three things.",
+      LAPSED:
+        "Your website itself stays online at its bbloom.ge address — nothing has gone down. What stopped is the paid part.",
+    },
+    paidPerks: [
+      "Our badge comes off your pages.",
+      "Your own domain name works.",
+      "Enquiries are emailed to you as they arrive. You see every one in your inbox here either way.",
+    ],
   },
   plans: {
     monthly: "per month",
@@ -541,21 +559,10 @@ const en: DashboardStrings = {
   },
   gate: {
     blocked: {
-      TRIAL:
-        "Your website is on a free trial, so it is not online yet. Choose a plan to publish it.",
-      EXPIRED:
-        "This website's plan has expired, so it is offline. Renew it to put it back online.",
-      CANCELLED:
-        "This website's plan was stopped, so it is offline. Start a new one to put it back online.",
-      NO_SUBSCRIPTION:
-        "This website does not have a plan yet. Choose one to put it online.",
       EMAIL_UNVERIFIED:
         "Confirm your email address before putting your website online.",
     },
     title: "Not online yet",
-    choosePlan: "Choose a plan",
-    askOwner:
-      "Only the website's owner can choose a plan — ask them to pick one.",
     verifyEmail: "Confirm your email",
     ready: "Publishing makes your website visible to everyone.",
   },
@@ -720,14 +727,14 @@ const ka: DashboardStrings = {
     haveAccount: "უკვე გაქვთ ანგარიში?",
     signIn: "შესვლა",
     terms:
-      "რედაქტირება მაშინვე შეგიძლიათ. გადახდა მხოლოდ მაშინ დაგჭირდებათ, როცა ვებგვერდის გამოქვეყნებას მოისურვებთ.",
+      "რედაქტირება მაშინვე შეგიძლიათ. bbloom.ge-ის მისამართზე გამოქვეყნება უფასოა — გადახდა მხოლოდ ჩვენი ნიშნის მოსახსნელად ან საკუთარი დომენისთვის დაგჭირდებათ.",
   },
   sites: {
     title: "თქვენი ვებგვერდები",
     subtitle: "ყველაფერი, რასაც ფლობთ ან რედაქტირებაში ეხმარებით.",
     emptyTitle: "მოდი, პირველი ვებგვერდი შევქმნათ",
     emptyBody:
-      "აირჩიეთ დიზაინი, მიუთითეთ ბიზნესის სახელი და დაიწყეთ რედაქტირება. სანამ პაკეტს არ აირჩევთ, ვებგვერდი არავის უჩანს.",
+      "აირჩიეთ დიზაინი, მიუთითეთ ბიზნესის სახელი და დაიწყეთ რედაქტირება. გამოქვეყნება უფასოა — მხოლოდ ელფოსტა დაადასტურეთ.",
     create: "ვებგვერდის შექმნა",
     open: "გახსნა",
     manage: "მართვა",
@@ -760,7 +767,7 @@ const ka: DashboardStrings = {
     preview: "გადახედვა",
     demo: "ცოცხალი დემო",
     afterHint:
-      "ვებგვერდი თავიდან დახურულია. აირჩიეთ პაკეტი, როცა გამოქვეყნებას მოისურვებთ.",
+      "ვებგვერდი თავიდან დახურულია. გამოქვეყნება უფასოა — როცა მოისურვებთ, მაშინ.",
   },
   verify: {
     bannerTitle: "დაადასტურეთ ელფოსტა",
@@ -813,16 +820,18 @@ const ka: DashboardStrings = {
   },
   billing: {
     title: "პაკეტი და გადახდები",
-    subtitle: "ვებგვერდი ქვეყნდება მას შემდეგ, რაც პაკეტი გადახდილი იქნება.",
+    subtitle:
+      "ვებგვერდი უფასოდ არის ონლაინ. პაკეტი ხსნის ჩვენს ნიშანს და საკუთარ დომენს გააქტიურებს.",
     status: "სტატუსი",
     plan: "პაკეტი",
-    noPlan: "პაკეტი ჯერ არ არის",
+    noPlan: "უფასო პაკეტი",
     provider: "გადახდის მეთოდი",
     trialEnds: "საცდელი პერიოდი მთავრდება",
     renews: "განახლდება",
-    graceEnds: "გაითიშება",
+    graceEnds: "დამატებები სრულდება",
     cancelAtPeriodEnd: "შეწყდება მიმდინარე პერიოდის ბოლოს",
-    cancelAtPeriodEndOn: (date) => `ვებგვერდი ონლაინ რჩება ${date}-მდე.`,
+    cancelAtPeriodEndOn: (date) =>
+      `პაკეტი მოქმედებს ${date}-მდე. ვებგვერდი ამის შემდეგაც ონლაინ რჩება.`,
     choosePlan: "პაკეტის არჩევა",
     changePlan: "პაკეტის შეცვლა",
     payments: "გადახდები",
@@ -830,7 +839,7 @@ const ka: DashboardStrings = {
     cancelPlan: "განახლების შეწყვეტა",
     cancelling: "წყდება…",
     cancelConfirm:
-      "ვებგვერდი ონლაინ დარჩება გადახდილი პერიოდის ბოლომდე, შემდეგ კი გაითიშება. გავაგრძელოთ?",
+      "პაკეტი მოქმედებს გადახდილი პერიოდის ბოლომდე. ვებგვერდი ნებისმიერ შემთხვევაში ონლაინ რჩება — უბრალოდ ჩვენი ნიშანი დაბრუნდება და საკუთარი დომენი შეწყვეტს მუშაობას. გავაგრძელოთ?",
     cancelHint: "ნებისმიერ შემთხვევაში, დარედაქტირებული შიგთავსი გრჩებათ.",
     ownerOnly: "პაკეტის შეცვლა მხოლოდ ვებგვერდის მფლობელს შეუძლია.",
     periods: "რა ვადით",
@@ -840,16 +849,32 @@ const ka: DashboardStrings = {
     checkoutFailed: "გადახდის დაწყება ვერ მოხერხდა. სცადეთ თავიდან.",
     cancelFailed: "განახლების გაუქმება ვერ მოხერხდა. სცადეთ თავიდან.",
     bankTitle: "საბანკო გადარიცხვა",
-    bankHint: "ვებგვერდი გამოქვეყნდება, როგორც კი თანხა ჩამოგვივა.",
+    bankHint: "პაკეტი ამოქმედდება, როგორც კი თანხა ჩამოგვივა.",
     redirecting: "გადაგიყვანთ გადახდის გვერდზე…",
     done: "მზადაა",
     pendingTitle: "ველოდებით თქვენს გადახდას",
     pendingBody: (amount, plan) =>
-      `ველოდებით ${amount}-ს პაკეტისთვის „${plan}“. ვებგვერდი გამოქვეყნდება, როგორც კი თანხა ჩამოგვივა.`,
-    pendingNotPaid: "თანხა ჯერ არ მიგვიღია, ამიტომ ვებგვერდი ისევ დახურულია.",
+      `ველოდებით ${amount}-ს პაკეტისთვის „${plan}“. ის ამოქმედდება, როგორც კი თანხა ჩამოგვივა.`,
+    pendingNotPaid:
+      "თანხა ჯერ არ მიგვიღია, ამიტომ ვებგვერდი ისევ უფასო პაკეტზეა.",
     pendingReplace:
       "სხვა პაკეტის არჩევა ამას ჩაანაცვლებს — ორივეს გადახდა არასდროს მოგიწევთ.",
     pendingSince: (date) => `მოთხოვნილია ${date}`,
+    paidTitle: {
+      FREE_PLAN: "თქვენ უფასო პაკეტზე ხართ",
+      LAPSED: "თქვენი პაკეტი დასრულდა",
+    },
+    paidBody: {
+      FREE_PLAN:
+        "ვებგვერდი ონლაინ არის და ონლაინვე რჩება — უფასოდ, bbloom.ge-ის მისამართზე. პაკეტი სამ რამეს ამატებს.",
+      LAPSED:
+        "ვებგვერდი თავად ონლაინ რჩება bbloom.ge-ის მისამართზე — არაფერი გათიშულა. შეწყდა მხოლოდ ფასიანი ნაწილი.",
+    },
+    paidPerks: [
+      "ჩვენი ნიშანი ქრება გვერდებიდან.",
+      "მუშაობს თქვენი საკუთარი დომენი.",
+      "შეტყობინებები ელფოსტაზე მოგდით. ყველა მათგანს აქაც ხედავთ, ნებისმიერ შემთხვევაში.",
+    ],
   },
   plans: {
     monthly: "თვეში",
@@ -898,21 +923,10 @@ const ka: DashboardStrings = {
   },
   gate: {
     blocked: {
-      TRIAL:
-        "თქვენი ვებგვერდი საცდელ პერიოდშია, ამიტომ ჯერ არ არის ონლაინ. გამოსაქვეყნებლად აირჩიეთ პაკეტი.",
-      EXPIRED:
-        "ამ ვებგვერდის პაკეტს ვადა გაუვიდა, ამიტომ ის გათიშულია. ხელახლა გასააქტიურებლად განაახლეთ პაკეტი.",
-      CANCELLED:
-        "ამ ვებგვერდის პაკეტი შეწყვეტილია, ამიტომ ის გათიშულია. ხელახლა გასააქტიურებლად აირჩიეთ ახალი პაკეტი.",
-      NO_SUBSCRIPTION:
-        "ამ ვებგვერდს ჯერ პაკეტი არ აქვს. გამოსაქვეყნებლად აირჩიეთ ერთ-ერთი.",
       EMAIL_UNVERIFIED:
         "ვებგვერდის გამოქვეყნებამდე დაადასტურეთ თქვენი ელფოსტა.",
     },
     title: "ჯერ არ არის ონლაინ",
-    choosePlan: "პაკეტის არჩევა",
-    askOwner:
-      "პაკეტის არჩევა მხოლოდ ვებგვერდის მფლობელს შეუძლია — სთხოვეთ მას.",
     verifyEmail: "ელფოსტის დადასტურება",
     ready: "გამოქვეყნების შემდეგ ვებგვერდი ყველასთვის ხილვადი ხდება.",
   },

@@ -19,7 +19,7 @@ export default function VerifyBanner() {
   const { locale } = useI18n();
   const t = dashboardStrings(locale);
   const { user, token } = useSession();
-  const { refresh } = useAuth();
+  const { refresh, resendAvailableAt } = useAuth();
 
   if (user.emailVerified) return null;
 
@@ -53,6 +53,7 @@ export default function VerifyBanner() {
         token={token}
         tone="warning"
         emailDelivery={user.emailDelivery}
+        resendAvailableAt={resendAvailableAt}
         // Re-reading the profile is what makes the banner disappear: the
         // confirmed flag lives on the session, not in local state here.
         onVerified={() => void refresh()}
