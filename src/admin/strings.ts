@@ -454,11 +454,12 @@ const en: AdminStrings = {
         : `${count} people never received their email`,
     owedBody:
       "These people are still owed a message, whether or not sending works again now. Mail recovering does not reach them — someone has to. A person drops off this list only when they receive something, not when the next send succeeds.",
-    owedAllShownNote: "Everyone still owed is listed, longest wait first.",
+    owedAllShownNote:
+      "Everyone we know to be owed is listed, longest wait first.",
     owedTruncatedNote: (shown, hidden) =>
       `${shown} are listed, longest wait first among them. ${hidden} more are owed and not shown — this list drops the longest waits to make room, so those ${hidden} have been waiting longer than anyone here.`,
     owedLimit:
-      "This covers messages we know failed to send. If one was accepted and bounced afterwards, nothing reaches us and that person will not appear here.",
+      "This covers messages the server could not hand over. If one was accepted and bounced afterwards, nothing comes back to us — and that person is dropped from this list exactly as though they had been reached.",
     listNote:
       "This list is cleared by the next successful send, so everyone still on it is still waiting.",
     allShownNote:
@@ -706,11 +707,11 @@ const ka: AdminStrings = {
     owedBody:
       "ამ ადამიანებს წერილი კვლავ ერგებათ — მიუხედავად იმისა, გაგზავნა ახლა მუშაობს თუ არა. ელფოსტის აღდგენა მათთან არ აღწევს; ვიღაცამ უნდა მიაწვდინოს. სიიდან ადამიანი მაშინ ქრება, როცა თავად მიიღებს წერილს და არა მაშინ, როცა შემდეგი გაგზავნა გამოვა.",
     owedAllShownNote:
-      "ყველა, ვისაც წერილი ერგება, სიაშია — ყველაზე დიდხანს მოლოდინი პირველად.",
+      "ყველა, ვისზეც ვიცით, რომ წერილი ერგება, სიაშია — ყველაზე დიდხანს მოლოდინი პირველად.",
     owedTruncatedNote: (shown, hidden) =>
       `მათგან ${shown} ჩანს, ყველაზე დიდხანს მოლოდინი პირველად. კიდევ ${hidden} ადამიანს ერგება წერილი და აქ არ ჩანს — სია ადგილის გასათავისუფლებლად სწორედ ყველაზე დიდხანს მოლოდინებს შლის, ამიტომ ეს ${hidden} ყველაზე მეტ ხანს ელოდება.`,
     owedLimit:
-      "აქ მხოლოდ ის წერილებია, რომელთა გაგზავნაც ჩვენ ვერ შევძელით. თუ წერილი მიღებულ იქნა და შემდეგ დაბრუნდა, ამის შესახებ ინფორმაცია ჩვენამდე არ აღწევს და ის ადამიანი აქ არ გამოჩნდება.",
+      "აქ მხოლოდ ის წერილებია, რომელთა გაგზავნაც სერვერმა ვერ შეძლო. თუ წერილი მიღებულ იქნა და შემდეგ დაბრუნდა, ამის შესახებ ჩვენამდე არაფერი აღწევს — და ის ადამიანი სიიდან ისე ქრება, თითქოს წერილი მიეღოს.",
     listNote:
       "სია იწმინდება პირველივე წარმატებული გაგზავნისას, ამიტომ ყველა, ვინც აქ წერია, ჯერ კიდევ ელოდება.",
     allShownNote:

@@ -271,6 +271,13 @@ export type MailHealth = {
    * the *missing* ones have waited longer than any of them. Both are true and
    * they pull in opposite directions, which is precisely why the sentence
    * cannot be shortened without becoming false.
+   *
+   * Finally, this list is a *lower bound* on who is owed, and in a sharper way
+   * than "we cannot see bounces". The row is cleared on SMTP *acceptance*, not
+   * on delivery — so a message accepted by the relay and bounced afterwards
+   * removes a person who was already listed here. Not merely never added:
+   * deleted, by the event that failed them. The copy must therefore never
+   * claim this list is everyone who is owed, only everyone we know of.
    */
   unresolved?: MailFailure[];
   /**

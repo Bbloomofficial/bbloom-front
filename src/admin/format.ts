@@ -15,6 +15,24 @@ export function formatDate(value: string | undefined, locale: Locale): string {
 }
 
 /** Date and clock time. The status screen needs the minute, not just the day. */
+/** Renders a backend instant for staff.
+ *
+ *  The backend's instants carry nanoseconds (`…:47.901800409Z`). `Date.parse`
+ *  handles that, truncating to milliseconds, which is finer than this screen
+ *  displays anyway.
+ *
+ *  Deliberately string-only, and it should stay that way. The backend's
+ *  timestamp *format* is not pinned by any test that exercises Spring's own
+ *  mapper, so a `write-dates-as-timestamps` flip would start sending epoch
+ *  numbers with nothing failing on either side. Measured what that does here:
+ *  every epoch shape — seconds, seconds-with-nanos, milliseconds, and their
+ *  string forms — yields `NaN` and renders as "—". That is the good failure.
+ *  An absent timestamp is visibly absent; a wrong one is not.
+ *
+ *  So do not "fix" the dash by accepting numbers. Seconds and milliseconds are
+ *  indistinguishable at this magnitude, and guessing wrong renders a confident,
+ *  well-formatted 1970 next to a real recipient's address on the one screen
+ *  whose job is deciding who to apologise to. */
 export function formatDateTime(
   value: string | undefined,
   locale: Locale,
