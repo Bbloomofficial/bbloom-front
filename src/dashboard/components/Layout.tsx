@@ -194,13 +194,27 @@ export default function Layout({
                 {t.viewSite}
               </a>
             )}
-            <button
-              type="button"
-              onClick={() => navigate("/dashboard/account")}
-              className="hidden rounded-xl border border-ink-100 bg-surface px-3 py-2 text-sm font-semibold text-ink-600 transition hover:border-bloom-300 hover:text-bloom-600 md:inline-flex"
-            >
-              {t.nav.account}
-            </button>
+            {/*
+              Only when the tab group isn't already offering it. On the account
+              level screens the tabs are "websites" and "account", so this button
+              was a second copy of a tab sitting a few centimetres away — which
+              is what the user saw and asked to lose.
+
+              On a site's screens the tabs are that site's own (overview, page,
+              inbox, billing, team), none of which is the account, and the site
+              switcher lists only sites and "add another". There this is the only
+              way to reach the account page at any width, so deleting it outright
+              would have stranded that page behind the browser's back button.
+            */}
+            {active && (
+              <button
+                type="button"
+                onClick={() => navigate("/dashboard/account")}
+                className="hidden rounded-xl border border-ink-100 bg-surface px-3 py-2 text-sm font-semibold text-ink-600 transition hover:border-bloom-300 hover:text-bloom-600 md:inline-flex"
+              >
+                {t.nav.account}
+              </button>
+            )}
             <LanguageSwitcher />
             <ThemeToggle />
             <button
