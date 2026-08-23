@@ -40,6 +40,8 @@ export default function Verify() {
   );
 
   const [state, setState] = useState<State>(token ? "checking" : "code");
+  // Only an explicit `false` means mail is down; an older build omits it.
+  const undeliverable = session?.emailDelivery === false;
   const [detail, setDetail] = useState<string | null>(null);
 
   useEffect(() => {
@@ -110,21 +112,28 @@ export default function Verify() {
           ) : state === "code" ? (
             <>
               <h1 className="text-xl font-extrabold tracking-tight text-ink-900">
-                {t.verify.pageTitle}
+                {undeliverable
+                  ? t.verify.unavailableTitle
+                  : t.verify.pageTitle}
               </h1>
-              <p className="mt-2 text-sm text-ink-600">{t.verify.pageBody}</p>
+              <p className="mt-2 text-sm text-ink-600">
+                {undeliverable ? t.verify.unavailableBody : t.verify.pageBody}
+              </p>
 
               {email ? (
                 <>
-                  <p className="mt-2 text-sm text-ink-600">
-                    {t.verify.codeSentTo}{" "}
-                    <span className="font-semibold text-ink-900" dir="ltr">
-                      {email}
-                    </span>
-                  </p>
+                  {!undeliverable && (
+                    <p className="mt-2 text-sm text-ink-600">
+                      {t.verify.codeSentTo}{" "}
+                      <span className="font-semibold text-ink-900" dir="ltr">
+                        {email}
+                      </span>
+                    </p>
+                  )}
                   <VerifyCodeForm
                     email={email}
                     token={session?.token ?? null}
+                    emailDelivery={session?.emailDelivery}
                     onVerified={() => setState("done")}
                   />
                 </>
@@ -158,6 +167,7 @@ export default function Verify() {
                 <VerifyCodeForm
                   email={email}
                   token={session?.token ?? null}
+                  emailDelivery={session?.emailDelivery}
                   onVerified={() => setState("done")}
                 />
               )}

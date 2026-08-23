@@ -66,6 +66,11 @@ type Props = {
    */
   token?: string | null;
   onVerified: (profile?: AccountProfile) => void;
+  /**
+   * Whether the server can send mail. Only an explicit `false` changes what is
+   * said, so an older build that omits the field keeps the normal wording.
+   */
+  emailDelivery?: boolean;
   /** Renders on the amber banner instead of on a plain surface. */
   tone?: "surface" | "warning";
 };
@@ -74,6 +79,7 @@ export default function VerifyCodeForm({
   email,
   token,
   onVerified,
+  emailDelivery,
   tone = "surface",
 }: Props) {
   const { locale } = useI18n();
@@ -345,6 +351,7 @@ export default function VerifyCodeForm({
   }, [token, resending, cooldown, locale, focusBox]);
 
   const warning = tone === "warning";
+  const undeliverable = emailDelivery === false;
 
   if (codeUnsupported) {
     return (
@@ -386,7 +393,7 @@ export default function VerifyCodeForm({
             : "block text-sm font-semibold text-ink-900"
         }
       >
-        {t.verify.codeLabel}
+        {undeliverable ? t.verify.unavailableHaveCode : t.verify.codeLabel}
       </label>
 
       {/* Left-to-right even in Georgian: a code is a number, and numbers do not
@@ -432,7 +439,10 @@ export default function VerifyCodeForm({
           {submitting ? t.verify.codeChecking : t.verify.codeSubmit}
         </button>
 
-        {token && (
+        {/* Resending is pointless when the server cannot send: it would burn a
+            throttle slot and promise a second email that will not arrive
+            either. */}
+        {token && !undeliverable && (
           <button
             type="button"
             onClick={() => void resend()}

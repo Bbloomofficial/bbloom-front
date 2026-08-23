@@ -23,25 +23,36 @@ export default function VerifyBanner() {
 
   if (user.emailVerified) return null;
 
+  // Only an explicit `false` means mail is down. An older backend omits the
+  // field, and treating that as "broken" would tell every client on a healthy
+  // server that confirmation is unavailable.
+  const undeliverable = user.emailDelivery === false;
+
   return (
     <div className="rounded-3xl border border-amber-200 bg-amber-50 p-5 dark:border-amber-900/60 dark:bg-amber-950/30">
       <p className="font-bold text-amber-900 dark:text-amber-100">
-        {t.verify.bannerTitle}
+        {undeliverable ? t.verify.unavailableTitle : t.verify.bannerTitle}
       </p>
       <p className="mt-1 text-sm text-amber-800 dark:text-amber-200/90">
-        {t.verify.bannerBody}
+        {undeliverable ? t.verify.unavailableBody : t.verify.bannerBody}
       </p>
-      <p className="mt-1 text-sm text-amber-800 dark:text-amber-200/90">
-        {t.verify.codeSentTo}{" "}
-        <span className="font-semibold text-amber-900 dark:text-amber-100" dir="ltr">
-          {user.email}
-        </span>
-      </p>
+      {!undeliverable && (
+        <p className="mt-1 text-sm text-amber-800 dark:text-amber-200/90">
+          {t.verify.codeSentTo}{" "}
+          <span
+            className="font-semibold text-amber-900 dark:text-amber-100"
+            dir="ltr"
+          >
+            {user.email}
+          </span>
+        </p>
+      )}
 
       <VerifyCodeForm
         email={user.email}
         token={token}
         tone="warning"
+        emailDelivery={user.emailDelivery}
         // Re-reading the profile is what makes the banner disappear: the
         // confirmed flag lives on the session, not in local state here.
         onVerified={() => void refresh()}

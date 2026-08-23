@@ -107,6 +107,10 @@ export type DashboardStrings = {
     codeFailed: string;
     codeSentTo: string;
     deliveryOff: string;
+    /** Shown instead of "we sent you a code" when the server cannot send mail. */
+    unavailableTitle: string;
+    unavailableBody: string;
+    unavailableHaveCode: string;
     resendDailyLimit: string;
     linkOnly: string;
     pageTitle: string;
@@ -403,6 +407,10 @@ const en: DashboardStrings = {
     codeSentTo: "We sent a code to",
     deliveryOff:
       "Email sending is not switched on yet, so nothing was sent. Tell us and we will confirm your address for you.",
+    unavailableTitle: "Email confirmation is temporarily unavailable",
+    unavailableBody:
+      "We cannot send confirmation emails at the moment, so no code is on its way. Keep building your website — you can confirm later, and nothing you do now is lost. Write to hello@bbloom.ge if you need your website online today.",
+    unavailableHaveCode: "Already have a code? Enter it here.",
     resendDailyLimit:
       "That's as many codes as we can send today. Try again tomorrow, or write to hello@bbloom.ge.",
     linkOnly:
@@ -745,6 +753,10 @@ const ka: DashboardStrings = {
       "ცდების რაოდენობა ამოიწურა. გამოიგზავნეთ ახალი კოდი და სცადეთ ხელახლა.",
     codeFailed: "კოდი ვერ შევამოწმეთ. სცადეთ ცოტა ხანში.",
     codeSentTo: "კოდი გამოგზავნილია მისამართზე",
+    unavailableTitle: "ელფოსტის დადასტურება დროებით მიუწვდომელია",
+    unavailableBody:
+      "ამჟამად დამადასტურებელი წერილის გაგზავნა ვერ ხერხდება, ამიტომ კოდი არ მოვა. განაგრძეთ ვებგვერდის აწყობა — დადასტურებას მოგვიანებით შეძლებთ და არაფერი დაიკარგება. თუ ვებგვერდის დღესვე გამოქვეყნება გჭირდებათ, მოგვწერეთ hello@bbloom.ge-ზე.",
+    unavailableHaveCode: "უკვე გაქვთ კოდი? შეიყვანეთ აქ.",
     deliveryOff:
       "ელფოსტის გაგზავნა ჯერ არ არის ჩართული, ამიტომ წერილი არ გასულა. მოგვწერეთ და ჩვენ დაგიდასტურებთ მისამართს.",
     resendDailyLimit:

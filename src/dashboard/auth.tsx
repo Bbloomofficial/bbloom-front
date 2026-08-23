@@ -59,9 +59,19 @@ export function readStoredToken(): string | null {
  * returning client to "create an account" to save their second site is both
  * wrong and impossible.
  */
-export function readStoredAccount(): { token: string; email: string } | null {
+export function readStoredAccount(): {
+  token: string;
+  email: string;
+  emailDelivery?: boolean;
+} | null {
   const session = readSession();
-  return session ? { token: session.token, email: session.user.email } : null;
+  return session
+    ? {
+        token: session.token,
+        email: session.user.email,
+        emailDelivery: session.user.emailDelivery,
+      }
+    : null;
 }
 
 /**

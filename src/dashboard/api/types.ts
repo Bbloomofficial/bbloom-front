@@ -66,6 +66,12 @@ export type AccountProfile = {
   fullName: string;
   role: string;
   emailVerified: boolean;
+  /**
+   * Whether the server can actually send mail. Absent on older builds, so only
+   * an explicit `false` means "nothing will arrive" — treating unknown as off
+   * would tell every client on a healthy server that confirmation is broken.
+   */
+  emailDelivery?: boolean;
   siteId?: string;
   siteSlug?: string;
   businessName?: string;
