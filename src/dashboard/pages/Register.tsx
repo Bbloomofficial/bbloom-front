@@ -3,7 +3,7 @@ import type { FormEvent } from "react";
 import { Link } from "react-router-dom";
 import Logo from "../../components/Logo";
 import LanguageSwitcher from "../../components/LanguageSwitcher";
-import { ApiError } from "../../api/http";
+import { describeProblem } from "../../api/problem";
 import { useI18n } from "../../i18n";
 import { useAuth } from "../auth";
 import { dashboardStrings } from "../strings";
@@ -55,13 +55,10 @@ export default function Register() {
         language: locale,
       });
     } catch (caught) {
-      // A duplicate email or a password the backend rejects both come back
-      // with a detail worth reading, so they are shown rather than flattened.
-      setError(
-        caught instanceof ApiError && caught.message
-          ? caught.message
-          : t.register.failed,
-      );
+      // A duplicate email and a rejected password each get their own sentence;
+      // both are things the client can act on, so neither is flattened into a
+      // generic failure.
+      setError(describeProblem(caught, t.errors, t.register.failed));
       setSubmitting(false);
     }
   }

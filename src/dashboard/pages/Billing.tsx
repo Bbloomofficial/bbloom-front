@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { formatMinor } from "../../api/plans";
-import { ApiError } from "../../api/http";
+import { describeProblem } from "../../api/problem";
 import { PlanCard, usePlans } from "../../components/PlanCard";
 import { useI18n } from "../../i18n";
 import {
@@ -99,11 +99,7 @@ export default function Billing() {
       load();
       await refresh();
     } catch (caught) {
-      setError(
-        caught instanceof ApiError && caught.message
-          ? caught.message
-          : t.billing.checkoutStarting,
-      );
+      setError(describeProblem(caught, t.errors, t.billing.checkoutFailed));
     } finally {
       setBusy(null);
     }
@@ -118,11 +114,7 @@ export default function Billing() {
       setSubscription(await cancelSubscription(token, site.id));
       await refresh();
     } catch (caught) {
-      setError(
-        caught instanceof ApiError && caught.message
-          ? caught.message
-          : t.billing.cancelling,
-      );
+      setError(describeProblem(caught, t.errors, t.billing.cancelFailed));
     } finally {
       setBusy(null);
     }

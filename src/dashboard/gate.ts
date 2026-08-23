@@ -74,10 +74,12 @@ export function publishErrorMessage(
   site: Pick<AccountSite, "subscription">,
   emailVerified: boolean,
   copy: Record<PublishBlock, string>,
+  otherwise?: () => string,
 ): string {
   if (error instanceof ApiError && error.status === 409) {
     const [block] = publishBlocks(site, emailVerified);
     if (block) return copy[block];
   }
+  if (otherwise) return otherwise();
   return error instanceof Error ? error.message : String(error);
 }

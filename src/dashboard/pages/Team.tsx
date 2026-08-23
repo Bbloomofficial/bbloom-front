@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import type { FormEvent } from "react";
-import { ApiError } from "../../api/http";
+import { describeProblem } from "../../api/problem";
 import { useI18n } from "../../i18n";
 import {
   fetchMembers,
@@ -43,9 +43,7 @@ export default function Team() {
   useEffect(load, [load]);
 
   function report(caught: unknown, fallback: string) {
-    setError(
-      caught instanceof ApiError && caught.message ? caught.message : fallback,
-    );
+    setError(describeProblem(caught, t.errors, fallback));
   }
 
   async function invite(event: FormEvent) {

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
 import { ApiError } from "../../api/http";
+import { describeProblem } from "../../api/problem";
 import { useI18n } from "../../i18n";
 import { changeAccountPassword } from "../api/account";
 import { useSession } from "../auth";
@@ -30,10 +31,12 @@ export default function Account() {
       setCurrentPassword("");
       setNewPassword("");
     } catch (caught) {
+      // The endpoint answers 401 for a wrong *current* password, which is a
+      // different problem from a rejected sign-in and needs its own sentence.
       setError(
-        caught instanceof ApiError && caught.message
-          ? caught.message
-          : t.account.submit,
+        caught instanceof ApiError && caught.status === 401
+          ? t.account.wrongCurrent
+          : describeProblem(caught, t.errors, t.account.failed),
       );
     } finally {
       setSubmitting(false);

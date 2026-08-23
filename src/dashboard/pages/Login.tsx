@@ -1,7 +1,7 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
 import { Link } from "react-router-dom";
-import { ApiError } from "../../api/http";
+import { describeProblem } from "../../api/problem";
 import { useI18n } from "../../i18n";
 import { useAuth } from "../auth";
 import { dashboardStrings } from "../strings";
@@ -25,12 +25,7 @@ export default function Login() {
     try {
       await signIn(email.trim(), password);
     } catch (caught) {
-      // 401 comes back as a generic problem detail; anything else is worth showing.
-      const message =
-        caught instanceof ApiError && caught.status !== 401
-          ? caught.message
-          : t.login.failed;
-      setError(message);
+      setError(describeProblem(caught, t.errors, t.login.failed));
       setSubmitting(false);
     }
   }

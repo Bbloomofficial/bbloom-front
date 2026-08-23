@@ -1,4 +1,6 @@
 import type { Locale } from "../i18n";
+import type { ProblemStrings } from "../api/problem";
+import { problemStrings } from "../api/problemStrings";
 import type { PublishBlock } from "./gate";
 
 /**
@@ -81,6 +83,7 @@ export type DashboardStrings = {
     sampleContentHint: string;
     submit: string;
     submitting: string;
+    failed: string;
     noTemplate: string;
     preview: string;
     demo: string;
@@ -150,6 +153,8 @@ export type DashboardStrings = {
     period: (count: number) => string;
     checkoutTitle: string;
     checkoutStarting: string;
+    checkoutFailed: string;
+    cancelFailed: string;
     bankTitle: string;
     bankHint: string;
     redirecting: string;
@@ -201,6 +206,13 @@ export type DashboardStrings = {
     submit: string;
     submitting: string;
     saved: string;
+    /**
+     * A 401 here is not a dead session — it is the current password being
+     * wrong, and saying "wrong email or password" next to two password boxes
+     * would send someone hunting for a mistake in a field they cannot see.
+     */
+    wrongCurrent: string;
+    failed: string;
   };
   gate: {
     blocked: Record<PublishBlock, string>;
@@ -240,6 +252,7 @@ export type DashboardStrings = {
     recent: string;
     viewAll: string;
     empty: string;
+    publishFailed: string;
   };
   contact: {
     title: string;
@@ -286,12 +299,21 @@ export type DashboardStrings = {
     save: string;
     saving: string;
     saved: string;
+    saveFailed: string;
     reply: string;
     call: string;
     close: string;
   };
   types: Record<string, string>;
   statuses: Record<string, string>;
+  preview: {
+    failed: string;
+  };
+  /**
+   * What the client is told when a request fails. The API explains itself in
+   * English; these are the sentences we show instead.
+   */
+  errors: ProblemStrings;
 };
 
 const en: DashboardStrings = {
@@ -374,6 +396,7 @@ const en: DashboardStrings = {
       "Gives you a complete page to edit instead of empty boxes. Recommended.",
     submit: "Create website",
     submitting: "Creating…",
+    failed: "We couldn't create the website. Please try again.",
     noTemplate: "Choose a design to continue.",
     preview: "Preview",
     demo: "Live demo",
@@ -456,6 +479,8 @@ const en: DashboardStrings = {
     period: (count) => `${count} month${count === 1 ? "" : "s"}`,
     checkoutTitle: "Payment",
     checkoutStarting: "Preparing…",
+    checkoutFailed: "We couldn't start the payment. Please try again.",
+    cancelFailed: "We couldn't cancel the renewal. Please try again.",
     bankTitle: "Bank transfer",
     bankHint: "Your website goes online as soon as the payment reaches us.",
     redirecting: "Taking you to the payment page…",
@@ -511,6 +536,8 @@ const en: DashboardStrings = {
     submit: "Change password",
     submitting: "Saving…",
     saved: "Password changed.",
+    wrongCurrent: "Your current password isn't right.",
+    failed: "We couldn't change your password. Please try again.",
   },
   gate: {
     blocked: {
@@ -576,6 +603,7 @@ const en: DashboardStrings = {
     recent: "Latest messages",
     viewAll: "Open inbox",
     empty: "No messages yet. They will appear here as soon as someone writes.",
+    publishFailed: "We couldn't change what's online. Please try again.",
   },
   contact: {
     title: "Contact details",
@@ -623,6 +651,7 @@ const en: DashboardStrings = {
     save: "Save note",
     saving: "Saving…",
     saved: "Saved",
+    saveFailed: "We couldn't save that. Please try again.",
     reply: "Reply by email",
     call: "Call",
     close: "Close",
@@ -640,6 +669,10 @@ const en: DashboardStrings = {
     SPAM: "Spam",
     ARCHIVED: "Archived",
   },
+  preview: {
+    failed: "We couldn't load the preview. Try again.",
+  },
+  errors: problemStrings("en"),
 };
 
 const ka: DashboardStrings = {
@@ -722,6 +755,7 @@ const ka: DashboardStrings = {
       "ცარიელი ველების ნაცვლად მზა გვერდს მიიღებთ, რომელსაც დაარედაქტირებთ. გირჩევთ.",
     submit: "ვებგვერდის შექმნა",
     submitting: "იქმნება…",
+    failed: "ვებგვერდის შექმნა ვერ მოხერხდა. სცადეთ თავიდან.",
     noTemplate: "გასაგრძელებლად აირჩიეთ დიზაინი.",
     preview: "გადახედვა",
     demo: "ცოცხალი დემო",
@@ -803,6 +837,8 @@ const ka: DashboardStrings = {
     period: (count) => `${count} თვე`,
     checkoutTitle: "გადახდა",
     checkoutStarting: "მზადდება…",
+    checkoutFailed: "გადახდის დაწყება ვერ მოხერხდა. სცადეთ თავიდან.",
+    cancelFailed: "განახლების გაუქმება ვერ მოხერხდა. სცადეთ თავიდან.",
     bankTitle: "საბანკო გადარიცხვა",
     bankHint: "ვებგვერდი გამოქვეყნდება, როგორც კი თანხა ჩამოგვივა.",
     redirecting: "გადაგიყვანთ გადახდის გვერდზე…",
@@ -857,6 +893,8 @@ const ka: DashboardStrings = {
     submit: "პაროლის შეცვლა",
     submitting: "ინახება…",
     saved: "პაროლი შეიცვალა.",
+    wrongCurrent: "მიმდინარე პაროლი არასწორია.",
+    failed: "პაროლის შეცვლა ვერ მოხერხდა. სცადეთ თავიდან.",
   },
   gate: {
     blocked: {
@@ -922,6 +960,7 @@ const ka: DashboardStrings = {
     recent: "ბოლო შეტყობინებები",
     viewAll: "შემოსულების გახსნა",
     empty: "ჯერ არაფერია. შეტყობინებები აქ გამოჩნდება.",
+    publishFailed: "სტატუსის შეცვლა ვერ მოხერხდა. სცადეთ თავიდან.",
   },
   contact: {
     title: "საკონტაქტო ინფორმაცია",
@@ -969,6 +1008,7 @@ const ka: DashboardStrings = {
     save: "შენახვა",
     saving: "ინახება…",
     saved: "შენახულია",
+    saveFailed: "შენახვა ვერ მოხერხდა. სცადეთ თავიდან.",
     reply: "პასუხი ელფოსტით",
     call: "დარეკვა",
     close: "დახურვა",
@@ -986,6 +1026,10 @@ const ka: DashboardStrings = {
     SPAM: "სპამი",
     ARCHIVED: "დაარქივებული",
   },
+  preview: {
+    failed: "გადახედვა ვერ ჩაიტვირთა. სცადეთ თავიდან.",
+  },
+  errors: problemStrings("ka"),
 };
 
 const dictionaries: Record<Locale, DashboardStrings> = { en, ka };

@@ -1,9 +1,12 @@
 import { useCallback, useEffect, useState } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
 import { request } from "../../api/http";
+import { describeProblem } from "../../api/problem";
+import { useI18n } from "../../i18n";
 import type { SiteLanguage, SitePayload } from "../../site/api/types";
 import { SiteBody } from "../../site/SitePage";
 import { readStoredToken } from "../auth";
+import { dashboardStrings } from "../strings";
 import { PREVIEW_MESSAGE } from "./PreviewFrame";
 
 /**
@@ -30,11 +33,13 @@ export default function PreviewPage() {
 
   const [payload, setPayload] = useState<SitePayload | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const { locale } = useI18n();
+  const t = dashboardStrings(locale);
 
   useEffect(() => {
     const token = readStoredToken();
     if (!token) {
-      setError("Session expired");
+      setError(t.errors.session);
       return;
     }
     let cancelled = false;
@@ -51,14 +56,14 @@ export default function PreviewPage() {
       })
       .catch((cause: unknown) => {
         if (!cancelled) {
-          setError(cause instanceof Error ? cause.message : "Preview failed");
+          setError(describeProblem(cause, t.errors, t.preview.failed));
         }
       });
 
     return () => {
       cancelled = true;
     };
-  }, [siteId, lang, draft]);
+  }, [siteId, lang, draft, t]);
 
   // The editor asks us to bring a section into view when it is selected.
   useEffect(() => {

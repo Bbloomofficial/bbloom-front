@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useI18n } from "../i18n";
-import { ApiError } from "../api/http";
+import { describeProblem } from "../api/problem";
 import { fetchTemplates } from "../api/templates";
 import { fetchSite } from "../site/api/client";
 import type { PublicSection, SitePayload } from "../site/api/types";
@@ -378,9 +378,7 @@ export default function TryEditor() {
         publishError: result.publishError,
       });
     } catch (error) {
-      setFormError(
-        error instanceof ApiError ? error.message : String(error),
-      );
+      setFormError(describeProblem(error, t.errors, t.saveFailed));
       setSave(back);
     }
   }
@@ -407,7 +405,7 @@ export default function TryEditor() {
       storeSession(response);
       await finish(response.token, save);
     } catch (error) {
-      setFormError(error instanceof ApiError ? error.message : String(error));
+      setFormError(describeProblem(error, t.errors, t.saveFailed));
     } finally {
       setBusy(false);
     }

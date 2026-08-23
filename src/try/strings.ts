@@ -4,6 +4,9 @@
  * of it is marketing: it is the instructions for an editor.
  */
 
+import type { ProblemStrings } from "../api/problem";
+import { problemStrings } from "../api/problemStrings";
+
 export type TryStrings = {
   galleryTitle: string;
   gallerySubtitle: string;
@@ -75,6 +78,9 @@ export type TryStrings = {
   openSite: string;
   openPanel: string;
   freeNote: string;
+  /** What the visitor is told when saving their website fails. */
+  saveFailed: string;
+  errors: ProblemStrings;
 };
 
 const en: TryStrings = {
@@ -155,6 +161,8 @@ const en: TryStrings = {
   openPanel: "Go to my panel",
   freeNote:
     "Free on a bbloom.ge address. Your own domain, online orders and customer accounts are paid.",
+  saveFailed: "We couldn't save your website. Please try again.",
+  errors: problemStrings("en"),
 };
 
 const ka: TryStrings = {
@@ -237,6 +245,8 @@ const ka: TryStrings = {
   openPanel: "პანელზე გადასვლა",
   freeNote:
     "უფასოა bbloom.ge მისამართზე. საკუთარი დომენი, ონლაინ შეკვეთები და მომხმარებლების ანგარიშები ფასიანია.",
+  saveFailed: "ვებგვერდის შენახვა ვერ მოხერხდა. სცადეთ თავიდან.",
+  errors: problemStrings("ka"),
 };
 
 export function tryStrings(locale: string): TryStrings {

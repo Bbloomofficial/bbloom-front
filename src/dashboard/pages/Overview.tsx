@@ -2,6 +2,7 @@ import { useCallback, useState } from "react";
 import type { ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { useI18n } from "../../i18n";
+import { describeProblem } from "../../api/problem";
 import { useSession } from "../auth";
 import {
   fetchEnquiries,
@@ -91,7 +92,13 @@ export default function Overview() {
         // A refusal is a 409 with an English, deliberately actionable message.
         // Known reasons are re-said in the client's own language.
         setPublishError(
-          publishErrorMessage(error, active, user.emailVerified, t.gate.blocked),
+          publishErrorMessage(
+            error,
+            active,
+            user.emailVerified,
+            t.gate.blocked,
+            () => describeProblem(error, t.errors, t.overview.publishFailed),
+          ),
         );
       } finally {
         setPublishing(false);

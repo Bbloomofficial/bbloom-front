@@ -1,6 +1,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { describeProblem } from "../../api/problem";
 import { useI18n } from "../../i18n";
 import { useSession } from "../auth";
+import { publishErrorMessage } from "../gate";
+import { dashboardStrings } from "../strings";
 import { useActiveSite } from "../site";
 import { useResource } from "../hooks";
 import {
@@ -79,8 +82,10 @@ function Toggle<T extends string>({
 export default function Editor() {
   const { locale } = useI18n();
   const t = editorStrings(locale);
-  const { token, handleError } = useSession();
-  const siteId = useActiveSite().id;
+  const { token, handleError, user } = useSession();
+  const activeSite = useActiveSite();
+  const siteId = activeSite.id;
+  const shell = dashboardStrings(locale);
   const uiLang: SiteLanguage = locale === "en" ? "en" : "ka";
 
   const site = useResource(
@@ -236,7 +241,7 @@ export default function Editor() {
       await dropUnusedMedia(selected.key, previous, resolved);
     } catch (cause) {
       handleError(cause);
-      setError(cause instanceof Error ? cause.message : t.saveFailed);
+      setError(describeProblem(cause, t.errors, t.saveFailed));
     } finally {
       setSaving(false);
     }
@@ -250,7 +255,17 @@ export default function Editor() {
       refreshPreview();
     } catch (cause) {
       handleError(cause);
-      setError(cause instanceof Error ? cause.message : t.saveFailed);
+      // A refused publish is the one failure here whose reason lives in the
+      // subscription rather than in the response, so it is named from state.
+      setError(
+        publishErrorMessage(
+          cause,
+          activeSite,
+          user.emailVerified,
+          shell.gate.blocked,
+          () => describeProblem(cause, t.errors, t.saveFailed),
+        ),
+      );
     } finally {
       setBusy(false);
     }

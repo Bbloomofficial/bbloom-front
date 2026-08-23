@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import { useI18n } from "../../i18n";
+import { describeProblem } from "../../api/problem";
 import { useSession } from "../auth";
 import { updateEnquiry } from "../api/client";
 import { ENQUIRY_STATUSES } from "../api/types";
@@ -79,7 +80,7 @@ export default function EnquiryDetail({
       if (kind === "note") setSaved(true);
     } catch (caught) {
       handleError(caught);
-      setError((caught as Error).message);
+      setError(describeProblem(caught, t.errors, t.detail.saveFailed));
     } finally {
       setSaving(null);
     }

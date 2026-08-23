@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { templateThumbnail } from "../../api/templates";
 import type { SiteTemplate } from "../../api/templates";
 import { fetchTemplates } from "../../api/templates";
-import { ApiError } from "../../api/http";
+import { describeProblem } from "../../api/problem";
 import { useI18n } from "../../i18n";
 import type { SiteLanguage } from "../api/types";
 import { createSite } from "../api/account";
@@ -58,11 +58,7 @@ export default function NewSite() {
       await refresh();
       navigate(`/dashboard/s/${site.id}`);
     } catch (caught) {
-      setError(
-        caught instanceof ApiError && caught.message
-          ? caught.message
-          : t.newSite.submitting,
-      );
+      setError(describeProblem(caught, t.errors, t.newSite.failed));
       setSubmitting(false);
     }
   }

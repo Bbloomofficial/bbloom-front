@@ -1,3 +1,5 @@
+import type { ProblemStrings } from "../../api/problem";
+import { problemStrings } from "../../api/problemStrings";
 import type { Locale } from "../../i18n";
 
 /**
@@ -63,6 +65,8 @@ export type EditorStrings = {
   imageLinkUse: string;
   imageLinkFailed: string;
   imagePending: string;
+  /** What the client is told when a save is refused. */
+  errors: ProblemStrings;
 };
 
 const en: EditorStrings = {
@@ -127,6 +131,7 @@ const en: EditorStrings = {
   imageLinkFailed:
     "That link could not be fetched. Download the image and upload the file instead.",
   imagePending: "Not uploaded yet — it is saved when you press Save.",
+  errors: problemStrings("en"),
 };
 
 const ka: EditorStrings = {
@@ -190,6 +195,7 @@ const ka: EditorStrings = {
   imageLinkFailed:
     "ბმულის ჩამოტვირთვა ვერ მოხერხდა. ჩამოტვირთეთ სურათი და ატვირთეთ ფაილად.",
   imagePending: "ჯერ არ არის ატვირთული — შეინახება „შენახვაზე“ დაჭერისას.",
+  errors: problemStrings("ka"),
 };
 
 export function editorStrings(locale: Locale): EditorStrings {
