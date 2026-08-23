@@ -107,6 +107,14 @@ function lengthMessage(limits: FieldLimits, strings: ProblemStrings): string {
   // A minimum of one is "not empty" wearing a different hat, and someone who
   // left a field blank is better served by being told to fill it in.
   const floor = min !== undefined && min > 1 ? min : undefined;
+  // A pair that cannot both be satisfied describes no length at all. Rendering
+  // it would produce a confident instruction ("between 100 and 5 characters")
+  // that no input can follow, so the pair is dropped and the wider sentence is
+  // used instead. This cannot come from the annotations as they stand; it is
+  // here because the alternative to checking is trusting two numbers that
+  // arrived separately over a network to have kept their order.
+  if (floor !== undefined && max !== undefined && floor > max)
+    return strings.fieldInvalid;
   if (floor !== undefined && max !== undefined)
     return strings.fieldLengthRange(floor, max);
   if (max !== undefined) return strings.fieldTooLong(max);
