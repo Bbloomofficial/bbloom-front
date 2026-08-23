@@ -239,7 +239,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
       return user;
     } catch (error) {
-      if (error instanceof ApiError && error.status === 401) signOut();
+      // 401 is a rejected token. 404 is stranger and worse: the token is
+      // perfectly valid and the account behind it is gone, which happens when
+      // an account is deleted while someone is signed in. Nothing about that
+      // recovers, and without treating it as a dead session the panel sits
+      // there signed in to nobody, answering "not found" to everything with no
+      // way back out but clearing site data by hand.
+      if (
+        error instanceof ApiError &&
+        (error.status === 401 || error.status === 404)
+      ) {
+        signOut();
+      }
       return null;
     }
   }, [session?.token, signOut]);
