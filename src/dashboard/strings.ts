@@ -425,9 +425,10 @@ const en: DashboardStrings = {
     resend: "Send the email again",
     resendCode: "Send a new code",
     resending: "Sending…",
-    resent: "Sent. Check your inbox, including spam.",
+    resent:
+      "Sent. Check your inbox, including spam. Use the code in this newest email — the earlier one stopped working the moment we sent this one.",
     resentAgain:
-      "Sent again. If none of them have arrived, the problem is at our end and not with the address you typed. Write to hello@bbloom.ge and we will confirm you by hand.",
+      "Sent again. Use the code in the newest email; the earlier ones stopped working. If none of them have arrived, the problem is at our end and not with the address you typed. Write to hello@bbloom.ge and we will confirm you by hand.",
     resendFailed: "We could not send it. Try again shortly.",
     resendWait: (seconds) => `Send again in ${seconds}s`,
     resendTooSoon: "We just sent one. Give it a moment.",
@@ -798,9 +799,10 @@ const ka: DashboardStrings = {
     resend: "წერილის ხელახლა გაგზავნა",
     resendCode: "ახალი კოდის გამოგზავნა",
     resending: "იგზავნება…",
-    resent: "გაიგზავნა. შეამოწმეთ ელფოსტა, სპამის საქაღალდის ჩათვლით.",
+    resent:
+      "გაიგზავნა. შეამოწმეთ ელფოსტა, სპამის საქაღალდის ჩათვლით. გამოიყენეთ ბოლო წერილის კოდი — წინა კოდი ახლის გაგზავნისთანავე გაუქმდა.",
     resentAgain:
-      "ხელახლა გაიგზავნა. თუ არცერთი წერილი არ მოვიდა, პრობლემა ჩვენს მხარესაა და არა თქვენს მისამართში. მოგვწერეთ hello@bbloom.ge-ზე და ხელით დაგადასტურებთ.",
+      "ხელახლა გაიგზავნა. გამოიყენეთ ბოლო წერილის კოდი; წინები აღარ მუშაობს. თუ არცერთი წერილი არ მოვიდა, პრობლემა ჩვენს მხარესაა და არა თქვენს მისამართში. მოგვწერეთ hello@bbloom.ge-ზე და ხელით დაგადასტურებთ.",
     resendFailed: "ვერ გავაგზავნეთ. სცადეთ ცოტა ხანში.",
     resendWait: (seconds) => `ხელახლა გაგზავნა ${seconds} წმ-ში`,
     resendTooSoon: "ახლახან გავგზავნეთ. მოიცადეთ ცოტა.",
