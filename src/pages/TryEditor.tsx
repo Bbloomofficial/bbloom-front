@@ -438,7 +438,16 @@ export default function TryEditor() {
 
   return (
     <div className="grid min-h-screen grid-rows-[auto_1fr] lg:grid-cols-[380px_1fr] lg:grid-rows-1">
-      <aside className="flex max-h-[65vh] flex-col border-b border-ink-100 bg-canvas lg:max-h-screen lg:border-b-0 lg:border-r">
+      {/* On a phone this pane is a plain column that grows with its content and
+          scrolls with the page. It used to be capped at 65vh with the fields as
+          the only flexible child, which meant the header, the section list and
+          the save footer took a fixed ~440-500px and the editing area got
+          whatever was left: 18px on the tallest phone made, and literally
+          nothing below about 830px of viewport. A client on a 16-section
+          template inside Instagram's browser had no visible field at all.
+          Capping by viewport height only works where the chrome is a small
+          fraction of it, which is the desktop case and only that. */}
+      <aside className="flex flex-col border-b border-ink-100 bg-canvas lg:max-h-screen lg:border-b-0 lg:border-r">
         <div className="flex flex-col gap-3 border-b border-ink-100 p-4">
           <div className="flex items-center justify-between gap-2">
             <Link
@@ -523,7 +532,7 @@ export default function TryEditor() {
         </div>
 
         <div
-          className="flex-1 overflow-y-auto p-4"
+          className="p-4 lg:min-h-0 lg:flex-1 lg:overflow-y-auto"
           onFocusCapture={(event) => {
             const wrapper = (event.target as HTMLElement).closest(
               "[data-field-path]",
