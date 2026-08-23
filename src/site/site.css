@@ -446,6 +446,29 @@
     opacity: 1;
     transform: none;
   }
+
+  /* The marquee is the one animation whose *content* depends on the motion:
+     the message is only fully readable because it travels. The blanket rule
+     above snaps every animation to its end state, and this one's end state is
+     translateX(-50%) — so an announcement longer than the screen would sit
+     frozen mid-phrase, permanently, for exactly the users who asked for less
+     movement. Under reduced motion it therefore stops being a marquee: the
+     duplicate copies go, the single remaining one is allowed to wrap, and the
+     whole message is readable standing still. */
+  .site-marquee {
+    animation: none !important;
+    transform: none !important;
+    min-width: 0;
+    justify-content: center;
+  }
+
+  .site-marquee > span:not(:first-child) {
+    display: none;
+  }
+
+  .site-marquee > span:first-child > span {
+    white-space: normal;
+  }
 }
 
 /* Free-tier upgrade prompt */

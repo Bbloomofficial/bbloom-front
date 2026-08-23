@@ -30,7 +30,17 @@ export function AnnouncementBar({ section }: { section: PublicSection }) {
   );
 }
 
-/** Gradient strip that scrolls its message — the flagships. */
+/** Gradient strip that scrolls its message — the flagships.
+ *
+ *  Two things about the motion here are not interchangeable with the other
+ *  animations on a site. First, when it is *not* animated the text has to be
+ *  allowed to wrap: the strip clips, so a nowrap announcement wider than a
+ *  phone loses its first and last words with no way to reach them — and
+ *  "free delivery" is exactly the sort of thing that lives at one of those
+ *  ends. Second, the blanket prefers-reduced-motion rule in site.css snaps
+ *  every animation to its end state, and this animation's end state is
+ *  translateX(-50%), which would freeze the message mid-phrase forever. It
+ *  gets its own reduced-motion rule there for that reason. */
 export function AnnouncementMarquee({ section }: { section: PublicSection }) {
   const { effects } = useSite();
   const text = str(section.content, "text");
@@ -39,7 +49,11 @@ export function AnnouncementMarquee({ section }: { section: PublicSection }) {
   if (!text) return null;
 
   const item = (
-    <span className="mx-6 inline-flex items-center gap-3 text-sm font-semibold tracking-wide whitespace-nowrap">
+    <span
+      className={`mx-6 inline-flex items-center gap-3 text-sm font-semibold tracking-wide ${
+        animated ? "whitespace-nowrap" : ""
+      }`}
+    >
       <span aria-hidden="true">✦</span>
       {text}
     </span>
