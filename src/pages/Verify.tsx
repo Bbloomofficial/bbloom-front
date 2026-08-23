@@ -59,7 +59,14 @@ export default function Verify() {
           return;
         }
         setState("failed");
-        setDetail(error.message);
+        // A dead or spent link is exactly what the Georgian copy above already
+        // explains, so repeating it in English underneath adds nothing and
+        // reads like something broke. The server's words are kept only for a
+        // failure we have no copy for, so a new reason is never swallowed.
+        const expected =
+          error instanceof ApiError &&
+          (error.status === 404 || error.code === "TOKEN_EXPIRED");
+        setDetail(expected ? null : error.message);
       });
     return () => {
       cancelled = true;
