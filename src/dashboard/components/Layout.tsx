@@ -81,6 +81,39 @@ function SiteSwitcher({ active }: { active: AccountSite | null }) {
           role="menu"
           className="absolute start-0 top-full z-50 mt-2 w-72 overflow-hidden rounded-2xl border border-ink-100 bg-surface p-1.5 shadow-xl shadow-ink-900/10"
         >
+          {/*
+            The way out, first and before the list of places to go instead.
+
+            Every route into a site's screens replaces this whole header with
+            that site's tabs, and none of them is the websites list — so once a
+            client was inside one site the only way back was the URL bar. The
+            avatar looks like it should do this, but it opens the menu, which
+            is why the menu is where the answer belongs.
+
+            Only while inside a site: on the websites list itself this would
+            point at the page already being read.
+          */}
+          {active && (
+            <>
+              <Link
+                to="/dashboard"
+                onClick={() => setOpen(false)}
+                className="flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-semibold text-ink-900 transition hover:bg-ink-50"
+              >
+                <svg
+                  viewBox="0 0 20 20"
+                  className="h-4 w-4 shrink-0 text-ink-400 rtl:-scale-x-100"
+                  fill="currentColor"
+                  aria-hidden="true"
+                >
+                  <path d="M12.7 4.3a1 1 0 0 1 0 1.4L8.42 10l4.3 4.3a1 1 0 0 1-1.42 1.4l-5-5a1 1 0 0 1 0-1.4l5-5a1 1 0 0 1 1.4 0Z" />
+                </svg>
+                {t.sites.allSites}
+              </Link>
+              <div className="my-1 border-t border-ink-100" />
+            </>
+          )}
+
           <p className="px-3 pb-1 pt-2 text-xs font-bold uppercase tracking-wide text-ink-400">
             {t.sites.switcher}
           </p>
@@ -111,6 +144,25 @@ function SiteSwitcher({ active }: { active: AccountSite | null }) {
           >
             + {t.sites.addAnother}
           </Link>
+
+          {/*
+            The account, on the same terms as the button in the header: shown
+            only inside a site, because that is where the tabs do not offer it.
+
+            This is also the only route to it on a phone. The header button is
+            `md:inline-flex`, so below 768px a site's screens had no way to the
+            account page at all — the menu is reachable at every width, so the
+            same entry closes that too.
+          */}
+          {active && (
+            <Link
+              to="/dashboard/account"
+              onClick={() => setOpen(false)}
+              className="block rounded-xl px-3 py-2 text-sm font-semibold text-ink-600 transition hover:bg-ink-50 md:hidden"
+            >
+              {t.nav.account}
+            </Link>
+          )}
         </div>
       )}
     </div>
