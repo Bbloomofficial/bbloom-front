@@ -31,9 +31,10 @@ const en: ProblemStrings = {
   notFound: "We couldn't find that.",
   emailTaken: "There's already an account with this email. Sign in instead.",
   throttled: "Too many attempts. Wait a moment and try again.",
-  signInThrottled: "Signing in is paused for a moment. Please try again shortly.",
+  signInThrottled:
+    "Signing in to this account is paused for a moment. Please try again shortly.",
   signInThrottledFor: (minutes) =>
-    `Signing in is paused for a moment. Please try again in ${minutes} ${
+    `Signing in to this account is paused for a moment. Please try again in ${minutes} ${
       minutes === 1 ? "minute" : "minutes"
     }.`,
   server: "Something went wrong on our side. Please try again.",
@@ -59,9 +60,9 @@ const ka: ProblemStrings = {
   notFound: "ვერ მოიძებნა.",
   emailTaken: "ამ ელფოსტით ანგარიში უკვე არსებობს. უბრალოდ შედით.",
   throttled: "ბევრი მცდელობა იყო. მოიცადეთ და სცადეთ თავიდან.",
-  signInThrottled: "შესვლა დროებით შეჩერებულია. სცადეთ ცოტა ხანში.",
+  signInThrottled: "ამ ანგარიშზე შესვლა დროებით შეჩერებულია. სცადეთ ცოტა ხანში.",
   signInThrottledFor: (minutes) =>
-    `შესვლა დროებით შეჩერებულია. სცადეთ ${minutes} წუთში.`,
+    `ამ ანგარიშზე შესვლა დროებით შეჩერებულია. სცადეთ ${minutes} წუთში.`,
   server: "ჩვენს მხარეს რაღაც ვერ გამოვიდა. სცადეთ თავიდან.",
 };
 

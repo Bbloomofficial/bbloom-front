@@ -306,10 +306,15 @@ export function describeProblem(
       return caught.message || fallback;
     case 429: {
       // Two different throttles share this status. The sign-in one is counted
-      // per caller rather than per account, so the person reading this may not
-      // be the person who spent the budget — an office or a mobile carrier can
-      // put many people behind one address. The wording therefore describes the
-      // state and never asserts who caused it.
+      // per (caller address, account) pair — it was briefly per caller alone,
+      // which let one person's failures lock out everyone behind the same
+      // office line or carrier NAT.
+      //
+      // Pairing narrows that but does not close it, so the wording still
+      // describes the state and never asserts who caused it: a small business
+      // sharing one login is the common case here, and one colleague
+      // mistyping it ten times locks out the other. What no longer happens is
+      // collateral damage between *different* accounts on one address.
       if (caught.code !== "AUTH_RATE_LIMITED") return strings.throttled;
       const minutes = minutesUntil(caught.problem.retryAfter);
       return minutes
