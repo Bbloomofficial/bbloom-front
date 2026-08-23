@@ -253,6 +253,15 @@ export type MailHealth = {
    *
    * One row per person, holding their *first* failure, oldest first. An entry
    * disappears when that person receives something, not when anybody does.
+   *
+   * Capped at 20, and evicted from the **opposite end to `recentFailures`**:
+   * this list drops the *oldest* row to admit a new person, so that a stale
+   * list can never hide a live outage. The consequence for the screen is
+   * counter-intuitive and is the reason the truncation note is worded as it
+   * is — when this list is truncated, the people missing from it are the ones
+   * who have been waiting *longest*, not the ones who have just joined. An
+   * admin working top-down through the visible rows is not starting with the
+   * worst case; they are starting with the worst case still on the screen.
    */
   unresolved?: MailFailure[];
   /**
