@@ -21,7 +21,27 @@ import type { AccountProfile, AccountSite, EmailLanguage } from "./api/types";
  */
 const STORAGE_KEY = "bbloom:site-session";
 
-type StoredSession = { token: string; expiresAt: string; user: AccountProfile };
+type StoredSession = {
+  token: string;
+  expiresAt: string;
+  user: AccountProfile;
+  /**
+   * What happened to the last confirmation email we watched being sent, and
+   * when. Persisted because the build-before-you-sign-up flow registers on the
+   * marketing side and then navigates into the panel: a failed send held only
+   * in memory would be forgotten in exactly the flow most people arrive by.
+   */
+  mail?: { at: number; sent?: boolean | null };
+};
+
+/**
+ * How long a watched send is still worth reporting.
+ *
+ * Matched to the code's own fifteen-minute life. After that the client has to
+ * resend anyway, which produces a fresh answer — so a stale `false` can never
+ * outlive the thing it describes and start accusing a healthy server.
+ */
+const MAIL_FACT_TTL_MS = 15 * 60_000;
 
 function readSession(): StoredSession | null {
   if (typeof window === "undefined") return null;
@@ -86,11 +106,18 @@ export function storeSession(response: {
   token: string;
   expiresAt: string;
   user: AccountProfile;
+  mailSent?: boolean | null;
 }): void {
   writeSession({
     token: response.token,
     expiresAt: response.expiresAt,
     user: response.user,
+    // Only registration mails anything here; a sign-in carries no `mailSent`
+    // and must not leave a send fact behind for the panel to render.
+    mail:
+      response.mailSent === undefined
+        ? undefined
+        : { at: Date.now(), sent: response.mailSent },
   });
 }
 
@@ -124,6 +151,14 @@ type AuthValue = {
    * been sent by something other than the resend button itself.
    */
   resendAvailableAt: string | null;
+  /**
+   * True only when a send we watched explicitly reported failure and is recent
+   * enough to still be the one the client is waiting for. Unknown is never
+   * failure.
+   */
+  lastSendFailed: boolean;
+  /** Records the outcome of a send made elsewhere, e.g. the resend button. */
+  noteSend: (sent: boolean | null | undefined) => void;
 };
 
 const AuthContext = createContext<AuthValue | null>(null);
@@ -152,7 +187,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
    * too short and the 429 handler sets the real figure, too long and the client
    * waits a few extra seconds for a mail they have already been sent.
    */
-  const [mailedAt, setMailedAt] = useState<number | null>(null);
+  const [mailedAt, setMailedAt] = useState<number | null>(
+    () => readSession()?.mail?.at ?? null,
+  );
+  /**
+   * Whether that send actually left. `false` is the case this exists for: the
+   * client is sitting in the panel being told to check an inbox that will stay
+   * empty, and nothing else on the screen knows. Undefined is unknown and must
+   * read as "check your inbox", not as failure.
+   */
+  const [mailSent, setMailSent] = useState<boolean | null | undefined>(
+    () => readSession()?.mail?.sent,
+  );
 
   const signOut = useCallback(() => {
     window.localStorage.removeItem(STORAGE_KEY);
@@ -189,14 +235,32 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [session, restoring, signOut]);
 
   const start = useCallback(
-    (response: { token: string; expiresAt: string; user: AccountProfile }) => {
+    (
+      response: {
+        token: string;
+        expiresAt: string;
+        user: AccountProfile;
+        mailSent?: boolean | null;
+      },
+      /** Whether this response is one that caused an email to be sent. */
+      mailed: boolean,
+    ) => {
+      // Signing in sends nothing, so it must clear any earlier send result
+      // rather than inherit it. A `false` left over from a previous session
+      // would accuse a healthy server on a screen with no send behind it.
+      const mail = mailed
+        ? { at: Date.now(), sent: response.mailSent }
+        : undefined;
       const next: StoredSession = {
         token: response.token,
         expiresAt: response.expiresAt,
         user: response.user,
+        mail,
       };
       writeSession(next);
       setSession(next);
+      setMailedAt(mail?.at ?? null);
+      setMailSent(mail?.sent);
       setRestoring(false);
     },
     [],
@@ -204,7 +268,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signIn = useCallback(
     async (email: string, password: string) => {
-      start(await loginAccount(email, password));
+      start(await loginAccount(email, password), false);
     },
     [start],
   );
@@ -220,8 +284,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       password: string;
       language?: EmailLanguage;
     }) => {
-      start(await registerAccount(input));
-      setMailedAt(Date.now());
+      start(await registerAccount(input), true);
     },
     [start],
   );
@@ -277,6 +340,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     [signOut],
   );
 
+  const noteSend = useCallback((sent: boolean | null | undefined) => {
+    const at = Date.now();
+    setMailedAt(at);
+    setMailSent(sent);
+    setSession((current) => {
+      if (!current) return current;
+      const next = { ...current, mail: { at, sent } };
+      writeSession(next);
+      return next;
+    });
+  }, []);
+
   const value = useMemo<AuthValue>(
     () => ({
       token: session?.token ?? null,
@@ -287,6 +362,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       signOut,
       refresh,
       handleError,
+      noteSend,
+      lastSendFailed:
+        mailSent === false &&
+        mailedAt !== null &&
+        Date.now() - mailedAt < MAIL_FACT_TTL_MS,
       resendAvailableAt:
         mailedAt === null
           ? null
@@ -300,7 +380,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       signOut,
       refresh,
       handleError,
+      noteSend,
       mailedAt,
+      mailSent,
     ],
   );
 

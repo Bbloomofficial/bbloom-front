@@ -110,6 +110,13 @@ export type DashboardStrings = {
     codeFailed: string;
     codeSentTo: string;
     deliveryOff: string;
+    /**
+     * A single send that failed, as opposed to mail being switched off. The
+     * address is fine and the account is fine; one message did not leave.
+     */
+    sendFailed: string;
+    sendFailedTitle: string;
+    sendFailedBody: string;
     /** Shown instead of "we sent you a code" when the server cannot send mail. */
     unavailableTitle: string;
     unavailableBody: string;
@@ -432,6 +439,11 @@ const en: DashboardStrings = {
     codeSentTo: "We sent a code to",
     deliveryOff:
       "Email sending is not switched on yet, so nothing was sent. Tell us and we will confirm your address for you.",
+    sendFailed:
+      "That one did not send. Your address is fine — try again in a moment, or write to hello@bbloom.ge and we will confirm it for you.",
+    sendFailedTitle: "Your confirmation email did not send",
+    sendFailedBody:
+      "Nothing arrived because the message failed to leave us, not because your address is wrong. Send it again below, or write to hello@bbloom.ge and we will confirm your address for you.",
     unavailableTitle: "Email confirmation is temporarily unavailable",
     unavailableBody:
       "We cannot send confirmation emails at the moment, so no code is on its way. Keep building your website — you can confirm later, and nothing you do now is lost. Write to hello@bbloom.ge if you need your website online today.",
@@ -803,6 +815,11 @@ const ka: DashboardStrings = {
     unavailableHaveCode: "უკვე გაქვთ კოდი? შეიყვანეთ აქ.",
     deliveryOff:
       "ელფოსტის გაგზავნა ჯერ არ არის ჩართული, ამიტომ წერილი არ გასულა. მოგვწერეთ და ჩვენ დაგიდასტურებთ მისამართს.",
+    sendFailed:
+      "ეს წერილი ვერ გაიგზავნა. თქვენი მისამართი გამართულია — სცადეთ ცოტა ხანში ან მოგვწერეთ hello@bbloom.ge-ზე და ჩვენ დაგიდასტურებთ.",
+    sendFailedTitle: "დამადასტურებელი წერილი ვერ გაიგზავნა",
+    sendFailedBody:
+      "წერილი არ მოვიდა იმიტომ, რომ ჩვენგან ვერ გავიდა და არა იმიტომ, რომ მისამართი არასწორია. გაგზავნეთ ხელახლა ქვემოთ ან მოგვწერეთ hello@bbloom.ge-ზე და ჩვენ დაგიდასტურებთ მისამართს.",
     resendDailyLimit:
       "დღეს კოდების გაგზავნის ლიმიტი ამოიწურა. სცადეთ ხვალ ან მოგვწერეთ hello@bbloom.ge-ზე.",
     linkOnly:

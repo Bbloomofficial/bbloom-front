@@ -104,6 +104,20 @@ export type SiteLoginResponse = {
   tokenType: string;
   expiresAt: string;
   user: AccountProfile;
+  /**
+   * Whether *this* message was accepted by the mail server.
+   *
+   * Distinct from `emailDelivery`, which is an aggregate health flag that only
+   * goes false after three consecutive failures — so the first two people of
+   * every outage see a healthy server and an email that never arrives. This is
+   * the per-send answer, and the two are allowed to disagree.
+   *
+   * Absent or null means unknown: no answer within the server's wait, or
+   * nothing was sent at all (signing in mails nothing). Unknown must never be
+   * rendered as failure — claiming an email failed while it is still in flight
+   * is the same confident wrongness pointing the other way.
+   */
+  mailSent?: boolean | null;
 };
 
 /**
@@ -197,6 +211,11 @@ export type VerificationTicket = {
    * actually sent and telling the client to check their inbox would be a lie.
    */
   emailDelivery?: boolean;
+  /**
+   * Whether this particular resend was accepted by the mail server. See
+   * `SiteLoginResponse.mailSent`; absent/null is unknown, not failure.
+   */
+  mailSent?: boolean | null;
   /**
    * Only present while mail delivery was unwired. Never render it: once the
    * backend actually sends the email this field goes away, and a screen that

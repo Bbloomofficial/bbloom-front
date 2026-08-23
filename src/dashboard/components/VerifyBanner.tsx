@@ -19,7 +19,7 @@ export default function VerifyBanner() {
   const { locale } = useI18n();
   const t = dashboardStrings(locale);
   const { user, token } = useSession();
-  const { refresh, resendAvailableAt } = useAuth();
+  const { refresh, resendAvailableAt, lastSendFailed, noteSend } = useAuth();
 
   if (user.emailVerified) return null;
 
@@ -27,16 +27,30 @@ export default function VerifyBanner() {
   // field, and treating that as "broken" would tell every client on a healthy
   // server that confirmation is unavailable.
   const undeliverable = user.emailDelivery === false;
+  // A single send that failed is a different claim from mail being off, and it
+  // is the one that cost a real client: `emailDelivery` only goes false on the
+  // third consecutive failure, so the first people of an outage saw a healthy
+  // server and a cheerful "check your inbox" for a message that never left.
+  const failed = !undeliverable && lastSendFailed;
+
+  const title = undeliverable
+    ? t.verify.unavailableTitle
+    : failed
+      ? t.verify.sendFailedTitle
+      : t.verify.bannerTitle;
+  const body = undeliverable
+    ? t.verify.unavailableBody
+    : failed
+      ? t.verify.sendFailedBody
+      : t.verify.bannerBody;
 
   return (
     <div className="rounded-3xl border border-amber-200 bg-amber-50 p-5 dark:border-amber-900/60 dark:bg-amber-950/30">
-      <p className="font-bold text-amber-900 dark:text-amber-100">
-        {undeliverable ? t.verify.unavailableTitle : t.verify.bannerTitle}
-      </p>
+      <p className="font-bold text-amber-900 dark:text-amber-100">{title}</p>
       <p className="mt-1 text-sm text-amber-800 dark:text-amber-200/90">
-        {undeliverable ? t.verify.unavailableBody : t.verify.bannerBody}
+        {body}
       </p>
-      {!undeliverable && (
+      {!undeliverable && !failed && (
         <p className="mt-1 text-sm text-amber-800 dark:text-amber-200/90">
           {t.verify.codeSentTo}{" "}
           <span
@@ -54,6 +68,7 @@ export default function VerifyBanner() {
         tone="warning"
         emailDelivery={user.emailDelivery}
         resendAvailableAt={resendAvailableAt}
+        onSendResult={noteSend}
         // Re-reading the profile is what makes the banner disappear: the
         // confirmed flag lives on the session, not in local state here.
         onVerified={() => void refresh()}

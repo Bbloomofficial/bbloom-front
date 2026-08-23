@@ -54,6 +54,7 @@ type Message =
   | { kind: "resendTooSoon" }
   | { kind: "resendDailyLimit" }
   | { kind: "deliveryOff" }
+  | { kind: "sendFailed" }
   | { kind: "resent" }
   | { kind: "server"; text: string };
 
@@ -80,6 +81,11 @@ type Props = {
    * about the rate limit by being refused by it, which reads as a fault.
    */
   resendAvailableAt?: string | null;
+  /**
+   * Reports what the server said about the resend it just made, so a surface
+   * that renders its own "we emailed you" headline can stop claiming it.
+   */
+  onSendResult?: (sent: boolean | null | undefined) => void;
 };
 
 export default function VerifyCodeForm({
@@ -89,6 +95,7 @@ export default function VerifyCodeForm({
   emailDelivery,
   tone = "surface",
   resendAvailableAt,
+  onSendResult,
 }: Props) {
   const { locale } = useI18n();
   const t = dashboardStrings(locale);
@@ -114,6 +121,8 @@ export default function VerifyCodeForm({
           return t.verify.resendDailyLimit;
         case "deliveryOff":
           return t.verify.deliveryOff;
+        case "sendFailed":
+          return t.verify.sendFailed;
         case "resent":
           return t.verify.resent;
         case "server":
@@ -344,10 +353,19 @@ export default function VerifyCodeForm({
       // nothing left the building. Telling someone to check an inbox that will
       // stay empty wastes their time and makes them doubt the address they
       // typed, so it says what actually happened instead.
+      //
+      // `mailSent: false` is narrower and newer: mail works, this one message
+      // did not go. It gets its own line because the remedy differs — resending
+      // is worth trying, whereas resending into an unconfigured server is not.
+      // Absent or null is unknown and must stay optimistic; claiming a failure
+      // while the send is still in flight is the same lie reversed.
+      onSendResult?.(ticket.mailSent);
       setNotice(
         ticket.emailDelivery === false
           ? { kind: "deliveryOff" }
-          : { kind: "resent" },
+          : ticket.mailSent === false
+            ? { kind: "sendFailed" }
+            : { kind: "resent" },
       );
     } catch (caught) {
       if (caught instanceof ApiError && caught.status === 429) {
