@@ -116,6 +116,13 @@ export type SiteLoginResponse = {
    * nothing was sent at all (signing in mails nothing). Unknown must never be
    * rendered as failure — claiming an email failed while it is still in flight
    * is the same confident wrongness pointing the other way.
+   *
+   * The ceiling on `true`: it means the SMTP server *accepted* the message, not
+   * that it arrived. A typo'd or dead address is accepted and bounces
+   * asynchronously at the far end, where no signal reaches us. So `true` rules
+   * out the failure that cost a client on 23 August — authentication refused,
+   * nothing left the building — and rules out nothing about the address. Copy
+   * on this branch may say "sent"; it may not say "delivered".
    */
   mailSent?: boolean | null;
 };

@@ -51,15 +51,25 @@ export default function VerifyBanner() {
         {body}
       </p>
       {!undeliverable && !failed && (
-        <p className="mt-1 text-sm text-amber-800 dark:text-amber-200/90">
-          {t.verify.codeSentTo}{" "}
-          <span
-            className="font-semibold text-amber-900 dark:text-amber-100"
-            dir="ltr"
-          >
-            {user.email}
-          </span>
-        </p>
+        <>
+          <p className="mt-1 text-sm text-amber-800 dark:text-amber-200/90">
+            {t.verify.codeSentTo}{" "}
+            <span
+              className="font-semibold text-amber-900 dark:text-amber-100"
+              dir="ltr"
+            >
+              {user.email}
+            </span>
+          </p>
+          {/* The server can only tell us the message was accepted, never that
+              it landed: a typo'd address is accepted and bounces minutes later
+              at the far end, where nothing reaches us. Printing the address is
+              what makes a typo visible; this names the two things that can
+              still be wrong when the code does not arrive. */}
+          <p className="mt-1 text-xs text-amber-800/90 dark:text-amber-200/80">
+            {t.verify.notArrived}
+          </p>
+        </>
       )}
 
       <VerifyCodeForm

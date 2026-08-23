@@ -109,6 +109,14 @@ export type DashboardStrings = {
     codeTooManyAttempts: string;
     codeFailed: string;
     codeSentTo: string;
+    /**
+     * `mailSent: true` means the SMTP server accepted the message, not that it
+     * arrived: a typo'd or dead address is accepted and bounces asynchronously
+     * minutes later, with no signal the API ever sees. So the optimistic branch
+     * has to offer the two things that can still be wrong — the spam folder and
+     * the address itself — next to the address, where a typo is visible.
+     */
+    notArrived: string;
     deliveryOff: string;
     /**
      * A single send that failed, as opposed to mail being switched off. The
@@ -419,7 +427,7 @@ const en: DashboardStrings = {
     resend: "Send the email again",
     resendCode: "Send a new code",
     resending: "Sending…",
-    resent: "Sent. Check your inbox.",
+    resent: "Sent. Check your inbox, including spam.",
     resendFailed: "We could not send it. Try again shortly.",
     resendWait: (seconds) => `Send again in ${seconds}s`,
     resendTooSoon: "We just sent one. Give it a moment.",
@@ -437,6 +445,8 @@ const en: DashboardStrings = {
       "Too many attempts. Send yourself a new code and try again.",
     codeFailed: "We could not check that code. Try again shortly.",
     codeSentTo: "We sent a code to",
+    notArrived:
+      "Not there? Check your spam folder. If that address is wrong, write to hello@bbloom.ge and we will correct it.",
     deliveryOff:
       "Email sending is not switched on yet, so nothing was sent. Tell us and we will confirm your address for you.",
     sendFailed:
@@ -791,7 +801,7 @@ const ka: DashboardStrings = {
     resend: "წერილის ხელახლა გაგზავნა",
     resendCode: "ახალი კოდის გამოგზავნა",
     resending: "იგზავნება…",
-    resent: "გაიგზავნა. შეამოწმეთ ელფოსტა.",
+    resent: "გაიგზავნა. შეამოწმეთ ელფოსტა, სპამის საქაღალდის ჩათვლით.",
     resendFailed: "ვერ გავაგზავნეთ. სცადეთ ცოტა ხანში.",
     resendWait: (seconds) => `ხელახლა გაგზავნა ${seconds} წმ-ში`,
     resendTooSoon: "ახლახან გავგზავნეთ. მოიცადეთ ცოტა.",
@@ -809,6 +819,8 @@ const ka: DashboardStrings = {
       "ცდების რაოდენობა ამოიწურა. გამოიგზავნეთ ახალი კოდი და სცადეთ ხელახლა.",
     codeFailed: "კოდი ვერ შევამოწმეთ. სცადეთ ცოტა ხანში.",
     codeSentTo: "კოდი გამოგზავნილია მისამართზე",
+    notArrived:
+      "არ მოვიდა? შეამოწმეთ სპამის საქაღალდე. თუ ეს მისამართი არასწორია, მოგვწერეთ hello@bbloom.ge-ზე და გავასწორებთ.",
     unavailableTitle: "ელფოსტის დადასტურება დროებით მიუწვდომელია",
     unavailableBody:
       "ამჟამად დამადასტურებელი წერილის გაგზავნა ვერ ხერხდება, ამიტომ კოდი არ მოვა. განაგრძეთ ვებგვერდის აწყობა — დადასტურებას მოგვიანებით შეძლებთ და არაფერი დაიკარგება. თუ ვებგვერდის დღესვე გამოქვეყნება გჭირდებათ, მოგვწერეთ hello@bbloom.ge-ზე.",
