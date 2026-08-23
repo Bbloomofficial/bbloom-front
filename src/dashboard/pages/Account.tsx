@@ -1,6 +1,7 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
 import { ApiError, authFailure } from "../../api/http";
+import PasswordField from "../../components/PasswordField";
 import { describeProblem } from "../../api/problem";
 import { useI18n } from "../../i18n";
 import { changeAccountPassword } from "../api/account";
@@ -98,9 +99,8 @@ export default function Account() {
             <label className="label" htmlFor="current-password">
               {t.account.currentPassword}
             </label>
-            <input
+            <PasswordField
               id="current-password"
-              type="password"
               autoComplete="current-password"
               dir="ltr"
               required
@@ -113,9 +113,8 @@ export default function Account() {
             <label className="label" htmlFor="new-password">
               {t.account.newPassword}
             </label>
-            <input
+            <PasswordField
               id="new-password"
-              type="password"
               autoComplete="new-password"
               dir="ltr"
               required

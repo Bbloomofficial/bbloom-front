@@ -3,6 +3,7 @@ import type { FormEvent } from "react";
 import { Link } from "react-router-dom";
 import Logo from "../../components/Logo";
 import LanguageSwitcher from "../../components/LanguageSwitcher";
+import PasswordField from "../../components/PasswordField";
 import { describeProblem } from "../../api/problem";
 import { useI18n } from "../../i18n";
 import { useAuth } from "../auth";
@@ -112,10 +113,9 @@ export default function Register() {
             <label className="label" htmlFor="register-password">
               {t.register.password}
             </label>
-            <input
+            <PasswordField
               id="register-password"
               name="password"
-              type="password"
               autoComplete="new-password"
               dir="ltr"
               required

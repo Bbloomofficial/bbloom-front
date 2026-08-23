@@ -2,6 +2,7 @@ import { useState } from "react";
 import type { FormEvent } from "react";
 import Logo from "../../components/Logo";
 import LanguageSwitcher from "../../components/LanguageSwitcher";
+import PasswordField from "../../components/PasswordField";
 import { ApiError } from "../../api/http";
 import { useI18n } from "../../i18n";
 import { useAuth } from "../auth";
@@ -75,10 +76,9 @@ export default function Login() {
                 <label className="label" htmlFor="admin-password">
                   {t.login.password}
                 </label>
-                <input
+                <PasswordField
                   id="admin-password"
                   name="password"
-                  type="password"
                   autoComplete="current-password"
                   dir="ltr"
                   required

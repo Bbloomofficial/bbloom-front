@@ -23,6 +23,8 @@ export const ka: Dict = {
 
   theme: { toLight: 'ღია თემაზე გადართვა', toDark: 'მუქ თემაზე გადართვა' },
 
+  password: { show: 'პაროლის ჩვენება', hide: 'პაროლის დამალვა' },
+
   language: { label: 'ენის შეცვლა' },
 
   hero: {

@@ -23,6 +23,8 @@ export const en: Dict = {
 
   theme: { toLight: 'Switch to light theme', toDark: 'Switch to dark theme' },
 
+  password: { show: 'Show password', hide: 'Hide password' },
+
   language: { label: 'Change language' },
 
   hero: {

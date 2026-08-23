@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useI18n } from "../i18n";
+import PasswordField from "../components/PasswordField";
 import { describeProblem } from "../api/problem";
 import { fetchTemplates } from "../api/templates";
 import { fetchSite } from "../site/api/client";
@@ -868,9 +869,8 @@ export default function TryEditor() {
                   <span className="text-xs font-semibold text-ink-500">
                     {t.password}
                   </span>
-                  <input
+                  <PasswordField
                     name="password"
-                    type="password"
                     required
                     minLength={8}
                     autoComplete={
@@ -878,7 +878,8 @@ export default function TryEditor() {
                         ? "new-password"
                         : "current-password"
                     }
-                    className={`${inputClass} mt-1.5`}
+                    className={inputClass}
+                    wrapperClassName="mt-1.5"
                   />
                   {save.mode === "register" ? (
                     <span className="mt-1 block text-xs text-ink-400">

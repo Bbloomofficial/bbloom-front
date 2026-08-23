@@ -1,6 +1,7 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
 import { Link } from "react-router-dom";
+import PasswordField from "../../components/PasswordField";
 import { describeProblem } from "../../api/problem";
 import { useI18n } from "../../i18n";
 import { useAuth } from "../auth";
@@ -60,10 +61,9 @@ export default function Login() {
             <label className="label" htmlFor="dashboard-password">
               {t.login.password}
             </label>
-            <input
+            <PasswordField
               id="dashboard-password"
               name="password"
-              type="password"
               autoComplete="current-password"
               dir="ltr"
               required

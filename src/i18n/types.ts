@@ -42,6 +42,7 @@ export type Dict = {
     home: string
   }
   theme: { toLight: string; toDark: string }
+  password: { show: string; hide: string }
   language: { label: string }
   hero: {
     eyebrow: string
