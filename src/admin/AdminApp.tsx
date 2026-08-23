@@ -1,10 +1,12 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import { AuthProvider, useAuth } from "./auth";
+import { SystemProvider } from "./system";
 import Layout from "./components/Layout";
 import Login from "./pages/Login";
 import Sites from "./pages/Sites";
 import NewSite from "./pages/NewSite";
 import SiteDetail from "./pages/SiteDetail";
+import SystemStatus from "./pages/SystemStatus";
 
 function Routed() {
   const { token, restoring } = useAuth();
@@ -15,14 +17,17 @@ function Routed() {
   if (!token) return <Login />;
 
   return (
-    <Layout>
-      <Routes>
-        <Route path="/" element={<Sites />} />
-        <Route path="sites/new" element={<NewSite />} />
-        <Route path="sites/:siteId" element={<SiteDetail />} />
-        <Route path="*" element={<Navigate to="/admin" replace />} />
-      </Routes>
-    </Layout>
+    <SystemProvider>
+      <Layout>
+        <Routes>
+          <Route path="/" element={<Sites />} />
+          <Route path="sites/new" element={<NewSite />} />
+          <Route path="sites/:siteId" element={<SiteDetail />} />
+          <Route path="system" element={<SystemStatus />} />
+          <Route path="*" element={<Navigate to="/admin" replace />} />
+        </Routes>
+      </Layout>
+    </SystemProvider>
   );
 }
 

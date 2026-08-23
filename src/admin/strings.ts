@@ -7,7 +7,7 @@ import type { Locale } from "../i18n";
  */
 export type AdminStrings = {
   brand: string;
-  nav: { sites: string; newSite: string };
+  nav: { sites: string; newSite: string; system: string };
   signedInAs: string;
   signOut: string;
   backToBbloom: string;
@@ -179,6 +179,30 @@ export type AdminStrings = {
     deleteConfirm: (slug: string) => string;
     deleting: string;
   };
+  system: {
+    title: string;
+    subtitle: string;
+    snapshotNote: string;
+    checkedAt: string;
+    refresh: string;
+    mailTitle: string;
+    mailStatuses: Record<string, string>;
+    offNote: string;
+    okNote: string;
+    lastSuccess: string;
+    unknown: string;
+    consecutive: (count: number) => string;
+    waitingTitle: (count: number) => string;
+    waitingBody: string;
+    listNote: string;
+    allShownNote: string;
+    colTime: string;
+    colRecipient: string;
+    colSubject: string;
+    colReason: string;
+    noneWaiting: string;
+    bannerAction: string;
+  };
   statuses: Record<string, string>;
   categories: Record<string, string>;
   tiers: Record<string, string>;
@@ -191,7 +215,7 @@ export type AdminStrings = {
 
 const en: AdminStrings = {
   brand: "bbloom staff",
-  nav: { sites: "Sites", newSite: "New site" },
+  nav: { sites: "Sites", newSite: "New site", system: "System" },
   signedInAs: "Signed in as",
   signOut: "Sign out",
   backToBbloom: "Back to bbloom.co",
@@ -379,6 +403,46 @@ const en: AdminStrings = {
     deleteConfirm: (slug) => `Type ${slug} to confirm`,
     deleting: "Deleting…",
   },
+  system: {
+    title: "System",
+    subtitle: "What the API is doing right now.",
+    snapshotNote:
+      "This is the running server's own memory, so it resets whenever the API is deployed. It answers what is wrong now, not what happened last week.",
+    checkedAt: "Checked",
+    refresh: "Refresh",
+    mailTitle: "Outgoing email",
+    mailStatuses: {
+      OK: "Sending",
+      DEGRADED: "Some mail is failing",
+      FAILING: "Not sending",
+      OFF: "Turned off",
+    },
+    offNote:
+      "No from-address is configured, so email is deliberately doing nothing. That is the expected state outside production.",
+    okNote: "Every email we have tried to send has gone out.",
+    lastSuccess: "Last successful send",
+    unknown: "Unknown",
+    consecutive: (count) =>
+      count === 1
+        ? "1 failure in a row"
+        : `${count} failures in a row`,
+    waitingTitle: (count) =>
+      count === 1
+        ? "1 person is waiting for an email that never sent"
+        : `${count} people are waiting for an email that never sent`,
+    waitingBody:
+      "Confirming an email address is the only thing standing between a client and a published website. Until this is fixed they cannot proceed, and nothing on their screen tells them why.",
+    listNote:
+      "This list is cleared by the next successful send, so everyone still on it is still waiting.",
+    allShownNote:
+      "Every failure is listed. The most recent is not necessarily the one that matters.",
+    colTime: "Time",
+    colRecipient: "Recipient",
+    colSubject: "Email",
+    colReason: "Reason",
+    noneWaiting: "Nobody is waiting for an email.",
+    bannerAction: "See who",
+  },
   statuses: { DRAFT: "Draft", PUBLISHED: "Published" },
   categories: { SHOP: "Online shop", RESTAURANT: "Restaurant" },
   tiers: { SIMPLE: "Simple", CLASSIC: "Classic", MODERN: "Modern" },
@@ -388,7 +452,7 @@ const en: AdminStrings = {
 
 const ka: AdminStrings = {
   brand: "bbloom გუნდი",
-  nav: { sites: "საიტები", newSite: "ახალი საიტი" },
+  nav: { sites: "საიტები", newSite: "ახალი საიტი", system: "სისტემა" },
   signedInAs: "შესული ხართ როგორც",
   signOut: "გამოსვლა",
   backToBbloom: "დაბრუნება bbloom.co-ზე",
@@ -578,6 +642,41 @@ const ka: AdminStrings = {
     deleteSite: "საიტის წაშლა",
     deleteConfirm: (slug) => `დასადასტურებლად აკრიფეთ ${slug}`,
     deleting: "იშლება…",
+  },
+  system: {
+    title: "სისტემა",
+    subtitle: "რას აკეთებს API ამ წუთში.",
+    snapshotNote:
+      "ეს სერვერის მიმდინარე მეხსიერებაა და ნულდება ყოველი განახლებისას. ის პასუხობს კითხვას „რა არ მუშაობს ახლა“, და არა „რა მოხდა გასულ კვირას“.",
+    checkedAt: "შემოწმდა",
+    refresh: "განახლება",
+    mailTitle: "გამავალი ელფოსტა",
+    mailStatuses: {
+      OK: "იგზავნება",
+      DEGRADED: "ნაწილი ვერ გაიგზავნა",
+      FAILING: "არ იგზავნება",
+      OFF: "გამორთულია",
+    },
+    offNote:
+      "გამგზავნი მისამართი მითითებული არ არის, ამიტომ ელფოსტა განზრახ არაფერს აკეთებს. სატესტო გარემოში ეს გამართული მდგომარეობაა.",
+    okNote: "ყველა წერილი, რომლის გაგზავნაც ვცადეთ, გავიდა.",
+    lastSuccess: "ბოლო წარმატებული გაგზავნა",
+    unknown: "უცნობია",
+    consecutive: (count) => `ზედიზედ ${count} წარუმატებელი მცდელობა`,
+    waitingTitle: (count) =>
+      `${count} ადამიანი ელოდება წერილს, რომელიც არ გაიგზავნა`,
+    waitingBody:
+      "ელფოსტის დადასტურება ერთადერთია, რაც კლიენტსა და გამოქვეყნებულ საიტს შორის დგას. სანამ ეს არ გასწორდება, ისინი ვერაფერს გააკეთებენ — და მათ ეკრანზე არაფერი ამბობს, რატომ.",
+    listNote:
+      "სია იწმინდება პირველივე წარმატებული გაგზავნისას, ამიტომ ყველა, ვინც აქ წერია, ჯერ კიდევ ელოდება.",
+    allShownNote:
+      "ნაჩვენებია ყველა ჩანაწერი. ბოლო აუცილებლად არ ნიშნავს მთავარს.",
+    colTime: "დრო",
+    colRecipient: "მიმღები",
+    colSubject: "წერილი",
+    colReason: "მიზეზი",
+    noneWaiting: "წერილს არავინ ელოდება.",
+    bannerAction: "ნახეთ ვინ",
   },
   statuses: { DRAFT: "მუშავდება", PUBLISHED: "გამოქვეყნებული" },
   categories: { SHOP: "ონლაინ მაღაზია", RESTAURANT: "რესტორანი" },

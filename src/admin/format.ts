@@ -14,6 +14,22 @@ export function formatDate(value: string | undefined, locale: Locale): string {
   });
 }
 
+/** Date and clock time. The status screen needs the minute, not just the day. */
+export function formatDateTime(
+  value: string | undefined,
+  locale: Locale,
+): string {
+  if (!value) return "—";
+  const parsed = Date.parse(value);
+  if (Number.isNaN(parsed)) return "—";
+  return new Date(parsed).toLocaleString(locale === "ka" ? "ka-GE" : "en-GB", {
+    day: "numeric",
+    month: "short",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
 /**
  * Mirrors the backend's slug derivation closely enough to preview it: lowercase
  * ASCII, dashes for gaps. Georgian names transliterate to nothing, which is why
@@ -30,7 +46,6 @@ export function slugify(value: string): string {
 }
 
 export const SLUG_PATTERN = /^[a-z0-9-]*$/;
-
 /** Bilingual values arrive as a `*Ka`/`*En` pair; pick the reader's language. */
 export function localised(
   ka: string | undefined,

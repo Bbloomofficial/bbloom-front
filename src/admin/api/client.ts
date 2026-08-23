@@ -7,6 +7,7 @@ import type {
   SiteUser,
   StaffLoginResponse,
   StaffProfile,
+  SystemStatus,
   TemplateSummary,
   UpdateSiteRequest,
 } from "./types";
@@ -43,6 +44,16 @@ export function login(
 
 export function fetchProfile(token: string): Promise<StaffProfile> {
   return authed<StaffProfile>(token, "/auth/me");
+}
+
+/**
+ * Operational health of the API process. Staff-only, and the reason it exists
+ * is that a failed confirmation email used to be visible only in container
+ * logs — while the client it belonged to sat looking at a screen that said
+ * everything had gone fine.
+ */
+export function fetchSystemStatus(token: string): Promise<SystemStatus> {
+  return authed<SystemStatus>(token, "/admin/system/status");
 }
 
 /**

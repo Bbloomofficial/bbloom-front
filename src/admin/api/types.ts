@@ -181,3 +181,56 @@ export type UpdateSiteRequest = {
   contactAddressEn?: string | null;
   mapUrl?: string | null;
 };
+
+/**
+ * Operational health of the API process, for the staff status screen.
+ *
+ * This is a snapshot of the running container's memory, not an audit log: it
+ * resets on every deploy. It answers "is something wrong now", and a screen
+ * built on it must not imply it can answer "what happened last week".
+ */
+
+/**
+ * `OFF` means no from-address is configured, so mail is deliberately a no-op.
+ * That is the correct state on a developer's laptop and must not be rendered
+ * as an outage.
+ */
+export const MAIL_STATUSES = ["OK", "DEGRADED", "FAILING", "OFF"] as const;
+export type MailStatus = (typeof MAIL_STATUSES)[number];
+
+/**
+ * One send that did not leave the building. `recipient` is deliberately
+ * unmasked by the backend and must stay that way — the only job this screen
+ * has is telling a human who to go and apologise to.
+ */
+export type MailFailure = {
+  at: string;
+  recipient: string;
+  subject: string;
+  reason: string;
+};
+
+export type MailHealth = {
+  status: MailStatus;
+  configured: boolean;
+  /**
+   * The *client-facing* flag, which stays true through the first two failures
+   * by design. Never branch on it here: on the day it mattered, the first
+   * failure and the lost customer were the same send. Branch on `status`.
+   */
+  healthy: boolean;
+  consecutiveFailures: number;
+  /** Absent — not null — when the process has restarted and not yet sent. */
+  lastSuccessAt?: string;
+  /**
+   * Cleared by the next successful send, so a non-empty list means these
+   * people are still waiting. Most recent first, but the most recent is
+   * routinely the least important entry: render all of them.
+   */
+  recentFailures: MailFailure[];
+};
+
+export type SystemStatus = {
+  checkedAt: string;
+  mail: MailHealth;
+};

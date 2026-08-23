@@ -5,6 +5,8 @@ import LanguageSwitcher from "../../components/LanguageSwitcher";
 import ThemeToggle from "../../components/ThemeToggle";
 import { useI18n } from "../../i18n";
 import { useSession } from "../auth";
+import { useSystemStatus } from "../system";
+import MailAlert from "./MailAlert";
 import { adminStrings } from "../strings";
 
 function navClass({ isActive }: { isActive: boolean }) {
@@ -20,6 +22,9 @@ export default function Layout({ children }: { children: ReactNode }) {
   const { locale } = useI18n();
   const t = adminStrings(locale);
   const { user, signOut } = useSession();
+  // Staff below ADMIN cannot read the health endpoint, so the link is hidden
+  // rather than left to lead them to an empty screen.
+  const { forbidden } = useSystemStatus();
 
   return (
     <div className="flex min-h-screen flex-col bg-canvas">
@@ -39,6 +44,11 @@ export default function Layout({ children }: { children: ReactNode }) {
             <NavLink to="/admin/sites/new" className={navClass}>
               {t.nav.newSite}
             </NavLink>
+            {!forbidden && (
+              <NavLink to="/admin/system" className={navClass}>
+                {t.nav.system}
+              </NavLink>
+            )}
           </nav>
 
           <div className="ms-auto flex items-center gap-2">
@@ -61,8 +71,15 @@ export default function Layout({ children }: { children: ReactNode }) {
           <NavLink to="/admin/sites/new" className={navClass}>
             {t.nav.newSite}
           </NavLink>
+          {!forbidden && (
+            <NavLink to="/admin/system" className={navClass}>
+              {t.nav.system}
+            </NavLink>
+          )}
         </nav>
       </header>
+
+      <MailAlert />
 
       <main className="container-page flex-1 py-8 sm:py-10">{children}</main>
 
