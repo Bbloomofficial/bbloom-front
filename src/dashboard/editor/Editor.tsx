@@ -6,6 +6,7 @@ import { publishErrorMessage } from "../gate";
 import { dashboardStrings } from "../strings";
 import { useActiveSite } from "../site";
 import { useResource } from "../hooks";
+import { useStarvationWarning } from "../../hooks/useStarvationWarning";
 import {
   deleteMedia,
   discardSections,
@@ -119,6 +120,7 @@ export default function Editor() {
    * through `pendingUrl`.
    */
   const pending = useRef(new Map<string, PendingImage>());
+  const fieldsPaneRef = useStarvationWarning("site editor fields");
   const [pickResolve, setPickResolve] = useState<
     ((value: unknown) => void) | null
   >(null);
@@ -463,13 +465,19 @@ export default function Editor() {
                       ) : null}
                     </span>
                   </button>
-                  <span className="flex flex-col">
+                  {/* Side by side with a real gap on touch: stacked, these were
+                      18x16 with no space between them, so "move up" and "move
+                      down" were one tap target wide and a mis-tap silently
+                      reordered the page. Density is only reinstated at lg,
+                      where the pointer is a mouse. */}
+                  <span className="flex gap-2 lg:flex-col lg:gap-0">
                     <button
                       type="button"
                       onClick={() => void move(index, -1)}
                       disabled={index === 0 || busy}
                       aria-label={t.moveUp}
-                      className="px-1 text-xs text-ink-300 transition hover:text-bloom-600 disabled:opacity-25"
+                      title={t.moveUp}
+                      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-xs text-ink-300 transition hover:text-bloom-600 disabled:opacity-25 lg:h-auto lg:w-auto lg:rounded-none lg:px-1"
                     >
                       ▲
                     </button>
@@ -478,7 +486,8 @@ export default function Editor() {
                       onClick={() => void move(index, 1)}
                       disabled={index === sections.length - 1 || busy}
                       aria-label={t.moveDown}
-                      className="px-1 text-xs text-ink-300 transition hover:text-bloom-600 disabled:opacity-25"
+                      title={t.moveDown}
+                      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-xs text-ink-300 transition hover:text-bloom-600 disabled:opacity-25 lg:h-auto lg:w-auto lg:rounded-none lg:px-1"
                     >
                       ▼
                     </button>
@@ -524,8 +533,14 @@ export default function Editor() {
                 </div>
               ) : null}
 
+              {/* Not capped on a phone: a vh-height inner scroller inside a page
+                  that already scrolls fights the native gesture, and it is the
+                  same shape as the try-editor bug. It also has to go for the
+                  sticky save bar below to engage — a short section never
+                  scrolls, so the bar would never travel with you. */}
               <div
-                className="max-h-[60vh] overflow-y-auto pe-1"
+                ref={fieldsPaneRef}
+                className="pe-1 lg:max-h-[60vh] lg:overflow-y-auto"
                 onFocusCapture={(event) => {
                   const wrapper = (event.target as HTMLElement).closest(
                     "[data-field-path]",
@@ -553,12 +568,18 @@ export default function Editor() {
                 />
               </div>
 
-              <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-ink-100 pt-3">
+              {/* Sticky to the bottom of the screen while you are inside the
+                  field list. It used to sit in flow at the end of it, which put
+                  the primary action of the screen ~900px below the fold on a
+                  phone: you could not tell a saved page from an unsaved one
+                  without scrolling to find out. Static again at lg, where the
+                  whole column already fits. */}
+              <div className="sticky bottom-0 z-20 -mx-4 -mb-4 mt-4 flex flex-wrap items-center gap-2 border-t border-ink-100 bg-surface px-4 pb-4 pt-3 lg:static lg:mx-0 lg:mb-0 lg:px-0 lg:pb-0">
                 <button
                   type="button"
                   onClick={() => void save()}
                   disabled={!dirty || saving}
-                  className="rounded-xl bg-bloom-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-bloom-700 disabled:opacity-40"
+                  className="inline-flex min-h-11 items-center rounded-xl bg-bloom-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-bloom-700 disabled:opacity-40 lg:min-h-0"
                 >
                   {saving ? t.saving : t.save}
                 </button>
@@ -566,7 +587,7 @@ export default function Editor() {
                   type="button"
                   onClick={reset}
                   disabled={busy}
-                  className="rounded-xl border border-ink-100 px-3 py-2 text-xs font-semibold text-ink-500 transition hover:border-bloom-300 hover:text-bloom-600 disabled:opacity-40"
+                  className="inline-flex min-h-11 items-center rounded-xl border border-ink-100 px-3 py-2 text-xs font-semibold text-ink-500 transition hover:border-bloom-300 hover:text-bloom-600 disabled:opacity-40 lg:min-h-0"
                 >
                   {t.reset}
                 </button>

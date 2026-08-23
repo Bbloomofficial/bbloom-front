@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useI18n } from "../i18n";
 import PasswordField from "../components/PasswordField";
+import { useStarvationWarning } from "../hooks/useStarvationWarning";
 import { describeProblem } from "../api/problem";
 import { fetchTemplates } from "../api/templates";
 import { fetchSite } from "../site/api/client";
@@ -167,6 +168,7 @@ export default function TryEditor() {
   const [focusField, setFocusField] = useState<string | null>(null);
   const [activeField, setActiveField] = useState<string | null>(null);
   const previewRef = useRef<HTMLDivElement>(null);
+  const fieldsPaneRef = useStarvationWarning("try editor fields");
 
   useEffect(() => {
     let cancelled = false;
@@ -532,6 +534,7 @@ export default function TryEditor() {
         </div>
 
         <div
+          ref={fieldsPaneRef}
           className="p-4 lg:min-h-0 lg:flex-1 lg:overflow-y-auto"
           onFocusCapture={(event) => {
             const wrapper = (event.target as HTMLElement).closest(
