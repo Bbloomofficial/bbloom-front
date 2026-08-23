@@ -9,11 +9,18 @@
  * panel, which is how this was found: an empty business name on the create-site
  * form answered in a language the client had not chosen.
  *
- * So nothing here parses prose to decide *what happened*. The decision is made
- * from the status code and the stable `code` property, and the English text is
- * consulted only to tell one validation complaint from another, where the
- * status alone cannot. That ordering matters, because the backend has said it
- * intends to reword its prose, and copy that can be reworded is not a contract.
+ * So nothing here parses prose to decide *what happened*. Every decision is
+ * made from the status, the problem's `code`, and — for a rejected field — the
+ * `fieldCodes` map, which names the Bean Validation constraint that failed
+ * (`NotBlank`, `Size`, `Email`). That is the constraint itself rather than a
+ * sentence describing it, so it cannot be reworded out from under us, and the
+ * backend has said it intends to reword its prose.
+ *
+ * The one thing still read out of a message is the pair of *numbers* in a
+ * `Size` violation, because the limit lives in the backend's field definitions
+ * and there is nowhere else on this side to learn it. If that ever fails to
+ * match, the message degrades to a sentence with no numbers in it rather than
+ * to nothing.
  *
  * When a reason is genuinely unrecognised the server's own words are shown
  * rather than swallowed: an English sentence is bad, but a client staring at
@@ -43,6 +50,14 @@ export type ProblemStrings = {
   fieldEmail: string;
   /** A password outside the accepted length. */
   fieldPasswordLength: string;
+  /** Text longer than the column behind it allows. */
+  fieldTooLong: (max: number) => string;
+  /** Text outside a length the backend insists on at both ends. */
+  fieldLengthRange: (min: number, max: number) => string;
+  /** A value in the wrong shape — the web address of a site, for instance. */
+  fieldPattern: string;
+  /** A number that has to be larger than it is. */
+  fieldNumber: string;
   /** Wrong email or password, or a wrong current password. */
   credentials: string;
   /** The session is gone or was never valid. */
@@ -59,8 +74,56 @@ export type ProblemStrings = {
   server: string;
 };
 
-/** Bean Validation's defaults, which arrive verbatim in `errors`. */
-function fieldMessage(raw: string, strings: ProblemStrings): string {
+/**
+ * `size must be between 8 and 72` — the limits, not the sentence. Returns null
+ * rather than guessing if the shape is not the one we know.
+ */
+function sizeLimits(raw: string): { min: number; max: number } | null {
+  const match = /between (\d+) and (\d+)/.exec(raw);
+  if (!match) return null;
+  return { min: Number(match[1]), max: Number(match[2]) };
+}
+
+/**
+ * The sentence for one rejected field.
+ *
+ * `constraint` is the Bean Validation annotation the backend reports in
+ * `fieldCodes`. Where it is missing — an older deploy, or a failure that never
+ * came from validation — the English default is read as a last resort, so this
+ * degrades to the previous behaviour instead of to nothing.
+ */
+function fieldMessage(
+  field: string,
+  raw: string,
+  constraint: string | undefined,
+  strings: ProblemStrings,
+): string {
+  switch (constraint) {
+    case "NotBlank":
+    case "NotNull":
+    case "NotEmpty":
+      return strings.fieldRequired;
+    case "Email":
+      return strings.fieldEmail;
+    case "Pattern":
+      return strings.fieldPattern;
+    case "Positive":
+    case "PositiveOrZero":
+    case "Min":
+    case "Max":
+      return strings.fieldNumber;
+    case "Size": {
+      // A password is the one length a client is asked to *reach* rather than
+      // stay under, and it deserves the sentence that says so.
+      if (/password/i.test(field)) return strings.fieldPasswordLength;
+      const limits = sizeLimits(raw);
+      if (!limits) return strings.fieldInvalid;
+      return limits.min > 1
+        ? strings.fieldLengthRange(limits.min, limits.max)
+        : strings.fieldTooLong(limits.max);
+    }
+  }
+
   const text = raw.trim().toLowerCase();
   if (text.includes("must not be blank") || text.includes("must not be empty"))
     return strings.fieldRequired;
@@ -74,10 +137,14 @@ function fieldMessage(raw: string, strings: ProblemStrings): string {
  * Localises a single field complaint for display next to its input.
  */
 export function describeField(
-  raw: string | undefined,
+  caught: unknown,
+  field: string,
   strings: ProblemStrings,
 ): string | undefined {
-  return raw ? fieldMessage(raw, strings) : undefined;
+  if (!(caught instanceof ApiError)) return undefined;
+  const raw = caught.fields[field];
+  if (!raw) return undefined;
+  return fieldMessage(field, raw, caught.fieldCodes[field], strings);
 }
 
 /**
@@ -91,7 +158,7 @@ export function describeFields(
   if (!(caught instanceof ApiError)) return {};
   const out: Record<string, string> = {};
   for (const [field, message] of Object.entries(caught.fields)) {
-    out[field] = fieldMessage(message, strings);
+    out[field] = fieldMessage(field, message, caught.fieldCodes[field], strings);
   }
   return out;
 }
@@ -121,9 +188,12 @@ export function describeProblem(
       // naming it is far more useful than saying a form is invalid. Where
       // several are wrong, the generic sentence is honest and the inputs are
       // marked individually anyway.
-      const messages = Object.values(caught.fields);
-      if (messages.length === 1) return fieldMessage(messages[0], strings);
-      if (messages.length > 1) return strings.validation;
+      const entries = Object.entries(caught.fields);
+      if (entries.length === 1) {
+        const [field, message] = entries[0];
+        return fieldMessage(field, message, caught.fieldCodes[field], strings);
+      }
+      if (entries.length > 1) return strings.validation;
       // A 400 with no field errors is a malformed request rather than a bad
       // one, and the server's sentence is the only thing that explains it.
       return caught.message || strings.validation;

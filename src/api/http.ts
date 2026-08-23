@@ -48,6 +48,15 @@ export class ApiError extends Error {
    */
   readonly code?: string;
   /**
+   * The Bean Validation annotation behind each rejected field — `NotBlank`,
+   * `Size`, `Email` — keyed as `fields` is.
+   *
+   * Same argument as `code`, one level down. `fields` carries the framework's
+   * English default message, which is prose and can be reworded; the
+   * annotation name is the constraint itself and cannot.
+   */
+  readonly fieldCodes: Record<string, string>;
+  /**
    * The rest of the problem body. Some failures carry extra facts that only
    * make sense for that failure — how many attempts remain, when a throttle
    * lifts — and inventing a typed field per case would be worse than keeping
@@ -60,11 +69,13 @@ export class ApiError extends Error {
     status: number,
     fields: Record<string, string> = {},
     problem: Record<string, unknown> = {},
+    fieldCodes: Record<string, string> = {},
   ) {
     super(message);
     this.name = "ApiError";
     this.status = status;
     this.fields = fields;
+    this.fieldCodes = fieldCodes;
     this.problem = problem;
     const code = problem.code;
     this.code = typeof code === "string" ? code : undefined;
@@ -76,6 +87,7 @@ type ProblemDetail = {
   detail?: string;
   code?: string;
   errors?: Record<string, string> | { field: string; message: string }[];
+  fieldCodes?: Record<string, string>;
 };
 
 async function toError(response: Response): Promise<ApiError> {
@@ -100,6 +112,7 @@ async function toError(response: Response): Promise<ApiError> {
     response.status,
     fields,
     problem as Record<string, unknown>,
+    problem.fieldCodes ?? {},
   );
 }
 
