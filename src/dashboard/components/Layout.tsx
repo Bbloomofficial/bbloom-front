@@ -130,6 +130,10 @@ export default function Layout({
   const { user, signOut } = useSession();
   const navigate = useNavigate();
   const active = site ?? null;
+  // Read the account's own list rather than `site`, which is absent on every
+  // account-level screen and would make a client with five websites look like a
+  // client with none.
+  const hasSite = sitesOf(user).length > 0;
 
   const links = active
     ? [
@@ -215,8 +219,28 @@ export default function Layout({
       </header>
 
       <main className="container-page flex-1 space-y-6 py-8 sm:py-10">
-        <VerifyBanner />
+        {/*
+          The banner goes first once there is a website, because from that point
+          on it explains a live restriction: the publish button is refusing, and
+          the reason belongs above the thing that is refusing.
+        
+          Before the first website it explains nothing yet. Confirming an address
+          gates publishing and only publishing, and an account with no site has
+          nothing to publish — the gate is a full step ahead of the client. Put
+          in front of them, it is a 428px amber form standing between a new
+          signup and the only action that account can take, and on a 390x844
+          phone that measurably pushed "create a website" to y=835: off-screen
+          before browser chrome is subtracted. The first screen of the funnel
+          then reads as a wall, which is exactly how it reads to someone who
+          never received the mail.
+        
+          So the order follows the gate rather than the severity: after the
+          content while it gates nothing, before it the moment it gates
+          something.
+        */}
+        {hasSite && <VerifyBanner />}
         {children}
+        {!hasSite && <VerifyBanner />}
       </main>
 
       <footer className="border-t border-ink-100 py-6">
