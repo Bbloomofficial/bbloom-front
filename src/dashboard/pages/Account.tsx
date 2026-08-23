@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
-import { ApiError } from "../../api/http";
+import { ApiError, authFailure } from "../../api/http";
 import { describeProblem } from "../../api/problem";
 import { useI18n } from "../../i18n";
 import { changeAccountPassword } from "../api/account";
@@ -31,8 +31,20 @@ export default function Account() {
       setCurrentPassword("");
       setNewPassword("");
     } catch (caught) {
-      // The endpoint answers 401 for a wrong *current* password, which is a
-      // different problem from a rejected sign-in and needs its own sentence.
+      // Two different 401s arrive here. `INVALID_CREDENTIALS` is the current
+      // password being wrong, which is a form error. `AUTHENTICATION_REQUIRED`
+      // is the session itself being gone, and saying "wrong password" to that
+      // sends someone into retyping a password that was right all along.
+      //
+      // An unrecognised 401 keeps the old reading rather than signing anyone
+      // out: against a backend that predates these codes every 401 here really
+      // was a wrong password, and losing a filled-in form to a guess is the
+      // worse of the two mistakes.
+      const failure = authFailure(caught);
+      if (failure === "session") {
+        setError(t.account.sessionExpired);
+        return;
+      }
       setError(
         caught instanceof ApiError && caught.status === 401
           ? t.account.wrongCurrent

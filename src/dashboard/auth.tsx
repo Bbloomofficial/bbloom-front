@@ -7,7 +7,7 @@ import {
   useState,
 } from "react";
 import type { ReactNode } from "react";
-import { ApiError } from "../api/http";
+import { ApiError, authFailure } from "../api/http";
 import { fetchAccount, loginAccount, registerAccount } from "./api/account";
 import type { AccountProfile, AccountSite, EmailLanguage } from "./api/types";
 
@@ -249,7 +249,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // A 403 is no longer proof of a dead session: an editor who reaches an
       // owner-only endpoint gets one too, and signing them out for it would be
       // absurd. Only an outright rejected token ends the session.
-      if (error instanceof ApiError && error.status === 401) signOut();
+      //
+      // Nor is every 401. A 401 carrying `INVALID_CREDENTIALS` means a password
+      // was offered and refused, which says nothing about the token — and
+      // ending the session over it would throw away whatever the client was in
+      // the middle of. An unrecognised 401 still signs out, because for a
+      // background read a dead token is by far the likelier explanation.
+      if (
+        error instanceof ApiError &&
+        error.status === 401 &&
+        authFailure(error) !== "credentials"
+      ) {
+        signOut();
+      }
     },
     [signOut],
   );

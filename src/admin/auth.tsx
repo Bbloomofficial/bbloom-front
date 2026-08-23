@@ -7,7 +7,7 @@ import {
   useState,
 } from "react";
 import type { ReactNode } from "react";
-import { ApiError } from "../api/http";
+import { ApiError, authFailure } from "../api/http";
 import { fetchProfile, login as loginRequest } from "./api/client";
 import type { StaffProfile } from "./api/types";
 
@@ -98,9 +98,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const handleError = useCallback(
     (error: unknown) => {
+      // A 401 carrying `INVALID_CREDENTIALS` is a password being refused, not a
+      // dead token, and it must not end a staff session mid-task.
       if (
         error instanceof ApiError &&
-        (error.status === 401 || error.status === 403)
+        (error.status === 401 || error.status === 403) &&
+        authFailure(error) !== "credentials"
       ) {
         signOut();
       }

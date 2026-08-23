@@ -123,6 +123,29 @@ export class ApiError extends Error {
   }
 }
 
+/**
+ * Which of the two very different things a 401 means.
+ *
+ * The status alone conflates them: "the password you just typed is wrong" and
+ * "you are not signed in any more" are the same number, and treating one as the
+ * other is a real failure in both directions. Sign someone out for mistyping a
+ * field and they lose the form they were filling in; tell someone with a dead
+ * token that their current password is wrong and they will retype a correct
+ * password forever, because the thing that is wrong is not the thing we named.
+ *
+ * `unknown` is returned rather than guessed at, so each caller can pick the
+ * safe default for its own screen: a background read should assume the session
+ * is gone, and a password form should assume the password is.
+ */
+export type AuthFailure = "credentials" | "session" | "unknown";
+
+export function authFailure(error: unknown): AuthFailure {
+  if (!(error instanceof ApiError) || error.status !== 401) return "unknown";
+  if (error.code === "INVALID_CREDENTIALS") return "credentials";
+  if (error.code === "AUTHENTICATION_REQUIRED") return "session";
+  return "unknown";
+}
+
 type ProblemDetail = {
   title?: string;
   detail?: string;

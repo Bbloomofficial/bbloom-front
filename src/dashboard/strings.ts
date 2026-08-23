@@ -215,6 +215,7 @@ export type DashboardStrings = {
      * would send someone hunting for a mistake in a field they cannot see.
      */
     wrongCurrent: string;
+    sessionExpired: string;
     failed: string;
   };
   gate: {
@@ -555,6 +556,8 @@ const en: DashboardStrings = {
     submitting: "Saving…",
     saved: "Password changed.",
     wrongCurrent: "Your current password isn't right.",
+    sessionExpired:
+      "You have been signed out. Sign in again and change your password from there.",
     failed: "We couldn't change your password. Please try again.",
   },
   gate: {
@@ -919,6 +922,8 @@ const ka: DashboardStrings = {
     submitting: "ინახება…",
     saved: "პაროლი შეიცვალა.",
     wrongCurrent: "მიმდინარე პაროლი არასწორია.",
+    sessionExpired:
+      "სესია დასრულდა. შედით თავიდან და პაროლი იქიდან შეცვალეთ.",
     failed: "პაროლის შეცვლა ვერ მოხერხდა. სცადეთ თავიდან.",
   },
   gate: {
