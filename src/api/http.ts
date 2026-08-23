@@ -153,6 +153,13 @@ type ProblemDetail = {
   errors?: Record<string, string> | { field: string; message: string }[];
   fieldCodes?: Record<string, string>;
   fieldLimits?: Record<string, { min?: number; max?: number }>;
+  /**
+   * When a throttle will next accept a request, as an ISO instant. Named
+   * `retryAfter` on the sign-in limit and `resendAvailableAt` on the code
+   * resend; both are the same shape and both are read.
+   */
+  retryAfter?: string;
+  resendAvailableAt?: string;
 };
 
 async function toError(response: Response): Promise<ApiError> {

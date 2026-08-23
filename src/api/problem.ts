@@ -29,7 +29,7 @@
  * rather than a permanent state of affairs.
  */
 
-import { ApiError, type FieldLimits } from "./http";
+import { ApiError, authFailure, type FieldLimits } from "./http";
 
 /**
  * The localised copy this module needs. Each surface owns its own dictionary —
@@ -74,6 +74,14 @@ export type ProblemStrings = {
   emailTaken: string;
   /** Too many requests, throttled. */
   throttled: string;
+  /**
+   * Sign-in specifically, which is throttled per caller rather than per
+   * account. Whoever reads this may not be who spent the budget, so it must
+   * not accuse them of having been trying.
+   */
+  signInThrottled: string;
+  /** As above, when the server told us how long the wait is. */
+  signInThrottledFor: (minutes: number) => string;
   /** The server broke. */
   server: string;
 };
@@ -120,6 +128,19 @@ function lengthMessage(limits: FieldLimits, strings: ProblemStrings): string {
   if (max !== undefined) return strings.fieldTooLong(max);
   if (floor !== undefined) return strings.fieldTooShort(floor);
   return strings.fieldInvalid;
+}
+
+/**
+ * Whole minutes until an instant, rounded up, or null if there is no usable
+ * one. A deadline that has passed, is unparseable or is absent all read as
+ * "no figure to show" rather than as zero, so the caller falls back to a
+ * sentence without a number instead of promising a wait of nothing.
+ */
+function minutesUntil(iso: unknown): number | null {
+  if (typeof iso !== "string") return null;
+  const remaining = Date.parse(iso) - Date.now();
+  if (!Number.isFinite(remaining) || remaining <= 0) return null;
+  return Math.ceil(remaining / 60_000);
 }
 
 /**
@@ -265,11 +286,11 @@ export function describeProblem(
     }
     case 401:
       // The same status covers "wrong password" and "your session expired",
-      // which need opposite things from the client, so they are told apart by
-      // whether we were holding a token at all. The credentials case is by far
-      // the more common, and a stale-session message on a login form would send
-      // someone looking for a session they never had.
-      return caught.code === "TOKEN_EXPIRED"
+      // which need opposite things from the client. The server names which,
+      // and where it does not, the credentials reading is the safer default:
+      // a stale-session message on a login form sends someone looking for a
+      // session they never had, and a login form is where most 401s happen.
+      return authFailure(caught) === "session"
         ? strings.session
         : strings.credentials;
     case 403:
@@ -283,8 +304,18 @@ export function describeProblem(
       // before a request is made.
       if (/already exists/i.test(caught.message)) return strings.emailTaken;
       return caught.message || fallback;
-    case 429:
-      return strings.throttled;
+    case 429: {
+      // Two different throttles share this status. The sign-in one is counted
+      // per caller rather than per account, so the person reading this may not
+      // be the person who spent the budget — an office or a mobile carrier can
+      // put many people behind one address. The wording therefore describes the
+      // state and never asserts who caused it.
+      if (caught.code !== "AUTH_RATE_LIMITED") return strings.throttled;
+      const minutes = minutesUntil(caught.problem.retryAfter);
+      return minutes
+        ? strings.signInThrottledFor(minutes)
+        : strings.signInThrottled;
+    }
     default:
       return caught.message || fallback;
   }
