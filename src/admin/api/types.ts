@@ -238,6 +238,30 @@ export type MailHealth = {
   lastFailureAt?: string;
   lastFailureReason?: string;
   /**
+   * People still owed an email, which is a different question from whether
+   * mail is broken. Everything else on this payload clears on the next
+   * successful send — and an outage *ends* with an admin sending themselves a
+   * test, which is a successful send. On 23 August that probe would have wiped
+   * the real client off the screen at the moment somebody opened it to find
+   * out who to apologise to.
+   *
+   * So this list survives recovery and may be non-empty while `status` is
+   * `OK`. That is not the impossible pairing — that one is `OK` with a
+   * non-empty `recentFailures`, and it still holds. Never gate this on
+   * `status`: a panel that hides it when the light is green loses the same
+   * person twice.
+   *
+   * One row per person, holding their *first* failure, oldest first. An entry
+   * disappears when that person receives something, not when anybody does.
+   */
+  unresolved?: MailFailure[];
+  /**
+   * How many people are owed in total, listed or not — counted from a separate
+   * tally rather than from the rows, so truncation cannot make it lie. A
+   * primitive int, so `0` genuinely means zero rather than unknown.
+   */
+  owedTotal?: number;
+  /**
    * Cleared by the next successful send, so a non-empty list means these
    * people are still waiting. Most recent first, but the most recent is
    * routinely the least important entry: render all of them.

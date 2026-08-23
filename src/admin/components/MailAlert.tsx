@@ -36,6 +36,36 @@ export function peopleWaitingIsFloor(mail: {
   );
 }
 
+/** People still owed an email, whether or not mail is currently broken.
+ *
+ *  `owedTotal` is tallied separately from the rows, so it stays exact when the
+ *  list is truncated. Counting the rows is only a fallback for a backend that
+ *  predates the field, where the answer can only ever be a floor. */
+export function peopleOwed(mail: {
+  owedTotal?: number;
+  unresolved?: MailFailure[];
+}): number {
+  if (typeof mail.owedTotal === "number") return mail.owedTotal;
+  return new Set(
+    (mail.unresolved ?? []).map((failure) =>
+      failure.recipient.trim().toLowerCase(),
+    ),
+  ).size;
+}
+
+/** How many owed people are not in the list.
+ *
+ *  Deliberately not `unlistedFailures`: that one measures the current outage
+ *  via `consecutiveFailures`, which says nothing about a list that outlives
+ *  the outage. Using it here would hedge on the wrong number and go quiet at
+ *  the wrong times. */
+export function unlistedOwed(mail: {
+  owedTotal?: number;
+  unresolved?: MailFailure[];
+}): number {
+  return Math.max(0, peopleOwed(mail) - (mail.unresolved?.length ?? 0));
+}
+
 /** How many failed sends happened but are no longer listed.
  *
  *  `recentFailures` is a fixed ring (20 at the time of writing) while
@@ -73,29 +103,45 @@ export default function MailAlert() {
   const { status } = useSystemStatus();
 
   const mail = status?.mail;
-  if (!mail || !mailNeedsAttention(mail.status)) return null;
+  if (!mail) return null;
+
+  const broken = mailNeedsAttention(mail.status);
+  const owed = peopleOwed(mail);
+
+  // Two different questions, and one banner cannot answer both. "Is mail
+  // broken" is the alarm; "does anyone still not have their email" outlives
+  // the fix, because the successful send that clears the alarm is usually the
+  // admin's own test probe. Showing only the first recreates the original
+  // bug at the shell level: green, empty, and nobody has a reason to look.
+  if (!broken && owed === 0) return null;
 
   const waiting = peopleWaiting(mail);
+  const tone = broken
+    ? "border-danger/30 bg-danger/10 dark:bg-danger/15"
+    : "border-amber-300/60 bg-amber-100/70 dark:border-amber-900/60 dark:bg-amber-950/40";
+  const text = broken
+    ? "text-danger"
+    : "text-amber-900 dark:text-amber-100";
+  const dot = broken ? "bg-danger" : "bg-amber-500";
 
   return (
-    <div
-      role="alert"
-      className="border-b border-danger/30 bg-danger/10 dark:bg-danger/15"
-    >
+    <div role="alert" className={`border-b ${tone}`}>
       <div className="container-page flex flex-wrap items-center gap-x-3 gap-y-1 py-3">
-        <span aria-hidden className="h-2 w-2 shrink-0 rounded-full bg-danger" />
-        <p className="text-sm font-bold text-danger">
-          {waiting > 0
-            ? peopleWaitingIsFloor(mail)
-              ? t.system.waitingAtLeastTitle(waiting)
-              : t.system.waitingTitle(waiting)
-            : `${t.system.mailTitle} — ${
-                t.system.mailStatuses[mail.status] ?? mail.status
-              }`}
+        <span aria-hidden className={`h-2 w-2 shrink-0 rounded-full ${dot}`} />
+        <p className={`text-sm font-bold ${text}`}>
+          {broken
+            ? waiting > 0
+              ? peopleWaitingIsFloor(mail)
+                ? t.system.waitingAtLeastTitle(waiting)
+                : t.system.waitingTitle(waiting)
+              : `${t.system.mailTitle} — ${
+                  t.system.mailStatuses[mail.status] ?? mail.status
+                }`
+            : t.system.owedTitle(owed)}
         </p>
         <Link
           to="/admin/system"
-          className="ms-auto shrink-0 text-sm font-semibold text-danger underline underline-offset-2 hover:opacity-80"
+          className={`ms-auto shrink-0 text-sm font-semibold underline underline-offset-2 hover:opacity-80 ${text}`}
         >
           {t.system.bannerAction}
         </Link>

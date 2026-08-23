@@ -196,6 +196,12 @@ export type AdminStrings = {
     waitingTitle: (count: number) => string;
     waitingAtLeastTitle: (count: number) => string;
     truncatedNote: (shown: number, hidden: number) => string;
+    owedTitle: (count: number) => string;
+    owedBody: string;
+    owedAllShownNote: string;
+    owedTruncatedNote: (shown: number, hidden: number) => string;
+    /** What a list of known failures cannot cover. */
+    owedLimit: string;
     waitingBody: string;
     listNote: string;
     allShownNote: string;
@@ -422,7 +428,7 @@ const en: AdminStrings = {
     },
     offNote:
       "No from-address is configured, so email is deliberately doing nothing. That is the expected state outside production.",
-    okNote: "Every email we have tried to send has gone out.",
+    okNote: "Sending is working right now.",
     lastSuccess: "Last successful send",
     latestFailure: "Most recent failure",
     unknown: "Unknown",
@@ -442,6 +448,17 @@ const en: AdminStrings = {
       `The ${shown} earliest failures are kept, so these are the people who have been waiting longest. ${hidden} later failures are not shown.`,
     waitingBody:
       "Confirming an email address is the only thing standing between a client and a published website. Until this is fixed they cannot proceed, and nothing on their screen tells them why.",
+    owedTitle: (count) =>
+      count === 1
+        ? "1 person never received their email"
+        : `${count} people never received their email`,
+    owedBody:
+      "These people are still owed a message, whether or not sending works again now. Mail recovering does not reach them — someone has to. A person drops off this list only when they receive something, not when the next send succeeds.",
+    owedAllShownNote: "Everyone still owed is listed, longest wait first.",
+    owedTruncatedNote: (shown, hidden) =>
+      `${shown} of them are listed, longest wait first. ${hidden} more are owed and not shown.`,
+    owedLimit:
+      "This covers messages we know failed to send. If one was accepted and bounced afterwards, nothing reaches us and that person will not appear here.",
     listNote:
       "This list is cleared by the next successful send, so everyone still on it is still waiting.",
     allShownNote:
@@ -450,7 +467,7 @@ const en: AdminStrings = {
     colRecipient: "Recipient",
     colSubject: "Email",
     colReason: "Reason",
-    noneWaiting: "Nobody is waiting for an email.",
+    noneWaiting: "Nothing is failing to send right now.",
     bannerAction: "See who",
   },
   statuses: { DRAFT: "Draft", PUBLISHED: "Published" },
@@ -669,7 +686,7 @@ const ka: AdminStrings = {
     },
     offNote:
       "გამგზავნი მისამართი მითითებული არ არის, ამიტომ ელფოსტა განზრახ არაფერს აკეთებს. სატესტო გარემოში ეს გამართული მდგომარეობაა.",
-    okNote: "ყველა წერილი, რომლის გაგზავნაც ვცადეთ, გავიდა.",
+    okNote: "გაგზავნა ამჟამად მუშაობს.",
     lastSuccess: "ბოლო წარმატებული გაგზავნა",
     latestFailure: "ბოლო შეცდომა",
     unknown: "უცნობია",
@@ -682,6 +699,18 @@ const ka: AdminStrings = {
       `ინახება ყველაზე ადრინდელი ${shown} ჩანაწერი — სწორედ ესენი ელოდებიან ყველაზე დიდხანს. კიდევ ${hidden} მოგვიანებითი წერილი ვერ გაიგზავნა და აქ არ ჩანს.`,
     waitingBody:
       "ელფოსტის დადასტურება ერთადერთია, რაც კლიენტსა და გამოქვეყნებულ საიტს შორის დგას. სანამ ეს არ გასწორდება, ისინი ვერაფერს გააკეთებენ — და მათ ეკრანზე არაფერი ამბობს, რატომ.",
+    owedTitle: (count) =>
+      count === 1
+        ? "1 ადამიანს წერილი ვერ მიუვიდა"
+        : `${count} ადამიანს წერილი ვერ მიუვიდა`,
+    owedBody:
+      "ამ ადამიანებს წერილი კვლავ ერგებათ — მიუხედავად იმისა, გაგზავნა ახლა მუშაობს თუ არა. ელფოსტის აღდგენა მათთან არ აღწევს; ვიღაცამ უნდა მიაწვდინოს. სიიდან ადამიანი მაშინ ქრება, როცა თავად მიიღებს წერილს და არა მაშინ, როცა შემდეგი გაგზავნა გამოვა.",
+    owedAllShownNote:
+      "ყველა, ვისაც წერილი ერგება, სიაშია — ყველაზე დიდხანს მოლოდინი პირველად.",
+    owedTruncatedNote: (shown, hidden) =>
+      `მათგან ${shown} ჩანს, ყველაზე დიდხანს მოლოდინი პირველად. კიდევ ${hidden} ადამიანს ერგება წერილი და აქ არ ჩანს.`,
+    owedLimit:
+      "აქ მხოლოდ ის წერილებია, რომელთა გაგზავნაც ჩვენ ვერ შევძელით. თუ წერილი მიღებულ იქნა და შემდეგ დაბრუნდა, ამის შესახებ ინფორმაცია ჩვენამდე არ აღწევს და ის ადამიანი აქ არ გამოჩნდება.",
     listNote:
       "სია იწმინდება პირველივე წარმატებული გაგზავნისას, ამიტომ ყველა, ვინც აქ წერია, ჯერ კიდევ ელოდება.",
     allShownNote:
@@ -690,7 +719,7 @@ const ka: AdminStrings = {
     colRecipient: "მიმღები",
     colSubject: "წერილი",
     colReason: "მიზეზი",
-    noneWaiting: "წერილს არავინ ელოდება.",
+    noneWaiting: "ამჟამად წერილების გაგზავნა არ იშლება.",
     bannerAction: "ნახეთ ვინ",
   },
   statuses: { DRAFT: "მუშავდება", PUBLISHED: "გამოქვეყნებული" },

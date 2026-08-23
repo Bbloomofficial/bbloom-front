@@ -3,11 +3,13 @@ import { adminStrings } from "../strings";
 import { formatDateTime } from "../format";
 import { mailNeedsAttention, useSystemStatus } from "../system";
 import {
+  peopleOwed,
   peopleWaiting,
   peopleWaitingIsFloor,
   unlistedFailures,
+  unlistedOwed,
 } from "../components/MailAlert";
-import type { MailStatus } from "../api/types";
+import type { MailFailure, MailStatus } from "../api/types";
 
 /**
  * `OFF` is not a fault — it means no from-address is configured and mail is
@@ -26,6 +28,63 @@ function dotFor(status: MailStatus): string {
   if (mailNeedsAttention(status)) return "bg-danger";
   if (status === "OFF") return "bg-ink-400";
   return "bg-success";
+}
+
+/**
+ * The same table for both lists: failures in the current outage, and people
+ * still owed an email after it ended. Rows are rendered in the order the
+ * server sends them — oldest first in both cases, so the top row is the person
+ * who has been waiting longest and an admin can work straight down.
+ */
+function FailureTable({ rows }: { rows: MailFailure[] }) {
+  const { locale } = useI18n();
+  const t = adminStrings(locale);
+
+  return (
+    <div className="mt-5 overflow-x-auto">
+      <table className="w-full text-start text-sm">
+        <thead className="border-b border-ink-100 text-xs uppercase tracking-wide text-ink-400">
+          <tr>
+            <th className="px-3 py-3 text-start font-semibold">
+              {t.system.colTime}
+            </th>
+            <th className="px-3 py-3 text-start font-semibold">
+              {t.system.colRecipient}
+            </th>
+            <th className="hidden px-3 py-3 text-start font-semibold md:table-cell">
+              {t.system.colSubject}
+            </th>
+            <th className="px-3 py-3 text-start font-semibold">
+              {t.system.colReason}
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((failure, index) => (
+            <tr
+              key={`${failure.at}-${failure.recipient}-${index}`}
+              className="border-b border-ink-100 last:border-0"
+            >
+              <td className="whitespace-nowrap px-3 py-4 text-ink-600">
+                {formatDateTime(failure.at, locale)}
+              </td>
+              <td className="px-3 py-4">
+                {/* Never masked. Working out who to apologise to is the only
+                    job this screen has. */}
+                <span dir="ltr" className="font-semibold text-ink-900">
+                  {failure.recipient}
+                </span>
+              </td>
+              <td className="hidden max-w-72 px-3 py-4 text-ink-600 md:table-cell">
+                {failure.subject}
+              </td>
+              <td className="px-3 py-4 text-danger">{failure.reason}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
 }
 
 export default function SystemStatus() {
@@ -134,62 +193,35 @@ export default function SystemStatus() {
                     : t.system.allShownNote}
                 </p>
 
-                <div className="mt-5 overflow-x-auto">
-                  <table className="w-full text-start text-sm">
-                    <thead className="border-b border-ink-100 text-xs uppercase tracking-wide text-ink-400">
-                      <tr>
-                        <th className="px-3 py-3 text-start font-semibold">
-                          {t.system.colTime}
-                        </th>
-                        <th className="px-3 py-3 text-start font-semibold">
-                          {t.system.colRecipient}
-                        </th>
-                        <th className="hidden px-3 py-3 text-start font-semibold md:table-cell">
-                          {t.system.colSubject}
-                        </th>
-                        <th className="px-3 py-3 text-start font-semibold">
-                          {t.system.colReason}
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {/* Every entry, at equal weight, in the order the server
-                          sends them — oldest first, so the top row is the
-                          person who has been waiting longest and an admin can
-                          work straight down. Rendering only the newest would
-                          show a test probe and hide the person who mattered. */}
-                      {mail.recentFailures.map((failure, index) => (
-                        <tr
-                          key={`${failure.at}-${failure.recipient}-${index}`}
-                          className="border-b border-ink-100 last:border-0"
-                        >
-                          <td className="whitespace-nowrap px-3 py-4 text-ink-600">
-                            {formatDateTime(failure.at, locale)}
-                          </td>
-                          <td className="px-3 py-4">
-                            {/* Never masked. Working out who to apologise to
-                                is the only job this screen has. */}
-                            <span
-                              dir="ltr"
-                              className="font-semibold text-ink-900"
-                            >
-                              {failure.recipient}
-                            </span>
-                          </td>
-                          <td className="hidden max-w-72 px-3 py-4 text-ink-600 md:table-cell">
-                            {failure.subject}
-                          </td>
-                          <td className="px-3 py-4 text-danger">
-                            {failure.reason}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
+                <FailureTable rows={mail.recentFailures} />
               </>
             )}
           </section>
+
+          {/* The people still owed an email, which is a different question
+              from whether mail is broken — and the only one still answerable
+              after the fix. It has to render regardless of `status`, because
+              the successful send that turns the light green is usually the
+              admin's own test probe, fired the moment they came looking. */}
+          {mail.unresolved && mail.unresolved.length > 0 && (
+            <section className="mt-6 rounded-3xl border border-amber-300/60 bg-amber-50 p-6 sm:p-7 dark:border-amber-900/60 dark:bg-amber-950/25">
+              <h2 className="text-lg font-bold text-ink-900">
+                {t.system.owedTitle(peopleOwed(mail))}
+              </h2>
+              <p className="mt-2 text-sm text-ink-600">{t.system.owedBody}</p>
+              <p className="mt-1 text-sm text-ink-400">
+                {unlistedOwed(mail) > 0
+                  ? t.system.owedTruncatedNote(
+                      mail.unresolved.length,
+                      unlistedOwed(mail),
+                    )
+                  : t.system.owedAllShownNote}
+              </p>
+              <p className="mt-1 text-sm text-ink-400">{t.system.owedLimit}</p>
+
+              <FailureTable rows={mail.unresolved} />
+            </section>
+          )}
         </>
       )}
 
