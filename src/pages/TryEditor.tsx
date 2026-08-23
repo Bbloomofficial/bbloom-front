@@ -387,6 +387,9 @@ export default function TryEditor() {
     event.preventDefault();
     if (save.phase !== "form") return;
     const data = new FormData(event.currentTarget);
+    // This one form both registers and signs in, and the two throttles are
+    // keyed differently, so the error has to know which button was pressed.
+    const authAction = save.mode === "register" ? "signUp" : "signIn";
     setBusy(true);
     setFormError(null);
     try {
@@ -405,7 +408,9 @@ export default function TryEditor() {
       storeSession(response);
       await finish(response.token, save);
     } catch (error) {
-      setFormError(describeProblem(error, t.errors, t.saveFailed));
+      setFormError(
+        describeProblem(error, t.errors, t.saveFailed, { authAction }),
+      );
     } finally {
       setBusy(false);
     }

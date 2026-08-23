@@ -58,7 +58,11 @@ export default function Register() {
       // A duplicate email and a rejected password each get their own sentence;
       // both are things the client can act on, so neither is flattened into a
       // generic failure.
-      setError(describeProblem(caught, t.errors, t.register.failed));
+      setError(
+        describeProblem(caught, t.errors, t.register.failed, {
+          authAction: "signUp",
+        }),
+      );
       setSubmitting(false);
     }
   }

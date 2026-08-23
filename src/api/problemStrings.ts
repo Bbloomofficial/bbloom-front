@@ -37,6 +37,12 @@ const en: ProblemStrings = {
     `Signing in to this account is paused for a moment. Please try again in ${minutes} ${
       minutes === 1 ? "minute" : "minutes"
     }.`,
+  signUpThrottled:
+    "There have been too many sign-up attempts from this connection. Please try again shortly.",
+  signUpThrottledFor: (minutes) =>
+    `There have been too many sign-up attempts from this connection. Please try again in ${minutes} ${
+      minutes === 1 ? "minute" : "minutes"
+    }.`,
   server: "Something went wrong on our side. Please try again.",
 };
 
@@ -63,6 +69,10 @@ const ka: ProblemStrings = {
   signInThrottled: "ამ ანგარიშზე შესვლა დროებით შეჩერებულია. სცადეთ ცოტა ხანში.",
   signInThrottledFor: (minutes) =>
     `ამ ანგარიშზე შესვლა დროებით შეჩერებულია. სცადეთ ${minutes} წუთში.`,
+  signUpThrottled:
+    "ამ ქსელიდან რეგისტრაციის ბევრი მცდელობა იყო. სცადეთ ცოტა ხანში.",
+  signUpThrottledFor: (minutes) =>
+    `ამ ქსელიდან რეგისტრაციის ბევრი მცდელობა იყო. სცადეთ ${minutes} წუთში.`,
   server: "ჩვენს მხარეს რაღაც ვერ გამოვიდა. სცადეთ თავიდან.",
 };
 

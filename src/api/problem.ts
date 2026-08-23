@@ -82,6 +82,17 @@ export type ProblemStrings = {
   signInThrottled: string;
   /** As above, when the server told us how long the wait is. */
   signInThrottledFor: (minutes: number) => string;
+  /**
+   * Sign-up, which shares the `AUTH_RATE_LIMITED` code with sign-in but is
+   * still counted per address alone — pairing it with the email would defeat
+   * it, since someone registering picks a fresh address every time. So this
+   * one really can be spent by a stranger on the same carrier NAT, and it
+   * says "from this connection" rather than naming an account that, on a
+   * sign-up form, does not exist yet.
+   */
+  signUpThrottled: string;
+  /** As above, when the server told us how long the wait is. */
+  signUpThrottledFor: (minutes: number) => string;
   /** The server broke. */
   server: string;
 };
@@ -238,10 +249,22 @@ export function describeFields(
  * useful — it is deliberately required, because a generic "request failed" is
  * almost never the most helpful thing a particular form could say.
  */
+export type DescribeOptions = {
+  /**
+   * Which credential action the screen is performing. Sign-in and sign-up
+   * share one error code but not one explanation: sign-in is throttled per
+   * (address, account) and sign-up per address alone, and a form creating an
+   * account cannot describe the limit as belonging to that account, because
+   * it does not exist yet. Defaults to sign-in, which is where a 401 or 429
+   * almost always arrives.
+   */
+  authAction?: "signIn" | "signUp";
+};
 export function describeProblem(
   caught: unknown,
   strings: ProblemStrings,
   fallback: string,
+  options: DescribeOptions = {},
 ): string {
   // fetch rejects rather than resolving when the request never lands, so this
   // is a dropped connection or a blocked request, not an answer from the API.
@@ -317,6 +340,14 @@ export function describeProblem(
       // collateral damage between *different* accounts on one address.
       if (caught.code !== "AUTH_RATE_LIMITED") return strings.throttled;
       const minutes = minutesUntil(caught.problem.retryAfter);
+      // Sign-up shares the code but not the key: it is still counted per
+      // address alone, so unlike sign-in it genuinely can be spent by a
+      // stranger sharing a carrier NAT, and there is no account to name.
+      if (options.authAction === "signUp") {
+        return minutes
+          ? strings.signUpThrottledFor(minutes)
+          : strings.signUpThrottled;
+      }
       return minutes
         ? strings.signInThrottledFor(minutes)
         : strings.signInThrottled;
