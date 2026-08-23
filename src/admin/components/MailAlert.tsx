@@ -13,6 +13,21 @@ export function peopleWaiting(failures: MailFailure[]): number {
   ).size;
 }
 
+/** How many failed sends happened but are no longer listed.
+ *
+ *  `recentFailures` is a fixed ring (20 at the time of writing) while
+ *  `consecutiveFailures` keeps counting past it, so during a long outage the
+ *  table is a *sample* of the people owed an email, not the set of them. That
+ *  gap has to be said out loud: twenty rows that look complete are exactly the
+ *  kind of thing that stops someone looking any further. The ring size is read
+ *  from the payload rather than hardcoded, so it stays true if it changes. */
+export function unlistedFailures(mail: {
+  consecutiveFailures: number;
+  recentFailures: MailFailure[];
+}): number {
+  return Math.max(0, mail.consecutiveFailures - mail.recentFailures.length);
+}
+
 /**
  * The standing alarm for outgoing mail, shown on every admin screen.
  *
@@ -30,6 +45,7 @@ export default function MailAlert() {
   if (!mail || !mailNeedsAttention(mail.status)) return null;
 
   const waiting = peopleWaiting(mail.recentFailures);
+  const hidden = unlistedFailures(mail);
 
   return (
     <div
@@ -40,7 +56,9 @@ export default function MailAlert() {
         <span aria-hidden className="h-2 w-2 shrink-0 rounded-full bg-danger" />
         <p className="text-sm font-bold text-danger">
           {waiting > 0
-            ? t.system.waitingTitle(waiting)
+            ? hidden > 0
+              ? t.system.waitingAtLeastTitle(waiting)
+              : t.system.waitingTitle(waiting)
             : `${t.system.mailTitle} — ${
                 t.system.mailStatuses[mail.status] ?? mail.status
               }`}

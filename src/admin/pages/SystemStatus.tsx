@@ -2,7 +2,7 @@ import { useI18n } from "../../i18n";
 import { adminStrings } from "../strings";
 import { formatDateTime } from "../format";
 import { mailNeedsAttention, useSystemStatus } from "../system";
-import { peopleWaiting } from "../components/MailAlert";
+import { peopleWaiting, unlistedFailures } from "../components/MailAlert";
 import type { MailStatus } from "../api/types";
 
 /**
@@ -32,6 +32,7 @@ export default function SystemStatus() {
   if (forbidden) return null;
 
   const mail = status?.mail;
+  const hidden = mail ? unlistedFailures(mail) : 0;
 
   return (
     <div>
@@ -81,7 +82,11 @@ export default function SystemStatus() {
             {mailNeedsAttention(mail.status) && (
               <>
                 <p className="mt-3 text-sm font-bold text-danger">
-                  {t.system.waitingTitle(peopleWaiting(mail.recentFailures))}
+                  {hidden > 0
+                    ? t.system.waitingAtLeastTitle(
+                        peopleWaiting(mail.recentFailures),
+                      )
+                    : t.system.waitingTitle(peopleWaiting(mail.recentFailures))}
                 </p>
                 <p className="mt-1 text-sm text-ink-600">
                   {t.system.waitingBody}
@@ -108,7 +113,9 @@ export default function SystemStatus() {
               <>
                 <p className="text-sm text-ink-600">{t.system.listNote}</p>
                 <p className="mt-1 text-sm text-ink-400">
-                  {t.system.allShownNote}
+                  {hidden > 0
+                    ? t.system.truncatedNote(mail.recentFailures.length, hidden)
+                    : t.system.allShownNote}
                 </p>
 
                 <div className="mt-5 overflow-x-auto">
