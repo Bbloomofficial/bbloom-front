@@ -33,6 +33,30 @@ function digitsOf(value: string): string {
   return value.replace(/\D+/g, "").slice(0, LENGTH);
 }
 
+/**
+ * What to tell the client, kept as a description rather than as finished text.
+ *
+ * The language can be switched while a message is on screen, and a string
+ * resolved when the request failed would sit there in the previous language
+ * until something else replaced it. Storing the reason and resolving it at
+ * render keeps the whole panel in one language.
+ *
+ * `server` is the exception: prose the backend wrote, which cannot be
+ * re-resolved and is carried verbatim.
+ */
+type Message =
+  | { kind: "codeFailed" }
+  | { kind: "codeExpired" }
+  | { kind: "codeTooManyAttempts" }
+  | { kind: "codeWrong" }
+  | { kind: "codeAttemptsLeft"; remaining: number }
+  | { kind: "resendFailed" }
+  | { kind: "resendTooSoon" }
+  | { kind: "resendDailyLimit" }
+  | { kind: "deliveryOff" }
+  | { kind: "resent" }
+  | { kind: "server"; text: string };
+
 type Props = {
   /** The address the code was sent to; needed because there is no session. */
   email: string;
@@ -55,10 +79,40 @@ export default function VerifyCodeForm({
   const { locale } = useI18n();
   const t = dashboardStrings(locale);
 
+  const say = useCallback(
+    (message: Message): string => {
+      switch (message.kind) {
+        case "codeFailed":
+          return t.verify.codeFailed;
+        case "codeExpired":
+          return t.verify.codeExpired;
+        case "codeTooManyAttempts":
+          return t.verify.codeTooManyAttempts;
+        case "codeWrong":
+          return t.verify.codeWrong;
+        case "codeAttemptsLeft":
+          return t.verify.codeAttemptsLeft(message.remaining);
+        case "resendFailed":
+          return t.verify.resendFailed;
+        case "resendTooSoon":
+          return t.verify.resendTooSoon;
+        case "resendDailyLimit":
+          return t.verify.resendDailyLimit;
+        case "deliveryOff":
+          return t.verify.deliveryOff;
+        case "resent":
+          return t.verify.resent;
+        case "server":
+          return message.text;
+      }
+    },
+    [t],
+  );
+
   const [digits, setDigits] = useState<string[]>(() => Array(LENGTH).fill(""));
   const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [notice, setNotice] = useState<string | null>(null);
+  const [error, setError] = useState<Message | null>(null);
+  const [notice, setNotice] = useState<Message | null>(null);
   const [resending, setResending] = useState(false);
   const [cooldown, setCooldown] = useState(0);
   /**
@@ -100,7 +154,7 @@ export default function VerifyCodeForm({
         focusBox(0);
 
         if (!(caught instanceof ApiError)) {
-          setError(t.verify.codeFailed);
+          setError({ kind: "codeFailed" });
           return;
         }
 
@@ -132,10 +186,10 @@ export default function VerifyCodeForm({
 
         switch (caught.code) {
           case "CODE_EXPIRED":
-            setError(t.verify.codeExpired);
+            setError({ kind: "codeExpired" });
             return;
           case "TOO_MANY_ATTEMPTS":
-            setError(t.verify.codeTooManyAttempts);
+            setError({ kind: "codeTooManyAttempts" });
             return;
           case "CODE_INVALID": {
             // Saying how many tries are left turns a dead end into a decision:
@@ -144,26 +198,30 @@ export default function VerifyCodeForm({
             const left = caught.problem.attemptsRemaining;
             setError(
               typeof left === "number" && left > 0
-                ? t.verify.codeAttemptsLeft(left)
-                : t.verify.codeWrong,
+                ? { kind: "codeAttemptsLeft", remaining: left }
+                : { kind: "codeWrong" },
             );
             return;
           }
           default:
             if (caught.status === 429) {
-              setError(t.verify.codeTooManyAttempts);
+              setError({ kind: "codeTooManyAttempts" });
               return;
             }
             // An unrecognised failure still has the server's own words, which
             // are written to be shown.
-            setError(caught.message || t.verify.codeWrong);
+            setError(
+              caught.message
+                ? { kind: "server", text: caught.message }
+                : { kind: "codeWrong" },
+            );
         }
       } finally {
         inFlight.current = false;
         setSubmitting(false);
       }
     },
-    [email, focusBox, onVerified, t],
+    [email, focusBox, onVerified],
   );
 
   const write = useCallback(
@@ -264,8 +322,8 @@ export default function VerifyCodeForm({
       // typed, so it says what actually happened instead.
       setNotice(
         ticket.emailDelivery === false
-          ? t.verify.deliveryOff
-          : t.verify.resent,
+          ? { kind: "deliveryOff" }
+          : { kind: "resent" },
       );
     } catch (caught) {
       if (caught instanceof ApiError && caught.status === 429) {
@@ -275,16 +333,16 @@ export default function VerifyCodeForm({
         );
         setError(
           caught.code === "DAILY_LIMIT"
-            ? t.verify.resendDailyLimit
-            : t.verify.resendTooSoon,
+            ? { kind: "resendDailyLimit" }
+            : { kind: "resendTooSoon" },
         );
       } else {
-        setError(t.verify.resendFailed);
+        setError({ kind: "resendFailed" });
       }
     } finally {
       setResending(false);
     }
-  }, [token, resending, cooldown, locale, t, focusBox]);
+  }, [token, resending, cooldown, locale, focusBox]);
 
   const warning = tone === "warning";
 
@@ -406,7 +464,7 @@ export default function VerifyCodeForm({
                 : "mt-3 text-sm font-semibold text-ink-700"
           }
         >
-          {error ?? notice}
+          {say(error ?? notice ?? { kind: "codeFailed" })}
         </p>
       )}
     </div>
