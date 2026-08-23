@@ -42,6 +42,8 @@ export type ProblemStrings = {
   network: string;
   /** The form was rejected and we have no better sentence for it. */
   validation: string;
+  /** The server could not read the request at all — our bug, not theirs. */
+  malformed: string;
   /** A required field was left empty. */
   fieldRequired: string;
   /** A field holds something that is not a valid value. */
@@ -184,6 +186,18 @@ export function describeProblem(
 
   switch (caught.status) {
     case 400: {
+      // Not every 400 is a rejected form. When the body itself cannot be read
+      // — an enum we sent a value the API does not accept, say — the failure is
+      // reported before anything binds, so there are no field errors to show
+      // and no field to attach them to. The server's sentence names the field
+      // and its accepted values, which is exactly what a developer needs and
+      // nothing a client could act on, so it goes to the console and the client
+      // is told, honestly, that this one is not their fault.
+      if (caught.code === "MALFORMED_REQUEST") {
+        console.error("Rejected by the API as unreadable:", caught.message);
+        return strings.malformed;
+      }
+
       // A validation failure usually complains about exactly one field, and
       // naming it is far more useful than saying a form is invalid. Where
       // several are wrong, the generic sentence is honest and the inputs are
@@ -194,8 +208,8 @@ export function describeProblem(
         return fieldMessage(field, message, caught.fieldCodes[field], strings);
       }
       if (entries.length > 1) return strings.validation;
-      // A 400 with no field errors is a malformed request rather than a bad
-      // one, and the server's sentence is the only thing that explains it.
+      // A 400 we have no code for and no fields on. The server's sentence is
+      // the only thing that explains it, so it is shown rather than swallowed.
       return caught.message || strings.validation;
     }
     case 401:

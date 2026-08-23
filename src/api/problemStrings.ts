@@ -14,6 +14,7 @@ import type { ProblemStrings } from "./problem";
 const en: ProblemStrings = {
   network: "We couldn't reach bbloom. Check your connection and try again.",
   validation: "Some of the fields need fixing.",
+  malformed: "We couldn't send that. Please reload the page and try again.",
   fieldRequired: "Please fill this in.",
   fieldInvalid: "This doesn't look right.",
   fieldEmail: "Enter a valid email address.",
@@ -36,6 +37,7 @@ const ka: ProblemStrings = {
   network:
     "bbloom-თან კავშირი ვერ დამყარდა. შეამოწმეთ ინტერნეტი და სცადეთ თავიდან.",
   validation: "ზოგიერთი ველი შესასწორებელია.",
+  malformed: "მოთხოვნა ვერ გაიგზავნა. გადატვირთეთ გვერდი და სცადეთ თავიდან.",
   fieldRequired: "შეავსეთ ეს ველი.",
   fieldInvalid: "მნიშვნელობა არასწორია.",
   fieldEmail: "შეიყვანეთ სწორი ელფოსტა.",
