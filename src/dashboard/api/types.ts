@@ -247,7 +247,6 @@ export type CreateSiteRequest = {
   currency?: string;
   contactEmail?: string;
   contactPhone?: string;
-  includeSampleContent?: boolean;
 };
 
 export type SiteDomain = {

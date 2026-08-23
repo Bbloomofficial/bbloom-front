@@ -80,15 +80,14 @@ export type DashboardStrings = {
     language: string;
     template: string;
     templateHint: string;
-    sampleContent: string;
-    sampleContentHint: string;
+    /** On each design card, opening that design's live demo in a new tab. */
+    viewDemo: string;
     submit: string;
     submitting: string;
     failed: string;
     noTemplate: string;
     preview: string;
     demo: string;
-    afterHint: string;
   };
   verify: {
     bannerTitle: string;
@@ -411,17 +410,13 @@ const en: DashboardStrings = {
     language: "Main language",
     template: "Design",
     templateHint: "Every design is fully editable — text, photos and colours.",
-    sampleContent: "Fill it with example content",
-    sampleContentHint:
-      "Gives you a complete page to edit instead of empty boxes. Recommended.",
+    viewDemo: "See an example",
     submit: "Create website",
     submitting: "Creating…",
     failed: "We couldn't create the website. Please try again.",
     noTemplate: "Choose a design to continue.",
     preview: "Preview",
     demo: "Live demo",
-    afterHint:
-      "Your website starts private. Publish it for free whenever you are ready.",
   },
   verify: {
     bannerTitle: "Confirm your email address",
@@ -788,17 +783,13 @@ const ka: DashboardStrings = {
     language: "მთავარი ენა",
     template: "დიზაინი",
     templateHint: "ყველა დიზაინი სრულად რედაქტირებადია — ტექსტი, ფოტოები და ფერები.",
-    sampleContent: "შეავსეთ სანიმუშო შიგთავსით",
-    sampleContentHint:
-      "ცარიელი ველების ნაცვლად მზა გვერდს მიიღებთ, რომელსაც დაარედაქტირებთ. გირჩევთ.",
+    viewDemo: "მაგალითის ნახვა",
     submit: "ვებგვერდის შექმნა",
     submitting: "იქმნება…",
     failed: "ვებგვერდის შექმნა ვერ მოხერხდა. სცადეთ თავიდან.",
     noTemplate: "გასაგრძელებლად აირჩიეთ დიზაინი.",
     preview: "გადახედვა",
     demo: "ცოცხალი დემო",
-    afterHint:
-      "ვებგვერდი თავიდან დახურულია. გამოქვეყნება უფასოა — როცა მოისურვებთ, მაშინ.",
   },
   verify: {
     bannerTitle: "დაადასტურეთ ელფოსტა",
