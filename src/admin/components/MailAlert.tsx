@@ -18,9 +18,17 @@ export function peopleWaiting(failures: MailFailure[]): number {
  *  `recentFailures` is a fixed ring (20 at the time of writing) while
  *  `consecutiveFailures` keeps counting past it, so during a long outage the
  *  table is a *sample* of the people owed an email, not the set of them. That
- *  gap has to be said out loud: twenty rows that look complete are exactly the
- *  kind of thing that stops someone looking any further. The ring size is read
- *  from the payload rather than hardcoded, so it stays true if it changes. */
+ *  gap has to be said out loud: twenty rows and a full-looking table is exactly
+ *  the kind of thing that stops someone looking any further.
+ *
+ *  Which end gets dropped matters more than the count does. Eviction is from
+ *  the tail, so the rows that survive are the *newest* failures and the people
+ *  who fall off are the ones who have been waiting longest — the ones most
+ *  likely to have already given up. The copy says so rather than leaving an
+ *  admin to assume the missing ones are recent.
+ *
+ *  The ring size is read from the payload rather than hardcoded, so it stays
+ *  true if it changes. */
 export function unlistedFailures(mail: {
   consecutiveFailures: number;
   recentFailures: MailFailure[];

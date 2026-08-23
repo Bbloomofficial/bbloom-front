@@ -437,7 +437,7 @@ const en: AdminStrings = {
         ? "At least 1 person is waiting for an email that never sent"
         : `At least ${count} people are waiting for an email that never sent`,
     truncatedNote: (shown, hidden) =>
-      `Only the ${shown} most recent failures are kept, and ${hidden} more have failed since. There are people affected who are not on this list.`,
+      `Only the ${shown} most recent failures are kept. ${hidden} earlier failures are not shown — and those people have been waiting the longest.`,
     waitingBody:
       "Confirming an email address is the only thing standing between a client and a published website. Until this is fixed they cannot proceed, and nothing on their screen tells them why.",
     listNote:
@@ -676,7 +676,7 @@ const ka: AdminStrings = {
     waitingAtLeastTitle: (count) =>
       `სულ მცირე ${count} ადამიანი ელოდება წერილს, რომელიც არ გაიგზავნა`,
     truncatedNote: (shown, hidden) =>
-      `სიაში მხოლოდ ბოლო ${shown} ჩანაწერი ინახება, მას შემდეგ კი კიდევ ${hidden} წერილი ვერ გაიგზავნა. დაზარალებულები არიან, ვინც ამ სიაში არ ჩანს.`,
+      `სიაში მხოლოდ ბოლო ${shown} ჩანაწერი ინახება. კიდევ ${hidden} უფრო ადრინდელი წერილი ვერ გაიგზავნა და აქ არ ჩანს — სწორედ ისინი ელოდებიან ყველაზე დიდხანს.`,
     waitingBody:
       "ელფოსტის დადასტურება ერთადერთია, რაც კლიენტსა და გამოქვეყნებულ საიტს შორის დგას. სანამ ეს არ გასწორდება, ისინი ვერაფერს გააკეთებენ — და მათ ეკრანზე არაფერი ამბობს, რატომ.",
     listNote:
