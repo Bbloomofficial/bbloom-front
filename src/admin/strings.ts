@@ -190,6 +190,7 @@ export type AdminStrings = {
     offNote: string;
     okNote: string;
     lastSuccess: string;
+    latestFailure: string;
     unknown: string;
     consecutive: (count: number) => string;
     waitingTitle: (count: number) => string;
@@ -423,6 +424,7 @@ const en: AdminStrings = {
       "No from-address is configured, so email is deliberately doing nothing. That is the expected state outside production.",
     okNote: "Every email we have tried to send has gone out.",
     lastSuccess: "Last successful send",
+    latestFailure: "Most recent failure",
     unknown: "Unknown",
     consecutive: (count) =>
       count === 1
@@ -437,7 +439,7 @@ const en: AdminStrings = {
         ? "At least 1 person is waiting for an email that never sent"
         : `At least ${count} people are waiting for an email that never sent`,
     truncatedNote: (shown, hidden) =>
-      `Only the ${shown} most recent failures are kept. ${hidden} earlier failures are not shown — and those people have been waiting the longest.`,
+      `The ${shown} earliest failures are kept, so these are the people who have been waiting longest. ${hidden} later failures are not shown.`,
     waitingBody:
       "Confirming an email address is the only thing standing between a client and a published website. Until this is fixed they cannot proceed, and nothing on their screen tells them why.",
     listNote:
@@ -669,6 +671,7 @@ const ka: AdminStrings = {
       "გამგზავნი მისამართი მითითებული არ არის, ამიტომ ელფოსტა განზრახ არაფერს აკეთებს. სატესტო გარემოში ეს გამართული მდგომარეობაა.",
     okNote: "ყველა წერილი, რომლის გაგზავნაც ვცადეთ, გავიდა.",
     lastSuccess: "ბოლო წარმატებული გაგზავნა",
+    latestFailure: "ბოლო შეცდომა",
     unknown: "უცნობია",
     consecutive: (count) => `ზედიზედ ${count} წარუმატებელი მცდელობა`,
     waitingTitle: (count) =>
@@ -676,7 +679,7 @@ const ka: AdminStrings = {
     waitingAtLeastTitle: (count) =>
       `სულ მცირე ${count} ადამიანი ელოდება წერილს, რომელიც არ გაიგზავნა`,
     truncatedNote: (shown, hidden) =>
-      `სიაში მხოლოდ ბოლო ${shown} ჩანაწერი ინახება. კიდევ ${hidden} უფრო ადრინდელი წერილი ვერ გაიგზავნა და აქ არ ჩანს — სწორედ ისინი ელოდებიან ყველაზე დიდხანს.`,
+      `ინახება ყველაზე ადრინდელი ${shown} ჩანაწერი — სწორედ ესენი ელოდებიან ყველაზე დიდხანს. კიდევ ${hidden} მოგვიანებითი წერილი ვერ გაიგზავნა და აქ არ ჩანს.`,
     waitingBody:
       "ელფოსტის დადასტურება ერთადერთია, რაც კლიენტსა და გამოქვეყნებულ საიტს შორის დგას. სანამ ეს არ გასწორდება, ისინი ვერაფერს გააკეთებენ — და მათ ეკრანზე არაფერი ამბობს, რატომ.",
     listNote:

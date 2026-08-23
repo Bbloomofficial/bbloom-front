@@ -5,12 +5,35 @@ import { mailNeedsAttention, useSystemStatus } from "../system";
 import type { MailFailure } from "../api/types";
 
 /** How many people are owed an email, rather than how many sends failed.
+ *
  *  Today's outage was three failed sends to two addresses; two is the number a
- *  human has to act on. */
-export function peopleWaiting(failures: MailFailure[]): number {
+ *  human has to act on. The server now counts this independently of the ring,
+ *  so it stays exact when the list is truncated — counting the rows is only a
+ *  fallback for an older backend, and it undercounts by definition. */
+export function peopleWaiting(mail: {
+  affectedRecipients?: number;
+  recentFailures: MailFailure[];
+}): number {
+  if (typeof mail.affectedRecipients === "number") {
+    return mail.affectedRecipients;
+  }
   return new Set(
-    failures.map((failure) => failure.recipient.trim().toLowerCase()),
+    mail.recentFailures.map((failure) => failure.recipient.trim().toLowerCase()),
   ).size;
+}
+
+/** True when the headline can only be a floor: the list is truncated and the
+ *  server did not give us the exact figure. With `affectedRecipients` present
+ *  the count is exact even under truncation, so the hedge disappears — a hedge
+ *  shown when it isn't needed is its own small lie. */
+export function peopleWaitingIsFloor(mail: {
+  affectedRecipients?: number;
+  consecutiveFailures: number;
+  recentFailures: MailFailure[];
+}): boolean {
+  return (
+    typeof mail.affectedRecipients !== "number" && unlistedFailures(mail) > 0
+  );
 }
 
 /** How many failed sends happened but are no longer listed.
@@ -21,11 +44,11 @@ export function peopleWaiting(failures: MailFailure[]): number {
  *  gap has to be said out loud: twenty rows and a full-looking table is exactly
  *  the kind of thing that stops someone looking any further.
  *
- *  Which end gets dropped matters more than the count does. Eviction is from
- *  the tail, so the rows that survive are the *newest* failures and the people
- *  who fall off are the ones who have been waiting longest — the ones most
- *  likely to have already given up. The copy says so rather than leaving an
- *  admin to assume the missing ones are recent.
+ *  Which end gets dropped matters more than the count does. Eviction keeps the
+ *  *earliest* entries, so the rows that survive are the people who have been
+ *  waiting longest — the ones most likely to have given up — and the failures
+ *  that fall off are later ones. The copy says so rather than leaving an admin
+ *  to guess which end they are looking at.
  *
  *  The ring size is read from the payload rather than hardcoded, so it stays
  *  true if it changes. */
@@ -52,8 +75,7 @@ export default function MailAlert() {
   const mail = status?.mail;
   if (!mail || !mailNeedsAttention(mail.status)) return null;
 
-  const waiting = peopleWaiting(mail.recentFailures);
-  const hidden = unlistedFailures(mail);
+  const waiting = peopleWaiting(mail);
 
   return (
     <div
@@ -64,7 +86,7 @@ export default function MailAlert() {
         <span aria-hidden className="h-2 w-2 shrink-0 rounded-full bg-danger" />
         <p className="text-sm font-bold text-danger">
           {waiting > 0
-            ? hidden > 0
+            ? peopleWaitingIsFloor(mail)
               ? t.system.waitingAtLeastTitle(waiting)
               : t.system.waitingTitle(waiting)
             : `${t.system.mailTitle} — ${

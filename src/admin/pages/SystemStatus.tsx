@@ -2,7 +2,11 @@ import { useI18n } from "../../i18n";
 import { adminStrings } from "../strings";
 import { formatDateTime } from "../format";
 import { mailNeedsAttention, useSystemStatus } from "../system";
-import { peopleWaiting, unlistedFailures } from "../components/MailAlert";
+import {
+  peopleWaiting,
+  peopleWaitingIsFloor,
+  unlistedFailures,
+} from "../components/MailAlert";
 import type { MailStatus } from "../api/types";
 
 /**
@@ -82,11 +86,9 @@ export default function SystemStatus() {
             {mailNeedsAttention(mail.status) && (
               <>
                 <p className="mt-3 text-sm font-bold text-danger">
-                  {hidden > 0
-                    ? t.system.waitingAtLeastTitle(
-                        peopleWaiting(mail.recentFailures),
-                      )
-                    : t.system.waitingTitle(peopleWaiting(mail.recentFailures))}
+                  {peopleWaitingIsFloor(mail)
+                    ? t.system.waitingAtLeastTitle(peopleWaiting(mail))
+                    : t.system.waitingTitle(peopleWaiting(mail))}
                 </p>
                 <p className="mt-1 text-sm text-ink-600">
                   {t.system.waitingBody}
@@ -104,6 +106,20 @@ export default function SystemStatus() {
                 ? formatDateTime(mail.lastSuccessAt, locale)
                 : t.system.unknown}
             </p>
+
+            {/* The newest failure, which the table cannot show: it keeps the
+                earliest entries, so every visible reason is frozen at the
+                start of the outage. Without this an admin fixes the problem
+                the outage began with rather than the one it is on now. */}
+            {mail.lastFailureReason && (
+              <p className="mt-1 text-xs text-ink-400">
+                {t.system.latestFailure}:{" "}
+                {mail.lastFailureAt
+                  ? `${formatDateTime(mail.lastFailureAt, locale)} — `
+                  : ""}
+                <span className="text-danger">{mail.lastFailureReason}</span>
+              </p>
+            )}
           </section>
 
           <section className="mt-6 rounded-3xl border border-ink-100 bg-surface p-6 sm:p-7">
@@ -137,11 +153,11 @@ export default function SystemStatus() {
                       </tr>
                     </thead>
                     <tbody>
-                      {/* Every entry, at equal weight. The list arrives most
-                          recent first and the most recent is routinely a test
-                          probe, while the real client sits further down —
-                          rendering only the newest would show the noise and
-                          hide the person. */}
+                      {/* Every entry, at equal weight, in the order the server
+                          sends them — oldest first, so the top row is the
+                          person who has been waiting longest and an admin can
+                          work straight down. Rendering only the newest would
+                          show a test probe and hide the person who mattered. */}
                       {mail.recentFailures.map((failure, index) => (
                         <tr
                           key={`${failure.at}-${failure.recipient}-${index}`}

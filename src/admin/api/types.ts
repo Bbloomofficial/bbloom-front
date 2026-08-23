@@ -223,6 +223,21 @@ export type MailHealth = {
   /** Absent — not null — when the process has restarted and not yet sent. */
   lastSuccessAt?: string;
   /**
+   * Distinct addresses affected by the current run, counted independently of
+   * the list, so it stays exact when the list is truncated. Always present on
+   * a current backend, including `0`; absent on an older one, where the only
+   * available answer is to count the rows and hedge.
+   */
+  affectedRecipients?: number;
+  /**
+   * The newest failure, which the list itself no longer carries: eviction now
+   * keeps the *earliest* entries, so every visible `reason` is frozen at the
+   * start of an outage. These two are what stop an admin diagnosing a problem
+   * that has already been replaced by a different one. Absent, never null.
+   */
+  lastFailureAt?: string;
+  lastFailureReason?: string;
+  /**
    * Cleared by the next successful send, so a non-empty list means these
    * people are still waiting. Most recent first, but the most recent is
    * routinely the least important entry: render all of them.
