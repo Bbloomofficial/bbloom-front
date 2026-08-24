@@ -243,6 +243,7 @@ export type AdminStrings = {
     page: (page: number, total: number) => string;
     back: string;
     emailStatus: string;
+    accountStatus: string;
     confirmEmail: string;
     confirming: string;
     confirmed: string;
@@ -552,6 +553,7 @@ const en: AdminStrings = {
     page: (page, total) => `Page ${page} of ${total}`,
     back: "All accounts",
     emailStatus: "Email status",
+    accountStatus: "Account status",
     confirmEmail: "Confirm email",
     confirming: "Confirming…",
     confirmed: "Email confirmed",
@@ -857,6 +859,7 @@ const ka: AdminStrings = {
     page: (page, total) => `გვერდი ${page} / ${total}`,
     back: "ყველა ანგარიში",
     emailStatus: "ელფოსტის სტატუსი",
+    accountStatus: "ანგარიშის სტატუსი",
     confirmEmail: "ელფოსტის დადასტურება",
     confirming: "მოწმდება…",
     confirmed: "ელფოსტა დადასტურდა",

@@ -177,7 +177,11 @@ export default function AccountDetail() {
           </div>
           <div>
             <dt className="text-xs font-semibold uppercase tracking-wide text-ink-400">
-              {t.accounts.emailStatus}
+              {/* This is `enabled`, which is about the account, not the
+                  address. Labelling it "email status" made a disabled account
+                  read as a disabled mailbox, and put the same heading on two
+                  adjacent fields answering different questions. */}
+              {t.accounts.accountStatus}
             </dt>
             <dd className="mt-1 text-sm text-ink-900">
               {account.enabled ? t.accounts.enabled : t.accounts.disabled}

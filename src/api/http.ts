@@ -201,6 +201,19 @@ export async function request<T>(path: string, init?: RequestInit): Promise<T> {
   });
 
   if (!response.ok) throw await toError(response);
-  if (response.status === 204) return undefined as T;
-  return (await response.json()) as T;
+  // 204 is not the only empty success: the staff resend endpoint answers 202
+  // with no body, and `response.json()` throws on an empty payload — which
+  // surfaced to staff as a raw `Unexpected end of JSON input` on a send that
+  // had actually gone out. Decide on the body that is present rather than on
+  // a list of statuses we happen to know about, so the next endpoint that
+  // returns 201-with-no-content doesn't reintroduce this.
+  //
+  // A non-empty body that fails to parse still throws: that is a real
+  // disagreement about the contract and should not be swallowed.
+  if (response.status === 204 || response.status === 205) {
+    return undefined as T;
+  }
+  const text = await response.text();
+  if (!text) return undefined as T;
+  return JSON.parse(text) as T;
 }
