@@ -25,6 +25,19 @@ import { dashboardStrings } from "./strings";
 import { dashPath } from "../routes";
 
 /**
+ * The sub-millisecond digits of a wire timestamp, padded so they compare as
+ * numbers of the same magnitude.
+ *
+ * Raw string comparison is not safe here: `.81Z` and `.810945Z` are `.810000`
+ * and `.810945`, but compared as text the `Z` sorts above `9` and the earlier
+ * instant loses. Padding removes that, and the fraction is independent of any
+ * UTC offset because offsets are whole minutes.
+ */
+function subMilliDigits(value: string): string {
+  return (/\.(\d+)/.exec(value)?.[1] ?? "").slice(3).padEnd(6, "0");
+}
+
+/**
  * The website an old link was about: the account's *earliest*, which is the one
  * it had when that bookmark was made or that mail was sent.
  *
@@ -37,17 +50,28 @@ import { dashPath } from "../routes";
  *
  * `createdAt` is optional on the wire (absent, never null), so a site without a
  * usable one cannot win the comparison and the list order is the fallback.
- * `Date.parse` truncates to milliseconds, so two sites created in the same
- * millisecond tie and the earlier of them in the list wins — deterministic, and
- * not a case a client can reach by hand anyway.
+ *
+ * Milliseconds first, then the digits below them. `Date.parse` is right for
+ * every format it accepts, but it truncates to milliseconds, and the backend
+ * serialises Postgres *microseconds* (`…:15.810945Z`). Its legacy flat `siteId`
+ * is `min(createdAt)` over the untruncated values, so a tie we broke by list
+ * order could name a different website than the backend names while both of us
+ * behaved exactly as documented — the kind of disagreement that is slow to
+ * debug because neither side looks wrong. Two sites can share a millisecond
+ * when they are seeded or scripted in a batch, even though a client clicking
+ * through the UI never will.
  */
 function earliestSite(sites: AccountSite[]): AccountSite | undefined {
   let earliest: AccountSite | undefined;
   let earliestAt = Number.POSITIVE_INFINITY;
+  let earliestSub = "";
   for (const site of sites) {
     const at = site.createdAt ? Date.parse(site.createdAt) : Number.NaN;
-    if (Number.isNaN(at) || at >= earliestAt) continue;
+    if (Number.isNaN(at) || at > earliestAt) continue;
+    const sub = subMilliDigits(site.createdAt as string);
+    if (at === earliestAt && sub >= earliestSub) continue;
     earliestAt = at;
+    earliestSub = sub;
     earliest = site;
   }
   return earliest ?? sites[0];
@@ -130,9 +154,11 @@ function SignedIn() {
       <Route path="page" element={<LegacyRedirect to="page" />} />
       <Route path="inbox" element={<LegacyRedirect to="inbox" />} />
       {/*
-        The enquiry notifications we sent before today named `/dashboard/messages`.
-        Those mails are already in clients' inboxes and cannot be edited, so the
-        path has to keep resolving even though nothing links to it any more.
+        The enquiry notification names `/dashboard/messages`. No such mail has
+        ever gone out — notifications are switched off and no enquiry has been
+        recorded — so nothing is currently pointing here. It stays because the
+        moment that switch is turned on the links become permanent, and a path
+        that has to exist before the first send is cheaper than one added after.
       */}
       <Route path="messages" element={<LegacyRedirect to="inbox" />} />
       <Route path="login" element={<Navigate to={dashPath()} replace />} />
