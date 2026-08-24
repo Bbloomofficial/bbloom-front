@@ -278,7 +278,7 @@ export default function Overview() {
               <Link
                 key={type}
                 to={`/dashboard/s/${siteId}/inbox?type=${type}`}
-                className="inline-flex items-center gap-2 rounded-full border border-ink-100 bg-surface px-3 py-1.5 text-xs font-semibold text-ink-600 transition hover:border-bloom-300 hover:text-bloom-600"
+                className="inline-flex items-center gap-2 rounded-full border border-ink-100 bg-control px-3 py-1.5 text-xs font-semibold text-ink-600 transition hover:border-bloom-300 hover:text-bloom-600"
               >
                 {t.types[type]}
                 <span className="text-ink-400">{stats.data?.byType[type]}</span>

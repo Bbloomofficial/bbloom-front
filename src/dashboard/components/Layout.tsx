@@ -241,7 +241,7 @@ export default function Layout({
                 href={active.publicUrl ?? `/site/${active.slug}`}
                 target="_blank"
                 rel="noreferrer"
-                className="hidden rounded-xl border border-ink-100 bg-surface px-3 py-2 text-sm font-semibold text-ink-600 transition hover:border-bloom-300 hover:text-bloom-600 md:inline-flex"
+                className="hidden rounded-xl border border-ink-100 bg-control px-3 py-2 text-sm font-semibold text-ink-600 transition hover:border-bloom-300 hover:text-bloom-600 md:inline-flex"
               >
                 {t.viewSite}
               </a>
