@@ -15,6 +15,7 @@ export const en: Dict = {
     contact: 'Contact',
     cta: 'Get in touch',
     signIn: 'Sign in',
+    register: 'Sign up',
     start: 'Create your website',
     openMenu: 'Open menu',
     closeMenu: 'Close menu',

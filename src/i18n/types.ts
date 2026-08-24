@@ -36,6 +36,12 @@ export type Dict = {
     contact: string
     cta: string
     signIn: string
+    /**
+     * Sign-up, sitting beside sign-in rather than replacing `start`: `start`
+     * opens the anonymous editor, which asks for an account only once there is
+     * something to save. This is for someone who has already decided.
+     */
+    register: string
     start: string
     openMenu: string
     closeMenu: string

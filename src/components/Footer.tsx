@@ -56,6 +56,11 @@ export default function Footer() {
                 {t.nav.signIn}
               </Link>
             </li>
+            <li>
+              <Link to="/dashboard/register" className="hover:text-tint-fg">
+                {t.nav.register}
+              </Link>
+            </li>
           </ul>
         </div>
 

@@ -66,8 +66,23 @@ export default function Navbar() {
           >
             {t.nav.signIn}
           </Link>
-          <Link to="/try" className="btn-primary hidden xl:inline-flex">
-            {t.nav.start}
+          {/* Sign-up next to sign-in, because someone who has already decided
+              should not have to go through the anonymous editor to find the
+              form.
+
+              It takes the CTA slot from `start` rather than joining it. The bar
+              cannot hold both: `container-page` is capped at max-w-6xl, so the
+              content width is 1152px on every screen -- a wider viewport buys
+              nothing -- and the four controls measured 1290px. `start` is the
+              one that goes because signing up and the anonymous editor both end
+              at a new website, whereas dropping either auth link would leave an
+              existing client with no way in. `/try` is still in the menu below,
+              and on the home page's own hero. */}
+          <Link
+            to="/dashboard/register"
+            className="btn btn-primary btn-sm hidden whitespace-nowrap xl:inline-flex"
+          >
+            {t.nav.register}
           </Link>
 
           <button
@@ -113,12 +128,20 @@ export default function Navbar() {
             <Link to="/try" className="btn-primary mt-2">
               {t.nav.start}
             </Link>
-            <Link
-              to="/dashboard/login"
-              className="rounded-xl px-4 py-3 text-center text-sm font-semibold text-ink-600"
-            >
-              {t.nav.signIn}
-            </Link>
+            <div className="mt-1 grid grid-cols-2 gap-2">
+              <Link
+                to="/dashboard/login"
+                className="rounded-xl border border-ink-100 bg-control px-4 py-3 text-center text-sm font-semibold text-ink-600 transition hover:border-bloom-300 hover:bg-tint hover:text-bloom-600 active:scale-95"
+              >
+                {t.nav.signIn}
+              </Link>
+              <Link
+                to="/dashboard/register"
+                className="rounded-xl border border-ink-100 bg-control px-4 py-3 text-center text-sm font-semibold text-ink-600 transition hover:border-bloom-300 hover:bg-tint hover:text-bloom-600 active:scale-95"
+              >
+                {t.nav.register}
+              </Link>
+            </div>
           </div>
         </div>
       )}
