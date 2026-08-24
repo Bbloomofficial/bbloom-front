@@ -59,11 +59,49 @@ function initial(name: string) {
 }
 
 /**
+ * The account-level header. Deliberately static: on these screens the switcher
+ * had nothing to offer that was not already on the page behind it — the
+ * websites list renders the same sites with the same badges and the same "add
+ * another" link, and the sidebar's own nav already carries both the list and
+ * the account. A chevron that opens a copy of the current page is an invitation
+ * to a dead end.
+ *
+ * Inside a site it is the opposite and `SiteSwitcher` keeps every part of it,
+ * because there the site tabs replace this nav entirely and the menu is the
+ * only way back to the list or across to another website.
+ */
+function AccountHeader() {
+  const { locale } = useI18n();
+  const t = dashboardStrings(locale);
+  const { user } = useSession();
+
+  return (
+    <div className="flex w-full min-w-0 items-center gap-2.5 rounded-2xl px-2 py-1.5 text-start sm:gap-3">
+      <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-bloom-500 to-bloom-700 text-sm font-extrabold text-white shadow-lg shadow-bloom-600/25">
+        {initial(t.nav.sites)}
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className="block truncate text-sm font-bold text-ink-900">
+          {t.nav.sites}
+        </span>
+        <span className="block truncate text-xs text-ink-400" dir="ltr">
+          {user.email}
+        </span>
+      </span>
+    </div>
+  );
+}
+
+/**
  * The switcher is the whole difference between "your website" and "your
  * account": one login can now hold sites in different roles, so the site being
  * worked on has to be a visible, changeable thing rather than an assumption.
+ *
+ * Only rendered inside a site. `active` is required rather than nullable so
+ * that stays true by construction — the account-level case is `AccountHeader`,
+ * and a nullable prop here would quietly let the menu back onto those screens.
  */
-function SiteSwitcher({ active }: { active: AccountSite | null }) {
+function SiteSwitcher({ active }: { active: AccountSite }) {
   const { locale } = useI18n();
   const t = dashboardStrings(locale);
   const { user } = useSession();
@@ -80,7 +118,7 @@ function SiteSwitcher({ active }: { active: AccountSite | null }) {
     return () => document.removeEventListener("mousedown", onDown);
   }, [open]);
 
-  const label = active?.businessName ?? t.nav.sites;
+  const label = active.businessName;
 
   return (
     <div className="relative min-w-0 shrink" ref={wrap}>
@@ -99,7 +137,7 @@ function SiteSwitcher({ active }: { active: AccountSite | null }) {
             {label}
           </span>
           <span className="block truncate text-xs text-ink-400" dir="ltr">
-            {active?.primaryDomain ?? active?.slug ?? user.email}
+            {active.primaryDomain ?? active.slug}
           </span>
         </span>
         <svg
@@ -126,29 +164,26 @@ function SiteSwitcher({ active }: { active: AccountSite | null }) {
             avatar looks like it should do this, but it opens the menu, which
             is why the menu is where the answer belongs.
 
-            Only while inside a site: on the websites list itself this would
-            point at the page already being read.
+            Unconditional now: this component only renders inside a site, so
+            there is no longer a case where it would point at the page already
+            being read.
           */}
-          {active && (
-            <>
-              <Link
-                to={dashPath()}
-                onClick={() => setOpen(false)}
-                className="flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-semibold text-ink-900 transition hover:bg-ink-50"
-              >
-                <svg
-                  viewBox="0 0 20 20"
-                  className="h-4 w-4 shrink-0 text-ink-400 rtl:-scale-x-100"
-                  fill="currentColor"
-                  aria-hidden="true"
-                >
-                  <path d="M12.7 4.3a1 1 0 0 1 0 1.4L8.42 10l4.3 4.3a1 1 0 0 1-1.42 1.4l-5-5a1 1 0 0 1 0-1.4l5-5a1 1 0 0 1 1.4 0Z" />
-                </svg>
-                {t.sites.allSites}
-              </Link>
-              <div className="my-1 border-t border-ink-100" />
-            </>
-          )}
+          <Link
+            to={dashPath()}
+            onClick={() => setOpen(false)}
+            className="flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-semibold text-ink-900 transition hover:bg-ink-50"
+          >
+            <svg
+              viewBox="0 0 20 20"
+              className="h-4 w-4 shrink-0 text-ink-400 rtl:-scale-x-100"
+              fill="currentColor"
+              aria-hidden="true"
+            >
+              <path d="M12.7 4.3a1 1 0 0 1 0 1.4L8.42 10l4.3 4.3a1 1 0 0 1-1.42 1.4l-5-5a1 1 0 0 1 0-1.4l5-5a1 1 0 0 1 1.4 0Z" />
+            </svg>
+            {t.sites.allSites}
+          </Link>
+          <div className="my-1 border-t border-ink-100" />
 
           <p className="px-3 pb-1 pt-2 text-xs font-bold uppercase tracking-wide text-ink-400">
             {t.sites.switcher}
@@ -271,7 +306,7 @@ export default function Layout({
 
   const sidebar = (
     <div className="flex h-full min-h-0 flex-col gap-1 p-3">
-      <SiteSwitcher active={active} />
+      {active ? <SiteSwitcher active={active} /> : <AccountHeader />}
 
       <nav className="mt-3 flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto">
         {links.map((link) => (
