@@ -65,6 +65,22 @@ export type AccountSite = {
   primaryDomain?: string;
   publicUrl?: string;
   hasDraftChanges?: boolean;
+  /**
+   * Whether putting *this* website online would be refused for want of a paid
+   * plan, as of the moment the profile was fetched.
+   *
+   * Free hosting covers one website online at a time, and this is the server
+   * stating whether the slot is spoken for rather than us re-deriving it. It
+   * is not a property of the site alone — it turns on what else its owners
+   * have online — so it changes underneath us when another site is published
+   * or taken offline, and it is only meaningful as fresh as the last refresh.
+   *
+   * Absent means no. An older API does not send it, and the safe reading of
+   * silence is "nothing is in the way": wrongly warning someone their website
+   * needs paying for when it does not is far worse than staying quiet and
+   * letting the 409 explain itself.
+   */
+  publishRequiresPlan?: boolean;
   subscription?: SiteSubscriptionSummary;
   createdAt?: string;
 };

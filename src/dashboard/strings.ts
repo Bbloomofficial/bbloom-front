@@ -65,6 +65,12 @@ export type DashboardStrings = {
     allSites: string;
     switcher: string;
     draftChanges: string;
+    /**
+     * Marks a website that would be refused if published, so the client learns
+     * it here rather than from a rejection. Kept to a short label because it
+     * sits in a row of badges; the full explanation is on the site's own page.
+     */
+    needsPlan: string;
     trialEnds: (date: string) => string;
     renewsOn: (date: string) => string;
     graceUntil: (date: string) => string;
@@ -394,6 +400,7 @@ const en: DashboardStrings = {
     allSites: "All websites",
     switcher: "Switch website",
     draftChanges: "Unpublished edits",
+    needsPlan: "Needs a plan to go online",
     trialEnds: (date) => `Trial ends ${date}`,
     renewsOn: (date) => `Renews ${date}`,
     graceUntil: (date) => `Payment overdue — extras end ${date}`,
@@ -588,7 +595,7 @@ const en: DashboardStrings = {
       EMAIL_UNVERIFIED:
         "Confirm your email address before putting your website online.",
       ADDITIONAL_SITE_REQUIRES_PLAN:
-        "Your first website is online for free. To put this one online too, choose a plan for it. You can keep editing it either way.",
+        "Your free website is already online. Take that one offline to put this one up instead, or choose a plan to have both online at once. You can keep editing this one either way.",
     },
     title: "Not online yet",
     verifyEmail: "Confirm your email",
@@ -770,6 +777,7 @@ const ka: DashboardStrings = {
     allSites: "ყველა ვებგვერდი",
     switcher: "ვებგვერდის შეცვლა",
     draftChanges: "გამოუქვეყნებელი ცვლილებები",
+    needsPlan: "გამოსაქვეყნებლად საჭიროა პაკეტი",
     trialEnds: (date) => `საცდელი პერიოდი მთავრდება ${date}`,
     renewsOn: (date) => `განახლდება ${date}`,
     graceUntil: (date) => `გადახდა ვადაგადაცილებულია — გაითიშება ${date}-ის შემდეგ`,
@@ -963,7 +971,7 @@ const ka: DashboardStrings = {
       EMAIL_UNVERIFIED:
         "ვებგვერდის გამოქვეყნებამდე დაადასტურეთ თქვენი ელფოსტა.",
       ADDITIONAL_SITE_REQUIRES_PLAN:
-        "თქვენი პირველი ვებგვერდი უფასოდ არის ონლაინ. ამის გამოსაქვეყნებლად აირჩიეთ პაკეტი. რედაქტირება ორივე შემთხვევაში ხელმისაწვდომია.",
+        "თქვენი უფასო ვებგვერდი უკვე ონლაინ არის. ამის გამოსაქვეყნებლად ან ის მოხსენით, ან აირჩიეთ პაკეტი და ორივე ერთად იქნება ონლაინ. რედაქტირება ორივე შემთხვევაში ხელმისაწვდომია.",
     },
     title: "ჯერ არ არის ონლაინ",
     verifyEmail: "ელფოსტის დადასტურება",

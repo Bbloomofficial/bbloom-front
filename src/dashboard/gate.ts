@@ -75,6 +75,29 @@ export function canPublish(
 }
 
 /**
+ * Whether the server says putting this website online would be refused for
+ * want of a paid plan.
+ *
+ * Deliberately *not* folded into `publishBlocks`, which decides whether the
+ * publish button is worth showing at all. This one warns without disarming.
+ *
+ * The difference is what a stale answer costs. `emailVerified` is a fact about
+ * the account and stays true once true. This flag is a fact about the account's
+ * *other* websites — taking one offline hands the slot over — so it can go
+ * stale in a tab that has been open a while. If a stale `true` hid the button,
+ * a client who had just freed the slot would be left looking at a screen with
+ * no way to act and no way to find out why. Left visible, a stale `true` costs
+ * one refused request, which now explains itself in their own language.
+ *
+ * Absent means no, for the reason given on the field itself.
+ */
+export function publishNeedsPlan(
+  site: Pick<AccountSite, "publishRequiresPlan">,
+): boolean {
+  return site.publishRequiresPlan === true;
+}
+
+/**
  * Whether the paid extras are live for this website.
  *
  * Absent means no, deliberately. The flag is new, and a client on a build that

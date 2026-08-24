@@ -4,6 +4,7 @@ import type { AccountSite } from "../api/types";
 import { sitesOf, useSession } from "../auth";
 import { RoleBadge, SiteStatusBadge } from "../components/Badges";
 import { dashboardStrings, formatDate } from "../strings";
+import { publishNeedsPlan } from "../gate";
 
 /**
  * The account home. It is a list even for someone with one website, because
@@ -68,6 +69,16 @@ function SiteCard({ site }: { site: AccountSite }) {
         {site.hasDraftChanges && (
           <span className="rounded-full bg-tint px-2.5 py-1 text-xs font-semibold text-tint-fg">
             {t.sites.draftChanges}
+          </span>
+        )}
+        {/* Guarded on status as well as the flag. A site holding the slot
+            reports false while it is up, so the two should never disagree —
+            but if they ever did, telling someone their live website needs
+            paying for to go online is the worse failure, and this is the
+            cheaper side to be wrong on. */}
+        {site.status !== "PUBLISHED" && publishNeedsPlan(site) && (
+          <span className="rounded-full border border-ink-100 bg-canvas px-2.5 py-1 text-xs font-semibold text-ink-600">
+            {t.sites.needsPlan}
           </span>
         )}
       </div>

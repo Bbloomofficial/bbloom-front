@@ -17,7 +17,12 @@ import { dashboardStrings, formatDate, formatDateTime } from "../strings";
 import { SiteStatusBadge, StatusBadge, TypeBadge } from "../components/Badges";
 import { ContactSettings } from "../components/ContactSettings";
 import { useActiveSite, useIsOwner } from "../site";
-import { canPublish, publishBlocks, publishErrorMessage } from "../gate";
+import {
+  canPublish,
+  publishBlocks,
+  publishErrorMessage,
+  publishNeedsPlan,
+} from "../gate";
 
 /** `MODERN` / `shop-modern` read better as words in a client-facing UI. */
 function titleCase(value: string) {
@@ -172,6 +177,19 @@ export default function Overview() {
             {/* The confirmation box itself is in the banner at the top of every
                 dashboard page, so there is nothing to link to — saying it twice
                 here and sending them upwards would be the detour. */}
+          </div>
+        )}
+
+        {!published && blocks.length === 0 && publishNeedsPlan(active) && (
+          <div className="mt-5 rounded-2xl border border-ink-100 bg-canvas p-4">
+            <p className="text-sm font-bold text-ink-900">{t.gate.title}</p>
+            <p className="mt-2 text-sm text-ink-600">
+              {t.gate.blocked.ADDITIONAL_SITE_REQUIRES_PLAN}
+            </p>
+            {/* The publish button stays enabled above. This warns without
+                disarming: the flag describes the account's *other* websites, so
+                it can go stale in a long-open tab, and a client who has just
+                freed the slot must not be left with a dead button. */}
           </div>
         )}
 
