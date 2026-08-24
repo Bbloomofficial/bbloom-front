@@ -163,7 +163,16 @@ export default function AccountDetail() {
               {t.accounts.language}
             </dt>
             <dd className="mt-1 text-sm text-ink-900">
-              {account.language ?? "—"}
+              {/* The API sends this uppercase ("KA") while the name table is
+                  keyed lowercase, so a direct lookup silently misses and shows
+                  staff a bare language code. Fall back to the raw value rather
+                  than an em dash: an unknown code is still information, and
+                  hiding it would make a wrong `language` look like an unset
+                  one. */}
+              {account.language
+                ? (t.languageNames[account.language.toLowerCase()] ??
+                  account.language)
+                : "—"}
             </dd>
           </div>
           <div>
