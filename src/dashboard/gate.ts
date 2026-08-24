@@ -24,11 +24,38 @@ import type { AccountSite, SiteSubscriptionSummary } from "./api/types";
  */
 
 /**
- * Why publishing is refused. `null` means it should go through.
+ * Why publishing is refused, of the reasons we can work out *before* asking.
  *
- * One member, and that is the point: every commercial reason is gone.
+ * One member, and that is the point: every commercial reason for a *first*
+ * website is gone.
  */
 export type PublishBlock = "EMAIL_UNVERIFIED";
+
+/**
+ * Every reason the server refuses a publish, including the ones we cannot see
+ * coming. A superset of `PublishBlock`.
+ *
+ * Free hosting covers one website per client, so an additional site has to be
+ * paid for before it goes online. We deliberately do not predict that one. The
+ * rule turns on which site holds the allowance, and the only way to work that
+ * out here is to re-derive it from `createdAt` — a rule that lives on the
+ * server and is not stated in any payload. Guessing it wrong means telling
+ * someone their website needs paying for when it does not, so this reason is
+ * only ever *reported*, never *predicted*.
+ */
+export type PublishRefusal = PublishBlock | "ADDITIONAL_SITE_REQUIRES_PLAN";
+
+/**
+ * The server's names for these, which are not our names for them.
+ *
+ * `EMAIL_NOT_VERIFIED` and `EMAIL_UNVERIFIED` are the same refusal spelled two
+ * ways, so the mapping is written out rather than assumed to be an identity.
+ */
+const refusalCodes: Record<string, PublishRefusal> = {
+  EMAIL_NOT_VERIFIED: "EMAIL_UNVERIFIED",
+  EMAIL_UNVERIFIED: "EMAIL_UNVERIFIED",
+  ADDITIONAL_SITE_REQUIRES_PLAN: "ADDITIONAL_SITE_REQUIRES_PLAN",
+};
 
 /**
  * Every reason publishing would be refused, most substantive first.
@@ -96,15 +123,25 @@ const lapsedStatuses = new Set<SiteSubscriptionSummary["status"]>([
  * English, so a known reason is rendered from our own dictionaries instead. A
  * reason we do not recognise falls through to the server's own words, so a
  * message added on the backend tomorrow is never silently swallowed.
+ *
+ * The reason is taken from the server's `code` first and only derived from
+ * local state as a fallback. That order matters now that more than one thing
+ * can refuse a publish: derivation answers with whatever *would* block, which
+ * is not necessarily what *did*. A client with an unconfirmed email who is
+ * refused for needing a plan would be sent off to confirm their address —
+ * truthfully, about the wrong subject — and would come back no better off. The
+ * fallback is kept only for an API old enough not to send the codes.
  */
 export function publishErrorMessage(
   error: unknown,
   site: Pick<AccountSite, "subscription">,
   emailVerified: boolean,
-  copy: Record<PublishBlock, string>,
+  copy: Record<PublishRefusal, string>,
   otherwise?: () => string,
 ): string {
   if (error instanceof ApiError && error.status === 409) {
+    const named = error.code ? refusalCodes[error.code] : undefined;
+    if (named) return copy[named];
     const [block] = publishBlocks(site, emailVerified);
     if (block) return copy[block];
   }

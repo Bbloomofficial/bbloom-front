@@ -1,7 +1,7 @@
 import type { Locale } from "../i18n";
 import type { ProblemStrings } from "../api/problem";
 import { problemStrings } from "../api/problemStrings";
-import type { PublishBlock } from "./gate";
+import type { PublishRefusal } from "./gate";
 
 /**
  * Chrome for the client dashboard. Site *content* is localised by the backend,
@@ -235,7 +235,7 @@ export type DashboardStrings = {
     failed: string;
   };
   gate: {
-    blocked: Record<PublishBlock, string>;
+    blocked: Record<PublishRefusal, string>;
     title: string;
     verifyEmail: string;
     ready: string;
@@ -587,6 +587,8 @@ const en: DashboardStrings = {
     blocked: {
       EMAIL_UNVERIFIED:
         "Confirm your email address before putting your website online.",
+      ADDITIONAL_SITE_REQUIRES_PLAN:
+        "Your first website is online for free. To put this one online too, choose a plan for it. You can keep editing it either way.",
     },
     title: "Not online yet",
     verifyEmail: "Confirm your email",
@@ -960,6 +962,8 @@ const ka: DashboardStrings = {
     blocked: {
       EMAIL_UNVERIFIED:
         "ვებგვერდის გამოქვეყნებამდე დაადასტურეთ თქვენი ელფოსტა.",
+      ADDITIONAL_SITE_REQUIRES_PLAN:
+        "თქვენი პირველი ვებგვერდი უფასოდ არის ონლაინ. ამის გამოსაქვეყნებლად აირჩიეთ პაკეტი. რედაქტირება ორივე შემთხვევაში ხელმისაწვდომია.",
     },
     title: "ჯერ არ არის ონლაინ",
     verifyEmail: "ელფოსტის დადასტურება",
