@@ -282,7 +282,7 @@ export default function AccountDetail() {
         <h2 className="text-lg font-bold text-ink-900">
           {t.accounts.sitesTitle}
         </h2>
-        {account.sites.length === 0 ? (
+        {!account.sites?.length ? (
           <p className="mt-4 text-sm text-ink-600">{t.accounts.noSites}</p>
         ) : (
           <div className="mt-4 overflow-hidden rounded-2xl border border-ink-100">

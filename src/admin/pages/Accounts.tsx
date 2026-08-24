@@ -122,6 +122,21 @@ export default function Accounts() {
                     >
                       {account.email}
                     </Link>
+                    {/* The search matches website names too, so a row found by
+                        `q=marita` would otherwise be an unfamiliar email with
+                        nothing on screen explaining why it came back. This is
+                        also the identifier staff actually have on a phone call:
+                        the client says "it's about Marita", not their address. */}
+                    {account.sites?.length > 0 && (
+                      <p className="mt-0.5 truncate text-xs text-ink-400">
+                        {account.sites
+                          .slice(0, 3)
+                          .map((site) => site.businessName)
+                          .join(", ")}
+                        {account.sites.length > 3 &&
+                          ` +${account.sites.length - 3}`}
+                      </p>
+                    )}
                   </td>
                   <td className="hidden px-5 py-4 text-ink-600 md:table-cell">
                     {account.fullName}
