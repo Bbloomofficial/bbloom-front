@@ -90,8 +90,9 @@ export type AccountSite = {
  * registered one has `sites: []` and *omits* the flat `siteId`/`siteSlug`/
  * `businessName` keys entirely rather than sending them as null.
  *
- * Those flat fields mirror the first site for backwards compatibility. New code
- * reads `sites`; nothing here should be built on the mirror.
+ * Those flat fields mirror the *earliest* site for backwards compatibility —
+ * not `sites[0]`, which is the newest, since the list arrives newest-first. New
+ * code reads `sites`; nothing here should be built on the mirror.
  */
 export type AccountProfile = {
   id: string;

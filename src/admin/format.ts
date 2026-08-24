@@ -1,8 +1,9 @@
+/** Formatting helpers shared by the admin screens. */
+
 import type { Locale } from "../i18n";
 import type { TemplateSummary } from "./api/types";
 
-/** Formatting helpers shared by the admin screens. */
-
+/** Day, month and year. Used where the clock time would be noise. */
 export function formatDate(value: string | undefined, locale: Locale): string {
   if (!value) return "—";
   const parsed = Date.parse(value);
@@ -14,8 +15,8 @@ export function formatDate(value: string | undefined, locale: Locale): string {
   });
 }
 
-/** Date and clock time. The status screen needs the minute, not just the day. */
-/** Renders a backend instant for staff.
+/** Renders a backend instant for staff: the date and the clock time, because
+ *  the status screen needs the minute and not just the day.
  *
  *  The backend's instants carry nanoseconds (`…:47.901800409Z`). `Date.parse`
  *  handles that, truncating to milliseconds, which is finer than this screen
