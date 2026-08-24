@@ -38,6 +38,11 @@ export default function AccountDetail() {
     if (confirming || !accountId) return;
     setConfirming(true);
     setActionError(null);
+    // Confirming removes the resend controls, and a "confirmation email sent"
+    // notice left behind by them would outlive the section it belongs to —
+    // still true, but now answering a question the page has stopped asking.
+    setResendNotice(null);
+    setResendError(null);
     try {
       const updated = await confirmAccountEmail(token, accountId);
       set(updated);
