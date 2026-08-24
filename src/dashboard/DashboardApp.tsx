@@ -28,10 +28,21 @@ import { dashPath } from "../routes";
  * The sub-millisecond digits of a wire timestamp, padded so they compare as
  * numbers of the same magnitude.
  *
- * Raw string comparison is not safe here: `.81Z` and `.810945Z` are `.810000`
- * and `.810945`, but compared as text the `Z` sorts above `9` and the earlier
- * instant loses. Padding removes that, and the fraction is independent of any
- * UTC offset because offsets are whole minutes.
+ * Raw string comparison is not safe here, and the reason is measured rather
+ * than imagined: Java's `Instant.toString()` writes the fraction in groups of
+ * three and trims empty trailing groups, so the backend emits **four different
+ * widths** for the same field — `…40Z`, `…40.810Z`, `…40.810945Z`,
+ * `…40.810945123Z`. Compared as text, `.810Z` sorts *after* `.810945Z` because
+ * `Z` (90) beats `9` (57), and a whole second sorts after everything inside it
+ * because `Z` beats `.` (46). Both put the earlier instant last.
+ *
+ * Padding removes the width entirely. The fraction is also independent of any
+ * UTC offset, because offsets are whole minutes.
+ *
+ * Do not "simplify" this back to comparing the strings. A sample of real
+ * timestamps will look like a fixed six digits and suggest it is safe: only
+ * about one microsecond value in a thousand ends in `000`, so the ragged case
+ * is invisible in anything short of a few thousand rows.
  */
 function subMilliDigits(value: string): string {
   return (/\.(\d+)/.exec(value)?.[1] ?? "").slice(3).padEnd(6, "0");
