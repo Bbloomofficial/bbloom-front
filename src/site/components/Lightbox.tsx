@@ -54,7 +54,7 @@ export function Lightbox({
         type="button"
         onClick={onClose}
         aria-label={t.close}
-        className="absolute top-4 right-4 rounded-full border border-white/25 p-2 text-white transition hover:bg-white/10"
+        className="absolute top-4 right-4 rounded-full border border-white/25 p-2 text-white transition hover:border-white/50 hover:bg-white/15 active:scale-90"
       >
         <Icon name="close" />
       </button>

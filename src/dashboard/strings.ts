@@ -63,8 +63,6 @@ export type DashboardStrings = {
     open: string;
     manage: string;
     addAnother: string;
-    allSites: string;
-    switcher: string;
     draftChanges: string;
     /**
      * Marks a website that would be refused if published, so the client learns
@@ -399,8 +397,6 @@ const en: DashboardStrings = {
     open: "Open",
     manage: "Manage",
     addAnother: "Add another website",
-    allSites: "All websites",
-    switcher: "Switch website",
     draftChanges: "Unpublished edits",
     needsPlan: "Needs a plan to go online",
     trialEnds: (date) => `Trial ends ${date}`,
@@ -777,8 +773,6 @@ const ka: DashboardStrings = {
     open: "გახსნა",
     manage: "მართვა",
     addAnother: "კიდევ ერთი ვებგვერდი",
-    allSites: "ყველა ვებგვერდი",
-    switcher: "ვებგვერდის შეცვლა",
     draftChanges: "გამოუქვეყნებელი ცვლილებები",
     needsPlan: "გამოსაქვეყნებლად საჭიროა პაკეტი",
     trialEnds: (date) => `საცდელი პერიოდი მთავრდება ${date}`,

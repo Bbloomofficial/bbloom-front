@@ -137,7 +137,7 @@ export function ImagePicker({
 
         <button
           type="button"
-          className="mt-4 w-full text-sm font-semibold text-ink-500 transition hover:text-ink-900"
+          className="mt-4 w-full text-sm font-semibold text-ink-500 underline-offset-4 transition hover:text-ink-900 hover:underline"
           onClick={onClose}
         >
           {labels.cancel}

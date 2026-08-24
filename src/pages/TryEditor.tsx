@@ -82,7 +82,7 @@ function FieldInput({
         <button
           type="button"
           onClick={onReset}
-          className="shrink-0 text-xs font-semibold text-ink-400 transition hover:text-ink-900"
+          className="shrink-0 text-xs font-semibold text-ink-400 underline-offset-4 transition hover:text-ink-900 hover:underline"
         >
           ↺ {t.reset}
         </button>
@@ -506,7 +506,7 @@ export default function TryEditor() {
             {totalEdits > 0 ? (
               <button
                 type="button"
-                className="whitespace-nowrap text-xs font-semibold text-ink-400 transition hover:text-ink-900"
+                className="whitespace-nowrap text-xs font-semibold text-ink-400 underline-offset-4 transition hover:text-ink-900 hover:underline"
                 onClick={() => {
                   if (window.confirm(t.resetAllConfirm)) {
                     commit(emptyDraft(draft.templateCode, draft.demoRef, lang));
@@ -841,14 +841,14 @@ export default function TryEditor() {
                 <div className="flex items-center justify-between text-sm">
                   <button
                     type="button"
-                    className="text-ink-500 hover:text-ink-900"
+                    className="text-ink-500 underline-offset-4 transition hover:text-ink-900 hover:underline"
                     onClick={() => setSave({ phase: "idle" })}
                   >
                     {t.cancel}
                   </button>
                   <button
                     type="button"
-                    className="font-semibold text-bloom-600"
+                    className="font-semibold text-bloom-600 underline-offset-4 transition hover:text-bloom-700 hover:underline"
                     onClick={() => setSave({ phase: "form", mode: "signin" })}
                   >
                     {t.useAnother}
@@ -934,14 +934,14 @@ export default function TryEditor() {
                 <div className="flex items-center justify-between text-sm">
                   <button
                     type="button"
-                    className="text-ink-500 hover:text-ink-900"
+                    className="text-ink-500 underline-offset-4 transition hover:text-ink-900 hover:underline"
                     onClick={() => setSave({ phase: "idle" })}
                   >
                     {t.cancel}
                   </button>
                   <button
                     type="button"
-                    className="font-semibold text-bloom-600"
+                    className="font-semibold text-bloom-600 underline-offset-4 transition hover:text-bloom-700 hover:underline"
                     onClick={() =>
                       setSave({
                         phase: "form",

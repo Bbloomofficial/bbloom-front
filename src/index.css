@@ -137,8 +137,36 @@
     @apply outline-2 outline-offset-2 outline-bloom-500;
   }
 
+  /*
+    Hover lifts, press sinks. Both are deliberately tiny: a pointer device gets
+    a button that answers it, while anything larger starts to read as the page
+    moving rather than the control responding.
+
+    Written as `transform` rather than `@apply -translate-y-px scale-95`
+    because Tailwind 4 compiles those utilities to the separate `translate` and
+    `scale` properties, which the `transition-property` above does not name —
+    they would jump instead of easing.
+  */
+  .btn:hover:not(:disabled) {
+    transform: translateY(-1px);
+  }
+
+  /* Faster than the hover, so the press is felt at the moment of clicking
+     rather than a beat afterwards. */
+  .btn:active:not(:disabled) {
+    transform: scale(0.97);
+    transition-duration: 80ms;
+  }
+
+  /* Without this a disabled button still lifted and still looked pressable,
+     which is worse than no feedback: it invites the click it will ignore. */
+  .btn:disabled {
+    @apply cursor-not-allowed opacity-55 shadow-none;
+    transform: none;
+  }
+
   .btn-primary {
-    @apply btn bg-bloom-600 text-white shadow-lg shadow-bloom-600/20 hover:bg-bloom-700 hover:shadow-bloom-700/25;
+    @apply btn bg-bloom-600 text-white shadow-lg shadow-bloom-600/20 hover:bg-bloom-700 hover:shadow-bloom-700/25 hover:shadow-xl;
   }
 
   .btn-secondary {
@@ -168,7 +196,30 @@
   }
 
   .icon-button {
-    @apply inline-flex h-10 w-10 items-center justify-center rounded-xl border border-ink-100 bg-control text-ink-600 transition hover:border-bloom-300 hover:text-bloom-600;
+    @apply inline-flex h-10 w-10 items-center justify-center rounded-xl border border-ink-100 bg-control text-ink-600 transition hover:border-bloom-300 hover:bg-tint hover:text-bloom-600;
+  }
+
+  .icon-button:active:not(:disabled) {
+    transform: scale(0.94);
+    transition-duration: 80ms;
+  }
+
+  .icon-button:focus-visible {
+    @apply outline-2 outline-offset-2 outline-bloom-500;
+  }
+}
+
+/*
+  Movement is decoration here — every one of these controls also changes colour
+  — so it is the whole of what gets dropped when someone has asked for less of
+  it. The colour and shadow transitions stay, because losing those would make
+  the buttons look broken rather than calm.
+*/
+@media (prefers-reduced-motion: reduce) {
+  .btn:hover:not(:disabled),
+  .btn:active:not(:disabled),
+  .icon-button:active:not(:disabled) {
+    transform: none;
   }
 }
 

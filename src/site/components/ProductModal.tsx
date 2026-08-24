@@ -62,7 +62,7 @@ export function ProductModal({ slug }: { slug: string }) {
           type="button"
           onClick={closeProduct}
           aria-label={t.close}
-          className="absolute top-4 right-4 z-10 rounded-full border border-site-border bg-site-surface p-2 text-site-text transition hover:text-site-primary"
+          className="absolute top-4 right-4 z-10 rounded-full border border-site-border bg-site-surface p-2 text-site-text transition hover:border-site-primary hover:text-site-primary active:scale-90"
         >
           <Icon name="close" size={18} />
         </button>

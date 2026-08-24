@@ -330,6 +330,22 @@
     cursor: not-allowed;
     transform: none;
   }
+
+  /*
+    The press. `transform` is already in the transition above, so this eases
+    rather than snapping; `:not([disabled])` matters because an anchor styled as
+    a button still reacts to :active even when it is meant to look dead.
+  */
+  .site-btn:not([disabled]):active {
+    transform: scale(0.97);
+    transition-duration: 0.08s;
+  }
+
+  .site-upgrade-close:active,
+  .site-upgrade-cta-primary:active,
+  .site-upgrade-cta-secondary:active {
+    transform: scale(0.96);
+  }
 }
 
 /* Motion — every animation below is disabled under prefers-reduced-motion. */
@@ -447,6 +463,16 @@
     transform: none;
   }
 
+  /* The press is decoration on top of a colour change that stays, so it is the
+     part that goes. Zeroing transition-duration above only makes the shrink
+     instant -- it does not stop it happening. */
+  .site-btn:not([disabled]):active,
+  .site-upgrade-close:active,
+  .site-upgrade-cta-primary:active,
+  .site-upgrade-cta-secondary:active {
+    transform: none;
+  }
+
   /* The marquee is the one animation whose *content* depends on the motion:
      the message is only fully readable because it travels. The blanket rule
      above snaps every animation to its end state, and this one's end state is
@@ -541,7 +567,10 @@
     background: transparent;
     color: #64748b;
     cursor: pointer;
-    transition: background-color 0.15s ease, color 0.15s ease;
+    transition:
+      background-color 0.15s ease,
+      color 0.15s ease,
+      transform 0.08s ease;
   }
 
   .site-upgrade-close:hover {

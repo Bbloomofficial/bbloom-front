@@ -379,7 +379,7 @@ export default function Editor() {
         <button
           type="button"
           onClick={loaded.reload}
-          className="rounded-xl bg-bloom-600 px-4 py-2 text-sm font-semibold text-white"
+          className="btn btn-primary"
         >
           {t.retry}
         </button>
@@ -409,7 +409,7 @@ export default function Editor() {
             type="button"
             onClick={discard}
             disabled={!hasDraft || busy}
-            className="rounded-xl border border-ink-100 bg-surface px-3 py-2 text-sm font-semibold text-ink-500 transition hover:border-red-300 hover:text-red-600 disabled:opacity-40"
+            className="rounded-xl border border-ink-100 bg-surface px-3 py-2 text-sm font-semibold text-ink-500 transition hover:border-red-300 hover:text-red-600 active:scale-95 disabled:opacity-40"
           >
             {t.discard}
           </button>
@@ -417,7 +417,7 @@ export default function Editor() {
             type="button"
             onClick={publish}
             disabled={!hasDraft || busy}
-            className="rounded-xl bg-bloom-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-bloom-700 disabled:opacity-40"
+            className="rounded-xl bg-bloom-600 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-bloom-600/20 transition hover:bg-bloom-700 hover:shadow-xl active:scale-95 disabled:opacity-40 disabled:shadow-none"
           >
             {busy ? t.publishing : t.publish}
           </button>
@@ -592,7 +592,7 @@ export default function Editor() {
                   type="button"
                   onClick={reset}
                   disabled={busy}
-                  className="inline-flex min-h-11 items-center rounded-xl border border-ink-100 px-3 py-2 text-xs font-semibold text-ink-500 transition hover:border-bloom-300 hover:text-bloom-600 disabled:opacity-40 lg:min-h-0"
+                  className="inline-flex min-h-11 items-center rounded-xl border border-ink-100 px-3 py-2 text-xs font-semibold text-ink-500 transition hover:border-bloom-300 hover:bg-tint hover:text-bloom-600 active:scale-95 disabled:opacity-40 lg:min-h-0"
                 >
                   {t.reset}
                 </button>

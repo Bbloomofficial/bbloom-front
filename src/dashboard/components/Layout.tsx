@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
-import { Link, NavLink, useLocation } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import LanguageSwitcher from "../../components/LanguageSwitcher";
 import ThemeToggle from "../../components/ThemeToggle";
 import { useI18n } from "../../i18n";
@@ -59,164 +59,151 @@ function initial(name: string) {
 }
 
 /**
- * The account-level header. Deliberately static: on these screens the switcher
- * had nothing to offer that was not already on the page behind it — the
- * websites list renders the same sites with the same badges and the same "add
- * another" link, and the sidebar's own nav already carries both the list and
- * the account. A chevron that opens a copy of the current page is an invitation
- * to a dead end.
+ * The account, not a website: the person's own name over the address they
+ * signed in with.
  *
- * Inside a site it is the opposite and `SiteSwitcher` keeps every part of it,
- * because there the site tabs replace this nav entirely and the menu is the
- * only way back to the list or across to another website.
+ * Static by design. The websites list is the site selector, and folding a
+ * second one into this header gave the rail a menu whose entire contents were
+ * the page behind it. Moving between websites now goes through the rail, which
+ * is present on every screen, so being inside one website never hides the way
+ * back.
  */
 function AccountHeader() {
-  const { locale } = useI18n();
-  const t = dashboardStrings(locale);
   const { user } = useSession();
+
+  /*
+    `fullName` is never null, absent or blank -- the column is NOT NULL and
+    validated at signup. It can still *equal the email*: staff inviting someone
+    who has no account yet, without typing a name, fall the new account back to
+    its own address. Printing the same string twice reads as a rendering fault
+    rather than as a name, so the sub-label steps aside for it.
+
+    No account in production hits this today, which is precisely why it is
+    handled now: the data cannot express the case, and it becomes reachable on
+    the first invite that leaves the name blank.
+  */
+  const emailIsTheName =
+    user.fullName.trim().toLowerCase() === user.email.trim().toLowerCase();
 
   return (
     <div className="flex w-full min-w-0 items-center gap-2.5 rounded-2xl px-2 py-1.5 text-start sm:gap-3">
       <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-bloom-500 to-bloom-700 text-sm font-extrabold text-white shadow-lg shadow-bloom-600/25">
-        {initial(t.nav.sites)}
+        {initial(user.fullName)}
       </span>
       <span className="min-w-0 flex-1">
         <span className="block truncate text-sm font-bold text-ink-900">
-          {t.nav.sites}
+          {user.fullName}
         </span>
-        <span className="block truncate text-xs text-ink-400" dir="ltr">
-          {user.email}
-        </span>
+        {!emailIsTheName && (
+          <span className="block truncate text-xs text-ink-400" dir="ltr">
+            {user.email}
+          </span>
+        )}
       </span>
     </div>
   );
 }
 
+function tabClass({ isActive }: { isActive: boolean }) {
+  return `flex shrink-0 items-center gap-2 rounded-xl px-3 py-2 text-sm font-semibold transition ${
+    isActive
+      ? "bg-tint text-tint-fg"
+      : "text-ink-600 hover:bg-ink-50 hover:text-ink-900"
+  }`;
+}
+
 /**
- * The switcher is the whole difference between "your website" and "your
- * account": one login can now hold sites in different roles, so the site being
- * worked on has to be a visible, changeable thing rather than an assumption.
+ * One website's own navigation, along the top.
  *
- * Only rendered inside a site. `active` is required rather than nullable so
- * that stays true by construction — the account-level case is `AccountHeader`,
- * and a nullable prop here would quietly let the menu back onto those screens.
+ * The rail underneath stays general -- the websites list and the account -- so
+ * the two kinds of navigation stop competing for one column. Opening a website
+ * used to replace every general link with that website's tabs, and that is what
+ * made a menu folded into the header the only way back out.
+ *
+ * Sticky under the mobile app bar, and at the top of the content column on
+ * large screens, so the tabs stay reachable part-way down a long editor page.
  */
-function SiteSwitcher({ active }: { active: AccountSite }) {
+function SiteTabs({ site }: { site: AccountSite }) {
   const { locale } = useI18n();
   const t = dashboardStrings(locale);
-  const { user } = useSession();
-  const sites = sitesOf(user);
-  const [open, setOpen] = useState(false);
-  const wrap = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    if (!open) return;
-    function onDown(event: MouseEvent) {
-      if (!wrap.current?.contains(event.target as Node)) setOpen(false);
-    }
-    document.addEventListener("mousedown", onDown);
-    return () => document.removeEventListener("mousedown", onDown);
-  }, [open]);
-
-  const label = active.businessName;
+  const tabs: { to: string; label: string; end: boolean; icon: NavKey }[] = [
+    {
+      to: dashPath(`/s/${site.id}`),
+      label: t.nav.overview,
+      end: true,
+      icon: "overview",
+    },
+    {
+      to: dashPath(`/s/${site.id}/page`),
+      label: t.nav.page,
+      end: false,
+      icon: "page",
+    },
+    {
+      to: dashPath(`/s/${site.id}/inbox`),
+      label: t.nav.inbox,
+      end: false,
+      icon: "inbox",
+    },
+    {
+      to: dashPath(`/s/${site.id}/billing`),
+      label: t.nav.billing,
+      end: false,
+      icon: "billing",
+    },
+    // Listing members is owner-only on the backend, so offering an editor the
+    // tab would only take them to a refusal. Billing stays visible: why the
+    // site is offline is not an owner-only fact.
+    ...(site.role === "SITE_OWNER"
+      ? [
+          {
+            to: dashPath(`/s/${site.id}/team`),
+            label: t.nav.team,
+            end: false,
+            icon: "team" as NavKey,
+          },
+        ]
+      : []),
+  ];
 
   return (
-    <div className="relative min-w-0 shrink" ref={wrap}>
-      <button
-        type="button"
-        onClick={() => setOpen((v) => !v)}
-        aria-haspopup="menu"
-        aria-expanded={open}
-        className="flex w-full min-w-0 items-center gap-2.5 rounded-2xl px-2 py-1.5 text-start transition hover:bg-ink-50 sm:gap-3"
-      >
-        <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-bloom-500 to-bloom-700 text-sm font-extrabold text-white shadow-lg shadow-bloom-600/25">
-          {initial(label)}
-        </span>
-        <span className="min-w-0 flex-1">
-          <span className="block truncate text-sm font-bold text-ink-900">
-            {label}
-          </span>
-          <span className="block truncate text-xs text-ink-400" dir="ltr">
-            {active.primaryDomain ?? active.slug}
-          </span>
-        </span>
-        <svg
-          viewBox="0 0 20 20"
-          className="h-4 w-4 shrink-0 text-ink-400"
-          fill="currentColor"
-          aria-hidden="true"
-        >
-          <path d="M5.3 7.3a1 1 0 0 1 1.4 0L10 10.6l3.3-3.3a1 1 0 1 1 1.4 1.4l-4 4a1 1 0 0 1-1.4 0l-4-4a1 1 0 0 1 0-1.4Z" />
-        </svg>
-      </button>
-
-      {open && (
-        <div
-          role="menu"
-          className="absolute start-0 top-full z-50 mt-2 w-72 overflow-hidden rounded-2xl border border-ink-100 bg-surface p-1.5 shadow-xl shadow-ink-900/10"
-        >
-          {/*
-            The way out, first and before the list of places to go instead.
-
-            Every route into a site's screens replaces this whole header with
-            that site's tabs, and none of them is the websites list — so once a
-            client was inside one site the only way back was the URL bar. The
-            avatar looks like it should do this, but it opens the menu, which
-            is why the menu is where the answer belongs.
-
-            Unconditional now: this component only renders inside a site, so
-            there is no longer a case where it would point at the page already
-            being read.
-          */}
-          <Link
-            to={dashPath()}
-            onClick={() => setOpen(false)}
-            className="flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-semibold text-ink-900 transition hover:bg-ink-50"
+    <div className="sticky top-16 z-30 border-b border-ink-100 bg-surface/90 backdrop-blur lg:top-0">
+      <div className="container-page">
+        {/*
+          The name gets a whole line to itself on a phone. Sharing one with the
+          badge and the view-site button left it 19px wide -- measured, not
+          guessed -- which matters more than usual because the mobile app bar
+          above deliberately shows the brand instead of the website's name, on
+          the grounds that it is legible here.
+        */}
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-2 pt-3">
+          <div className="flex min-w-0 flex-1 basis-full items-center gap-2 sm:basis-auto">
+            <span className="truncate text-sm font-bold text-ink-900">
+              {site.businessName}
+            </span>
+            <SiteStatusBadge status={site.status} />
+          </div>
+          {/* `publicUrl` is the site's real address; guessing it from the
+              slug went wrong the moment custom domains existed. */}
+          <a
+            href={site.publicUrl ?? `/site/${site.slug}`}
+            target="_blank"
+            rel="noreferrer"
+            className="btn btn-secondary btn-sm ms-auto shrink-0"
           >
-            <svg
-              viewBox="0 0 20 20"
-              className="h-4 w-4 shrink-0 text-ink-400 rtl:-scale-x-100"
-              fill="currentColor"
-              aria-hidden="true"
-            >
-              <path d="M12.7 4.3a1 1 0 0 1 0 1.4L8.42 10l4.3 4.3a1 1 0 0 1-1.42 1.4l-5-5a1 1 0 0 1 0-1.4l5-5a1 1 0 0 1 1.4 0Z" />
-            </svg>
-            {t.sites.allSites}
-          </Link>
-          <div className="my-1 border-t border-ink-100" />
-
-          <p className="px-3 pb-1 pt-2 text-xs font-bold uppercase tracking-wide text-ink-400">
-            {t.sites.switcher}
-          </p>
-          {sites.map((site) => (
-            <Link
-              key={site.id}
-              to={dashPath(`/s/${site.id}`)}
-              onClick={() => setOpen(false)}
-              className={`flex items-center gap-2 rounded-xl px-3 py-2 text-sm transition hover:bg-ink-50 ${
-                site.id === active?.id ? "bg-tint" : ""
-              }`}
-            >
-              <span className="min-w-0 flex-1">
-                <span className="block truncate font-semibold text-ink-900">
-                  {site.businessName}
-                </span>
-                <span className="block truncate text-xs text-ink-400" dir="ltr">
-                  {site.slug}
-                </span>
-              </span>
-              <SiteStatusBadge status={site.status} />
-            </Link>
-          ))}
-          <Link
-            to={dashPath("/new")}
-            onClick={() => setOpen(false)}
-            className="mt-1 block rounded-xl px-3 py-2 text-sm font-semibold text-tint-fg transition hover:bg-ink-50"
-          >
-            + {t.sites.addAnother}
-          </Link>
+            {t.viewSite}
+          </a>
         </div>
-      )}
+        <nav className="flex items-center gap-1 overflow-x-auto py-2">
+          {tabs.map((tab) => (
+            <NavLink key={tab.to} to={tab.to} end={tab.end} className={tabClass}>
+              <NavIcon name={tab.icon} />
+              <span className="truncate">{tab.label}</span>
+            </NavLink>
+          ))}
+        </nav>
+      </div>
     </div>
   );
 }
@@ -253,60 +240,26 @@ export default function Layout({
     return () => document.removeEventListener("keydown", onKey);
   }, [drawer]);
 
-  const links: { to: string; label: string; end: boolean; icon: NavKey }[] =
-    active
-      ? [
-          {
-            to: dashPath(`/s/${active.id}`),
-            label: t.nav.overview,
-            end: true,
-            icon: "overview",
-          },
-          {
-            to: dashPath(`/s/${active.id}/page`),
-            label: t.nav.page,
-            end: false,
-            icon: "page",
-          },
-          {
-            to: dashPath(`/s/${active.id}/inbox`),
-            label: t.nav.inbox,
-            end: false,
-            icon: "inbox",
-          },
-          {
-            to: dashPath(`/s/${active.id}/billing`),
-            label: t.nav.billing,
-            end: false,
-            icon: "billing",
-          },
-          // Listing members is owner-only on the backend, so offering an editor
-          // the tab would only take them to a refusal. Billing stays visible:
-          // why the site is offline is not an owner-only fact.
-          ...(active.role === "SITE_OWNER"
-            ? [
-                {
-                  to: dashPath(`/s/${active.id}/team`),
-                  label: t.nav.team,
-                  end: false,
-                  icon: "team" as NavKey,
-                },
-              ]
-            : []),
-        ]
-      : [
-          { to: dashPath(), label: t.nav.sites, end: true, icon: "sites" },
-          {
-            to: dashPath("/account"),
-            label: t.nav.account,
-            end: false,
-            icon: "account",
-          },
-        ];
+  const links: { to: string; label: string; end: boolean; icon: NavKey }[] = [
+    { to: dashPath(), label: t.nav.sites, end: true, icon: "sites" },
+    {
+      to: dashPath("/account"),
+      label: t.nav.account,
+      end: false,
+      icon: "account",
+    },
+  ];
 
+  /*
+    The rail is general navigation and nothing else. It used to become the
+    active site's tabs, which is why opening a website hid every route out of
+    it; those tabs are now `SiteTabs` along the top. The consequence worth
+    keeping in mind: these two links are on screen on every dashboard route, so
+    nothing below depends on a menu to get back.
+  */
   const sidebar = (
     <div className="flex h-full min-h-0 flex-col gap-1 p-3">
-      {active ? <SiteSwitcher active={active} /> : <AccountHeader />}
+      <AccountHeader />
 
       <nav className="mt-3 flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto">
         {links.map((link) => (
@@ -320,41 +273,16 @@ export default function Layout({
             <span className="truncate">{link.label}</span>
           </NavLink>
         ))}
-
-        {/*
-          Inside a site the links are that site's own, none of which is the
-          account, and the switcher lists only websites — so without this the
-          account page is reachable only from the browser's back button. On the
-          account-level screens it is already the second link above.
-        */}
-        {active && (
-          <NavLink to={dashPath("/account")} end={false} className={navClass}>
-            <NavIcon name="account" />
-            <span className="truncate">{t.nav.account}</span>
-          </NavLink>
-        )}
       </nav>
 
       <div className="mt-2 space-y-2 border-t border-ink-100 pt-3">
-        {/* `publicUrl` is the site's real address; guessing it from the
-            slug went wrong the moment custom domains existed. */}
-        {active && (
-          <a
-            href={active.publicUrl ?? `/site/${active.slug}`}
-            target="_blank"
-            rel="noreferrer"
-            className="flex items-center justify-center rounded-xl border border-ink-100 bg-control px-3 py-2 text-sm font-semibold text-ink-600 transition hover:border-bloom-300 hover:text-bloom-600"
-          >
-            {t.viewSite}
-          </a>
-        )}
         <div className="flex items-center gap-2">
           <LanguageSwitcher />
           <ThemeToggle />
           <button
             type="button"
             onClick={signOut}
-            className="ms-auto rounded-xl border border-ink-100 bg-control px-3 py-2 text-sm font-semibold text-ink-600 transition hover:border-bloom-300 hover:text-bloom-600"
+            className="ms-auto rounded-xl border border-ink-100 bg-control px-3 py-2 text-sm font-semibold text-ink-600 transition hover:border-bloom-300 hover:bg-tint hover:text-bloom-600 active:scale-95"
           >
             {t.signOut}
           </button>
@@ -378,7 +306,7 @@ export default function Layout({
             onClick={() => setDrawer(true)}
             aria-label={t.nav.menu}
             aria-expanded={drawer}
-            className="rounded-xl border border-ink-100 bg-control p-2.5 text-ink-600 transition hover:border-bloom-300 hover:text-bloom-600"
+            className="rounded-xl border border-ink-100 bg-control p-2.5 text-ink-600 transition hover:border-bloom-300 hover:bg-tint hover:text-bloom-600 active:scale-95"
           >
             <svg
               viewBox="0 0 20 20"
@@ -389,8 +317,11 @@ export default function Layout({
               <path d="M3 5.5h14v1.6H3V5.5Zm0 3.7h14v1.6H3V9.2Zm0 3.7h14v1.6H3v-1.6Z" />
             </svg>
           </button>
+          {/* The website's own name is in `SiteTabs` directly below; repeating
+              it here would spend the one line a phone has on the same word
+              twice. */}
           <span className="min-w-0 flex-1 truncate text-sm font-bold text-ink-900">
-            {active?.businessName ?? t.nav.sites}
+            {t.brand}
           </span>
           <ThemeToggle />
         </div>
@@ -411,6 +342,8 @@ export default function Layout({
       )}
 
       <div className="flex min-w-0 flex-1 flex-col">
+        {active && <SiteTabs site={active} />}
+
         <main className="container-page flex-1 space-y-6 py-8 sm:py-10">
           {/*
             The banner goes first once there is a website, because from that point

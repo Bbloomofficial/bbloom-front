@@ -197,7 +197,7 @@ export function SitePage({ mode }: { mode: "ref" | "host" }) {
           <button
             type="button"
             onClick={retry}
-            className="rounded-full bg-neutral-900 px-5 py-2.5 text-sm font-semibold text-white"
+            className="rounded-full bg-neutral-900 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-neutral-900/20 transition hover:bg-neutral-800 hover:shadow-xl active:scale-95"
           >
             {t.retry}
           </button>
