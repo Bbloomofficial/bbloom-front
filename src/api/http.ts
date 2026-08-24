@@ -2,6 +2,20 @@
  * The shared HTTP layer. The client-site renderer, the client dashboard and the
  * staff admin all talk to the same backend, which answers with RFC 9457 problem
  * details on every error, so parsing them belongs in one place.
+ *
+ * **One rule holds across every payload this API returns: an unset value is
+ * absent, never `null`.** The backend serialises with `non_null` inclusion
+ * configured platform-wide, so a null field drops its key instead of being
+ * sent as null. Two consequences worth knowing before writing a check:
+ *
+ * - `x === null` against a response field is dead code — it cannot fire.
+ *   Use `??`, optional chaining, or a truthiness test.
+ * - `"key" in obj` does not mean "has been configured"; the key is simply
+ *   missing whenever the value is unset, so presence and configuredness are
+ *   the same question rather than two.
+ *
+ * Types in this codebase still declare `?: T | null` in places. That is
+ * tolerance in case the setting ever changes, not a shape seen on the wire.
  */
 
 /** Base path of the API. Proxied to the backend in dev, same-origin in prod. */

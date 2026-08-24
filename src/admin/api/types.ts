@@ -299,6 +299,22 @@ export type SystemStatus = {
   mail: MailHealth;
 };
 
+/**
+ * The staff view of one website attached to an account.
+ *
+ * Every optional field here is **absent when unset, never `null`**: the API
+ * serialises with `non_null` inclusion platform-wide, so an unset value drops
+ * the key rather than sending it as null. The `| null` below is tolerance in
+ * case that setting ever changes, not a shape observed on the wire — a
+ * `=== null` test against any of these would be dead code today. Read them
+ * with `??` or a truthiness check.
+ *
+ * `planCode` is absent on **every** site in production, including the paid
+ * ones, because no plan has been sold yet. It is therefore not the answer to
+ * "is this client paying" — `paid` is, and `subscriptionStatus` is reliably
+ * present. Rendering the plan name as the paid signal would show blank
+ * against a genuinely paying account.
+ */
 export type AdminAccountSiteDto = {
   id: string;
   slug: string;
@@ -313,6 +329,17 @@ export type AdminAccountSiteDto = {
   createdAt: string;
 };
 
+/**
+ * A client account as staff see it. Same absent-not-null rule as above.
+ *
+ * `sites` is the exception that is always present: it arrives as `[]` for an
+ * account with no websites rather than being dropped. It is still read
+ * defensively, because it is the one field whose absence empties the whole
+ * admin panel rather than blanking a row — verified by removing the guard.
+ *
+ * `language` arrives **uppercase** (`"KA"`), so lower-case it before looking
+ * up a display name or the lookup silently misses and staff see a bare code.
+ */
 export type AdminAccountDto = {
   id: string;
   email: string;
