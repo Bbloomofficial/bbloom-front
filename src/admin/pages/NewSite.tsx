@@ -12,6 +12,7 @@ import TemplatePicker from "../components/TemplatePicker";
 import { TemplatePreview, demoHref } from "../components/TemplatePreview";
 import { SLUG_PATTERN, slugify, templateText } from "../format";
 import { adminStrings } from "../strings";
+import { adminPath } from "../../routes";
 
 type Step = 0 | 1 | 2 | 3;
 
@@ -91,14 +92,24 @@ export default function NewSite() {
 
     try {
       const site = await createSite(token, body);
-      navigate(`/admin/sites/${site.id}`, { replace: true });
+      navigate(adminPath(`/sites/${site.id}`), { replace: true });
     } catch (caught) {
       if (caught instanceof ApiError) {
         // A slug we sent explicitly is honoured or refused, never altered, so
         // a clash comes back as 409 and belongs on the address field alone —
         // a banner saying the same thing twice is just noise.
+        //
+        // Staff are exempt from the reserved-address list, so `SLUG_RESERVED`
+        // should not reach here; it is distinguished anyway because mapping
+        // every 409 to "already taken" would otherwise tell a colleague to
+        // pick another address without saying why this one cannot be had.
         if (caught.status === 409) {
-          setFieldErrors({ slug: t.wizard.slugTaken });
+          setFieldErrors({
+            slug:
+              caught.code === "SLUG_RESERVED"
+                ? t.wizard.slugReserved
+                : t.wizard.slugTaken,
+          });
           setStep(1);
         } else {
           setError(caught.message || t.wizard.failed);
@@ -129,7 +140,7 @@ export default function NewSite() {
           </h1>
           <p className="mt-1 text-sm text-ink-600">{t.wizard.subtitle}</p>
         </div>
-        <Link to="/admin" className="text-sm font-semibold text-ink-600 hover:text-bloom-600">
+        <Link to={adminPath()} className="text-sm font-semibold text-ink-600 hover:text-bloom-600">
           {t.cancel}
         </Link>
       </div>
@@ -279,7 +290,7 @@ export default function NewSite() {
                   {slugTouched ? t.wizard.slugHint : t.wizard.slugAuto}
                 </p>
                 <p className="mt-1 text-xs text-ink-400" dir="ltr">
-                  {effectiveSlug || "…"}.bbloom.co
+                  {effectiveSlug || "…"}.bbloom.ge
                 </p>
                 {!slugValid && (
                   <p className="mt-1.5 text-xs font-semibold text-danger">
@@ -496,7 +507,7 @@ export default function NewSite() {
             <dl className="mt-5 divide-y divide-ink-100 rounded-3xl border border-ink-100 bg-surface px-5">
               {[
                 [t.wizard.businessName, businessName],
-                [t.wizard.slug, `${effectiveSlug}.bbloom.co`],
+                [t.wizard.slug, `${effectiveSlug}.bbloom.ge`],
                 // Only named here when the preview card above is absent,
                 // which is the case if the catalog never loaded.
                 ...(template ? [] : [[t.sites.template, templateCode]]),

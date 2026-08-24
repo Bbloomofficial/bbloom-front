@@ -36,6 +36,7 @@ import { applyDraftToNewSite } from "../try/apply";
 import type { ApplyProgress } from "../try/apply";
 import { tryStrings } from "../try/strings";
 import type { TryStrings } from "../try/strings";
+import { dashPath } from "../routes";
 
 /**
  * Editing a website before there is an account to own it.
@@ -1002,7 +1003,7 @@ export default function TryEditor() {
                   <button
                     type="button"
                     className="btn-secondary"
-                    onClick={() => navigate(`/dashboard/s/${save.siteId}`)}
+                    onClick={() => navigate(dashPath(`/s/${save.siteId}`))}
                   >
                     {t.openPanel}
                   </button>

@@ -8,6 +8,7 @@ import { confirmVerification } from "../dashboard/api/account";
 import { readStoredAccount } from "../dashboard/auth";
 import { dashboardStrings } from "../dashboard/strings";
 import { useI18n } from "../i18n";
+import { dashPath } from "../routes";
 
 /**
  * The email confirmation landing page.
@@ -174,7 +175,7 @@ export default function Verify() {
             </div>
           )}
 
-          <Link to="/dashboard" className="btn-primary mt-6 w-full">
+          <Link to={dashPath()} className="btn-primary mt-6 w-full">
             {t.verify.goToPanel}
           </Link>
         </div>

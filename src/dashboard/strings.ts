@@ -18,6 +18,7 @@ export type DashboardStrings = {
     team: string;
     sites: string;
     account: string;
+    menu: string;
   };
   signedInAs: string;
   signOut: string;
@@ -350,6 +351,7 @@ const en: DashboardStrings = {
     team: "Team",
     sites: "Websites",
     account: "Account",
+    menu: "Menu",
   },
   signedInAs: "Signed in as",
   signOut: "Sign out",
@@ -727,6 +729,7 @@ const ka: DashboardStrings = {
     team: "გუნდი",
     sites: "ვებგვერდები",
     account: "ანგარიში",
+    menu: "მენიუ",
   },
   signedInAs: "შესული ხართ როგორც",
   signOut: "გამოსვლა",

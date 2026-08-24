@@ -11,6 +11,7 @@ import { createSite } from "../api/account";
 import { sitesOf, useSession } from "../auth";
 import { useResource } from "../hooks";
 import { dashboardStrings } from "../strings";
+import { dashPath } from "../../routes";
 
 /**
  * Where a design's live demo is published.
@@ -72,7 +73,7 @@ export default function NewSite() {
       // The new site only reaches the switcher through the profile, so the
       // session is refreshed before routing into a site-scoped screen.
       await refresh();
-      navigate(`/dashboard/s/${site.id}`);
+      navigate(dashPath(`/s/${site.id}`));
     } catch (caught) {
       setError(describeProblem(caught, t.errors, t.newSite.failed));
       setSubmitting(false);

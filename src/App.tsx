@@ -12,6 +12,7 @@ import About from "./pages/About";
 import Contact from "./pages/Contact";
 import NotFound from "./pages/NotFound";
 import { resolveSiteHost } from "./site/host";
+import { resolveAppHost } from "./routes";
 
 // Client sites are a separate product from the marketing site, so visitors to
 // either only download the half they need. The dashboard is a third audience —
@@ -90,6 +91,49 @@ function MarketingApp() {
 }
 
 export default function App() {
+  // Each signed-in app has a hostname of its own, where it is served from the
+  // root rather than from a path. This is checked before the client-site
+  // branch because both are subdomains of the same base domain and only an
+  // exact label tells them apart.
+  const appHost = resolveAppHost();
+
+  if (appHost === "admin") {
+    return (
+      <Routes>
+        <Route path="/*" element={<Admin />} />
+      </Routes>
+    );
+  }
+
+  if (appHost === "panel") {
+    return (
+      <Routes>
+        {/* Unauthenticated on purpose, and reachable here as well as on the
+            marketing domain, because a confirmation link may well be opened
+            from a mail client on either. */}
+        <Route
+          path="/verify"
+          element={
+            <Lazy>
+              <Verify />
+            </Lazy>
+          }
+        />
+        {/* The editor's preview iframe uses a relative URL, so it resolves
+            against whichever hostname the dashboard is running on. */}
+        <Route
+          path="/preview/:siteId"
+          element={
+            <Lazy>
+              <PreviewPage />
+            </Lazy>
+          }
+        />
+        <Route path="/*" element={<Dashboard />} />
+      </Routes>
+    );
+  }
+
   // A client site served on its own hostname takes over the whole app: on a
   // client's domain neither /admin nor /dashboard should resolve, so this
   // branch stays ahead of every other route.

@@ -1,5 +1,31 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
+  "redirects": [
+    {
+      "source": "/admin",
+      "has": [{ "type": "host", "value": "(www\\.)?bbloom\\.ge" }],
+      "destination": "https://admin.bbloom.ge/",
+      "permanent": false
+    },
+    {
+      "source": "/admin/:path*",
+      "has": [{ "type": "host", "value": "(www\\.)?bbloom\\.ge" }],
+      "destination": "https://admin.bbloom.ge/:path*",
+      "permanent": false
+    },
+    {
+      "source": "/dashboard",
+      "has": [{ "type": "host", "value": "(www\\.)?bbloom\\.ge" }],
+      "destination": "https://panel.bbloom.ge/",
+      "permanent": false
+    },
+    {
+      "source": "/dashboard/:path*",
+      "has": [{ "type": "host", "value": "(www\\.)?bbloom\\.ge" }],
+      "destination": "https://panel.bbloom.ge/:path*",
+      "permanent": false
+    }
+  ],
   "rewrites": [
     {
       "source": "/((?!api/).*)",

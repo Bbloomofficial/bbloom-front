@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { ApiError } from "../../api/http";
 import { useI18n } from "../../i18n";
+import { adminPath, dashboardHome } from "../../routes";
 import { useSession } from "../auth";
 import { useResource } from "../hooks";
 import { fetchSite, setPublished } from "../api/client";
@@ -92,13 +93,13 @@ export default function SiteDetailPage() {
   const previewHref = `/site/${site.slug}`;
   // The address staff read out to the client, without the scheme.
   const primaryUrl =
-    site.primaryUrl?.replace(/^https?:\/\//, "") ?? `${site.slug}.bbloom.co`;
+    site.primaryUrl?.replace(/^https?:\/\//, "") ?? `${site.slug}.bbloom.ge`;
 
   return (
     <div className="space-y-6">
       <div>
         <Link
-          to="/admin"
+          to={adminPath()}
           className="text-sm font-semibold text-ink-400 hover:text-bloom-600"
         >
           ← {t.detail.back}
@@ -134,7 +135,7 @@ export default function SiteDetailPage() {
               {t.detail.viewSite}
             </a>
             <a
-              href="/dashboard"
+              href={dashboardHome()}
               target="_blank"
               rel="noreferrer"
               className="btn-secondary"

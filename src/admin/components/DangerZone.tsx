@@ -6,6 +6,7 @@ import { useSession } from "../auth";
 import { deleteSite } from "../api/client";
 import type { SiteDetail } from "../api/types";
 import { adminStrings } from "../strings";
+import { adminPath } from "../../routes";
 
 /**
  * Deleting a site takes its content, its client accounts and its stored images
@@ -29,7 +30,7 @@ export default function DangerZone({ site }: { site: SiteDetail }) {
     setError(null);
     try {
       await deleteSite(token, site.id);
-      navigate("/admin", { replace: true });
+      navigate(adminPath(), { replace: true });
     } catch (caught) {
       setError(caught instanceof ApiError ? caught.message : String(caught));
       setBusy(false);

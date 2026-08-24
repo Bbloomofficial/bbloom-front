@@ -30,6 +30,7 @@ const en: ProblemStrings = {
   forbidden: "Only the website's owner can do this.",
   notFound: "We couldn't find that.",
   emailTaken: "There's already an account with this email. Sign in instead.",
+  slugReserved: "That address is reserved by bbloom. Please choose another one.",
   throttled: "Too many attempts. Wait a moment and try again.",
   signInThrottled:
     "Signing in to this account is paused for a moment. Please try again shortly.",
@@ -65,6 +66,7 @@ const ka: ProblemStrings = {
   forbidden: "ამის გაკეთება მხოლოდ ვებგვერდის მფლობელს შეუძლია.",
   notFound: "ვერ მოიძებნა.",
   emailTaken: "ამ ელფოსტით ანგარიში უკვე არსებობს. უბრალოდ შედით.",
+  slugReserved: "ეს მისამართი დაცულია bbloom-ის მიერ. აირჩიეთ სხვა.",
   throttled: "ბევრი მცდელობა იყო. მოიცადეთ და სცადეთ თავიდან.",
   signInThrottled: "ამ ანგარიშზე შესვლა დროებით შეჩერებულია. სცადეთ ცოტა ხანში.",
   signInThrottledFor: (minutes) =>

@@ -7,7 +7,7 @@ import type { Locale } from "../i18n";
  */
 export type AdminStrings = {
   brand: string;
-  nav: { sites: string; newSite: string; system: string };
+  nav: { sites: string; newSite: string; system: string; accounts: string };
   signedInAs: string;
   signOut: string;
   backToBbloom: string;
@@ -80,6 +80,7 @@ export type AdminStrings = {
     slugEdit: string;
     slugInvalid: string;
     slugTaken: string;
+    slugReserved: string;
     optionsTitle: string;
     languages: string;
     languagesHint: string;
@@ -220,14 +221,66 @@ export type AdminStrings = {
   /** How a language reads inside "the site opens in …" — a different case in
    *  Georgian, which is why it cannot reuse `languageNames`. */
   languageAdverbs: Record<string, string>;
+  accounts: {
+    title: string;
+    subtitle: string;
+    search: string;
+    searchPlaceholder: string;
+    email: string;
+    fullName: string;
+    created: string;
+    lastLogin: string;
+    never: string;
+    verified: string;
+    unverified: string;
+    freeUsage: string;
+    atLimit: string;
+    empty: string;
+    emptyFiltered: string;
+    results: (total: number) => string;
+    prev: string;
+    next: string;
+    page: (page: number, total: number) => string;
+    back: string;
+    emailStatus: string;
+    confirmEmail: string;
+    confirming: string;
+    confirmed: string;
+    resendConfirmation: string;
+    resending: string;
+    resent: string;
+    resendTooSoon: (minutes: number) => string;
+    resendDailyLimit: string;
+    freeAllowance: string;
+    freeAllowanceHint: string;
+    freeAllowanceCount: (n: number) => string;
+    freeAllowanceUsed: (used: number, total: number) => string;
+    freeAllowanceNoEffect: string;
+    updateAllowance: string;
+    updating: string;
+    sitesTitle: string;
+    siteSlug: string;
+    siteStatus: string;
+    siteRole: string;
+    sitePlan: string;
+    freeSlot: string;
+    paidPlan: string;
+    noPlan: string;
+    noSites: string;
+    roles: Record<string, string>;
+    failed: string;
+    enabled: string;
+    disabled: string;
+    language: string;
+  };
 };
 
 const en: AdminStrings = {
   brand: "bbloom staff",
-  nav: { sites: "Sites", newSite: "New site", system: "System" },
+  nav: { sites: "Sites", newSite: "New site", system: "System", accounts: "Accounts" },
   signedInAs: "Signed in as",
   signOut: "Sign out",
-  backToBbloom: "Back to bbloom.co",
+  backToBbloom: "Back to bbloom.ge",
   loading: "Loading…",
   retry: "Try again",
   cancel: "Cancel",
@@ -246,7 +299,7 @@ const en: AdminStrings = {
     submit: "Sign in",
     submitting: "Signing in…",
     failed: "We could not sign you in. Check your email and password.",
-    help: "This is the bbloom team area. Clients sign in at /dashboard.",
+    help: "This is the bbloom team area. Clients sign in at panel.bbloom.ge.",
   },
   sites: {
     title: "Client sites",
@@ -306,6 +359,7 @@ const en: AdminStrings = {
     slugEdit: "Edit",
     slugInvalid: "Use lowercase letters, numbers and dashes only.",
     slugTaken: "That address is already taken. Choose another one.",
+    slugReserved: "That address is reserved by bbloom. Choose another one.",
     optionsTitle: "How the site works",
     languages: "Languages",
     languagesHint: "Which languages the website is available in.",
@@ -476,14 +530,66 @@ const en: AdminStrings = {
   tiers: { SIMPLE: "Simple", CLASSIC: "Classic", MODERN: "Modern" },
   languageNames: { ka: "Georgian", en: "English" },
   languageAdverbs: { ka: "Georgian", en: "English" },
+  accounts: {
+    title: "Client accounts",
+    subtitle: "Everyone who has signed up on bbloom.",
+    search: "Search",
+    searchPlaceholder: "Email or name",
+    email: "Email",
+    fullName: "Full name",
+    created: "Created",
+    lastLogin: "Last sign in",
+    never: "Never",
+    verified: "Verified",
+    unverified: "Unverified",
+    freeUsage: "Free",
+    atLimit: "At limit",
+    empty: "No accounts yet.",
+    emptyFiltered: "Nothing matches that search.",
+    results: (total) => `${total} account${total === 1 ? "" : "s"}`,
+    prev: "Previous",
+    next: "Next",
+    page: (page, total) => `Page ${page} of ${total}`,
+    back: "All accounts",
+    emailStatus: "Email status",
+    confirmEmail: "Confirm email",
+    confirming: "Confirming…",
+    confirmed: "Email confirmed",
+    resendConfirmation: "Resend confirmation",
+    resending: "Sending…",
+    resent: "Confirmation sent",
+    resendTooSoon: (minutes) => `Try again in ${minutes} minute${minutes === 1 ? "" : "s"}.`,
+    resendDailyLimit: "Daily resend limit reached. Try again tomorrow.",
+    freeAllowance: "Free allowance",
+    freeAllowanceHint: "How many websites this client may keep online for free.",
+    freeAllowanceCount: (n) => `${n} free`,
+    freeAllowanceUsed: (used, total) => `${used} / ${total} used`,
+    freeAllowanceNoEffect: "Changing this does not take any website offline that is already live.",
+    updateAllowance: "Update",
+    updating: "Updating…",
+    sitesTitle: "Sites",
+    siteSlug: "Address",
+    siteStatus: "Status",
+    siteRole: "Role",
+    sitePlan: "Plan",
+    freeSlot: "Free slot",
+    paidPlan: "Paid",
+    noPlan: "No plan",
+    noSites: "No sites yet.",
+    roles: { SITE_OWNER: "Owner", SITE_EDITOR: "Editor" },
+    failed: "Something went wrong.",
+    enabled: "Active",
+    disabled: "Disabled",
+    language: "Language",
+  },
 };
 
 const ka: AdminStrings = {
   brand: "bbloom გუნდი",
-  nav: { sites: "საიტები", newSite: "ახალი საიტი", system: "სისტემა" },
+  nav: { sites: "საიტები", newSite: "ახალი საიტი", system: "სისტემა", accounts: "ანგარიშები" },
   signedInAs: "შესული ხართ როგორც",
   signOut: "გამოსვლა",
-  backToBbloom: "დაბრუნება bbloom.co-ზე",
+  backToBbloom: "დაბრუნება bbloom.ge-ზე",
   loading: "იტვირთება…",
   retry: "ხელახლა ცდა",
   cancel: "გაუქმება",
@@ -502,7 +608,7 @@ const ka: AdminStrings = {
     submit: "შესვლა",
     submitting: "მიმდინარეობს შესვლა…",
     failed: "ვერ შეხვედით. შეამოწმეთ ელფოსტა და პაროლი.",
-    help: "ეს bbloom-ის გუნდის სივრცეა. კლიენტები შედიან /dashboard-ზე.",
+    help: "ეს bbloom-ის გუნდის სივრცეა. კლიენტები შედიან panel.bbloom.ge-ზე.",
   },
   sites: {
     title: "კლიენტების საიტები",
@@ -563,6 +669,7 @@ const ka: AdminStrings = {
     slugEdit: "შეცვლა",
     slugInvalid: "გამოიყენეთ პატარა ლათინური ასოები, ციფრები და დეფისი.",
     slugTaken: "ეს მისამართი დაკავებულია. აირჩიეთ სხვა.",
+    slugReserved: "ეს მისამართი დაცულია bbloom-ის მიერ. აირჩიეთ სხვა.",
     optionsTitle: "როგორ იმუშავებს საიტი",
     languages: "ენები",
     languagesHint: "რომელ ენებზე იქნება ხელმისაწვდომი ვებგვერდი.",
@@ -728,6 +835,58 @@ const ka: AdminStrings = {
   tiers: { SIMPLE: "მარტივი", CLASSIC: "კლასიკური", MODERN: "თანამედროვე" },
   languageNames: { ka: "ქართული", en: "ინგლისური" },
   languageAdverbs: { ka: "ქართულად", en: "ინგლისურად" },
+  accounts: {
+    title: "კლიენტების ანგარიშები",
+    subtitle: "ყველა, ვინც bbloom-ზე დარეგისტრირდა.",
+    search: "ძიება",
+    searchPlaceholder: "ელფოსტა ან სახელი",
+    email: "ელფოსტა",
+    fullName: "სახელი და გვარი",
+    created: "შეიქმნა",
+    lastLogin: "ბოლო შესვლა",
+    never: "არასდროს",
+    verified: "დადასტურებული",
+    unverified: "დაუდასტურებელი",
+    freeUsage: "უფასო",
+    atLimit: "ლიმიტზე",
+    empty: "ანგარიშები ჯერ არ არის.",
+    emptyFiltered: "ამ ძიებას არაფერი შეესაბამება.",
+    results: (total) => `${total} ანგარიში`,
+    prev: "წინა",
+    next: "შემდეგი",
+    page: (page, total) => `გვერდი ${page} / ${total}`,
+    back: "ყველა ანგარიში",
+    emailStatus: "ელფოსტის სტატუსი",
+    confirmEmail: "ელფოსტის დადასტურება",
+    confirming: "მოწმდება…",
+    confirmed: "ელფოსტა დადასტურდა",
+    resendConfirmation: "ხელახლა გაგზავნა",
+    resending: "იგზავნება…",
+    resent: "დადასტურების წერილი გაიგზავნა",
+    resendTooSoon: (minutes) => `სცადეთ ${minutes} წუთში.`,
+    resendDailyLimit: "დღიური ლიმიტი ამოიწურა. სცადეთ ხვალ.",
+    freeAllowance: "უფასო ლიმიტი",
+    freeAllowanceHint: "რამდენი ვებგვერდი შეუძლია კლიენტს უფასოდ ჰქონდეს ონლაინ.",
+    freeAllowanceCount: (n) => `${n} უფასო`,
+    freeAllowanceUsed: (used, total) => `${used} / ${total} გამოყენებული`,
+    freeAllowanceNoEffect: "ეს არ გათიშავს უკვე გამოქვეყნებულ ვებგვერდს.",
+    updateAllowance: "შეცვლა",
+    updating: "იცვლება…",
+    sitesTitle: "საიტები",
+    siteSlug: "მისამართი",
+    siteStatus: "სტატუსი",
+    siteRole: "როლი",
+    sitePlan: "პაკეტი",
+    freeSlot: "უფასო ადგილი",
+    paidPlan: "ფასიანი",
+    noPlan: "პაკეტის გარეშე",
+    noSites: "საიტები ჯერ არ არის.",
+    roles: { SITE_OWNER: "მფლობელი", SITE_EDITOR: "რედაქტორი" },
+    failed: "შეცდომა მოხდა.",
+    enabled: "აქტიური",
+    disabled: "გათიშული",
+    language: "ენა",
+  },
 };
 
 const dictionaries: Record<Locale, AdminStrings> = { en, ka };

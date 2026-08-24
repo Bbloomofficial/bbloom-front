@@ -17,8 +17,16 @@
 /** Hosts that are never a client site, whatever the base domain is. */
 const DEV_HOSTS = new Set(["localhost", "127.0.0.1", "0.0.0.0", "::1", "[::1]"]);
 
-/** Labels under the base domain that belong to us rather than to a client. */
-const RESERVED_LABELS = new Set(["www", "app", "api"]);
+/**
+ * Labels under the base domain that belong to us rather than to a client.
+ *
+ * `admin` and `panel` serve our two signed-in apps (see `src/routes.ts`); the
+ * rest are infrastructure. A client site must never be able to claim one, or
+ * it would take over a surface that visitors read as bbloom speaking. The
+ * backend refuses these as slugs now, but sites created before it did are
+ * still out there, so this list is the one that has to hold.
+ */
+const RESERVED_LABELS = new Set(["www", "app", "api", "admin", "panel"]);
 
 function hostList(value: unknown): string[] {
   return String(value ?? "")

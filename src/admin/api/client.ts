@@ -2,6 +2,7 @@ import { request } from "../../api/http";
 import type {
   CreateSiteRequest,
   Page,
+  AdminAccountDto,
   SiteDetail,
   SiteSummary,
   SiteUser,
@@ -194,5 +195,59 @@ export function resetSiteUserPassword(
     token,
     `/manage/sites/${siteId}/users/${userId}/password`,
     { method: "POST", body: JSON.stringify({ newPassword: password }) },
+  );
+}
+
+export type AccountQuery = { q?: string; page?: number; size?: number };
+
+export function fetchAccounts(
+  token: string,
+  query: AccountQuery = {},
+): Promise<Page<AdminAccountDto>> {
+  const params = new URLSearchParams();
+  if (query.q) params.set("q", query.q);
+  params.set("page", String(query.page ?? 0));
+  params.set("size", String(query.size ?? 20));
+  return authed<Page<AdminAccountDto>>(token, `/admin/accounts?${params}`);
+}
+
+export function fetchAccount(
+  token: string,
+  accountId: string,
+): Promise<AdminAccountDto> {
+  return authed<AdminAccountDto>(token, `/admin/accounts/${accountId}`);
+}
+
+export function confirmAccountEmail(
+  token: string,
+  accountId: string,
+): Promise<AdminAccountDto> {
+  return authed<AdminAccountDto>(
+    token,
+    `/admin/accounts/${accountId}/confirm-email`,
+    { method: "POST" },
+  );
+}
+
+export function resendAccountConfirmation(
+  token: string,
+  accountId: string,
+): Promise<void> {
+  return authed<void>(
+    token,
+    `/admin/accounts/${accountId}/resend-confirmation`,
+    { method: "POST" },
+  );
+}
+
+export function updateFreeAllowance(
+  token: string,
+  accountId: string,
+  allowance: number,
+): Promise<AdminAccountDto> {
+  return authed<AdminAccountDto>(
+    token,
+    `/admin/accounts/${accountId}/free-allowance`,
+    { method: "PUT", body: JSON.stringify({ allowance }) },
   );
 }

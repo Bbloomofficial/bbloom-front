@@ -7,6 +7,7 @@ import { useI18n } from "../../i18n";
 import { useAuth } from "../auth";
 import { dashboardStrings } from "../strings";
 import { AuthShell } from "./Register";
+import { dashPath } from "../../routes";
 
 export default function Login() {
   const { locale } = useI18n();
@@ -94,7 +95,7 @@ export default function Login() {
         <p className="mt-5 text-center text-sm text-ink-600">
           {t.login.noAccount}{" "}
           <Link
-            to="/dashboard/register"
+            to={dashPath("/register")}
             className="font-semibold text-tint-fg hover:underline"
           >
             {t.login.createAccount}

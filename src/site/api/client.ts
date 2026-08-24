@@ -44,7 +44,7 @@ function withAbsoluteMedia(payload: SitePayload): SitePayload {
 }
 
 /**
- * `ref` is a slug, a `<slug>.bbloom.co` subdomain or a custom domain — the
+ * `ref` is a slug, a `<slug>.bbloom.ge` subdomain or a custom domain — the
  * backend resolves all three.
  */
 export function fetchSite(

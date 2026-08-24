@@ -72,6 +72,7 @@ export type ProblemStrings = {
   notFound: string;
   /** This email is already registered. */
   emailTaken: string;
+  slugReserved: string;
   /** Too many requests, throttled. */
   throttled: string;
   /**
@@ -325,6 +326,13 @@ export function describeProblem(
       // varies case by case, so only the ones we recognise are translated. The
       // publish gate never reaches here: it is derived from subscription state
       // before a request is made.
+      //
+      // Addresses like `admin` and `panel` are ours — they serve the staff
+      // panel and the client dashboard — so a client asking for one is refused
+      // rather than quietly given something else. A slug the backend derived
+      // from a business name is adjusted instead (`admin-2`), so this can only
+      // arrive in answer to an address someone typed on purpose.
+      if (caught.code === "SLUG_RESERVED") return strings.slugReserved;
       if (/already exists/i.test(caught.message)) return strings.emailTaken;
       return caught.message || fallback;
     case 429: {

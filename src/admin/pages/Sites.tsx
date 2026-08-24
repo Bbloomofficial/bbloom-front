@@ -12,6 +12,7 @@ import {
   PendingBadge,
 } from "../components/Badges";
 import { adminStrings } from "../strings";
+import { adminPath } from "../../routes";
 
 const PAGE_SIZE = 20;
 
@@ -74,7 +75,7 @@ export default function Sites() {
           </h1>
           <p className="mt-1 text-sm text-ink-600">{t.sites.subtitle}</p>
         </div>
-        <Link to="/admin/sites/new" className="btn-primary">
+        <Link to={adminPath("/sites/new")} className="btn-primary">
           {t.sites.create}
         </Link>
       </div>
@@ -148,7 +149,7 @@ export default function Sites() {
                 >
                   <td className="px-5 py-4">
                     <Link
-                      to={`/admin/sites/${site.id}`}
+                      to={adminPath(`/sites/${site.id}`)}
                       className="font-semibold text-ink-900 hover:text-bloom-600"
                     >
                       {site.businessName}
@@ -215,7 +216,7 @@ export default function Sites() {
                   </td>
                   <td className="px-5 py-4 text-end">
                     <Link
-                      to={`/admin/sites/${site.id}`}
+                      to={adminPath(`/sites/${site.id}`)}
                       className="text-sm font-semibold text-bloom-600 hover:text-bloom-700"
                     >
                       {t.sites.open}

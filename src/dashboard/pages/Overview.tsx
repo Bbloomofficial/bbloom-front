@@ -23,6 +23,7 @@ import {
   publishErrorMessage,
   publishNeedsPlan,
 } from "../gate";
+import { dashPath } from "../../routes";
 
 /** `MODERN` / `shop-modern` read better as words in a client-facing UI. */
 function titleCase(value: string) {
@@ -295,7 +296,7 @@ export default function Overview() {
             ).map((type) => (
               <Link
                 key={type}
-                to={`/dashboard/s/${siteId}/inbox?type=${type}`}
+                to={dashPath(`/s/${siteId}/inbox?type=${type}`)}
                 className="inline-flex items-center gap-2 rounded-full border border-ink-100 bg-control px-3 py-1.5 text-xs font-semibold text-ink-600 transition hover:border-bloom-300 hover:text-bloom-600"
               >
                 {t.types[type]}
@@ -310,7 +311,7 @@ export default function Overview() {
         <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
           <h2 className="text-lg font-bold text-ink-900">{t.overview.recent}</h2>
           <Link
-            to={`/dashboard/s/${siteId}/inbox`}
+            to={dashPath(`/s/${siteId}/inbox`)}
             className="text-sm font-semibold text-tint-fg hover:underline"
           >
             {t.overview.viewAll}
@@ -325,7 +326,7 @@ export default function Overview() {
               {recent.data.items.map((enquiry) => (
                 <li key={enquiry.id} className="border-t border-ink-100 first:border-0">
                   <Link
-                    to={`/dashboard/s/${siteId}/inbox?selected=${enquiry.id}`}
+                    to={dashPath(`/s/${siteId}/inbox?selected=${enquiry.id}`)}
                     className="flex flex-wrap items-center gap-3 px-5 py-4 transition hover:bg-ink-50"
                   >
                     <span className="min-w-0 flex-1">

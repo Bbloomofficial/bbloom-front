@@ -8,6 +8,7 @@ import { describeProblem } from "../../api/problem";
 import { useI18n } from "../../i18n";
 import { useAuth } from "../auth";
 import { dashboardStrings } from "../strings";
+import { dashPath } from "../../routes";
 
 /** Shared chrome for the signed-out screens. */
 export function AuthShell({ children }: { children: React.ReactNode }) {
@@ -151,7 +152,7 @@ export default function Register() {
         <p className="mt-5 text-center text-sm text-ink-600">
           {t.register.haveAccount}{" "}
           <Link
-            to="/dashboard/login"
+            to={dashPath("/login")}
             className="font-semibold text-tint-fg hover:underline"
           >
             {t.register.signIn}

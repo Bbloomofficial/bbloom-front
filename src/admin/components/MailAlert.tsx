@@ -3,6 +3,7 @@ import { useI18n } from "../../i18n";
 import { adminStrings } from "../strings";
 import { mailNeedsAttention, useSystemStatus } from "../system";
 import type { MailFailure } from "../api/types";
+import { adminPath } from "../../routes";
 
 /** How many people are owed an email, rather than how many sends failed.
  *
@@ -148,7 +149,7 @@ export default function MailAlert() {
             : t.system.owedTitle(owed)}
         </p>
         <Link
-          to="/admin/system"
+          to={adminPath("/system")}
           className={`ms-auto shrink-0 text-sm font-semibold underline underline-offset-2 hover:opacity-80 ${text}`}
         >
           {t.system.bannerAction}

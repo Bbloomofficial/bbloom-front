@@ -5,6 +5,7 @@ import { sitesOf, useSession } from "../auth";
 import { RoleBadge, SiteStatusBadge } from "../components/Badges";
 import { dashboardStrings, formatDate } from "../strings";
 import { publishNeedsPlan } from "../gate";
+import { dashPath } from "../../routes";
 
 /**
  * The account home. It is a list even for someone with one website, because
@@ -47,7 +48,7 @@ function SiteCard({ site }: { site: AccountSite }) {
 
   return (
     <Link
-      to={`/dashboard/s/${site.id}`}
+      to={dashPath(`/s/${site.id}`)}
       className="block rounded-3xl border border-ink-100 bg-surface p-5 transition hover:border-bloom-300 hover:shadow-lg hover:shadow-bloom-600/5"
     >
       <div className="flex items-start justify-between gap-3">
@@ -101,7 +102,7 @@ export default function Sites() {
         <p className="mx-auto mt-3 max-w-md text-sm text-ink-600">
           {t.sites.emptyBody}
         </p>
-        <Link to="/dashboard/new" className="btn-primary mt-6 inline-flex">
+        <Link to={dashPath("/new")} className="btn-primary mt-6 inline-flex">
           {t.sites.create}
         </Link>
       </div>
@@ -117,7 +118,7 @@ export default function Sites() {
           </h1>
           <p className="mt-1 text-sm text-ink-600">{t.sites.subtitle}</p>
         </div>
-        <Link to="/dashboard/new" className="btn-secondary">
+        <Link to={dashPath("/new")} className="btn-secondary">
           {t.sites.addAnother}
         </Link>
       </div>

@@ -21,6 +21,7 @@ import Sites from "./pages/Sites";
 import Team from "./pages/Team";
 import { SiteScope } from "./site";
 import { dashboardStrings } from "./strings";
+import { dashPath } from "../routes";
 
 /**
  * `/dashboard/page` and `/dashboard/inbox` were the whole dashboard until
@@ -32,10 +33,10 @@ function LegacyRedirect({ to }: { to: "page" | "inbox" | "" }) {
   const { search, hash } = useLocation();
   const sites = sitesOf(user);
   const first = sites[0];
-  if (!first) return <Navigate to="/dashboard" replace />;
+  if (!first) return <Navigate to={dashPath()} replace />;
   const suffix = to ? `/${to}` : "";
   return (
-    <Navigate to={`/dashboard/s/${first.id}${suffix}${search}${hash}`} replace />
+    <Navigate to={dashPath(`/s/${first.id}${suffix}${search}${hash}`)} replace />
   );
 }
 
@@ -47,7 +48,7 @@ function SiteRoutes() {
 
   // A site the account no longer belongs to is not an error worth a screen:
   // removal from a team is normal, so it falls back to the site list.
-  if (!site) return <Navigate to="/dashboard" replace />;
+  if (!site) return <Navigate to={dashPath()} replace />;
 
   return (
     <SiteScope site={site}>
@@ -60,7 +61,7 @@ function SiteRoutes() {
           <Route path="team" element={<Team />} />
           <Route
             path="*"
-            element={<Navigate to={`/dashboard/s/${site.id}`} replace />}
+            element={<Navigate to={dashPath(`/s/${site.id}`)} replace />}
           />
         </Routes>
       </Layout>
@@ -98,9 +99,9 @@ function SignedIn() {
       <Route path="s/:siteId/*" element={<SiteRoutes />} />
       <Route path="page" element={<LegacyRedirect to="page" />} />
       <Route path="inbox" element={<LegacyRedirect to="inbox" />} />
-      <Route path="login" element={<Navigate to="/dashboard" replace />} />
-      <Route path="register" element={<Navigate to="/dashboard" replace />} />
-      <Route path="*" element={<Navigate to="/dashboard" replace />} />
+      <Route path="login" element={<Navigate to={dashPath()} replace />} />
+      <Route path="register" element={<Navigate to={dashPath()} replace />} />
+      <Route path="*" element={<Navigate to={dashPath()} replace />} />
     </Routes>
   );
 }

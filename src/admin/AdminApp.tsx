@@ -1,4 +1,5 @@
 import { Navigate, Route, Routes } from "react-router-dom";
+import { adminPath } from "../routes";
 import { AuthProvider, useAuth } from "./auth";
 import { SystemProvider } from "./system";
 import Layout from "./components/Layout";
@@ -7,6 +8,8 @@ import Sites from "./pages/Sites";
 import NewSite from "./pages/NewSite";
 import SiteDetail from "./pages/SiteDetail";
 import SystemStatus from "./pages/SystemStatus";
+import Accounts from "./pages/Accounts";
+import AccountDetail from "./pages/AccountDetail";
 
 function Routed() {
   const { token, restoring } = useAuth();
@@ -23,8 +26,10 @@ function Routed() {
           <Route path="/" element={<Sites />} />
           <Route path="sites/new" element={<NewSite />} />
           <Route path="sites/:siteId" element={<SiteDetail />} />
+          <Route path="accounts" element={<Accounts />} />
+          <Route path="accounts/:accountId" element={<AccountDetail />} />
           <Route path="system" element={<SystemStatus />} />
-          <Route path="*" element={<Navigate to="/admin" replace />} />
+          <Route path="*" element={<Navigate to={adminPath()} replace />} />
         </Routes>
       </Layout>
     </SystemProvider>

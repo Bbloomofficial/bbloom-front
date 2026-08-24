@@ -298,3 +298,33 @@ export type SystemStatus = {
   checkedAt: string;
   mail: MailHealth;
 };
+
+export type AdminAccountSiteDto = {
+  id: string;
+  slug: string;
+  businessName: string;
+  status: "DRAFT" | "PUBLISHED";
+  role: "SITE_OWNER" | "SITE_EDITOR" | null;
+  paid: boolean;
+  planCode?: string | null;
+  subscriptionStatus?: string | null;
+  currentPeriodEnd?: string | null;
+  usingFreeSlot: boolean;
+  createdAt: string;
+};
+
+export type AdminAccountDto = {
+  id: string;
+  email: string;
+  fullName: string;
+  language?: string | null;
+  enabled: boolean;
+  emailVerified: boolean;
+  emailVerifiedAt?: string | null;
+  createdAt: string;
+  lastLoginAt?: string | null;
+  freeSiteAllowance: number;
+  freeSitesUsed: number;
+  atFreeLimit: boolean;
+  sites: AdminAccountSiteDto[];
+};
