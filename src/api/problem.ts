@@ -73,6 +73,20 @@ export type ProblemStrings = {
   /** This email is already registered. */
   emailTaken: string;
   slugReserved: string;
+  /**
+   * An invitation naming someone who has no bbloom account. The invite form
+   * only ever attaches an existing colleague, so this is the whole answer for
+   * the client rather than a step they can correct in place.
+   */
+  memberAccountMissing: string;
+  /**
+   * An invitation that would have to create the account and was given no name.
+   * Unreachable from this client today -- it sends neither a password nor a
+   * name, and the backend reports the missing password first -- so this is
+   * here so that a future invite form that does create accounts refuses in
+   * Georgian rather than in the backend's English.
+   */
+  memberNameRequired: string;
   /** Too many requests, throttled. */
   throttled: string;
   /**
@@ -333,6 +347,15 @@ export function describeProblem(
       // from a business name is adjusted instead (`admin-2`), so this can only
       // arrive in answer to an address someone typed on purpose.
       if (caught.code === "SLUG_RESERVED") return strings.slugReserved;
+      // The invite form attaches an existing colleague and cannot create an
+      // account, so "no account for this address" is the end of the road here
+      // rather than a field to fill in. Both are matched on `code`: the
+      // backend writes these `detail` strings to be shown as-is, but they are
+      // English and this admin is read in Georgian.
+      if (caught.code === "MEMBER_ACCOUNT_MISSING")
+        return strings.memberAccountMissing;
+      if (caught.code === "MEMBER_NAME_REQUIRED")
+        return strings.memberNameRequired;
       if (/already exists/i.test(caught.message)) return strings.emailTaken;
       return caught.message || fallback;
     case 429: {

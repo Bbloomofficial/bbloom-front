@@ -31,6 +31,10 @@ const en: ProblemStrings = {
   notFound: "We couldn't find that.",
   emailTaken: "There's already an account with this email. Sign in instead.",
   slugReserved: "That address is reserved by bbloom. Please choose another one.",
+  memberAccountMissing:
+    "Nobody with this email has a bbloom account yet. Ask them to sign up first, then invite them.",
+  memberNameRequired:
+    "Give this person's name so we can create their account.",
   throttled: "Too many attempts. Wait a moment and try again.",
   signInThrottled:
     "Signing in to this account is paused for a moment. Please try again shortly.",
@@ -67,6 +71,10 @@ const ka: ProblemStrings = {
   notFound: "ვერ მოიძებნა.",
   emailTaken: "ამ ელფოსტით ანგარიში უკვე არსებობს. უბრალოდ შედით.",
   slugReserved: "ეს მისამართი დაცულია bbloom-ის მიერ. აირჩიეთ სხვა.",
+  memberAccountMissing:
+    "ამ ელფოსტით bbloom-ის ანგარიში ჯერ არავის აქვს. სთხოვეთ დარეგისტრირდეს და შემდეგ მოიწვიეთ.",
+  memberNameRequired:
+    "მიუთითეთ ამ ადამიანის სახელი, რომ ანგარიში შევქმნათ.",
   throttled: "ბევრი მცდელობა იყო. მოიცადეთ და სცადეთ თავიდან.",
   signInThrottled: "ამ ანგარიშზე შესვლა დროებით შეჩერებულია. სცადეთ ცოტა ხანში.",
   signInThrottledFor: (minutes) =>
