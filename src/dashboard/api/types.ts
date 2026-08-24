@@ -216,9 +216,9 @@ export type SiteMember = {
  * Email delivery is not wired up yet, so this currently carries the `token`
  * for testing. Nothing in the UI may depend on that field existing.
  *
- * `retryAfter` is when another request will be accepted — the resend button
- * counts down from it rather than finding the limit by being refused, though
- * the 429 still has to be handled because two tabs can race it.
+ * `resendAvailableAt` is when another send will be accepted — the resend
+ * button counts down from it rather than finding the limit by being refused,
+ * though the 429 still has to be handled because two tabs can race it.
  */
 export type VerificationTicket = {
   email: string;
@@ -226,7 +226,14 @@ export type VerificationTicket = {
   expiresAt?: string;
   /** When the six-digit code expires. This is the one a countdown should follow. */
   codeExpiresAt?: string;
-  /** Legacy name for `resendAvailableAt`; both are read. */
+  /**
+   * Not an older spelling of `resendAvailableAt`: it belongs to the *sign-in*
+   * throttle (`AUTH_RATE_LIMITED`), while the resend throttle
+   * (`RESEND_TOO_SOON`) carries `resendAvailableAt`. Two throttles, two
+   * fields, both current. Read here only as tolerance — it is not expected on
+   * a verification ticket, so it must never be the field a countdown is built
+   * on or the countdown silently disappears.
+   */
   retryAfter?: string;
   resendAvailableAt?: string;
   /**
