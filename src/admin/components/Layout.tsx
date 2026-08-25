@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, Link } from "react-router-dom";
 import Logo from "../../components/Logo";
 import LanguageSwitcher from "../../components/LanguageSwitcher";
 import ThemeToggle from "../../components/ThemeToggle";
@@ -42,9 +42,9 @@ export default function Layout({ children }: { children: ReactNode }) {
     <div className="flex min-h-screen flex-col bg-canvas">
       <header className="sticky top-0 z-30 border-b border-ink-100 bg-surface/95 backdrop-blur">
         <div className="container-page flex h-16 items-center gap-3">
-          <a href={marketingHome()} aria-label="bbloom" className="shrink-0">
+          <Link to={adminPath()} aria-label={t.brand} className="shrink-0">
             <Logo />
-          </a>
+          </Link>
           <span className="hidden rounded-full bg-tint px-2.5 py-1 text-xs font-semibold text-tint-fg sm:inline">
             {t.brand}
           </span>

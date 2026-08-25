@@ -1,5 +1,6 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
+import { Link } from "react-router-dom";
 import Logo from "../../components/Logo";
 import LanguageSwitcher from "../../components/LanguageSwitcher";
 import PasswordField from "../../components/PasswordField";
@@ -7,6 +8,7 @@ import { ApiError } from "../../api/http";
 import { useI18n } from "../../i18n";
 import { useAuth } from "../auth";
 import { adminStrings } from "../strings";
+import { adminPath } from "../../routes";
 
 export default function Login() {
   const { locale } = useI18n();
@@ -39,9 +41,9 @@ export default function Login() {
   return (
     <div className="flex min-h-screen flex-col bg-canvas">
       <header className="container-page flex h-16 items-center justify-between">
-        <a href="/" aria-label="bbloom">
+        <Link to={adminPath()} aria-label={t.brand}>
           <Logo />
-        </a>
+        </Link>
         <LanguageSwitcher />
       </header>
 
