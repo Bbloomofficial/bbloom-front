@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
-import { NavLink, useLocation, useMatch } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import LanguageSwitcher from "../../components/LanguageSwitcher";
 import ThemeToggle from "../../components/ThemeToggle";
 import { useI18n } from "../../i18n";
@@ -127,7 +127,14 @@ function SiteTabs({ site }: { site: AccountSite }) {
   const { locale } = useI18n();
   const t = dashboardStrings(locale);
 
-  const tabs: { to: string; label: string; end: boolean; icon: NavKey }[] = [
+  const tabs: {
+    to: string;
+    label: string;
+    end: boolean;
+    icon: NavKey;
+    /** Rendered as a plain link into a new window rather than a nav tab. */
+    newWindow?: boolean;
+  }[] = [
     {
       to: dashPath(`/s/${site.id}`),
       label: t.nav.overview,
@@ -135,10 +142,13 @@ function SiteTabs({ site }: { site: AccountSite }) {
       icon: "overview",
     },
     {
-      to: dashPath(`/s/${site.id}/page`),
+      // The editor is a window of its own rather than a screen in here, so this
+      // is an anchor and not a `NavLink`: it can never be the active tab.
+      to: dashPath(`/s/${site.id}/editor`),
       label: t.nav.page,
       end: false,
       icon: "page",
+      newWindow: true,
     },
     {
       to: dashPath(`/s/${site.id}/inbox`),
@@ -196,12 +206,45 @@ function SiteTabs({ site }: { site: AccountSite }) {
           </a>
         </div>
         <nav className="flex items-center gap-1 overflow-x-auto py-2">
-          {tabs.map((tab) => (
-            <NavLink key={tab.to} to={tab.to} end={tab.end} className={tabClass}>
-              <NavIcon name={tab.icon} />
-              <span className="truncate">{tab.label}</span>
-            </NavLink>
-          ))}
+          {tabs.map((tab) =>
+            tab.newWindow ? (
+              <a
+                key={tab.to}
+                href={tab.to}
+                target="_blank"
+                rel="noreferrer"
+                className={tabClass({ isActive: false })}
+              >
+                <NavIcon name={tab.icon} />
+                <span className="truncate">{tab.label}</span>
+                <svg
+                  viewBox="0 0 24 24"
+                  className="h-3.5 w-3.5 shrink-0 opacity-60"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M14 4h6v6" />
+                  <path d="M20 4 10 14" />
+                  <path d="M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5" />
+                </svg>
+                <span className="sr-only">{t.opensInNewWindow}</span>
+              </a>
+            ) : (
+              <NavLink
+                key={tab.to}
+                to={tab.to}
+                end={tab.end}
+                className={tabClass}
+              >
+                <NavIcon name={tab.icon} />
+                <span className="truncate">{tab.label}</span>
+              </NavLink>
+            ),
+          )}
         </nav>
       </div>
     </div>
@@ -222,19 +265,6 @@ export default function Layout({
   const location = useLocation();
   const active = site ?? null;
   const [drawer, setDrawer] = useState(false);
-  /*
-    The page editor is a workspace rather than a document, so on that one route
-    the shell stops being a scrolling page and becomes a fixed-height frame:
-    the editor's preview can then take every pixel the panel does not.
-
-    `useMatch` rather than a regex on the path, so this is tied to the route as
-    declared in `DashboardApp` and moves with it.
-
-    Only from `lg`. On a phone there is no room to split, and a fixed-height
-    frame there would trap the field list in an inner scroller fighting the
-    native gesture.
-  */
-  const editorRoute = useMatch(dashPath("/s/:siteId/page"));
   // Read the account's own list rather than `site`, which is absent on every
   // account-level screen and would make a client with five websites look like a
   // client with none.
@@ -305,11 +335,7 @@ export default function Layout({
   );
 
   return (
-    <div
-      className={`min-h-screen bg-canvas lg:flex ${
-        editorRoute ? "lg:h-screen lg:overflow-hidden" : ""
-      }`}
-    >
+    <div className="min-h-screen bg-canvas lg:flex">
       {/* The sidebar scrolls on its own so a long website list cannot push the
           navigation off the bottom of a short window. */}
       <aside className="sticky top-0 z-40 hidden h-screen w-64 shrink-0 border-e border-ink-100 bg-surface lg:block">
@@ -361,13 +387,7 @@ export default function Layout({
       <div className="flex min-h-0 min-w-0 flex-1 flex-col">
         {active && <SiteTabs site={active} />}
 
-        <main
-          className={
-            editorRoute
-              ? "flex min-h-0 flex-1 flex-col"
-              : "container-page flex-1 space-y-6 py-8 sm:py-10"
-          }
-        >
+        <main className="container-page flex-1 space-y-6 py-8 sm:py-10">
           {/*
             The banner goes first once there is a website, because from that point
             on it explains a live restriction: the publish button is refusing, and
@@ -387,35 +407,28 @@ export default function Layout({
             content while it gates nothing, before it the moment it gates
             something.
 
-            The editor is the exception, and for the same measurement: it is a
-            fixed-height frame, so a 428px form at the top of it would leave the
-            preview a couple of hundred pixels and recreate the squeeze this
-            layout exists to fix. Nothing is lost — the editor's publish button
-            refuses with the very same sentence, and the banner is still on the
-            overview one click away.
+            The editor used to be an exception here, for the same measured
+            reason. It has its own window now and never renders inside this
+            shell, so the exception has gone with it.
           */}
-          {hasSite && !editorRoute && <VerifyBanner />}
+          {hasSite && <VerifyBanner />}
           {children}
           {!hasSite && <VerifyBanner />}
         </main>
 
-        {/* The editor owns the full height, so the footer would only eat into
-            the preview. It is on every other route. */}
-        {!editorRoute && (
-          <footer className="border-t border-ink-100 py-6">
-            <div className="container-page flex flex-wrap items-center justify-between gap-3 text-xs text-ink-400">
-              <span>
-                {t.signedInAs} {user.email}
-              </span>
-              <a
-                href={marketingHome()}
-                className="font-semibold hover:text-bloom-600"
-              >
-                {t.backToBbloom}
-              </a>
-            </div>
-          </footer>
-        )}
+        <footer className="border-t border-ink-100 py-6">
+          <div className="container-page flex flex-wrap items-center justify-between gap-3 text-xs text-ink-400">
+            <span>
+              {t.signedInAs} {user.email}
+            </span>
+            <a
+              href={marketingHome()}
+              className="font-semibold hover:text-bloom-600"
+            >
+              {t.backToBbloom}
+            </a>
+          </div>
+        </footer>
       </div>
     </div>
   );

@@ -10,6 +10,7 @@ import type { Locale } from "../../i18n";
 export type EditorStrings = {
   title: string;
   subtitle: string;
+  backToDashboard: string;
   sections: string;
   selectSection: string;
   noFields: string;
@@ -72,6 +73,7 @@ export type EditorStrings = {
 const en: EditorStrings = {
   title: "Your page",
   subtitle: "Edit your website and publish when you are happy with it.",
+  backToDashboard: "Back to the dashboard",
   sections: "Sections",
   selectSection: "Pick a section on the left to edit it.",
   noFields: "This section has nothing to edit.",
@@ -137,6 +139,7 @@ const en: EditorStrings = {
 const ka: EditorStrings = {
   title: "თქვენი გვერდი",
   subtitle: "შეცვალეთ თქვენი საიტი და გამოაქვეყნეთ, როცა მოგეწონებათ.",
+  backToDashboard: "პანელში დაბრუნება",
   sections: "სექციები",
   selectSection: "აირჩიეთ სექცია მარცხნივ, რომ შეცვალოთ.",
   noFields: "ამ სექციაში შესაცვლელი არაფერია.",

@@ -23,6 +23,7 @@ export type DashboardStrings = {
   signedInAs: string;
   signOut: string;
   viewSite: string;
+  opensInNewWindow: string;
   backToBbloom: string;
   loading: string;
   retry: string;
@@ -354,6 +355,7 @@ const en: DashboardStrings = {
   signedInAs: "Signed in as",
   signOut: "Sign out",
   viewSite: "View site",
+  opensInNewWindow: "Opens in a new window",
   backToBbloom: "Back to bbloom.ge",
   loading: "Loading…",
   retry: "Try again",
@@ -730,6 +732,7 @@ const ka: DashboardStrings = {
   signedInAs: "შესული ხართ როგორც",
   signOut: "გამოსვლა",
   viewSite: "საიტის ნახვა",
+  opensInNewWindow: "იხსნება ახალ ფანჯარაში",
   backToBbloom: "bbloom.ge-ზე დაბრუნება",
   loading: "იტვირთება…",
   retry: "ხელახლა ცდა",

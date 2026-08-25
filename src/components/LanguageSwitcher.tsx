@@ -5,11 +5,14 @@ import { Flag } from './Flag'
 
 /** Room needed below the button before the list is allowed to open downwards. */
 const LIST_HEIGHT = 96
+/** Matches `w-44` on the list; used to tell whether it would clear an edge. */
+const LIST_WIDTH = 176
 
 export default function LanguageSwitcher() {
   const { locale, setLocale, t } = useI18n()
   const [open, setOpen] = useState(false)
   const [dropUp, setDropUp] = useState(false)
+  const [alignLeft, setAlignLeft] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
   const buttonRef = useRef<HTMLButtonElement>(null)
 
@@ -35,6 +38,28 @@ export default function LanguageSwitcher() {
     // Only flip when going up is genuinely better, so a switcher with room for
     // neither still opens downwards rather than off the top of the window.
     setDropUp(below < LIST_HEIGHT && rect.top > below)
+
+    /*
+      The same decision horizontally, and it is the one the vertical fix
+      uncovered rather than caused. The list is right-aligned to the button,
+      which is correct in the marketing header, where the switcher sits near the
+      right edge. In the dashboard rail the button starts at x=16 and is about
+      86px wide, so a 176px list hung off its right edge begins at -74: the
+      panel ran off the left of the screen and only its last few characters were
+      readable. While the list was still opening 78px below the fold this was
+      invisible, because nothing was on screen to be clipped.
+
+      Reported as a camera would see it -- "the list is cut off by the left edge
+      of the screen" -- which is consistent with right-alignment, a negative
+      offset, a transform or the wrong positioning container. Measuring the
+      button told us which: nothing is offset, the button is simply too close to
+      the left edge for a panel wider than itself to hang leftward.
+    */
+    const clearsLeft = rect.right - LIST_WIDTH >= 0
+    const clearsRight = rect.left + LIST_WIDTH <= window.innerWidth
+    // Right-alignment stays the default so the header is untouched, and the
+    // flip needs somewhere better to go rather than merely somewhere else.
+    setAlignLeft(!clearsLeft && clearsRight)
   }, [open])
 
   useEffect(() => {
@@ -94,9 +119,9 @@ export default function LanguageSwitcher() {
         <ul
           role="listbox"
           aria-label={t.language.label}
-          className={`absolute right-0 z-50 w-44 overflow-hidden rounded-xl border border-ink-100 bg-surface p-1 shadow-lg shadow-black/5 ${
+          className={`absolute z-50 w-44 overflow-hidden rounded-xl border border-ink-100 bg-surface p-1 shadow-lg shadow-black/5 ${
             dropUp ? 'bottom-full mb-2' : 'top-full mt-2'
-          }`}
+          } ${alignLeft ? 'left-0' : 'right-0'}`}
         >
           {locales.map((item) => (
             <li key={item.code}>

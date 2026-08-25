@@ -154,6 +154,34 @@ export default function Editor() {
     if (site.data?.hasUnpublishedChanges) setHasDraft(true);
   }, [site.data]);
 
+  /*
+    Re-read the page when this window is focused again.
+
+    The editor is its own window now, so two of them open on one website is no
+    longer a contrived case — it is one extra click on the dashboard tab. Two
+    windows each holding their own copy of the sections means the second one to
+    save wins with content that was loaded before the first one wrote, and the
+    client is never told.
+
+    This does not make saving safe; it narrows the window in the one case where
+    narrowing is free. Refetching is refused outright while there are unsaved
+    edits here, because pulling the other window's copy over something the
+    client is part-way through typing would destroy work to prevent losing it.
+    An untouched window has nothing to lose, so it takes the newer copy.
+
+    The real fix is the server refusing a write made against a stale revision.
+    That needs a version on the section payload, which does not exist yet.
+  */
+  const reloadSections = loaded.reload;
+  useEffect(() => {
+    function onFocus() {
+      if (dirty || saving) return;
+      reloadSections();
+    }
+    window.addEventListener("focus", onFocus);
+    return () => window.removeEventListener("focus", onFocus);
+  }, [dirty, saving, reloadSections]);
+
   const selected = sections.find((section) => section.key === selectedKey);
   const selectedIndex = sections.findIndex(
     (section) => section.key === selectedKey,
@@ -411,9 +439,11 @@ export default function Editor() {
     edited was a sliver. The section list is now a chooser at the top of the
     panel, which buys the preview a whole column back.
 
-    Read `lg:h-full` together with `Layout`: on the editor route the shell is a
-    fixed-height flex column, so `flex-1` here is a real remainder rather than
-    an unbounded one. Below `lg` it stays a normal scrolling page.
+    Read `flex-1` here together with `EditorWindow`, which hosts this in a
+    window of its own: from `lg` that shell is a fixed-height flex column, so
+    the remainder is a real one rather than unbounded. Below `lg` it stays a
+    normal scrolling page. This component no longer renders inside the
+    dashboard shell at all.
   */
   return (
     <div className="flex min-h-0 flex-1 flex-col">

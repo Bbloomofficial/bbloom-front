@@ -10,7 +10,7 @@ import { useI18n } from "../i18n";
 import type { AccountSite } from "./api/types";
 import { AuthProvider, sitesOf, useAuth, useSession } from "./auth";
 import Layout from "./components/Layout";
-import Editor from "./editor/Editor";
+import EditorWindow from "./editor/EditorWindow";
 import Account from "./pages/Account";
 import Billing from "./pages/Billing";
 import Inbox from "./pages/Inbox";
@@ -120,7 +120,19 @@ function SiteRoutes() {
       <Layout site={site}>
         <Routes>
           <Route index element={<Overview />} />
-          <Route path="page" element={<Editor />} />
+          {/*
+            The editor now has a window of its own at `/s/:siteId/editor`,
+            outside this shell. `page` stays as a redirect rather than being
+            deleted: it is what the legacy `/dashboard/page` lands on and what
+            any bookmark from the last two days points at, and arriving in the
+            editor is what those links were always asking for.
+          */}
+          <Route
+            path="page"
+            element={
+              <Navigate to={dashPath(`/s/${site.id}/editor`)} replace />
+            }
+          />
           <Route path="inbox" element={<Inbox />} />
           <Route path="billing" element={<Billing />} />
           <Route path="team" element={<Team />} />
@@ -161,6 +173,7 @@ function SignedIn() {
           </Layout>
         }
       />
+      <Route path="s/:siteId/editor" element={<EditorWindow />} />
       <Route path="s/:siteId/*" element={<SiteRoutes />} />
       <Route path="page" element={<LegacyRedirect to="page" />} />
       <Route path="inbox" element={<LegacyRedirect to="inbox" />} />
