@@ -8,6 +8,7 @@
 } from "react";
 import type { ReactNode } from "react";
 import { ApiError, authFailure } from "../api/http";
+import { CLIENT_SESSION_KEY, announceClientSession } from "../clientSession";
 import { fetchAccount, loginAccount, registerAccount } from "./api/account";
 import type {
   AccountProfile,
@@ -23,9 +24,11 @@ import type {
  * registered account owns none at all.
  *
  * The storage key is unchanged on purpose, so clients who were signed in before
- * this shipped stay signed in through the deploy.
+ * this shipped stay signed in through the deploy. It is declared in
+ * `src/clientSession.ts` because the marketing home now has to read it too:
+ * `/` renders this dashboard for a signed-in client.
  */
-const STORAGE_KEY = "bbloom:site-session";
+const STORAGE_KEY = CLIENT_SESSION_KEY;
 
 type StoredSession = {
   token: string;
@@ -78,6 +81,9 @@ function readSession(): StoredSession | null {
 
 function writeSession(session: StoredSession) {
   window.localStorage.setItem(STORAGE_KEY, JSON.stringify(session));
+  // `/` is the marketing home to a stranger and this dashboard to a client, so
+  // the page outside the provider has to hear about a sign-in on this tab.
+  announceClientSession();
 }
 
 /** Reads the persisted token without mounting the provider (used by the preview frame). */
@@ -240,6 +246,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signOut = useCallback(() => {
     window.localStorage.removeItem(STORAGE_KEY);
+    announceClientSession();
     setSession(null);
     setRestoring(false);
   }, []);

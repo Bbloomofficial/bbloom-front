@@ -4,12 +4,14 @@ import Logo from './Logo'
 import ThemeToggle from './ThemeToggle'
 import LanguageSwitcher from './LanguageSwitcher'
 import { useI18n } from '../i18n'
+import { useClientSession } from '../clientSession'
 
 export default function Navbar() {
   const [open, setOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const { pathname } = useLocation()
   const { t } = useI18n()
+  const signedIn = useClientSession()
 
   const links = [
     { to: '/services', label: t.nav.services },
@@ -58,32 +60,46 @@ export default function Navbar() {
         <div className="flex items-center gap-2">
           <LanguageSwitcher />
           <ThemeToggle />
-          {/* The panel is the product now, so signing in has to be reachable
-              from every marketing page, not only from a plan card. */}
-          <Link
-            to="/dashboard/login"
-            className="hidden rounded-full px-3 py-2 text-sm font-semibold whitespace-nowrap text-ink-600 transition hover:text-ink-900 xl:inline-flex"
-          >
-            {t.nav.signIn}
-          </Link>
-          {/* Sign-up next to sign-in, because someone who has already decided
-              should not have to go through the anonymous editor to find the
-              form.
+          {/* Signing in has to be reachable from every marketing page, not only
+              from a plan card — and to someone already signed in, the pair is
+              replaced by the one link that is true for them. `/` is their
+              dashboard now, so this is a link home rather than a link away. */}
+          {signedIn ? (
+            <Link
+              to="/"
+              className="btn btn-primary btn-sm hidden whitespace-nowrap xl:inline-flex"
+            >
+              {t.nav.dashboard}
+            </Link>
+          ) : (
+            <>
+              <Link
+                to="/login"
+                className="hidden rounded-full px-3 py-2 text-sm font-semibold whitespace-nowrap text-ink-600 transition hover:text-ink-900 xl:inline-flex"
+              >
+                {t.nav.signIn}
+              </Link>
+              {/* Sign-up next to sign-in, because someone who has already
+                  decided should not have to go through the anonymous editor to
+                  find the form.
 
-              It takes the CTA slot from `start` rather than joining it. The bar
-              cannot hold both: `container-page` is capped at max-w-6xl, so the
-              content width is 1152px on every screen -- a wider viewport buys
-              nothing -- and the four controls measured 1290px. `start` is the
-              one that goes because signing up and the anonymous editor both end
-              at a new website, whereas dropping either auth link would leave an
-              existing client with no way in. `/try` is still in the menu below,
-              and on the home page's own hero. */}
-          <Link
-            to="/dashboard/register"
-            className="btn btn-primary btn-sm hidden whitespace-nowrap xl:inline-flex"
-          >
-            {t.nav.register}
-          </Link>
+                  It takes the CTA slot from `start` rather than joining it. The
+                  bar cannot hold both: `container-page` is capped at max-w-6xl,
+                  so the content width is 1152px on every screen -- a wider
+                  viewport buys nothing -- and the four controls measured 1290px.
+                  `start` is the one that goes because signing up and the
+                  anonymous editor both end at a new website, whereas dropping
+                  either auth link would leave an existing client with no way in.
+                  `/try` is still in the menu below, and on the home page's own
+                  hero. */}
+              <Link
+                to="/register"
+                className="btn btn-primary btn-sm hidden whitespace-nowrap xl:inline-flex"
+              >
+                {t.nav.register}
+              </Link>
+            </>
+          )}
 
           <button
             type="button"
@@ -129,18 +145,29 @@ export default function Navbar() {
               {t.nav.start}
             </Link>
             <div className="mt-1 grid grid-cols-2 gap-2">
-              <Link
-                to="/dashboard/login"
-                className="rounded-xl border border-ink-100 bg-control px-4 py-3 text-center text-sm font-semibold text-ink-600 transition hover:border-bloom-300 hover:bg-tint hover:text-bloom-600 active:scale-95"
-              >
-                {t.nav.signIn}
-              </Link>
-              <Link
-                to="/dashboard/register"
-                className="rounded-xl border border-ink-100 bg-control px-4 py-3 text-center text-sm font-semibold text-ink-600 transition hover:border-bloom-300 hover:bg-tint hover:text-bloom-600 active:scale-95"
-              >
-                {t.nav.register}
-              </Link>
+              {signedIn ? (
+                <Link
+                  to="/"
+                  className="col-span-2 rounded-xl border border-ink-100 bg-control px-4 py-3 text-center text-sm font-semibold text-ink-600 transition hover:border-bloom-300 hover:bg-tint hover:text-bloom-600 active:scale-95"
+                >
+                  {t.nav.dashboard}
+                </Link>
+              ) : (
+                <>
+                  <Link
+                    to="/login"
+                    className="rounded-xl border border-ink-100 bg-control px-4 py-3 text-center text-sm font-semibold text-ink-600 transition hover:border-bloom-300 hover:bg-tint hover:text-bloom-600 active:scale-95"
+                  >
+                    {t.nav.signIn}
+                  </Link>
+                  <Link
+                    to="/register"
+                    className="rounded-xl border border-ink-100 bg-control px-4 py-3 text-center text-sm font-semibold text-ink-600 transition hover:border-bloom-300 hover:bg-tint hover:text-bloom-600 active:scale-95"
+                  >
+                    {t.nav.register}
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         </div>

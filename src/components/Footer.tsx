@@ -52,12 +52,12 @@ export default function Footer() {
               </Link>
             </li>
             <li>
-              <Link to="/dashboard/login" className="hover:text-tint-fg">
+              <Link to="/login" className="hover:text-tint-fg">
                 {t.nav.signIn}
               </Link>
             </li>
             <li>
-              <Link to="/dashboard/register" className="hover:text-tint-fg">
+              <Link to="/register" className="hover:text-tint-fg">
                 {t.nav.register}
               </Link>
             </li>

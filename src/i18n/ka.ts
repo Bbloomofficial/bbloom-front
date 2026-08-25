@@ -15,6 +15,7 @@ export const ka: Dict = {
     contact: 'კონტაქტი',
     cta: 'დაგვიკავშირდი',
     signIn: 'შესვლა',
+    dashboard: 'ჩემი ვებგვერდები',
     register: 'რეგისტრაცია',
     start: 'ვებგვერდის შექმნა',
     openMenu: 'მენიუს გახსნა',

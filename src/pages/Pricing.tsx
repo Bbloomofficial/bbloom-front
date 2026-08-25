@@ -43,7 +43,7 @@ export default function Pricing() {
                 }
                 action={
                   <Link
-                    to="/dashboard/register"
+                    to="/register"
                     className={`w-full ${plan.featured ? 'btn-primary' : 'btn-secondary'}`}
                   >
                     {/* The plan's own call to action is written for it; ours is

@@ -1,15 +1,24 @@
 /**
  * Where the two signed-in apps live, which is no longer a constant.
  *
- * The staff panel and the client dashboard each have their own hostname —
- * `admin.bbloom.ge` and `panel.bbloom.ge` — where they are served from the
- * root. On the marketing domain they stay on their old paths, `/admin` and
- * `/dashboard`, so existing links and bookmarks keep working.
+ * The staff panel has a hostname of its own — `admin.bbloom.ge` — where it is
+ * served from the root, and stays on `/admin` on the marketing domain so old
+ * links keep working.
  *
- * Every internal link is therefore built from these helpers rather than
- * written out, because the same `<Link>` has to render `/dashboard/s/1` on one
- * hostname and `/s/1` on another. Hard-coding either spelling would break the
- * other.
+ * The client dashboard is no longer a separate destination at all. It is served
+ * from the **root of the marketing domain**: `bbloom.ge/` is the pitch to a
+ * stranger and their websites to a signed-in client, and every screen under it
+ * — `/s/{id}`, `/account`, `/new` — sits directly at the root. `panel.bbloom.ge`
+ * redirects there path-for-path, and the in-app `panel` host below stays as the
+ * fallback for anyone who reaches the bundle on that hostname anyway, so links
+ * in mail we have already sent keep working.
+ *
+ * Every internal link is still built from these helpers rather than written out.
+ * The staff panel is the case that needs it — the same `<Link>` has to render
+ * `/admin/sites` on the marketing domain and `/sites` on `admin.bbloom.ge` — and
+ * the client dashboard keeps going through them so that moving it again is one
+ * edit here rather than a search across every screen, which is what made this
+ * move a one-line change.
  *
  * The host is read once. It cannot change without a page load, and reading it
  * per render would invite a link that disagrees with the route it was matched
@@ -63,7 +72,16 @@ const appHost = resolveAppHost();
 
 /** `""` when the app owns the whole hostname, otherwise its path prefix. */
 export const ADMIN_BASE = appHost === "admin" ? "" : "/admin";
-export const DASH_BASE = appHost === "panel" ? "" : "/dashboard";
+
+/**
+ * The client dashboard is at the root of every hostname that serves it — its
+ * own, and the marketing domain, where it has been merged into the home page.
+ *
+ * Kept as a constant rather than inlined so `dashPath()` stays the single place
+ * every dashboard link is built, which is what made moving it a one-line change
+ * here instead of an edit to fifty call sites.
+ */
+export const DASH_BASE = "";
 
 function join(base: string, path: string): string {
   if (!path || path === "/") return base || "/";
@@ -96,15 +114,18 @@ export function isAppHost(): boolean {
 
 /**
  * Absolute homes, for links that have to cross from one hostname to another —
- * the marketing site pointing at the dashboard, say. On the marketing domain
- * these stay relative so a preview deployment keeps working.
+ * the staff panel pointing at the client dashboard, say. On a hostname that is
+ * not under the base domain these stay relative so a preview deployment keeps
+ * working.
+ *
+ * Both now name the same URL, because the client dashboard *is* the marketing
+ * home: signed in, `/` renders the dashboard. They stay separate functions
+ * because they answer different questions, and a staff link labelled "the
+ * client's dashboard" should not silently start meaning something else if the
+ * marketing home ever moves.
  */
 export function dashboardHome(): string {
-  const base = baseDomain();
-  return typeof window !== "undefined" &&
-    window.location.hostname.toLowerCase().endsWith(base)
-    ? `https://panel.${base}`
-    : "/dashboard";
+  return marketingHome();
 }
 
 /**

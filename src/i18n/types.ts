@@ -37,6 +37,13 @@ export type Dict = {
     cta: string
     signIn: string
     /**
+     * Where a client who is already signed in goes: their own websites, which
+     * are now what `/` renders for them. Replaces sign-in and sign-up in the
+     * bar rather than joining them — offering "sign in" to someone who is
+     * signed in is the sort of thing that makes a site feel like two sites.
+     */
+    dashboard: string
+    /**
      * Sign-up, sitting beside sign-in rather than replacing `start`: `start`
      * opens the anonymous editor, which asks for an account only once there is
      * something to save. This is for someone who has already decided.

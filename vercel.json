@@ -16,13 +16,25 @@
     {
       "source": "/dashboard",
       "has": [{ "type": "host", "value": "(www\\.)?bbloom\\.ge" }],
-      "destination": "https://panel.bbloom.ge/",
+      "destination": "/",
       "permanent": false
     },
     {
       "source": "/dashboard/:path*",
       "has": [{ "type": "host", "value": "(www\\.)?bbloom\\.ge" }],
-      "destination": "https://panel.bbloom.ge/:path*",
+      "destination": "/:path*",
+      "permanent": false
+    },
+    {
+      "source": "/",
+      "has": [{ "type": "host", "value": "panel\\.bbloom\\.ge" }],
+      "destination": "https://bbloom.ge/",
+      "permanent": false
+    },
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "panel\\.bbloom\\.ge" }],
+      "destination": "https://bbloom.ge/:path*",
       "permanent": false
     }
   ],

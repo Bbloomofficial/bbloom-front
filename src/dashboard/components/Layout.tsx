@@ -421,12 +421,21 @@ export default function Layout({
             <span>
               {t.signedInAs} {user.email}
             </span>
-            <a
-              href={marketingHome()}
-              className="font-semibold hover:text-bloom-600"
-            >
-              {t.backToBbloom}
-            </a>
+            {/*
+              Only when bbloom.ge is somewhere else. On the marketing domain the
+              dashboard *is* the home page, so this would be a link to the page
+              it sits on, under a label promising to take you somewhere — and a
+              signed-in client following it would arrive back here, which reads
+              as the link being broken.
+            */}
+            {marketingHome() !== "/" && (
+              <a
+                href={marketingHome()}
+                className="font-semibold hover:text-bloom-600"
+              >
+                {t.backToBbloom}
+              </a>
+            )}
           </div>
         </footer>
       </div>
