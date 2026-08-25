@@ -38,7 +38,16 @@ export type SiteStrings = {
   thanksBody: string;
   errorGeneric: string;
   rateLimited: string;
+  /**
+   * The site is not accepting messages — `409 ENQUIRIES_DISABLED`.
+   *
+   * Says nothing about plans or billing on purpose. Whoever reads this is the
+   * *client's customer*: they cannot act on someone else's subscription status
+   * and are not owed it. The reason belongs in the editor, to the client.
+   */
+  enquiriesDisabled: string;
   requiredName: string;
+  requiredMessage: string;
   requiredContact: string;
   requiredReservation: string;
   invalidEmail: string;
@@ -112,7 +121,10 @@ const en: SiteStrings = {
   errorGeneric: "Something went wrong. Please try again.",
   rateLimited:
     "Too many messages from this device. Please try again a little later.",
+  enquiriesDisabled:
+    "This website is not accepting messages at the moment. Please use the contact details above.",
   requiredName: "Please tell us your name.",
+  requiredMessage: "Please write your message.",
   requiredContact: "Leave an email or a phone number so we can reply.",
   requiredReservation: "Please choose a date and a time.",
   invalidEmail: "That email address does not look right.",
@@ -185,7 +197,10 @@ const ka: SiteStrings = {
   errorGeneric: "დაფიქსირდა შეცდომა. სცადეთ თავიდან.",
   rateLimited:
     "ამ მოწყობილობიდან ბევრი შეტყობინება გაიგზავნა. სცადეთ ცოტა ხანში.",
+  enquiriesDisabled:
+    "ეს ვებგვერდი ამჟამად შეტყობინებებს არ იღებს. გთხოვთ, დაგვიკავშირდეთ ზემოთ მითითებული კონტაქტით.",
   requiredName: "გთხოვთ, მიუთითოთ სახელი.",
+  requiredMessage: "გთხოვთ, დაწეროთ შეტყობინება.",
   requiredContact: "დატოვეთ ელფოსტა ან ტელეფონი, რომ დაგიკავშირდეთ.",
   requiredReservation: "გთხოვთ, აირჩიოთ თარიღი და დრო.",
   invalidEmail: "ელფოსტა არასწორია.",

@@ -6,6 +6,7 @@ import {
   WhatsappButton,
 } from "../components/ContactPanel";
 import { Icon } from "../components/Icon";
+import { EnquiryForm } from "../components/EnquiryForm";
 import { MapEmbed } from "../components/MapEmbed";
 import { useSite } from "../context";
 import { bool, itemStr, list, str } from "../utils/content";
@@ -55,15 +56,19 @@ function ContactDetails({ section }: { section: PublicSection }) {
 /**
  * All four contact variants share one body; the variant decides the layout.
  *
- * There is no message form: a form promises a reply from a mailbox this site
- * does not have. Visitors get the channels the client actually answers on, plus
- * a map.
+ * The message form is drawn only when the client has switched it on and their
+ * plan allows it — `features.enquiryForm`, resolved per site by the server. It
+ * used to be absent by policy, on the grounds that a form promises a reply from
+ * a mailbox this site does not have. That reasoning expired: messages now land
+ * in the client's dashboard inbox, which they read. Where the form is off,
+ * visitors still get the channels the client actually answers on, plus a map.
  */
 export function Contact({ section }: { section: PublicSection }) {
-  const { meta, t } = useSite();
+  const { meta, features, t } = useSite();
   const variant = section.variant ?? "simple";
   const hasSocial = Object.values(meta.social ?? {}).some(Boolean);
   const showMap = Boolean(meta.contact?.mapUrl || meta.contact?.address);
+  const showForm = features.enquiryForm === true;
   const glass = variant === "split-glass-form";
 
   const aside = (
@@ -72,6 +77,14 @@ export function Contact({ section }: { section: PublicSection }) {
         glass ? "site-glass rounded-site-lg" : "site-card"
       } flex flex-col gap-6 p-6 sm:p-8`}
     >
+      {showForm ? (
+        <div>
+          <h3 className="site-heading site-h4 mb-4 text-site-text">
+            {t.getInTouch}
+          </h3>
+          <EnquiryForm />
+        </div>
+      ) : null}
       {hasSocial ? (
         <div>
           <p className="mb-3 text-xs tracking-wide text-site-muted uppercase">
@@ -83,7 +96,7 @@ export function Contact({ section }: { section: PublicSection }) {
       {showMap ? <MapEmbed /> : null}
     </div>
   );
-  const hasAside = hasSocial || showMap;
+  const hasAside = hasSocial || showMap || showForm;
 
   const heading = (
     <SectionHeading

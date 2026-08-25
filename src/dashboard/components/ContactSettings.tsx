@@ -19,8 +19,9 @@ const inputClass =
 /**
  * Phone, email, address, map and social links belong to the site rather than to
  * any section, so the page editor never offered them. Without this the client
- * cannot change the phone number their visitors are told to call — and with the
- * message forms gone, those channels are the only way to reach them.
+ * cannot change the phone number their visitors are told to call — and these
+ * channels are the only ones every visitor gets, since the message form next
+ * door is off by default and stops when a plan does.
  */
 export function ContactSettings({
   site,

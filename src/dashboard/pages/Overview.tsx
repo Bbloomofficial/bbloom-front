@@ -16,6 +16,7 @@ import { useResource } from "../hooks";
 import { dashboardStrings, formatDate, formatDateTime } from "../strings";
 import { SiteStatusBadge, StatusBadge, TypeBadge } from "../components/Badges";
 import { ContactSettings } from "../components/ContactSettings";
+import { EnquiryFormSettings } from "../components/EnquiryFormSettings";
 import { useActiveSite, useIsOwner } from "../site";
 import {
   canPublish,
@@ -273,6 +274,14 @@ export default function Overview() {
 
       {detail ? (
         <ContactSettings site={detail} onSaved={() => reloadSite()} />
+      ) : null}
+
+      {detail ? (
+        <EnquiryFormSettings
+          site={detail}
+          account={active}
+          onSaved={() => reloadSite()}
+        />
       ) : null}
 
       <section>

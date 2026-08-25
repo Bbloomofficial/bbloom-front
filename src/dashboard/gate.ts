@@ -13,14 +13,20 @@ import type { AccountSite, SiteSubscriptionSummary } from "./api/types";
  * is an anti-abuse check rather than a commercial one.
  *
  * Money now buys three things instead: our badge comes off the page, a custom
- * domain resolves, and enquiries are emailed out rather than only appearing in
- * the dashboard. Those are gated on `allowsPaidFeatures`.
+ * domain resolves, and visitors can write to the client through a message form
+ * on the website. Those are gated on `allowsPaidFeatures`.
  *
  * The distinction matters for what we say to a client whose subscription
  * lapses. Nothing goes dark. Their website is still up, still theirs, still
- * taking enquiries — the badge is back and their own domain has gone quiet.
+ * showing their phone number and address — the badge is back, their own domain
+ * has gone quiet, and the message form has stopped taking messages.
  * "Your website is offline" is no longer a state that exists, and telling
  * someone it is would send them into a panic about a shop that is serving fine.
+ *
+ * The message form is the only one of the three that the client also has to
+ * switch on, so it has two independent reasons to be absent and they must not
+ * be conflated: `features.enquiryForm` is their choice, `effectiveFeatures
+ * .enquiryForm` is that choice with the plan applied.
  */
 
 /**

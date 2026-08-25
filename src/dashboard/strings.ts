@@ -297,6 +297,20 @@ export type DashboardStrings = {
     saved: string;
     error: string;
   };
+  enquiryForm: {
+    title: string;
+    subtitle: string;
+    toggle: string;
+    on: string;
+    off: string;
+    /** Chosen on, but the plan is not letting it run. */
+    pausedTitle: string;
+    pausedBody: string;
+    inboxHint: string;
+    needsPlan: string;
+    lapsed: string;
+    error: string;
+  };
   inbox: {
     title: string;
     subtitle: string;
@@ -674,6 +688,22 @@ const en: DashboardStrings = {
     social: "Social links",
     save: "Save",
     saved: "Saved",
+    error: "Could not save. Please try again.",
+  },
+  enquiryForm: {
+    title: "Message form",
+    subtitle:
+      "Lets visitors write to you from your website. Messages arrive in your inbox here — nothing is sent on by email.",
+    toggle: "Show a message form on my website",
+    on: "On",
+    off: "Off",
+    pausedTitle: "Your form is switched on, but not running",
+    pausedBody:
+      "Your plan does not currently include the message form, so visitors cannot write to you from the website. Your setting is kept — the form comes back as soon as the plan is active. Your contact details are still shown.",
+    inboxHint: "Read messages in Messages.",
+    needsPlan: "The message form needs a paid plan.",
+    lapsed:
+      "Your plan has stopped, so the message form cannot be switched on right now.",
     error: "Could not save. Please try again.",
   },
   inbox: {
@@ -1059,6 +1089,22 @@ const ka: DashboardStrings = {
     social: "სოციალური ბმულები",
     save: "შენახვა",
     saved: "შენახულია",
+    error: "ვერ შეინახა. სცადეთ თავიდან.",
+  },
+  enquiryForm: {
+    title: "შეტყობინების ფორმა",
+    subtitle:
+      "ვიზიტორები პირდაპირ ვებგვერდიდან მოგწერენ. შეტყობინებები აქვე, თქვენს ფოსტაში მოვა — ელფოსტაზე არ იგზავნება.",
+    toggle: "ვებგვერდზე შეტყობინების ფორმა გამოჩნდეს",
+    on: "ჩართული",
+    off: "გამორთული",
+    pausedTitle: "ფორმა ჩართულია, მაგრამ არ მუშაობს",
+    pausedBody:
+      "თქვენს პაკეტში შეტყობინების ფორმა ამჟამად არ შედის, ამიტომ ვიზიტორები ვებგვერდიდან ვერ მოგწერენ. თქვენი არჩევანი შენახულია — პაკეტის გააქტიურებისთანავე ფორმა დაბრუნდება. საკონტაქტო ინფორმაცია კვლავ ჩანს.",
+    inboxHint: "შეტყობინებები იხილეთ განყოფილებაში „შეტყობინებები“.",
+    needsPlan: "შეტყობინების ფორმა ფასიან პაკეტს საჭიროებს.",
+    lapsed:
+      "თქვენი პაკეტი შეწყვეტილია, ამიტომ შეტყობინების ფორმის ჩართვა ამჟამად ვერ ხერხდება.",
     error: "ვერ შეინახა. სცადეთ თავიდან.",
   },
   inbox: {

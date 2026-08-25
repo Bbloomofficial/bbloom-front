@@ -280,6 +280,16 @@ export type SiteDomain = {
   verified: boolean;
 };
 
+/**
+ * Capability flags. Only the ones this app branches on are named; the server
+ * sends more and a partial patch leaves the rest alone.
+ */
+export type SiteFeatureFlags = {
+  enquiryForm?: boolean;
+  reservations?: boolean;
+  newsletter?: boolean;
+} & Record<string, boolean | undefined>;
+
 export type SiteDetail = {
   id: string;
   slug: string;
@@ -304,6 +314,20 @@ export type SiteDetail = {
   primaryUrl?: string;
   productCount?: number;
   hasUnpublishedChanges?: boolean;
+  /**
+   * What the client *chose*. `null`/absent means they have never chosen, so the
+   * template's own default stands.
+   *
+   * Deliberately separate from `effectiveFeatures`, which is what is actually on
+   * once the plan is applied. The two disagree exactly when a client switched
+   * something on and then stopped paying — and in that case the editor must keep
+   * showing their choice. Driving the toggle from `effectiveFeatures` would flip
+   * it off under them and read as "my setting was thrown away"; it was not, and
+   * it comes back when they pay.
+   */
+  features?: SiteFeatureFlags | null;
+  /** What is on right now, plan applied. Everything a visitor sees follows this. */
+  effectiveFeatures?: SiteFeatureFlags;
   publishedAt?: string;
   createdAt?: string;
   updatedAt?: string;

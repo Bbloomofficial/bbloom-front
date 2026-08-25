@@ -73,7 +73,16 @@ export type SiteTheme = {
   effects?: SiteEffects;
 };
 
-/** Template-level capability flags, straight from the blueprint. */
+/**
+ * Capability flags for this site.
+ *
+ * No longer straight from the template blueprint: the server now resolves them
+ * per site, so this is the client's choice with their plan applied on top. Same
+ * key, same shape, different provenance — a flag that is `false` here may be one
+ * the client switched on and has stopped paying for. Nothing on the public site
+ * needs that distinction (a visitor sees what is on), but the editor does, which
+ * is why `SiteDetail` carries both halves separately.
+ */
 export type SiteFeatures = {
   categories?: boolean;
   products?: boolean;

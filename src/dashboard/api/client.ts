@@ -7,6 +7,7 @@ import type {
   Page,
   SectionDto,
   SiteDetail,
+  SiteFeatureFlags,
   SiteLoginResponse,
   SiteUserProfile,
 } from "./types";
@@ -67,6 +68,13 @@ export type SiteSettingsPatch = {
   contactAddressEn?: string | null;
   mapUrl?: string | null;
   social?: Record<string, string>;
+  /**
+   * Patch-merged by the server, so send only the flags being changed. Sending
+   * the whole object back would re-assert flags this build does not know about
+   * — a newer flag added on the backend would be silently overwritten with a
+   * stale value read from a page loaded before it existed.
+   */
+  features?: SiteFeatureFlags;
 };
 
 export function updateSiteSettings(
