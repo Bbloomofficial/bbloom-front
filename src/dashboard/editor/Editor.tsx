@@ -155,6 +155,20 @@ export default function Editor() {
   }, [site.data]);
 
   const selected = sections.find((section) => section.key === selectedKey);
+  const selectedIndex = sections.findIndex(
+    (section) => section.key === selectedKey,
+  );
+
+  /*
+    Preview mode hands the whole window to the page.
+
+    Asked for directly: "when clicking preview hide the editor side panel on
+    that page". It is also what the mode already means — review mode strips the
+    hotspots so the preview behaves exactly as a visitor's browser would, and
+    leaving a column of inputs beside it contradicts that. The toggle lives in
+    the preview's own toolbar, so the way back is on screen the whole time.
+  */
+  const panelOpen = mode === "edit";
 
   // Swapping sections drops any half-typed edit, so the panel always shows what
   // the server holds for the section on screen.
@@ -387,12 +401,26 @@ export default function Editor() {
     );
   }
 
+  /*
+    A workspace, not a document: one panel of fields and a preview that gets
+    every pixel left over.
+
+    It used to be three columns — a 16rem section list, a 22rem field form and
+    the preview in whatever remained. Measured on a 1031px window that left the
+    preview *56px* wide and the iframe inside it *28px*, so the page being
+    edited was a sliver. The section list is now a chooser at the top of the
+    panel, which buys the preview a whole column back.
+
+    Read `lg:h-full` together with `Layout`: on the editor route the shell is a
+    fixed-height flex column, so `flex-1` here is a real remainder rather than
+    an unbounded one. Below `lg` it stays a normal scrolling page.
+  */
   return (
-    <div className="space-y-5">
-      <header className="sticky top-16 z-30 -mx-4 flex flex-wrap items-end gap-3 border-b border-ink-100 bg-canvas/95 px-4 py-3 backdrop-blur sm:-mx-6 sm:px-6">
+    <div className="flex min-h-0 flex-1 flex-col">
+      <header className="flex flex-wrap items-center gap-3 border-b border-ink-100 bg-canvas px-4 py-3">
         <div className="min-w-0">
-          <h1 className="text-2xl font-extrabold text-ink-900">{t.title}</h1>
-          <p className="text-sm text-ink-400">{t.subtitle}</p>
+          <h1 className="text-lg font-extrabold text-ink-900">{t.title}</h1>
+          <p className="text-xs text-ink-400">{t.subtitle}</p>
         </div>
 
         <div className="ms-auto flex flex-wrap items-center gap-2">
@@ -425,186 +453,171 @@ export default function Editor() {
       </header>
 
       {error ? (
-        <p className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700 dark:bg-red-950/40 dark:text-red-200">
+        <p className="border-b border-red-100 bg-red-50 px-4 py-3 text-sm text-red-700 dark:bg-red-950/40 dark:text-red-200">
           {error}
         </p>
       ) : null}
 
-      <div className="grid gap-4 lg:grid-cols-[16rem_22rem_1fr]">
-        <aside className="rounded-2xl border border-ink-100 bg-surface p-2">
-          <h2 className="px-2 py-1.5 text-xs font-bold uppercase tracking-wide text-ink-400">
-            {t.sections}
-          </h2>
-          <ul className="max-h-[18rem] space-y-0.5 overflow-y-auto sm:max-h-[32rem] lg:max-h-[60vh]">
-            {sections.map((section, index) => {
-              const active = section.key === selectedKey;
-              return (
-                <li key={section.key} className="flex items-center gap-1">
+      <div
+        className={`grid min-h-0 flex-1 ${
+          panelOpen ? "lg:grid-cols-[24rem_1fr]" : "lg:grid-cols-1"
+        }`}
+      >
+        {panelOpen ? (
+          <aside className="flex min-h-0 flex-col border-b border-ink-100 bg-surface lg:border-b-0 lg:border-e">
+            {/* The section list was a column of its own. As a chooser it costs
+                one row instead, and the reorder arrows act on whichever
+                section is chosen — the same two operations, without spending a
+                quarter of the window on a list of fourteen names. */}
+            <div className="flex items-center gap-1 border-b border-ink-100 p-3">
+              <select
+                value={selectedKey ?? ""}
+                onChange={(event) => setSelectedKey(event.target.value)}
+                aria-label={t.sections}
+                className="min-w-0 flex-1 rounded-xl border border-ink-100 bg-surface px-3 py-2 text-sm font-semibold text-ink-900 transition hover:border-bloom-300"
+              >
+                {sections.map((section) => (
+                  <option key={section.key} value={section.key}>
+                    {sectionLabel(section, uiLang)}
+                    {section.hasDraft ? ` · ${t.edited}` : ""}
+                    {!section.visible ? ` · ${t.hidden}` : ""}
+                  </option>
+                ))}
+              </select>
+              <button
+                type="button"
+                onClick={() => void move(selectedIndex, -1)}
+                disabled={selectedIndex <= 0 || busy}
+                aria-label={t.moveUp}
+                title={t.moveUp}
+                className="icon-button h-10 w-10 shrink-0"
+              >
+                ▲
+              </button>
+              <button
+                type="button"
+                onClick={() => void move(selectedIndex, 1)}
+                disabled={
+                  selectedIndex < 0 ||
+                  selectedIndex === sections.length - 1 ||
+                  busy
+                }
+                aria-label={t.moveDown}
+                title={t.moveDown}
+                className="icon-button h-10 w-10 shrink-0"
+              >
+                ▼
+              </button>
+            </div>
+
+            {!selected ? (
+              <p className="p-4 text-sm text-ink-400">{t.selectSection}</p>
+            ) : (
+              <>
+                <div className="flex flex-wrap items-center gap-2 px-4 pt-4">
+                  <h2 className="text-base font-bold text-ink-900">
+                    {sectionLabel(selected, uiLang)}
+                  </h2>
                   <button
                     type="button"
-                    onClick={() => setSelectedKey(section.key)}
-                    className={`min-w-0 flex-1 rounded-xl px-2.5 py-2 text-start text-sm font-semibold transition ${
-                      active
-                        ? "bg-tint text-tint-fg"
-                        : "text-ink-600 hover:bg-ink-50"
-                    }`}
+                    onClick={() => void toggleVisible(selected)}
+                    disabled={busy}
+                    className="ms-auto rounded-lg border border-ink-100 px-2.5 py-1 text-xs font-semibold text-ink-500 transition hover:border-bloom-300 hover:text-bloom-600 disabled:opacity-40"
                   >
-                    <span className="block truncate">
-                      {sectionLabel(section, uiLang)}
-                    </span>
-                    <span className="mt-0.5 flex flex-wrap gap-1">
-                      {section.hasDraft ? (
-                        <span className="rounded bg-amber-100 px-1.5 text-[10px] font-bold text-amber-700">
-                          {t.edited}
-                        </span>
-                      ) : null}
-                      {!section.visible ? (
-                        <span className="rounded bg-ink-100 px-1.5 text-[10px] font-bold text-ink-500">
-                          {t.hidden}
-                        </span>
-                      ) : null}
-                    </span>
+                    {selected.visible ? t.hide : t.show}
                   </button>
-                  {/* Side by side with a real gap on touch: stacked, these were
-                      18x16 with no space between them, so "move up" and "move
-                      down" were one tap target wide and a mis-tap silently
-                      reordered the page. Density is only reinstated at lg,
-                      where the pointer is a mouse. */}
-                  <span className="flex gap-2 lg:flex-col lg:gap-0">
-                    <button
-                      type="button"
-                      onClick={() => void move(index, -1)}
-                      disabled={index === 0 || busy}
-                      aria-label={t.moveUp}
-                      title={t.moveUp}
-                      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-xs text-ink-300 transition hover:text-bloom-600 disabled:opacity-25 lg:h-auto lg:w-auto lg:rounded-none lg:px-1"
-                    >
-                      ▲
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => void move(index, 1)}
-                      disabled={index === sections.length - 1 || busy}
-                      aria-label={t.moveDown}
-                      title={t.moveDown}
-                      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-xs text-ink-300 transition hover:text-bloom-600 disabled:opacity-25 lg:h-auto lg:w-auto lg:rounded-none lg:px-1"
-                    >
-                      ▼
-                    </button>
-                  </span>
-                </li>
-              );
-            })}
-          </ul>
-        </aside>
+                </div>
 
-        <section className="rounded-2xl border border-ink-100 bg-surface p-4">
-          {!selected ? (
-            <p className="text-sm text-ink-400">{t.selectSection}</p>
-          ) : (
-            <>
-              <div className="mb-4 flex flex-wrap items-center gap-2">
-                <h2 className="text-base font-bold text-ink-900">
-                  {sectionLabel(selected, uiLang)}
-                </h2>
-                <button
-                  type="button"
-                  onClick={() => void toggleVisible(selected)}
-                  disabled={busy}
-                  className="ms-auto rounded-lg border border-ink-100 px-2.5 py-1 text-xs font-semibold text-ink-500 transition hover:border-bloom-300 hover:text-bloom-600 disabled:opacity-40"
+                {languages.length > 1 ? (
+                  <div className="flex items-center gap-2 px-4 pt-3">
+                    <span className="text-xs font-semibold text-ink-400">
+                      {t.contentLanguage}
+                    </span>
+                    <Toggle
+                      value={activeLang}
+                      onChange={setEditLang}
+                      options={languages.map((language) => ({
+                        value: language,
+                        label: language.toUpperCase(),
+                      }))}
+                    />
+                  </div>
+                ) : null}
+
+                {/* The panel is the only thing that scrolls on a desktop, which
+                    is what lets the preview stay put while you work down a long
+                    section.
+
+                    Not capped on a phone: a vh-height inner scroller inside a
+                    page that already scrolls fights the native gesture, and it
+                    is the same shape as the try-editor bug. If this ever looks
+                    cramped on a phone, do not reach for dvh or svh: they
+                    resolve smaller than vh, so on a pane sized as a remainder
+                    they make the symptom worse. The long version of that
+                    argument is in TryEditor.tsx. */}
+                <div
+                  ref={fieldsPaneRef}
+                  className="p-4 lg:min-h-0 lg:flex-1 lg:overflow-y-auto"
+                  onFocusCapture={(event) => {
+                    const wrapper = (event.target as HTMLElement).closest(
+                      "[data-field-path]",
+                    );
+                    const path = wrapper?.getAttribute("data-field-path");
+                    setActivePath(path ? `${selected.key}::${path}` : null);
+                  }}
+                  onBlurCapture={(event) => {
+                    // Only clear when focus leaves the field list altogether,
+                    // so tabbing between inputs does not flicker the highlight.
+                    const next = event.relatedTarget as Node | null;
+                    if (!next || !event.currentTarget.contains(next)) {
+                      setActivePath(null);
+                    }
+                  }}
                 >
-                  {selected.visible ? t.hide : t.show}
-                </button>
-              </div>
-
-              {languages.length > 1 ? (
-                <div className="mb-4 flex items-center gap-2">
-                  <span className="text-xs font-semibold text-ink-400">
-                    {t.contentLanguage}
-                  </span>
-                  <Toggle
-                    value={activeLang}
-                    onChange={setEditLang}
-                    options={languages.map((language) => ({
-                      value: language,
-                      label: language.toUpperCase(),
-                    }))}
+                  <FieldList
+                    fields={selected.fields ?? []}
+                    content={draftContent}
+                    onChange={(next) => {
+                      setDraftContent(next);
+                      setDirty(true);
+                    }}
+                    ctx={ctx}
                   />
                 </div>
-              ) : null}
 
-              {/* Not capped on a phone: a vh-height inner scroller inside a page
-                  that already scrolls fights the native gesture, and it is the
-                  same shape as the try-editor bug. It also has to go for the
-                  sticky save bar below to engage — a short section never
-                  scrolls, so the bar would never travel with you.
+                {/* Sticky to the bottom of the screen while you are inside the
+                    field list. It used to sit in flow at the end of it, which
+                    put the primary action of the screen ~900px below the fold
+                    on a phone: you could not tell a saved page from an unsaved
+                    one without scrolling to find out. At lg it is the panel's
+                    own footer, so it is on screen whatever the section. */}
+                <div className="sticky bottom-0 z-20 flex flex-wrap items-center gap-2 border-t border-ink-100 bg-surface px-4 pb-4 pt-3 lg:static">
+                  <button
+                    type="button"
+                    onClick={() => void save()}
+                    disabled={!dirty || saving}
+                    className="inline-flex min-h-11 items-center rounded-xl bg-bloom-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-bloom-700 active:scale-95 disabled:opacity-40 lg:min-h-0"
+                  >
+                    {saving ? t.saving : t.save}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={reset}
+                    disabled={busy}
+                    className="inline-flex min-h-11 items-center rounded-xl border border-ink-100 px-3 py-2 text-xs font-semibold text-ink-500 transition hover:border-bloom-300 hover:bg-tint hover:text-bloom-600 active:scale-95 disabled:opacity-40 lg:min-h-0"
+                  >
+                    {t.reset}
+                  </button>
+                  <span className="text-xs text-ink-400">
+                    {dirty ? t.unsaved : savedAt ? t.saved : ""}
+                  </span>
+                </div>
+              </>
+            )}
+          </aside>
+        ) : null}
 
-                  If this pane ever looks cramped on a phone again, do not
-                  reach for dvh or svh: they resolve smaller than vh, so on a
-                  pane sized as a remainder they make the symptom worse. The
-                  long version of that argument is in TryEditor.tsx. */}
-              <div
-                ref={fieldsPaneRef}
-                className="pe-1 lg:max-h-[60vh] lg:overflow-y-auto"
-                onFocusCapture={(event) => {
-                  const wrapper = (event.target as HTMLElement).closest(
-                    "[data-field-path]",
-                  );
-                  const path = wrapper?.getAttribute("data-field-path");
-                  setActivePath(path ? `${selected.key}::${path}` : null);
-                }}
-                onBlurCapture={(event) => {
-                  // Only clear when focus leaves the field list altogether, so
-                  // tabbing between inputs does not flicker the highlight.
-                  const next = event.relatedTarget as Node | null;
-                  if (!next || !event.currentTarget.contains(next)) {
-                    setActivePath(null);
-                  }
-                }}
-              >
-                <FieldList
-                  fields={selected.fields ?? []}
-                  content={draftContent}
-                  onChange={(next) => {
-                    setDraftContent(next);
-                    setDirty(true);
-                  }}
-                  ctx={ctx}
-                />
-              </div>
-
-              {/* Sticky to the bottom of the screen while you are inside the
-                  field list. It used to sit in flow at the end of it, which put
-                  the primary action of the screen ~900px below the fold on a
-                  phone: you could not tell a saved page from an unsaved one
-                  without scrolling to find out. Static again at lg, where the
-                  whole column already fits. */}
-              <div className="sticky bottom-0 z-20 -mx-4 -mb-4 mt-4 flex flex-wrap items-center gap-2 border-t border-ink-100 bg-surface px-4 pb-4 pt-3 lg:static lg:mx-0 lg:mb-0 lg:px-0 lg:pb-0">
-                <button
-                  type="button"
-                  onClick={() => void save()}
-                  disabled={!dirty || saving}
-                  className="inline-flex min-h-11 items-center rounded-xl bg-bloom-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-bloom-700 disabled:opacity-40 lg:min-h-0"
-                >
-                  {saving ? t.saving : t.save}
-                </button>
-                <button
-                  type="button"
-                  onClick={reset}
-                  disabled={busy}
-                  className="inline-flex min-h-11 items-center rounded-xl border border-ink-100 px-3 py-2 text-xs font-semibold text-ink-500 transition hover:border-bloom-300 hover:bg-tint hover:text-bloom-600 active:scale-95 disabled:opacity-40 lg:min-h-0"
-                >
-                  {t.reset}
-                </button>
-                <span className="text-xs text-ink-400">
-                  {dirty ? t.unsaved : savedAt ? t.saved : ""}
-                </span>
-              </div>
-            </>
-          )}
-        </section>
-
-        <section className="flex min-h-[42rem] flex-col overflow-hidden rounded-2xl border border-ink-100 bg-surface lg:h-[calc(100vh-11rem)]">
+        <section className="flex min-h-[32rem] min-w-0 flex-col overflow-hidden bg-surface lg:min-h-0">
           <div className="flex flex-wrap items-center gap-2 border-b border-ink-100 px-3 py-2">
             <h2 className="text-xs font-bold uppercase tracking-wide text-ink-400">
               {t.preview}

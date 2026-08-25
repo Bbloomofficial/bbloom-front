@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink, useLocation, useMatch } from "react-router-dom";
 import LanguageSwitcher from "../../components/LanguageSwitcher";
 import ThemeToggle from "../../components/ThemeToggle";
 import { useI18n } from "../../i18n";
@@ -222,6 +222,19 @@ export default function Layout({
   const location = useLocation();
   const active = site ?? null;
   const [drawer, setDrawer] = useState(false);
+  /*
+    The page editor is a workspace rather than a document, so on that one route
+    the shell stops being a scrolling page and becomes a fixed-height frame:
+    the editor's preview can then take every pixel the panel does not.
+
+    `useMatch` rather than a regex on the path, so this is tied to the route as
+    declared in `DashboardApp` and moves with it.
+
+    Only from `lg`. On a phone there is no room to split, and a fixed-height
+    frame there would trap the field list in an inner scroller fighting the
+    native gesture.
+  */
+  const editorRoute = useMatch(dashPath("/s/:siteId/page"));
   // Read the account's own list rather than `site`, which is absent on every
   // account-level screen and would make a client with five websites look like a
   // client with none.
@@ -292,7 +305,11 @@ export default function Layout({
   );
 
   return (
-    <div className="min-h-screen bg-canvas lg:flex">
+    <div
+      className={`min-h-screen bg-canvas lg:flex ${
+        editorRoute ? "lg:h-screen lg:overflow-hidden" : ""
+      }`}
+    >
       {/* The sidebar scrolls on its own so a long website list cannot push the
           navigation off the bottom of a short window. */}
       <aside className="sticky top-0 z-40 hidden h-screen w-64 shrink-0 border-e border-ink-100 bg-surface lg:block">
@@ -341,10 +358,16 @@ export default function Layout({
         </div>
       )}
 
-      <div className="flex min-w-0 flex-1 flex-col">
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col">
         {active && <SiteTabs site={active} />}
 
-        <main className="container-page flex-1 space-y-6 py-8 sm:py-10">
+        <main
+          className={
+            editorRoute
+              ? "flex min-h-0 flex-1 flex-col"
+              : "container-page flex-1 space-y-6 py-8 sm:py-10"
+          }
+        >
           {/*
             The banner goes first once there is a website, because from that point
             on it explains a live restriction: the publish button is refusing, and
@@ -363,25 +386,36 @@ export default function Layout({
             So the order follows the gate rather than the severity: after the
             content while it gates nothing, before it the moment it gates
             something.
+
+            The editor is the exception, and for the same measurement: it is a
+            fixed-height frame, so a 428px form at the top of it would leave the
+            preview a couple of hundred pixels and recreate the squeeze this
+            layout exists to fix. Nothing is lost — the editor's publish button
+            refuses with the very same sentence, and the banner is still on the
+            overview one click away.
           */}
-          {hasSite && <VerifyBanner />}
+          {hasSite && !editorRoute && <VerifyBanner />}
           {children}
           {!hasSite && <VerifyBanner />}
         </main>
 
-        <footer className="border-t border-ink-100 py-6">
-          <div className="container-page flex flex-wrap items-center justify-between gap-3 text-xs text-ink-400">
-            <span>
-              {t.signedInAs} {user.email}
-            </span>
-            <a
-              href={marketingHome()}
-              className="font-semibold hover:text-bloom-600"
-            >
-              {t.backToBbloom}
-            </a>
-          </div>
-        </footer>
+        {/* The editor owns the full height, so the footer would only eat into
+            the preview. It is on every other route. */}
+        {!editorRoute && (
+          <footer className="border-t border-ink-100 py-6">
+            <div className="container-page flex flex-wrap items-center justify-between gap-3 text-xs text-ink-400">
+              <span>
+                {t.signedInAs} {user.email}
+              </span>
+              <a
+                href={marketingHome()}
+                className="font-semibold hover:text-bloom-600"
+              >
+                {t.backToBbloom}
+              </a>
+            </div>
+          </footer>
+        )}
       </div>
     </div>
   );
