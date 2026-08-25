@@ -445,7 +445,7 @@ const en: AdminStrings = {
     mapUrl: "Map link",
     notifications: "Enquiry notifications",
     notificationsHint:
-      "Who is emailed when an enquiry or reservation arrives. The email is written in the site's own language, so the owner always reads it in the same one, and replying answers the customer directly.",
+      "Who would be emailed when an enquiry or reservation arrives. Sending is switched off across the whole server right now, so nothing is actually sent and this is only the address it would go to. The email is written in the site's own language, so the owner always reads it in the same one, and replying answers the customer directly.",
     notificationEmail: "Notification email",
     notificationFallback: (email) => `Empty, so enquiries go to ${email}.`,
     notificationNobody:
@@ -801,7 +801,7 @@ const ka: AdminStrings = {
     mapUrl: "რუკის ბმული",
     notifications: "შეტყობინებები მოთხოვნებზე",
     notificationsHint:
-      "ვის ეგზავნება წერილი, როცა შემოვა მოთხოვნა ან ჯავშანი. წერილი იწერება საიტის ენაზე, ამიტომ მფლობელი ყოველთვის ერთსა და იმავე ენაზე კითხულობს, პასუხი კი პირდაპირ მომხმარებელს მიდის.",
+      "ვის გაეგზავნებოდა წერილი, როცა შემოვა მოთხოვნა ან ჯავშანი. გაგზავნა ამჟამად სერვერზე მთლიანად გამორთულია, ანუ წერილი რეალურად არ იგზავნება და ეს მხოლოდ მისამართია, სადაც წავიდოდა. წერილი იწერება საიტის ენაზე, ამიტომ მფლობელი ყოველთვის ერთსა და იმავე ენაზე კითხულობს, პასუხი კი პირდაპირ მომხმარებელს მიდის.",
     notificationEmail: "შეტყობინების ელფოსტა",
     notificationFallback: (email) =>
       `ცარიელია, ამიტომ მოთხოვნები მიდის მისამართზე ${email}.`,

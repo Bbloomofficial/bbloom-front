@@ -33,8 +33,13 @@ export type SubscriptionStatus =
  * would pass silently forever.
  *
  * `allowsPaidFeatures` is the real one: our badge coming off the page, a custom
- * domain resolving, enquiries being emailed out. Read it for every upgrade
- * prompt and every paid affordance.
+ * domain resolving, visitors being able to write to the client through a
+ * message form on the website. Read it for every upgrade prompt and every paid
+ * affordance.
+ *
+ * Not "enquiries being emailed out", which is what this used to say. Nobody's
+ * enquiries are emailed, paid or free — the notification sender is switched off
+ * globally. The paid extra is *collecting* the message, not delivering it.
  *
  * Never infer either from the status name. `TRIALING` hosts happily now.
  */

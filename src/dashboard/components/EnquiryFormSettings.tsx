@@ -1,9 +1,12 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { useI18n } from "../../i18n";
+import { dashPath } from "../../routes";
 import { useSession } from "../auth";
 import { updateSiteSettings } from "../api/client";
 import type { AccountSite, SiteDetail } from "../api/types";
 import { dashboardStrings } from "../strings";
+import { useIsOwner } from "../site";
 import { paidErrorMessage } from "../gate";
 
 /**
@@ -119,12 +122,41 @@ export function EnquiryFormSettings({
         <div className="mt-4 rounded-2xl border border-amber-200 bg-amber-50 p-4">
           <p className="text-sm font-bold text-amber-900">{t.pausedTitle}</p>
           <p className="mt-1 text-sm text-amber-800">{t.pausedBody}</p>
+          <PlansLink siteId={site.id} label={t.seePlans} />
         </div>
       ) : null}
 
       {error ? (
-        <p className="mt-3 text-sm font-semibold text-rose-600">{error}</p>
+        <div className="mt-3">
+          <p className="text-sm font-semibold text-rose-600">{error}</p>
+          <PlansLink siteId={site.id} label={t.seePlans} />
+        </div>
       ) : null}
     </section>
+  );
+}
+
+/**
+ * Where to go about it.
+ *
+ * Worth its own element because the refusal used to be the end of the road: the
+ * paid plans were believed to be unbuyable, so the sentence had nowhere to
+ * point. They are purchasable from this panel, so leaving a client holding
+ * "needs a paid plan" with no route out would be us withholding the one action
+ * the message is asking them to take.
+ */
+function PlansLink({ siteId, label }: { siteId: string; label: string }) {
+  const isOwner = useIsOwner();
+  // Billing is owner-only, and sending an editor to a screen that will tell
+  // them so is worse than not offering the link: it reads as a permission
+  // problem with the form rather than with the plan.
+  if (!isOwner) return null;
+  return (
+    <Link
+      to={dashPath(`/s/${siteId}/billing`)}
+      className="mt-2 inline-block text-sm font-semibold text-tint-fg hover:underline"
+    >
+      {label}
+    </Link>
   );
 }

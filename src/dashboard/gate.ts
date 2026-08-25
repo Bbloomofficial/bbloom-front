@@ -23,10 +23,21 @@ import type { AccountSite, SiteSubscriptionSummary } from "./api/types";
  * "Your website is offline" is no longer a state that exists, and telling
  * someone it is would send them into a panic about a shop that is serving fine.
  *
+ * Two things stay true when the form stops, and both are worth saying out loud
+ * because they are what makes the stop survivable. The gate is on *submission*,
+ * not on the inbox, so every message already collected stays there and stays
+ * readable. And the client's own switch is left exactly as they set it, so the
+ * form returns as they left it rather than needing to be found again.
+ *
  * The message form is the only one of the three that the client also has to
  * switch on, so it has two independent reasons to be absent and they must not
  * be conflated: `features.enquiryForm` is their choice, `effectiveFeatures
  * .enquiryForm` is that choice with the plan applied.
+ *
+ * All three are the same predicate on the server — one `allowsPaidFeatures`,
+ * `ACTIVE || GRACE`. `hasPaidFeatures()` below is the only place this app is
+ * allowed to ask, deliberately: a second notion of "paid" invented next to the
+ * form would drift from the badge and the domain without anything failing.
  */
 
 /**

@@ -309,6 +309,7 @@ export type DashboardStrings = {
     inboxHint: string;
     needsPlan: string;
     lapsed: string;
+    seePlans: string;
     error: string;
   };
   inbox: {
@@ -569,7 +570,7 @@ const en: DashboardStrings = {
     paidPerks: [
       "Our badge comes off your pages.",
       "Your own domain name works.",
-      "Enquiries are emailed to you as they arrive. You see every one in your inbox here either way.",
+      "Visitors can write to you from your website, and their messages arrive in your inbox here.",
     ],
   },
   plans: {
@@ -704,6 +705,7 @@ const en: DashboardStrings = {
     needsPlan: "The message form needs a paid plan.",
     lapsed:
       "Your plan has stopped, so the message form cannot be switched on right now.",
+    seePlans: "See plans",
     error: "Could not save. Please try again.",
   },
   inbox: {
@@ -970,7 +972,7 @@ const ka: DashboardStrings = {
     paidPerks: [
       "ჩვენი ნიშანი ქრება გვერდებიდან.",
       "მუშაობს თქვენი საკუთარი დომენი.",
-      "შეტყობინებები ელფოსტაზე მოგდით. ყველა მათგანს აქაც ხედავთ, ნებისმიერ შემთხვევაში.",
+      "ვიზიტორები ვებგვერდიდან მოგწერენ და შეტყობინებები აქვე, თქვენს ფოსტაში მოდის.",
     ],
   },
   plans: {
@@ -1105,6 +1107,7 @@ const ka: DashboardStrings = {
     needsPlan: "შეტყობინების ფორმა ფასიან პაკეტს საჭიროებს.",
     lapsed:
       "თქვენი პაკეტი შეწყვეტილია, ამიტომ შეტყობინების ფორმის ჩართვა ამჟამად ვერ ხერხდება.",
+    seePlans: "პაკეტების ნახვა",
     error: "ვერ შეინახა. სცადეთ თავიდან.",
   },
   inbox: {

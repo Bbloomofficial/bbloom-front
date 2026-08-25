@@ -110,13 +110,19 @@ export function WhatsappButton({ className = "" }: { className?: string }) {
 }
 
 /**
- * What a visitor gets instead of a message form.
+ * What a visitor gets when there is no message form.
  *
  * A form implies someone is on the other end of it — a mailbox, a queue,
- * somebody who will reply. That is a hosted service, so a website that has not
- * paid for one must not pretend to have it: a message typed into a form nobody
- * reads is worse than no form at all. These are the channels the client already
- * runs, handed over directly.
+ * somebody who will reply. There now is: messages land in the client's
+ * dashboard inbox. So this is no longer the *only* thing a contact section can
+ * offer, and it is not a substitute either — where the form is drawn these
+ * channels sit beside it, because plenty of people would rather ring.
+ *
+ * It stands alone when the client has not switched the form on, or when their
+ * plan does not currently include it. Either way the reasoning holds in the
+ * one direction that matters: a message typed into a form nobody reads is
+ * worse than no form at all, so the form is drawn only when it is actually
+ * collecting.
  */
 export function ContactPanel({
   glass = false,
