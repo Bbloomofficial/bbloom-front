@@ -86,6 +86,19 @@ export default function Inbox() {
     [list.data, patched],
   );
 
+  // This lookup only searches the page that is currently loaded, which is safe
+  // because `selected` is only ever set by clicking a row of that page and is
+  // cleared whenever the filter or page changes. The id is present by
+  // construction, so a miss is unreachable.
+  //
+  // Do not turn `?selected=` into an external deep link (an emailed "view this
+  // enquiry" link, say). The invariant above is what makes it work, and a link
+  // from outside does not carry it: the enquiry would be found while it sits on
+  // page 1 and silently open nothing once it does not — passing every test and
+  // failing exactly when the client is busy enough for the mail to matter.
+  // There is no single-enquiry endpoint to fix it with either; the API offers
+  // list, /stats and PATCH /{id}, and no GET /{id}. If deep links are ever
+  // wanted, the backend adds that GET first.
   const selected = items.find((item) => item.id === selectedId) ?? null;
 
   const update = useCallback((next: Partial<Record<string, string>>) => {
