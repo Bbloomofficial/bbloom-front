@@ -165,10 +165,11 @@ export default function App() {
   }
 
   // `panel.bbloom.ge` is a compatibility hostname now: the dashboard's home is
-  // the marketing root, and the edge redirects this host there. The branch
-  // stays because it is also how the dashboard is run at the root locally
-  // (`VITE_APP_HOST=panel`), and because a redirect that is ever removed or
-  // mis-scoped should land on a working dashboard rather than on nothing.
+  // the marketing root, and `main.tsx` forwards that hostname there before this
+  // ever renders. The branch stays because it is how the dashboard is run at
+  // the root locally (`VITE_APP_HOST=panel`), which the forward deliberately
+  // ignores, and because a forward that is ever removed should land on a
+  // working dashboard rather than on nothing.
   if (appHost === "panel") {
     return (
       <Routes>

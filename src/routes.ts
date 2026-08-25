@@ -70,6 +70,33 @@ export function resolveAppHost(): AppHost {
 
 const appHost = resolveAppHost();
 
+/**
+ * Where a visitor who arrived on `panel.bbloom.ge` should be sent instead.
+ *
+ * The client dashboard is not a website of its own any more, and the panel
+ * hostname has to stop being one — otherwise "removed" means "still there, on
+ * the address people have bookmarked". `vercel.json` cannot do it: that host is
+ * served by Caddy from the Hetzner box, and Vercel never sees the request. This
+ * was checked rather than assumed — `panel.bbloom.ge` answers with
+ * `Server: Caddy` while the marketing domain does not.
+ *
+ * The real hostname is read here rather than `resolveAppHost()`, because that
+ * one also answers "panel" for `VITE_APP_HOST=panel`, which is how the
+ * dashboard is run at the root on a laptop. Redirecting on that would send a
+ * developer to production mid-edit.
+ *
+ * Returns `null` when there is nowhere to go, so the caller renders the app
+ * rather than a blank page.
+ */
+export function panelHostExit(): string | null {
+  if (typeof window === "undefined") return null;
+  const host = window.location.hostname.toLowerCase().replace(/\.$/, "");
+  const base = baseDomain();
+  if (host !== `panel.${base}`) return null;
+  const { pathname, search, hash } = window.location;
+  return `https://${base}${pathname}${search}${hash}`;
+}
+
 /** `""` when the app owns the whole hostname, otherwise its path prefix. */
 export const ADMIN_BASE = appHost === "admin" ? "" : "/admin";
 
