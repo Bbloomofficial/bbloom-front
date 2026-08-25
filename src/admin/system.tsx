@@ -11,7 +11,7 @@ import type { ReactNode } from "react";
 import { ApiError } from "../api/http";
 import { useAuth } from "./auth";
 import { fetchSystemStatus } from "./api/client";
-import type { MailStatus, SystemStatus } from "./api/types";
+import type { MailHealth, MailStatus, SystemStatus } from "./api/types";
 
 /**
  * Polls the staff health endpoint once for the whole admin shell.
@@ -29,6 +29,17 @@ type SystemValue = {
   /** True when this staff account may not read the endpoint at all. */
   forbidden: boolean;
   reload: () => void;
+  /**
+   * Replaces the mail reading with one taken elsewhere — specifically the one
+   * the test-send endpoint returns after its attempt.
+   *
+   * Without this the page and the header disagree for up to a minute after a
+   * staff test fixes or breaks something, which is the exact failure this
+   * provider was written as a single poller to prevent. The test send is also
+   * the most likely moment for the reading to change, so it is the worst minute
+   * to be stale in.
+   */
+  applyMail: (mail: MailHealth) => void;
 };
 
 const SystemContext = createContext<SystemValue | null>(null);
@@ -87,9 +98,20 @@ export function SystemProvider({ children }: { children: ReactNode }) {
 
   const reload = useCallback(() => setAttempt((value) => value + 1), []);
 
+  const applyMail = useCallback((mail: MailHealth) => {
+    setStatus((previous) => ({
+      // A test send can be the first thing that ever populates this screen, so
+      // there may be no previous reading to merge into. `checkedAt` then has to
+      // come from us rather than be left undefined and rendered as an invalid
+      // date.
+      checkedAt: previous?.checkedAt ?? new Date().toISOString(),
+      mail,
+    }));
+  }, []);
+
   const value = useMemo<SystemValue>(
-    () => ({ status, forbidden, reload }),
-    [status, forbidden, reload],
+    () => ({ status, forbidden, reload, applyMail }),
+    [status, forbidden, reload, applyMail],
   );
 
   return (

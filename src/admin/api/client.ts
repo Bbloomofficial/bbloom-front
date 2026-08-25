@@ -9,6 +9,7 @@ import type {
   StaffLoginResponse,
   StaffProfile,
   SystemStatus,
+  MailTestResult,
   TemplateSummary,
   UpdateSiteRequest,
 } from "./types";
@@ -55,6 +56,34 @@ export function fetchProfile(token: string): Promise<StaffProfile> {
  */
 export function fetchSystemStatus(token: string): Promise<SystemStatus> {
   return authed<SystemStatus>(token, "/admin/system/status");
+}
+
+/**
+ * Sends one real email and reports what happened to it.
+ *
+ * There is deliberately no subject or body parameter. Staff have no reason to
+ * compose the message, and an authenticated endpoint that mails arbitrary text
+ * from our own domain is a phishing tool wearing our branding.
+ *
+ * Synchronous, and slow on purpose: around a second normally, up to thirty when
+ * SMTP is timing out. Queueing it would make the reply "we have accepted your
+ * request to find out", which is the reassurance-without-evidence this button
+ * exists to replace — so the caller must show a real pending state rather than
+ * shorten the wait.
+ *
+ * A refusal comes back as **200** with `outcome: "FAILED"`. The request
+ * succeeded; we asked what happened and were told. Treating non-2xx as the only
+ * failure path would render a refusal as a success.
+ */
+export function sendMailTest(
+  token: string,
+  recipient: string,
+  language: string,
+): Promise<MailTestResult> {
+  return authed<MailTestResult>(token, "/admin/system/mail-test", {
+    method: "POST",
+    body: JSON.stringify({ recipient, language }),
+  });
 }
 
 /**

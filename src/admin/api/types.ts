@@ -299,6 +299,51 @@ export type SystemStatus = {
   mail: MailHealth;
 };
 
+export const MAIL_TEST_OUTCOMES = ["SENT", "FAILED", "NOT_CONFIGURED"] as const;
+
+/**
+ * What became of one staff test send.
+ *
+ * Three values, not two, and the third is the reason the endpoint is worth
+ * having: `NOT_CONFIGURED` means no from-address is set and **nothing was
+ * attempted**. It is not a failure, and showing it as one sends somebody to
+ * check a password that was never used — which is the confusion that cost hours
+ * in August and the whole point of the split.
+ *
+ * `SENT` is acceptance by the mail server, not arrival. The honest ceiling of
+ * this button is "we handed it over"; only a human finding `reference` in an
+ * inbox closes the rest.
+ */
+export type MailTestOutcome = (typeof MAIL_TEST_OUTCOMES)[number];
+
+export type MailTestResult = {
+  outcome: MailTestOutcome;
+  recipient: string;
+  attemptedAt: string;
+  /**
+   * Six hex characters, repeated in the subject line. The one field that makes
+   * the answer checkable: two tests in a row produce two near-identical
+   * emails, and the older one makes a *failed* second test look like a pass.
+   * Without matching this, the feature can confirm mail works while it is
+   * broken.
+   */
+  reference?: string;
+  subject?: string;
+  /** Absent — not null — unless `outcome` is `FAILED`. Show it verbatim. */
+  failureReason?: string;
+  /**
+   * The failure rows this send erased, handed back because the person pressing
+   * the button is usually the person reading that list — so without this the
+   * evidence vanishes mid-read.
+   *
+   * Not the owed list: these people survive in `mail.unresolved` and leave it
+   * only when they personally receive something.
+   */
+  clearedFailures?: MailFailure[];
+  /** A fresh reading taken after the attempt, so one call refreshes the page. */
+  mail?: MailHealth;
+};
+
 /**
  * The staff view of one website attached to an account.
  *

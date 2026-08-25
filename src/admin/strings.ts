@@ -212,6 +212,33 @@ export type AdminStrings = {
     colReason: string;
     noneWaiting: string;
     bannerAction: string;
+    test: {
+      title: string;
+      body: string;
+      recipientLabel: string;
+      recipientHint: string;
+      languageLabel: string;
+      send: string;
+      sending: string;
+      sendingNote: string;
+      badAddress: string;
+      rateLimited: string;
+      notPermitted: string;
+      requestFailed: string;
+      sentTitle: string;
+      sentBody: string;
+      failedTitle: string;
+      failedBody: string;
+      notConfiguredTitle: string;
+      notConfiguredBody: string;
+      reference: string;
+      referenceNote: string;
+      referenceFailedNote: string;
+      noReference: string;
+      attemptedAt: string;
+      clearedTitle: (count: number) => string;
+      clearedBody: string;
+    };
   };
   statuses: Record<string, string>;
   categories: Record<string, string>;
@@ -525,6 +552,46 @@ const en: AdminStrings = {
     colReason: "Reason",
     noneWaiting: "Nothing is failing to send right now.",
     bannerAction: "See who",
+    test: {
+      title: "Send a test email",
+      body: "Sends one real message and reports what the mail server did with it. Safe to send to a client's address: it carries no links and asks for nothing.",
+      recipientLabel: "Send to",
+      recipientHint:
+        "Your own address, unless you change it. Sending to yourself is the only way to check the message actually arrives.",
+      languageLabel: "Language of the message",
+      send: "Send test",
+      sending: "Sending…",
+      sendingNote:
+        "This waits for the mail server to answer, which can take up to half a minute when something is wrong. A slow reply is itself a finding.",
+      badAddress: "That does not look like an email address.",
+      rateLimited:
+        "Too many test sends in the last hour. Tests spend the same sending quota as the confirmation emails clients are waiting on, so this limit protects them, not us.",
+      notPermitted: "This account may not send test emails.",
+      requestFailed: "The test could not be run. Try again.",
+      sentTitle: "Accepted for delivery",
+      sentBody:
+        "The mail server took the message. That is not the same as it arriving — nothing after this point is visible to us.",
+      failedTitle: "The mail server refused it",
+      failedBody:
+        "This is the same failure a client's confirmation email would hit right now.",
+      notConfiguredTitle: "Nothing was sent",
+      notConfiguredBody:
+        "No from-address is configured, so no message was composed and nothing was attempted. Nothing is broken and there is no password to go and check — email is simply switched off.",
+      reference: "Check code",
+      referenceNote:
+        "This code is in the subject line. Open the message and check it matches: two tests produce near-identical emails, and an older one sitting in the inbox will make a failed test look like it worked.",
+      referenceFailedNote:
+        "This code identifies the attempt in the server log. Nothing was delivered, so there is no message to go and look for.",
+      noReference:
+        "No code was issued for this attempt, so there is nothing to match in an inbox.",
+      attemptedAt: "Attempted",
+      clearedTitle: (count) =>
+        count === 1
+          ? "This test cleared 1 failed delivery"
+          : `This test cleared ${count} failed deliveries`,
+      clearedBody:
+        "A successful send empties the failure list, so these rows have just left the failure panel on this page. The people are still owed a message — they stay on the list of everyone still owed until they personally receive something.",
+    },
   },
   statuses: { DRAFT: "Draft", PUBLISHED: "Published" },
   categories: { SHOP: "Online shop", RESTAURANT: "Restaurant" },
@@ -831,6 +898,46 @@ const ka: AdminStrings = {
     colReason: "მიზეზი",
     noneWaiting: "ამჟამად წერილების გაგზავნა არ იშლება.",
     bannerAction: "ნახეთ ვინ",
+    test: {
+      title: "სატესტო წერილის გაგზავნა",
+      body: "აგზავნის ერთ ნამდვილ წერილს და გიბრუნებთ, რა უყო მას ფოსტის სერვერმა. კლიენტის მისამართზეც უსაფრთხოა: წერილში ბმულები არ არის და არაფერს ითხოვს.",
+      recipientLabel: "ვის გაეგზავნოს",
+      recipientHint:
+        "თქვენივე მისამართი, თუ არ შეცვლით. საკუთარ თავზე გაგზავნა ერთადერთი გზაა შესამოწმებლად, რომ წერილი მართლა მოდის.",
+      languageLabel: "წერილის ენა",
+      send: "გაგზავნა",
+      sending: "იგზავნება…",
+      sendingNote:
+        "ველოდებით ფოსტის სერვერის პასუხს — გაუმართაობისას ეს ნახევარ წუთამდე გრძელდება. ნელი პასუხიც შედეგია.",
+      badAddress: "ეს ელფოსტის მისამართს არ ჰგავს.",
+      rateLimited:
+        "ბოლო საათში ძალიან ბევრი სატესტო წერილი გაიგზავნა. ტესტები იმავე ლიმიტს ხარჯავს, რომლითაც კლიენტების დამადასტურებელი წერილები იგზავნება — ეს შეზღუდვა მათ იცავს.",
+      notPermitted: "ამ ანგარიშს სატესტო წერილის გაგზავნა არ შეუძლია.",
+      requestFailed: "ტესტი ვერ შესრულდა. სცადეთ ხელახლა.",
+      sentTitle: "მიღებულია გასაგზავნად",
+      sentBody:
+        "ფოსტის სერვერმა წერილი ჩაიბარა. ეს არ ნიშნავს, რომ ის მივიდა — ამის შემდეგ მომხდარი ჩვენთვის აღარ ჩანს.",
+      failedTitle: "ფოსტის სერვერმა უარი თქვა",
+      failedBody:
+        "ზუსტად ამ შეცდომას წააწყდებოდა ახლა კლიენტის დამადასტურებელი წერილიც.",
+      notConfiguredTitle: "წერილი არ გაგზავნილა",
+      notConfiguredBody:
+        "გამგზავნის მისამართი მითითებული არ არის, ამიტომ წერილი არც შედგენილა და არაფერი უცდია სისტემას. არაფერია გაფუჭებული და პაროლის შემოწმება არ სჭირდება — ფოსტა უბრალოდ გამორთულია.",
+      reference: "საკონტროლო კოდი",
+      referenceNote:
+        "ეს კოდი წერილის სათაურშია. გახსენით წერილი და შეადარეთ: ორი ტესტი თითქმის ერთნაირ წერილებს აგზავნის და ძველი, ფოსტაში დარჩენილი წერილი წარუმატებელ ტესტსაც წარმატებულად გამოაჩენს.",
+      referenceFailedNote:
+        "ამ კოდით მოიძებნება ეს მცდელობა სერვერის ჟურნალში. წერილი არ ჩაბარებულა, ამიტომ ფოსტაში საძებნელი არაფერია.",
+      noReference:
+        "ამ მცდელობას კოდი არ მინიჭებია, ამიტომ ფოსტაში შესადარებელი არაფერია.",
+      attemptedAt: "მცდელობა",
+      clearedTitle: (count) =>
+        count === 1
+          ? "ამ ტესტმა 1 წარუმატებელი გაგზავნა ჩამოშალა"
+          : `ამ ტესტმა ${count} წარუმატებელი გაგზავნა ჩამოშალა`,
+      clearedBody:
+        "წარმატებული გაგზავნა ასუფთავებს შეცდომების სიას, ამიტომ ეს ჩანაწერები ახლახან გაქრა ამ გვერდის შეცდომების პანელიდან. ადამიანებს წერილი კვლავ ერგებათ — ისინი რჩებიან დავალიანების სიაში, სანამ რეალურად არ მიიღებენ რაიმეს.",
+    },
   },
   statuses: { DRAFT: "მუშავდება", PUBLISHED: "გამოქვეყნებული" },
   categories: { SHOP: "ონლაინ მაღაზია", RESTAURANT: "რესტორანი" },

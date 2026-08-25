@@ -9,7 +9,9 @@ import {
   unlistedFailures,
   unlistedOwed,
 } from "../components/MailAlert";
-import type { MailFailure, MailStatus } from "../api/types";
+import FailureTable from "../components/FailureTable";
+import MailTest from "../components/MailTest";
+import type { MailStatus } from "../api/types";
 
 /**
  * `OFF` is not a fault — it means no from-address is configured and mail is
@@ -28,63 +30,6 @@ function dotFor(status: MailStatus): string {
   if (mailNeedsAttention(status)) return "bg-danger";
   if (status === "OFF") return "bg-ink-400";
   return "bg-success";
-}
-
-/**
- * The same table for both lists: failures in the current outage, and people
- * still owed an email after it ended. Rows are rendered in the order the
- * server sends them — oldest first in both cases, so the top row is the person
- * who has been waiting longest and an admin can work straight down.
- */
-function FailureTable({ rows }: { rows: MailFailure[] }) {
-  const { locale } = useI18n();
-  const t = adminStrings(locale);
-
-  return (
-    <div className="mt-5 overflow-x-auto">
-      <table className="w-full text-start text-sm">
-        <thead className="border-b border-ink-100 text-xs uppercase tracking-wide text-ink-400">
-          <tr>
-            <th className="px-3 py-3 text-start font-semibold">
-              {t.system.colTime}
-            </th>
-            <th className="px-3 py-3 text-start font-semibold">
-              {t.system.colRecipient}
-            </th>
-            <th className="hidden px-3 py-3 text-start font-semibold md:table-cell">
-              {t.system.colSubject}
-            </th>
-            <th className="px-3 py-3 text-start font-semibold">
-              {t.system.colReason}
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((failure, index) => (
-            <tr
-              key={`${failure.at}-${failure.recipient}-${index}`}
-              className="border-b border-ink-100 last:border-0"
-            >
-              <td className="whitespace-nowrap px-3 py-4 text-ink-600">
-                {formatDateTime(failure.at, locale)}
-              </td>
-              <td className="px-3 py-4">
-                {/* Never masked. Working out who to apologise to is the only
-                    job this screen has. */}
-                <span dir="ltr" className="font-semibold text-ink-900">
-                  {failure.recipient}
-                </span>
-              </td>
-              <td className="hidden max-w-72 px-3 py-4 text-ink-600 md:table-cell">
-                {failure.subject}
-              </td>
-              <td className="px-3 py-4 text-danger">{failure.reason}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
 }
 
 export default function SystemStatus() {
@@ -224,6 +169,12 @@ export default function SystemStatus() {
           )}
         </>
       )}
+
+      {/* Rendered whether or not a reading arrived. A failed poll is one of the
+          moments an admin most wants to ask the question directly, and hiding
+          the only active diagnostic behind the passive one that just failed
+          would take the tool away exactly when it is needed. */}
+      <MailTest />
 
       <p className="mt-6 text-xs text-ink-400">
         {status && (
