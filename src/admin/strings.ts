@@ -222,6 +222,8 @@ export type AdminStrings = {
       sending: string;
       sendingNote: string;
       badAddress: string;
+      undeliverableAddress: string;
+      addressRefused: string;
       rateLimited: string;
       rateLimitedUntil: (when: string) => string;
       notPermitted: string;
@@ -565,6 +567,9 @@ const en: AdminStrings = {
       sendingNote:
         "This waits for the mail server to answer, which can take up to half a minute when something is wrong. A slow reply is itself a finding.",
       badAddress: "That does not look like an email address.",
+      undeliverableAddress:
+        "The address is well formed, but its domain does not accept mail. The message was not sent: it would have bounced back into our own inbox.",
+      addressRefused: "This address was refused, so nothing was sent.",
       rateLimited:
         "Too many test sends in the last hour. Tests spend the same sending quota as the confirmation emails clients are waiting on, so this limit protects them, not us.",
       rateLimitedUntil: (when) => `You can send another test at ${when}.`,
@@ -912,6 +917,9 @@ const ka: AdminStrings = {
       sendingNote:
         "ველოდებით ფოსტის სერვერის პასუხს — გაუმართაობისას ეს ნახევარ წუთამდე გრძელდება. ნელი პასუხიც შედეგია.",
       badAddress: "ეს ელფოსტის მისამართს არ ჰგავს.",
+      undeliverableAddress:
+        "მისამართი გამართულია, მაგრამ მის დომენს ფოსტა არ მიაქვს. წერილი არ გაგზავნილა — ის ჩვენსავე ფოსტაში დაბრუნდებოდა.",
+      addressRefused: "ეს მისამართი უარყოფილია — წერილი არ გაგზავნილა.",
       rateLimited:
         "ბოლო საათში ძალიან ბევრი სატესტო წერილი გაიგზავნა. ტესტები იმავე ლიმიტს ხარჯავს, რომლითაც კლიენტების დამადასტურებელი წერილები იგზავნება — ეს შეზღუდვა მათ იცავს.",
       rateLimitedUntil: (when) =>

@@ -80,7 +80,23 @@ export default function MailTest() {
     if (caught.status === 400) {
       // Our own sentence rather than the server's. The backend's English is
       // prose and may be reworded; the rejected *field* is the contract.
-      if (caught.fields.recipient) return t.badAddress;
+      //
+      // One field, two rejections. `Email` means the text is not an address;
+      // `Deliverable` means it is a perfectly good address whose domain cannot
+      // receive mail. Telling someone their well-formed address "does not look
+      // like an email address" sends them to fix a typo that is not there —
+      // and hides the actual finding, which is that the domain is wrong.
+      if (caught.fields.recipient) {
+        const constraint = caught.fieldCodes.recipient;
+        if (constraint === "Deliverable") return t.undeliverableAddress;
+        if (constraint === "Email") return t.badAddress;
+        // A constraint this build has not heard of, or an older backend that
+        // sends none. Falling back to "that does not look like an address"
+        // would be guessing, and it is the one guess that can be actively
+        // false: it sends someone hunting a typo in an address that is
+        // spelled perfectly. The vaguer sentence is true whatever refused it.
+        return t.addressRefused;
+      }
       return t.requestFailed;
     }
     if (caught.status === 429) {
