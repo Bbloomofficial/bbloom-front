@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
-import { NavLink, useLocation } from "react-router-dom";
+import { Link, NavLink, useLocation } from "react-router-dom";
 import LanguageSwitcher from "../../components/LanguageSwitcher";
 import ThemeToggle from "../../components/ThemeToggle";
 import { useI18n } from "../../i18n";
@@ -18,7 +18,8 @@ type NavKey =
   | "billing"
   | "team"
   | "sites"
-  | "account";
+  | "account"
+  | "exit";
 
 const NAV_ICONS: Record<NavKey, string> = {
   overview: "M10 2.5 2.5 8.4V17a1 1 0 0 0 1 1h4v-5h5v5h4a1 1 0 0 0 1-1V8.4L10 2.5Z",
@@ -31,13 +32,16 @@ const NAV_ICONS: Record<NavKey, string> = {
   sites: "M3 3h6v6H3V3Zm8 0h6v6h-6V3ZM3 11h6v6H3v-6Zm8 0h6v6h-6v-6Z",
   account:
     "M10 10a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Zm0 1.5c-3.6 0-6.5 2.2-6.5 4.4V17h13v-1.1c0-2.2-2.9-4.4-6.5-4.4Z",
+  // An arrow leaving a doorway: going back out to the public site, which is a
+  // different idea from `sites` (the list you own) and from signing out.
+  exit: "M9.3 3H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h4.3v-1.8H5a.2.2 0 0 1-.2-.2V5c0-.1.1-.2.2-.2h4.3V3Zm3.2 2.6L11.2 6.9 13.5 9.2H7.6v1.8h5.9l-2.3 2.3 1.3 1.3L17 10.1l-4.5-4.5Z",
 };
 
-function NavIcon({ name }: { name: NavKey }) {
+function NavIcon({ name, className }: { name: NavKey; className?: string }) {
   return (
     <svg
       viewBox="0 0 20 20"
-      className="h-[18px] w-[18px] shrink-0"
+      className={`${className ?? "h-[18px] w-[18px]"} shrink-0`}
       fill="currentColor"
       aria-hidden="true"
     >
@@ -52,6 +56,52 @@ function navClass({ isActive }: { isActive: boolean }) {
       ? "bg-tint text-tint-fg"
       : "text-ink-600 hover:bg-ink-50 hover:text-ink-900"
   }`;
+}
+
+/**
+ * The way out of the panel and back to bbloom.ge.
+ *
+ * It lives in the rail rather than the page footer, and that is the whole
+ * point of it. There was already a link — 12px, grey, in the footer under the
+ * fold on any screen with content — and it was reported missing, which is the
+ * correct report: „on the panel" means the chrome that is on screen wherever
+ * you are, and the rail held only Websites, Account, language, theme and sign
+ * out. A link you have to scroll a page to find is not a way out of the app.
+ *
+ * A real `<Link>` when the marketing site is this same app, so leaving costs a
+ * render rather than a full reload of a 333 kB bundle. An `<a>` when it is a
+ * different origin — `VITE_APP_HOST=panel` locally, and the panel hostname for
+ * as long as it still answers — because a client-side route cannot cross a
+ * host, and would land on the panel's own `/` instead of bbloom.ge.
+ */
+function BackToSite({ label }: { label: string }) {
+  const home = marketingHome();
+  const className =
+    // Tighter gap/padding and a step down in size than the nav items above: the
+    // Georgian label is by some margin the longest string in the rail, and at
+    // `text-sm gap-3 px-3` it gets ellipsised. Keep the label naming bbloom.ge
+    // rather than shortening it — „მთავარი გვერდი" would collide with „გვერდი",
+    // which is this panel's word for the *site's* page editor.
+    "flex w-full items-center gap-2 rounded-xl border border-ink-100 bg-control px-2 py-2.5 text-[13px] font-semibold text-ink-600 transition hover:border-bloom-300 hover:bg-tint hover:text-bloom-600 active:scale-95";
+  const inner = (
+    <>
+      <NavIcon name="exit" className="h-4 w-4" />
+      <span className="truncate">{label}</span>
+    </>
+  );
+
+  if (home === "/") {
+    return (
+      <Link to="/" className={className}>
+        {inner}
+      </Link>
+    );
+  }
+  return (
+    <a href={home} className={className}>
+      {inner}
+    </a>
+  );
 }
 
 function initial(name: string) {
@@ -319,6 +369,7 @@ export default function Layout({
       </nav>
 
       <div className="mt-2 space-y-2 border-t border-ink-100 pt-3">
+        <BackToSite label={t.backToBbloom} />
         <div className="flex items-center gap-2">
           <LanguageSwitcher />
           <ThemeToggle />
@@ -422,16 +473,12 @@ export default function Layout({
               {t.signedInAs} {user.email}
             </span>
             {/*
-              The dashboard sits at `/dashboard` and the landing page at `/`, so
-              this leads somewhere again — which it did not when the two shared
-              a URL.
+              The way back to bbloom.ge used to be here, and being here is why
+              it was reported missing. It is in the rail now, on screen from
+              every panel screen. Deliberately not in both places: two links to
+              one destination is the duplication that reads fine in a diff and
+              only looks wrong once rendered.
             */}
-            <a
-              href={marketingHome()}
-              className="font-semibold hover:text-bloom-600"
-            >
-              {t.backToBbloom}
-            </a>
           </div>
         </footer>
       </div>
