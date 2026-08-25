@@ -78,7 +78,7 @@ function SiteCard({ site }: { site: AccountSite }) {
             paying for to go online is the worse failure, and this is the
             cheaper side to be wrong on. */}
         {site.status !== "PUBLISHED" && publishNeedsPlan(site) && (
-          <span className="rounded-full border border-ink-100 bg-canvas px-2.5 py-1 text-xs font-semibold text-ink-600">
+          <span className="rounded-full border border-ink-100 bg-sunken px-2.5 py-1 text-xs font-semibold text-ink-600">
             {t.sites.needsPlan}
           </span>
         )}
