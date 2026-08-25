@@ -386,7 +386,7 @@ export default function Layout({
   );
 
   return (
-    <div className="min-h-screen bg-canvas lg:flex">
+    <div className="min-h-screen bg-sunken lg:flex">
       {/* The sidebar scrolls on its own so a long website list cannot push the
           navigation off the bottom of a short window. */}
       <aside className="sticky top-0 z-40 hidden h-screen w-64 shrink-0 border-e border-ink-100 bg-surface lg:block">

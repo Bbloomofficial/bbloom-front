@@ -49,7 +49,7 @@ function CheckoutResult({ result }: { result: CheckoutResponse }) {
   }
 
   return (
-    <div className="rounded-2xl border border-ink-100 bg-canvas p-4">
+    <div className="rounded-2xl border border-ink-100 bg-sunken p-4">
       <p className="text-sm font-bold text-ink-900">{t.billing.bankTitle}</p>
       {result.instructions && (
         <p className="mt-2 whitespace-pre-line text-sm text-ink-600">
@@ -195,7 +195,7 @@ export default function Billing() {
           otherwise reads as "my shop is down", and it is not: nothing about a
           bbloom.ge address is withdrawn for billing reasons. */}
       {paid && (
-        <section className="rounded-3xl border border-ink-100 bg-canvas p-5 sm:p-6">
+        <section className="rounded-3xl border border-ink-100 bg-sunken p-5 sm:p-6">
           <h2 className="text-sm font-bold text-ink-900">
             {t.billing.paidTitle[paid]}
           </h2>

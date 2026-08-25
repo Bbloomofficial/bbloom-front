@@ -32,6 +32,16 @@
   --color-canvas: #ffffff;
   --color-surface: #ffffff;
   /*
+   * The background a panel sits *on*, as opposed to `canvas`, which is the
+   * page itself. The dark theme separates the two for free — its page is
+   * darker than its panels — but in the light theme both are white, so a
+   * dashboard sidebar or card had no edge at all beyond a hairline border.
+   * `sunken` is the light theme's version of that separation: a tinted grey
+   * that white panels and inset boxes read against. It is the same colour as
+   * `canvas` in the dark theme, where the recession already exists.
+   */
+  --color-sunken: #f2f4f9;
+  /*
    * The fill of an interactive control, as opposed to `surface`, which is the
    * fill of a panel. They are the same colour in the light theme — a white
    * button with a darker border is the familiar ghost control — but they must
@@ -68,6 +78,7 @@
 
   --color-canvas: #0b0e17;
   --color-surface: #141826;
+  --color-sunken: #0b0e17;
   --color-control: #202738;
   --color-contrast: #05070d;
   --color-tint: #3a1c2e;
