@@ -83,7 +83,17 @@ export default function MailTest() {
       if (caught.fields.recipient) return t.badAddress;
       return t.requestFailed;
     }
-    if (caught.status === 429) return t.rateLimited;
+    if (caught.status === 429) {
+      // Optional by design: the public forms throw the same exception without
+      // an instant, and the backend omits the key rather than sending null.
+      // "Try again at undefined" is worse than the vague sentence, so this
+      // branches on presence rather than on the value.
+      const until = caught.problem.retryAfter;
+      if (typeof until === "string" && until) {
+        return `${t.rateLimited} ${t.rateLimitedUntil(formatDateTime(until, locale))}`;
+      }
+      return t.rateLimited;
+    }
     if (caught.status === 403) return t.notPermitted;
     return t.requestFailed;
   }
@@ -199,11 +209,13 @@ export default function MailTest() {
             )}
           </p>
 
-          {/* Only meaningful where a message was actually composed. On
-              `NOT_CONFIGURED` there is no subject line and therefore nothing to
-              match, and printing an empty code would invite someone to hunt an
-              inbox for a mail that was never written. */}
-          {result.reference ? (
+          {/* The backend issues a reference before it decides whether to send,
+              so `NOT_CONFIGURED` carries one too — for a message that was never
+              composed and never attempted. Printing it there would put an
+              official-looking code under the words "nothing was sent", which
+              invites someone to go and correlate a non-event. The panel's whole
+              job in that state is to stop the search. */}
+          {result.reference && outcome !== "NOT_CONFIGURED" ? (
             <div className="mt-4 rounded-2xl border border-ink-100 bg-surface p-4">
               <p className="text-xs font-semibold uppercase tracking-wide text-ink-400">
                 {t.reference}

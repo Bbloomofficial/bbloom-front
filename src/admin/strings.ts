@@ -223,6 +223,7 @@ export type AdminStrings = {
       sendingNote: string;
       badAddress: string;
       rateLimited: string;
+      rateLimitedUntil: (when: string) => string;
       notPermitted: string;
       requestFailed: string;
       sentTitle: string;
@@ -566,6 +567,7 @@ const en: AdminStrings = {
       badAddress: "That does not look like an email address.",
       rateLimited:
         "Too many test sends in the last hour. Tests spend the same sending quota as the confirmation emails clients are waiting on, so this limit protects them, not us.",
+      rateLimitedUntil: (when) => `You can send another test at ${when}.`,
       notPermitted: "This account may not send test emails.",
       requestFailed: "The test could not be run. Try again.",
       sentTitle: "Accepted for delivery",
@@ -912,6 +914,8 @@ const ka: AdminStrings = {
       badAddress: "ეს ელფოსტის მისამართს არ ჰგავს.",
       rateLimited:
         "ბოლო საათში ძალიან ბევრი სატესტო წერილი გაიგზავნა. ტესტები იმავე ლიმიტს ხარჯავს, რომლითაც კლიენტების დამადასტურებელი წერილები იგზავნება — ეს შეზღუდვა მათ იცავს.",
+      rateLimitedUntil: (when) =>
+        `შემდეგი ტესტის გაგზავნა შესაძლებელი იქნება ${when}-ზე.`,
       notPermitted: "ამ ანგარიშს სატესტო წერილის გაგზავნა არ შეუძლია.",
       requestFailed: "ტესტი ვერ შესრულდა. სცადეთ ხელახლა.",
       sentTitle: "მიღებულია გასაგზავნად",
