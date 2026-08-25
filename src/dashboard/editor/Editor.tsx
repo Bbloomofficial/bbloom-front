@@ -447,7 +447,7 @@ export default function Editor() {
   */
   return (
     <div className="flex min-h-0 flex-1 flex-col">
-      <header className="flex flex-wrap items-center gap-3 border-b border-ink-100 bg-sunken px-4 py-3">
+      <header className="flex flex-wrap items-center gap-3 border-b border-ink-100 bg-canvas px-4 py-3">
         <div className="min-w-0">
           <h1 className="text-lg font-extrabold text-ink-900">{t.title}</h1>
           <p className="text-xs text-ink-400">{t.subtitle}</p>

@@ -187,7 +187,7 @@ function ListField({
       {items.map((item, index) => (
         <div
           key={index}
-          className="rounded-xl border border-ink-100 bg-sunken/60 p-3"
+          className="rounded-xl border border-ink-100 bg-canvas/60 p-3"
         >
           <div className="mb-2 flex items-center gap-1">
             <span className="text-xs font-bold text-ink-400">

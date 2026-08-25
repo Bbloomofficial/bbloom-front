@@ -226,7 +226,7 @@ function Shell() {
 
   if (restoring) {
     return (
-      <div className="grid min-h-screen place-items-center bg-sunken text-sm text-ink-400">
+      <div className="grid min-h-screen place-items-center bg-canvas text-sm text-ink-400">
         {t.loading}
       </div>
     );

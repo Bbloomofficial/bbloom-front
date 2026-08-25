@@ -41,7 +41,7 @@ export default function EditorWindow() {
         would trap the field list in an inner scroller fighting the native
         scroll gesture.
       */}
-      <div className="flex min-h-screen flex-col bg-sunken lg:h-screen lg:overflow-hidden">
+      <div className="dash-chrome flex min-h-screen flex-col bg-canvas lg:h-screen lg:overflow-hidden">
         <div className="flex items-center gap-3 border-b border-ink-100 bg-surface px-4 py-2">
           {/*
             A link rather than `history.back()`: this tab is usually opened

@@ -16,7 +16,7 @@ import { dashPath } from "../../routes";
 /** Shared chrome for the signed-out screens. */
 export function AuthShell({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex min-h-screen flex-col bg-sunken">
+    <div className="dash-chrome flex min-h-screen flex-col bg-canvas">
       <header className="container-page flex h-16 items-center justify-between">
         <a href="/" aria-label="bbloom">
           <Logo />

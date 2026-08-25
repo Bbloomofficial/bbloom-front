@@ -167,7 +167,7 @@ export default function Overview() {
         </div>
 
         {!published && blocks.length > 0 && (
-          <div className="mt-5 rounded-2xl border border-ink-100 bg-sunken p-4">
+          <div className="mt-5 rounded-2xl border border-ink-100 bg-canvas p-4">
             <p className="text-sm font-bold text-ink-900">{t.gate.title}</p>
             <ul className="mt-2 space-y-1">
               {blocks.map((block) => (
@@ -183,7 +183,7 @@ export default function Overview() {
         )}
 
         {!published && blocks.length === 0 && publishNeedsPlan(active) && (
-          <div className="mt-5 rounded-2xl border border-ink-100 bg-sunken p-4">
+          <div className="mt-5 rounded-2xl border border-ink-100 bg-canvas p-4">
             <p className="text-sm font-bold text-ink-900">{t.gate.title}</p>
             <p className="mt-2 text-sm text-ink-600">
               {t.gate.blocked.ADDITIONAL_SITE_REQUIRES_PLAN}

@@ -14,7 +14,7 @@ const SOCIAL_KEYS = [
 ] as const;
 
 const inputClass =
-  "mt-1.5 w-full rounded-xl border border-ink-100 bg-sunken px-3 py-2 text-sm text-ink-900 outline-none transition focus:border-bloom-400 focus:ring-2 focus:ring-bloom-200";
+  "mt-1.5 w-full rounded-xl border border-ink-100 bg-canvas px-3 py-2 text-sm text-ink-900 outline-none transition focus:border-bloom-400 focus:ring-2 focus:ring-bloom-200";
 
 /**
  * Phone, email, address, map and social links belong to the site rather than to
