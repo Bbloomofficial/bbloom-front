@@ -330,7 +330,7 @@ const en: AdminStrings = {
     submit: "Sign in",
     submitting: "Signing in…",
     failed: "We could not sign you in. Check your email and password.",
-    help: "This is the bbloom team area. Clients sign in at panel.bbloom.ge.",
+    help: "This is the bbloom team area. Clients sign in at bbloom.ge.",
   },
   sites: {
     title: "Client sites",
@@ -684,7 +684,7 @@ const ka: AdminStrings = {
     submit: "შესვლა",
     submitting: "მიმდინარეობს შესვლა…",
     failed: "ვერ შეხვედით. შეამოწმეთ ელფოსტა და პაროლი.",
-    help: "ეს bbloom-ის გუნდის სივრცეა. კლიენტები შედიან panel.bbloom.ge-ზე.",
+    help: "ეს bbloom-ის გუნდის სივრცეა. კლიენტები შედიან bbloom.ge-ზე.",
   },
   sites: {
     title: "კლიენტების საიტები",
