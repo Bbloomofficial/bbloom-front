@@ -116,6 +116,7 @@ export type DashboardStrings = {
     codeSubmit: string;
     codeChecking: string;
     codeWrong: string;
+    codeSuperseded: string;
     codeAttemptsLeft: (remaining: number) => string;
     codeExpired: string;
     codeTooManyAttempts: string;
@@ -456,6 +457,8 @@ const en: DashboardStrings = {
     codeSubmit: "Confirm",
     codeChecking: "Checking…",
     codeWrong: "That code is not right. Check it and try again.",
+    codeSuperseded:
+      "That code was replaced when a newer one was sent. Use the code from the most recent email.",
     codeAttemptsLeft: (remaining) =>
       remaining === 1
         ? "That code is not right. One more try before you need a new one."
@@ -840,6 +843,8 @@ const ka: DashboardStrings = {
     codeSubmit: "დადასტურება",
     codeChecking: "მოწმდება…",
     codeWrong: "კოდი არასწორია. გადაამოწმეთ და სცადეთ ხელახლა.",
+    codeSuperseded:
+      "ეს კოდი გაუქმდა, როცა ახალი გამოიგზავნა. გამოიყენეთ ბოლო წერილის კოდი.",
     codeAttemptsLeft: (remaining) =>
       remaining === 1
         ? "კოდი არასწორია. დარჩა ერთი ცდა, შემდეგ ახალი კოდი დაგჭირდებათ."

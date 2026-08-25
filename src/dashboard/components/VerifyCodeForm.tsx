@@ -53,6 +53,7 @@ type Message =
   | { kind: "codeExpired" }
   | { kind: "codeTooManyAttempts" }
   | { kind: "codeWrong" }
+  | { kind: "codeSuperseded" }
   | { kind: "codeAttemptsLeft"; remaining: number }
   | { kind: "resendFailed" }
   | { kind: "resendTooSoon" }
@@ -129,6 +130,8 @@ export default function VerifyCodeForm({
           return t.verify.codeTooManyAttempts;
         case "codeWrong":
           return t.verify.codeWrong;
+        case "codeSuperseded":
+          return t.verify.codeSuperseded;
         case "codeAttemptsLeft":
           return t.verify.codeAttemptsLeft(message.remaining);
         case "resendFailed":
@@ -270,6 +273,14 @@ export default function VerifyCodeForm({
             return;
           case "TOO_MANY_ATTEMPTS":
             setError({ kind: "codeTooManyAttempts" });
+            return;
+          case "CODE_SUPERSEDED":
+            // Pressing resend retires the code already in their hand, so the
+            // client who finally finds the first email is holding something we
+            // invalidated. Naming that is the whole point; the attempt it costs
+            // is real but not what they need to hear, and a countdown beside
+            // "open the newest email" reads as an accusation again.
+            setError({ kind: "codeSuperseded" });
             return;
           case "CODE_INVALID": {
             // Saying how many tries are left turns a dead end into a decision:
