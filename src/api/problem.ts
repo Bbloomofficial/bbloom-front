@@ -72,6 +72,12 @@ export type ProblemStrings = {
   notFound: string;
   /** This email is already registered. */
   emailTaken: string;
+  /**
+   * Signing in was refused because the address has never been confirmed. Its
+   * own sentence because it is the opposite of a credentials failure and the
+   * remedy is a code, not a different password.
+   */
+  emailNotVerified: string;
   slugReserved: string;
   /**
    * An invitation naming someone who has no bbloom account. The invite form
@@ -332,6 +338,12 @@ export function describeProblem(
         ? strings.session
         : strings.credentials;
     case 403:
+      // An unconfirmed account is refused here, and it is not a permission
+      // problem: the password was right. Every screen that can act on it
+      // intercepts the code and shows the confirmation box instead, so this
+      // is only the wording for somewhere that cannot — and it must not say
+      // "check your password", which is the one thing that was correct.
+      if (caught.code === "EMAIL_NOT_VERIFIED") return strings.emailNotVerified;
       return strings.forbidden;
     case 404:
       return strings.notFound;
@@ -356,6 +368,11 @@ export function describeProblem(
         return strings.memberAccountMissing;
       if (caught.code === "MEMBER_NAME_REQUIRED")
         return strings.memberNameRequired;
+      // Matched on the code first. The message test behind it is the older
+      // check and stays only as tolerance for a backend that predates the
+      // code — reading English prose to decide what happened is exactly the
+      // thing that breaks when someone rewords a sentence.
+      if (caught.code === "EMAIL_ALREADY_REGISTERED") return strings.emailTaken;
       if (/already exists/i.test(caught.message)) return strings.emailTaken;
       return caught.message || fallback;
     case 429: {

@@ -40,6 +40,7 @@ export type DashboardStrings = {
     help: string;
     noAccount: string;
     createAccount: string;
+    backToSignIn: string;
   };
   register: {
     title: string;
@@ -54,6 +55,10 @@ export type DashboardStrings = {
     haveAccount: string;
     signIn: string;
     terms: string;
+    confirmTitle: string;
+    confirmBody: string;
+    confirmExisting: string;
+    confirmInstead: string;
   };
   sites: {
     title: string;
@@ -372,6 +377,7 @@ const en: DashboardStrings = {
     help: "Forgot your password? Write to us at hello@bbloom.ge and we will reset it.",
     noAccount: "New to bbloom?",
     createAccount: "Create an account",
+    backToSignIn: "Back to sign in",
   },
   register: {
     title: "Create your account",
@@ -388,6 +394,12 @@ const en: DashboardStrings = {
     signIn: "Sign in",
     terms:
       "You can edit everything straight away. Your website is free to publish at a bbloom.ge address — you only pay to drop our badge or use your own domain.",
+    confirmTitle: "Confirm your email",
+    confirmBody:
+      "Your account is ready. Enter the code we just emailed you to finish signing in.",
+    confirmExisting:
+      "This address has an account that has not been confirmed yet. Enter the code from the email, or send a new one.",
+    confirmInstead: "Confirm this address instead",
   },
   sites: {
     title: "Your websites",
@@ -749,6 +761,7 @@ const ka: DashboardStrings = {
     help: "დაგავიწყდათ პაროლი? მოგვწერეთ hello@bbloom.ge-ზე და აღვადგენთ.",
     noAccount: "პირველად ხართ bbloom-ზე?",
     createAccount: "ანგარიშის შექმნა",
+    backToSignIn: "შესვლის გვერდზე დაბრუნება",
   },
   register: {
     title: "შექმენით ანგარიში",
@@ -765,6 +778,12 @@ const ka: DashboardStrings = {
     signIn: "შესვლა",
     terms:
       "რედაქტირება მაშინვე შეგიძლიათ. bbloom.ge-ის მისამართზე გამოქვეყნება უფასოა — გადახდა მხოლოდ ჩვენი ნიშნის მოსახსნელად ან საკუთარი დომენისთვის დაგჭირდებათ.",
+    confirmTitle: "დაადასტურეთ ელფოსტა",
+    confirmBody:
+      "ანგარიში მზადაა. შეიყვანეთ კოდი, რომელიც ახლახან გამოგიგზავნეთ, და შესვლას დაასრულებთ.",
+    confirmExisting:
+      "ამ მისამართზე ანგარიში უკვე არსებობს, მაგრამ დადასტურებული არ არის. შეიყვანეთ კოდი წერილიდან ან გამოითხოვეთ ახალი.",
+    confirmInstead: "დაადასტურეთ ეს მისამართი",
   },
   sites: {
     title: "თქვენი ვებგვერდები",

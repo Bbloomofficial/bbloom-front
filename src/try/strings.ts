@@ -54,6 +54,9 @@ export type TryStrings = {
   saveCta: string;
   saveTitle: string;
   saveBody: string;
+  confirmTitle: string;
+  confirmBody: string;
+  confirmInstead: string;
   saveSignedInTitle: string;
   /** `{email}` is replaced with the signed-in address. */
   saveSignedInBody: string;
@@ -135,6 +138,10 @@ const en: TryStrings = {
   saveTitle: "Create your account to keep it",
   saveBody:
     "Your work is kept on your account, free, on a bbloom.ge address.",
+  confirmTitle: "Confirm your email to save it",
+  confirmBody:
+    "We emailed you a six-digit code. Your work stays on this page until you enter it.",
+  confirmInstead: "Confirm this address instead",
   saveSignedInTitle: "Save this website",
   saveSignedInBody:
     "It will be added to {email} as a new website, free, on a bbloom.ge address.",
@@ -219,6 +226,10 @@ const ka: TryStrings = {
   saveTitle: "შესანახად შექმენით ანგარიში",
   saveBody:
     "თქვენი ნამუშევარი შეინახება თქვენს ანგარიშზე, უფასოდ, bbloom.ge მისამართზე.",
+  confirmTitle: "შესანახად დაადასტურეთ ელფოსტა",
+  confirmBody:
+    "გამოგიგზავნეთ ექვსნიშნა კოდი. კოდის შეყვანამდე ნამუშევარი ამ გვერდზე რჩება.",
+  confirmInstead: "დაადასტურეთ ეს მისამართი",
   saveSignedInTitle: "შეინახეთ ეს ვებგვერდი",
   saveSignedInBody:
     "დაემატება {email}-ს როგორც ახალი ვებგვერდი, უფასოდ, bbloom.ge მისამართზე.",

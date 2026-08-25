@@ -31,8 +31,18 @@ function authed<T>(token: string, path: string, init?: RequestInit) {
 /* Account */
 
 /**
- * Registering answers with the same payload as logging in, so a new client is
- * signed in already and must never be asked for the password they just chose.
+ * Registering no longer produces a session. It answers `202` with a
+ * `VerificationTicket` and no token: the account row exists, but confirming the
+ * emailed code or link is what issues the first JWT.
+ *
+ * So every caller has to follow this with the confirmation screen. There is no
+ * "register and continue" path any more, and a caller that reads `.token` off
+ * this response reads `undefined` — which is why the return type changed rather
+ * than being widened.
+ *
+ * The 202 body does carry `mailSent`, unlike the resend below. Registration is
+ * allowed to be informative because the client just typed the address into the
+ * form in front of them; it tells them nothing about anybody else's account.
  *
  * `fullName` is required, and is not called `name`.
  */
@@ -48,13 +58,20 @@ export function registerAccount(body: {
    * language the client is visibly using right now.
    */
   language?: EmailLanguage;
-}): Promise<SiteLoginResponse> {
-  return request<SiteLoginResponse>("/account/register", {
+}): Promise<VerificationTicket> {
+  return request<VerificationTicket>("/account/register", {
     method: "POST",
     body: JSON.stringify(body),
   });
 }
 
+/**
+ * Signing in refuses an unconfirmed account with `403 EMAIL_NOT_VERIFIED`, and
+ * that response carries the `email` at the top level. Callers should read it
+ * from there rather than from their own form: it is the address the server
+ * matched, so handing it to the confirmation screen cannot disagree with the
+ * account the code will be checked against.
+ */
 export function loginAccount(
   email: string,
   password: string,
@@ -103,13 +120,44 @@ export function requestVerification(
 }
 
 /**
+ * The same thing for someone who has no session — which, now that logging in is
+ * gated on confirmation, is everybody who actually needs it. The authenticated
+ * version above sat behind the door it was meant to open.
+ *
+ * Its answer is deliberately uninformative and must stay that way. An unknown
+ * address, an unconfirmed one and an already-confirmed one all return a
+ * byte-identical shape; I checked all three against production and they differ
+ * only in the address echoed back and the timestamp. In particular `mailSent`
+ * is *absent* here though it is present on registration, because reporting it
+ * would turn an endpoint anyone can post to into an account-existence oracle.
+ *
+ * So a screen calling this can only ever say "if that address has an account,
+ * we have sent it a code". That is the contract rather than a gap in it, and
+ * copy must not be written that quietly promises more.
+ */
+export function resendVerification(
+  email: string,
+  language?: EmailLanguage,
+): Promise<VerificationTicket> {
+  return request<VerificationTicket>("/account/verification/resend", {
+    method: "POST",
+    body: JSON.stringify(language ? { email, language } : { email }),
+  });
+}
+
+/**
  * Deliberately unauthenticated: the confirmation link is opened by whichever
  * browser the mail client hands it to, which is rarely the one that signed up.
+ *
+ * Confirming is now what *issues* the session, so this answers a full
+ * `LoginResponse` rather than a profile. Callers must store it — a caller that
+ * merely shows a tick and sends them to log in strands a client who has just
+ * done the only thing that could have let them in.
  */
 export function confirmVerification(
   verificationToken: string,
-): Promise<AccountProfile> {
-  return request<AccountProfile>("/account/verification/confirm", {
+): Promise<SiteLoginResponse> {
+  return request<SiteLoginResponse>("/account/verification/confirm", {
     method: "POST",
     body: JSON.stringify({ token: verificationToken }),
   });
@@ -127,8 +175,8 @@ export function confirmVerification(
 export function confirmVerificationCode(
   email: string,
   code: string,
-): Promise<AccountProfile> {
-  return request<AccountProfile>("/account/verification/confirm", {
+): Promise<SiteLoginResponse> {
+  return request<SiteLoginResponse>("/account/verification/confirm", {
     method: "POST",
     body: JSON.stringify({ email, code: code.trim() }),
   });

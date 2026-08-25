@@ -4,7 +4,10 @@ import { Link } from "react-router-dom";
 import Logo from "../../components/Logo";
 import LanguageSwitcher from "../../components/LanguageSwitcher";
 import PasswordField from "../../components/PasswordField";
+import VerifyCodeForm from "../components/VerifyCodeForm";
+import { ApiError } from "../../api/http";
 import { describeProblem } from "../../api/problem";
+import type { VerificationTicket } from "../api/types";
 import { useI18n } from "../../i18n";
 import { useAuth } from "../auth";
 import { dashboardStrings } from "../strings";
@@ -30,13 +33,34 @@ export function AuthShell({ children }: { children: React.ReactNode }) {
 export default function Register() {
   const { locale } = useI18n();
   const t = dashboardStrings(locale);
-  const { signUp } = useAuth();
+  const { signUp, completeVerification, noteSend } = useAuth();
 
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  /**
+   * The 202 from registering. Its presence is what swaps this screen for the
+   * confirmation one, and it is kept whole because the cooldown, the delivery
+   * flag and the send result all live on it.
+   *
+   * Held in state rather than pushed as a route so the ticket survives: a
+   * `/verify?email=` navigation would arrive with no idea that an email had
+   * just gone out, and would offer a resend button the server refuses for
+   * another minute. Reloading loses this screen, but that path self-heals —
+   * logging in now returns the same 403 and lands back here.
+   */
+  const [issued, setIssued] = useState<VerificationTicket | null>(null);
+  /**
+   * Whether the address is already registered. Not itself a confirmation
+   * screen: it only earns the client a button offering one, because the
+   * likeliest reading is still "I already have an account" and hijacking the
+   * screen would bury the link to log in.
+   */
+  const [taken, setTaken] = useState(false);
+  /** They took the offer above and want to confirm rather than log in. */
+  const [confirming, setConfirming] = useState(false);
 
   async function onSubmit(event: FormEvent) {
     event.preventDefault();
@@ -44,18 +68,24 @@ export default function Register() {
     setSubmitting(true);
     setError(null);
     try {
-      // Registering signs them in, so there is nowhere to navigate to: the
-      // shell re-renders into the panel as soon as the session lands.
+      // Registering no longer signs anyone in — it mails a code and answers
+      // 202. Confirming that code is what issues the first session, so the
+      // next thing this screen shows is the box to type it into.
       //
       // `language` decides which language the confirmation email is written in.
       // The panel's current language is the best evidence we have, and it is
       // better evidence than anything the server could infer.
-      await signUp({
+      const ticket = await signUp({
         email: email.trim(),
         fullName: fullName.trim(),
         password,
         language: locale,
       });
+      setIssued(ticket);
+      // Registration mails a code itself, so the panel-wide resend clock starts
+      // here rather than when someone first presses resend.
+      noteSend(ticket.mailSent);
+      setSubmitting(false);
     } catch (caught) {
       // A duplicate email and a rejected password each get their own sentence;
       // both are things the client can act on, so neither is flattened into a
@@ -65,8 +95,64 @@ export default function Register() {
           authAction: "signUp",
         }),
       );
+      // An address that is already registered may well be this person's own
+      // abandoned signup: the account row is written before confirmation, so a
+      // first attempt they never finished still holds the address. Offering the
+      // confirmation screen is the only way out of that, and it is safe to
+      // offer because the code goes to the address, not to whoever asked.
+      if (
+        caught instanceof ApiError &&
+        caught.code === "EMAIL_ALREADY_REGISTERED"
+      ) {
+        setTaken(true);
+      }
       setSubmitting(false);
     }
+  }
+
+  if (issued || confirming) {
+    return (
+      <AuthShell>
+        <div className="rounded-3xl border border-ink-100 bg-surface p-6 shadow-xl shadow-bloom-600/5 sm:p-8">
+          <h1 className="text-2xl font-extrabold tracking-tight text-ink-900">
+            {t.register.confirmTitle}
+          </h1>
+          <p className="mt-2 text-sm text-ink-600">
+            {issued ? t.register.confirmBody : t.register.confirmExisting}
+          </p>
+          <p className="mt-2 text-sm text-ink-600">
+            {t.verify.codeSentTo}{" "}
+            <span className="font-semibold text-ink-900" dir="ltr">
+              {email.trim()}
+            </span>
+          </p>
+
+          <VerifyCodeForm
+            email={email.trim()}
+            emailDelivery={issued?.emailDelivery}
+            resendAvailableAt={issued?.resendAvailableAt ?? null}
+            onSendResult={noteSend}
+            onVerified={(session) => {
+              // Confirming hands back a real session, so there is nowhere to
+              // navigate to: the shell re-renders into the panel as soon as it
+              // lands. The tokenless branch is an address that was already
+              // confirmed, which means the password they just chose works.
+              if (session) completeVerification(session);
+              else setIssued(null);
+            }}
+          />
+
+          <p className="mt-5 text-center text-sm text-ink-600">
+            <Link
+              to={dashPath("/login")}
+              className="font-semibold text-tint-fg hover:underline"
+            >
+              {t.register.signIn}
+            </Link>
+          </p>
+        </div>
+      </AuthShell>
+    );
   }
 
   return (
@@ -132,12 +218,27 @@ export default function Register() {
           </div>
 
           {error && (
-            <p
+            <div
               role="alert"
               className="rounded-2xl bg-tint px-4 py-3 text-sm font-semibold text-danger"
             >
               {error}
-            </p>
+              {/* An account row is written before the address is confirmed, so
+                  a signup somebody abandoned still holds their email and
+                  answers a second attempt with this error. Without a way to
+                  finish it, that person is locked out of their own address by
+                  their own earlier attempt — they cannot re-register it and
+                  cannot log in either. */}
+              {taken && (
+                <button
+                  type="button"
+                  onClick={() => setConfirming(true)}
+                  className="mt-2 block font-semibold text-tint-fg underline underline-offset-4"
+                >
+                  {t.register.confirmInstead}
+                </button>
+              )}
+            </div>
           )}
 
           <button

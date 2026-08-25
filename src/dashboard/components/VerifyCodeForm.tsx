@@ -2,8 +2,12 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { ClipboardEvent, KeyboardEvent } from "react";
 import { ApiError } from "../../api/http";
 import { useI18n } from "../../i18n";
-import { confirmVerificationCode, requestVerification } from "../api/account";
-import type { AccountProfile } from "../api/types";
+import {
+  confirmVerificationCode,
+  requestVerification,
+  resendVerification,
+} from "../api/account";
+import type { SiteLoginResponse } from "../api/types";
 import { dashboardStrings } from "../strings";
 
 /**
@@ -63,11 +67,24 @@ type Props = {
   /** The address the code was sent to; needed because there is no session. */
   email: string;
   /**
-   * A session token, when one exists. Resending is authenticated, so without a
-   * token the resend button is hidden rather than offered and then refused.
+   * A session token, when one exists — which is now the rare case rather than
+   * the normal one, since an unconfirmed account can no longer log in.
+   *
+   * It is not what decides whether resending is offered any more. It only
+   * chooses *which* resend endpoint is used: the authenticated one reports
+   * `mailSent` and the unauthenticated one deliberately does not, so a session
+   * buys a more truthful answer and nothing else.
    */
   token?: string | null;
-  onVerified: (profile?: AccountProfile) => void;
+  /**
+   * Confirming issues the session, so this hands back a full login response.
+   *
+   * It is optional because one branch calls it with nothing: an address that
+   * was already confirmed is the state the client wanted, but that answer
+   * carries no token, so a caller must be able to cope with arriving verified
+   * and still signed out.
+   */
+  onVerified: (session?: SiteLoginResponse) => void;
   /**
    * Whether the server can send mail. Only an explicit `false` changes what is
    * said, so an older build that omits the field keeps the normal wording.
@@ -300,26 +317,29 @@ export default function VerifyCodeForm({
         return;
       }
 
-      setDigits((current) => {
-        const next = [...current];
-        // Typing into one box may deliver several digits at once — autofill of
-        // an SMS-style code does exactly this — so they spill rightwards.
-        for (let i = 0; i < typed.length && index + i < LENGTH; i += 1) {
-          next[index + i] = typed[i];
-        }
-        const filled = next.join("");
-        if (filled.length === LENGTH && !filled.includes("")) {
-          // Auto-submitting saves a click on the one screen where the client is
-          // already waiting on us.
-          void submit(filled);
-        }
-        return next;
-      });
+      const next = [...digits];
+      // Typing into one box may deliver several digits at once — autofill of
+      // an SMS-style code does exactly this — so they spill rightwards.
+      for (let i = 0; i < typed.length && index + i < LENGTH; i += 1) {
+        next[index + i] = typed[i];
+      }
+      setDigits(next);
+
+      // Completeness is `every box is non-empty`, not anything phrased over the
+      // joined string: `"123456".includes("")` is true for every string in
+      // JavaScript, so the guard that used to live here could never say yes and
+      // auto-submit never once fired. Deciding here rather than inside a
+      // setState updater also keeps it out of a callback React may run twice.
+      if (next.every((digit) => digit !== "")) {
+        // Auto-submitting saves a click on the one screen where the client is
+        // already waiting on us.
+        void submit(next.join(""));
+      }
 
       focusBox(index + typed.length);
       setError(null);
     },
-    [focusBox, submit],
+    [digits, focusBox, submit],
   );
 
   const onKeyDown = useCallback(
@@ -365,12 +385,18 @@ export default function VerifyCodeForm({
   );
 
   const resend = useCallback(async () => {
-    if (!token || resending || cooldown > 0) return;
+    if (resending || cooldown > 0) return;
     setResending(true);
     setError(null);
     setNotice(null);
     try {
-      const ticket = await requestVerification(token, locale);
+      // A session picks the endpoint that can also say whether the message was
+      // accepted. Without one, the unauthenticated resend is the only door —
+      // and it is the one that matters, because a client chasing a missing
+      // code cannot log in to reach the other.
+      const ticket = token
+        ? await requestVerification(token, locale)
+        : await resendVerification(email, locale);
       setCodeUnsupported(false);
       setDigits(Array(LENGTH).fill(""));
       focusBox(0);
@@ -417,7 +443,7 @@ export default function VerifyCodeForm({
     } finally {
       setResending(false);
     }
-  }, [token, resending, cooldown, locale, focusBox]);
+  }, [token, email, resending, cooldown, locale, focusBox]);
 
   const warning = tone === "warning";
   const undeliverable = emailDelivery === false;
@@ -434,20 +460,20 @@ export default function VerifyCodeForm({
         >
           {t.verify.linkOnly}
         </p>
-        {token && (
-          <button
-            type="button"
-            onClick={() => void resend()}
-            disabled={resending || cooldown > 0}
-            className="btn-secondary mt-3 disabled:opacity-60"
-          >
-            {resending
-              ? t.verify.resending
-              : cooldown > 0
-                ? t.verify.resendWait(cooldown)
-                : t.verify.resend}
-          </button>
-        )}
+        {/* Offered without a session now: resending is unauthenticated, so the
+            button no longer promises something the server would refuse. */}
+        <button
+          type="button"
+          onClick={() => void resend()}
+          disabled={resending || cooldown > 0}
+          className="btn-secondary mt-3 disabled:opacity-60"
+        >
+          {resending
+            ? t.verify.resending
+            : cooldown > 0
+              ? t.verify.resendWait(cooldown)
+              : t.verify.resend}
+        </button>
       </div>
     );
   }
@@ -511,7 +537,7 @@ export default function VerifyCodeForm({
         {/* Resending is pointless when the server cannot send: it would burn a
             throttle slot and promise a second email that will not arrive
             either. */}
-        {token && !undeliverable && (
+        {!undeliverable && (
           <button
             type="button"
             onClick={() => void resend()}

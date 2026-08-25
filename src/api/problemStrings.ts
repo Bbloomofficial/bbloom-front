@@ -29,7 +29,10 @@ const en: ProblemStrings = {
   session: "You've been signed out. Sign in again to continue.",
   forbidden: "Only the website's owner can do this.",
   notFound: "We couldn't find that.",
-  emailTaken: "There's already an account with this email. Sign in instead.",
+  emailTaken:
+    "There's already an account with this email. Sign in, or confirm the address if you never finished signing up.",
+  emailNotVerified:
+    "This address hasn't been confirmed yet. Enter the code we emailed you.",
   slugReserved: "That address is reserved by bbloom. Please choose another one.",
   memberAccountMissing:
     "Nobody with this email has a bbloom account yet. Ask them to sign up first, then invite them.",
@@ -69,7 +72,10 @@ const ka: ProblemStrings = {
   session: "სესია დასრულდა. გთხოვთ, თავიდან შეხვიდეთ.",
   forbidden: "ამის გაკეთება მხოლოდ ვებგვერდის მფლობელს შეუძლია.",
   notFound: "ვერ მოიძებნა.",
-  emailTaken: "ამ ელფოსტით ანგარიში უკვე არსებობს. უბრალოდ შედით.",
+  emailTaken:
+    "ამ ელფოსტით ანგარიში უკვე არსებობს. შედით ან დაადასტურეთ მისამართი, თუ რეგისტრაცია ბოლომდე არ დაასრულეთ.",
+  emailNotVerified:
+    "ეს მისამართი ჯერ არ არის დადასტურებული. შეიყვანეთ კოდი, რომელიც გამოგიგზავნეთ.",
   slugReserved: "ეს მისამართი დაცულია bbloom-ის მიერ. აირჩიეთ სხვა.",
   memberAccountMissing:
     "ამ ელფოსტით bbloom-ის ანგარიში ჯერ არავის აქვს. სთხოვეთ დარეგისტრირდეს და შემდეგ მოიწვიეთ.",

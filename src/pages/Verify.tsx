@@ -5,7 +5,7 @@ import LanguageSwitcher from "../components/LanguageSwitcher";
 import VerifyCodeForm from "../dashboard/components/VerifyCodeForm";
 import { ApiError } from "../api/http";
 import { confirmVerification } from "../dashboard/api/account";
-import { readStoredAccount } from "../dashboard/auth";
+import { readStoredAccount, storeSession } from "../dashboard/auth";
 import { dashboardStrings } from "../dashboard/strings";
 import { useI18n } from "../i18n";
 import { dashPath } from "../routes";
@@ -49,8 +49,16 @@ export default function Verify() {
     if (!token) return;
     let cancelled = false;
     confirmVerification(token)
-      .then(() => {
-        if (!cancelled) setState("done");
+      .then((session) => {
+        if (cancelled) return;
+        // Confirming is what issues the first session, so this page signs them
+        // in rather than congratulating them and sending them to a login form
+        // they cannot yet get through. It works even though this page sits
+        // outside the provider: the panel reads the same stored session on the
+        // next navigation, and the link is very often opened in a browser that
+        // has never seen this account.
+        storeSession(session);
+        setState("done");
       })
       .catch((error: Error) => {
         if (cancelled) return;
@@ -135,7 +143,10 @@ export default function Verify() {
                     email={email}
                     token={session?.token ?? null}
                     emailDelivery={session?.emailDelivery}
-                    onVerified={() => setState("done")}
+                    onVerified={(session) => {
+                      if (session) storeSession(session);
+                      setState("done");
+                    }}
                   />
                 </>
               ) : (
@@ -169,7 +180,10 @@ export default function Verify() {
                   email={email}
                   token={session?.token ?? null}
                   emailDelivery={session?.emailDelivery}
-                  onVerified={() => setState("done")}
+                  onVerified={(session) => {
+                      if (session) storeSession(session);
+                      setState("done");
+                    }}
                 />
               )}
             </div>

@@ -12,6 +12,9 @@ import { attachHotspots, highlightHotspot } from "../site/editing/hotspots";
 import type { HotspotTarget } from "../site/editing/hotspots";
 import { ImagePicker } from "../site/editing/ImagePicker";
 import { loginAccount, registerAccount } from "../dashboard/api/account";
+import type { VerificationTicket } from "../dashboard/api/types";
+import VerifyCodeForm from "../dashboard/components/VerifyCodeForm";
+import { ApiError } from "../api/http";
 import { storeSession, readStoredAccount } from "../dashboard/auth";
 import {
   applyDraftToPayload,
@@ -141,6 +144,21 @@ type SaveState =
   | { phase: "idle" }
   | { phase: "signedIn"; token: string; email: string }
   | { phase: "form"; mode: "register" | "signin" }
+  /**
+   * Waiting for the emailed code, holding the draft the whole time.
+   *
+   * Registering no longer returns a token, so the save cannot continue straight
+   * from the form any more — but sending someone away to confirm would abandon
+   * an unsaved draft at the exact moment they decided to keep it. So the code
+   * box appears here instead, and the session it produces resumes the same
+   * save that was interrupted.
+   */
+  | {
+      phase: "confirm";
+      email: string;
+      ticket?: VerificationTicket;
+      back: SaveState;
+    }
   | { phase: "working"; progress: ApplyProgress }
   | { phase: "done"; slug: string; siteId: string; publishError: string | null };
 
@@ -159,6 +177,11 @@ export default function TryEditor() {
   const [notice, setNotice] = useState<string | null>(null);
   const [save, setSave] = useState<SaveState>({ phase: "idle" });
   const [formError, setFormError] = useState<string | null>(null);
+  // An abandoned signup holds the address, so `EMAIL_ALREADY_REGISTERED` no
+  // longer means "you have an account". It may be the client's own unconfirmed
+  // attempt, and here they are holding an unsaved draft — so the message alone
+  // is a dead end and the way out has to be on screen next to it.
+  const [takenEmail, setTakenEmail] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [open, setOpen] = useState<Record<string, boolean>>({});
   const [mode, setMode] = useState<"edit" | "review">("edit");
@@ -396,22 +419,58 @@ export default function TryEditor() {
     const authAction = save.mode === "register" ? "signUp" : "signIn";
     setBusy(true);
     setFormError(null);
+    setTakenEmail(null);
+    const typedEmail = String(data.get("email") ?? "").trim();
     try {
-      const response =
-        save.mode === "register"
-          ? await registerAccount({
-              fullName: String(data.get("fullName") ?? ""),
-              email: String(data.get("email") ?? ""),
-              password: String(data.get("password") ?? ""),
-              language: locale,
-            })
-          : await loginAccount(
-              String(data.get("email") ?? ""),
-              String(data.get("password") ?? ""),
-            );
+      if (save.mode === "register") {
+        // 202 and a code in the inbox: no token, so nothing can be saved yet.
+        const ticket = await registerAccount({
+          fullName: String(data.get("fullName") ?? ""),
+          email: typedEmail,
+          password: String(data.get("password") ?? ""),
+          language: locale,
+        });
+        setSave({
+          phase: "confirm",
+          email: ticket.email || typedEmail,
+          ticket,
+          back: save,
+        });
+        return;
+      }
+      const response = await loginAccount(
+        typedEmail,
+        String(data.get("password") ?? ""),
+      );
       storeSession(response);
       await finish(response.token, save);
     } catch (error) {
+      // Signing in with an unconfirmed account is refused now. That is the
+      // same dead end as a fresh registration and takes the same way out,
+      // rather than being reported as a wrong password — which is what the
+      // generic message would have implied, about the one thing that was
+      // actually correct.
+      if (
+        error instanceof ApiError &&
+        error.code === "EMAIL_NOT_VERIFIED" &&
+        save.phase === "form"
+      ) {
+        setSave({
+          phase: "confirm",
+          email:
+            typeof error.problem.email === "string"
+              ? error.problem.email
+              : typedEmail,
+          back: save,
+        });
+        return;
+      }
+      if (
+        error instanceof ApiError &&
+        error.code === "EMAIL_ALREADY_REGISTERED"
+      ) {
+        setTakenEmail(typedEmail);
+      }
       setFormError(
         describeProblem(error, t.errors, t.saveFailed, { authAction }),
       );
@@ -857,6 +916,50 @@ export default function TryEditor() {
               </div>
             ) : null}
 
+            {save.phase === "confirm" ? (
+              <div className="flex flex-col gap-3">
+                <h2 className="text-lg font-extrabold text-ink-900">
+                  {t.confirmTitle}
+                </h2>
+                <p className="text-sm text-ink-600">{t.confirmBody}</p>
+                <p className="text-sm text-ink-600" dir="ltr">
+                  <span className="font-semibold text-ink-900">
+                    {save.email}
+                  </span>
+                </p>
+
+                {/* The draft is still in this tab and still unsaved, which is
+                    why the code is asked for here rather than on the panel's
+                    confirmation screen. The session it returns resumes the
+                    save that the 202 interrupted. */}
+                <VerifyCodeForm
+                  email={save.email}
+                  emailDelivery={save.ticket?.emailDelivery}
+                  resendAvailableAt={save.ticket?.resendAvailableAt ?? null}
+                  onVerified={(session) => {
+                    if (!session) {
+                      // Already confirmed: there is no token here, so the way
+                      // on is the password they just typed.
+                      setSave({ phase: "form", mode: "signin" });
+                      return;
+                    }
+                    storeSession(session);
+                    void finish(session.token, save.back);
+                  }}
+                />
+
+                <div className="flex items-center justify-between text-sm">
+                  <button
+                    type="button"
+                    className="text-ink-500 underline-offset-4 transition hover:text-ink-900 hover:underline"
+                    onClick={() => setSave({ phase: "idle" })}
+                  >
+                    {t.cancel}
+                  </button>
+                </div>
+              </div>
+            ) : null}
+
             {save.phase === "form" ? (
               <form onSubmit={onSubmitAccount} className="flex flex-col gap-3">
                 <h2 className="text-lg font-extrabold text-ink-900">
@@ -914,9 +1017,26 @@ export default function TryEditor() {
                 </label>
 
                 {formError ? (
-                  <p className="rounded-xl bg-rose-50 px-3 py-2 text-sm text-rose-700">
-                    {formError}
-                  </p>
+                  <div className="rounded-xl bg-rose-50 px-3 py-2 text-sm text-rose-700">
+                    <p>{formError}</p>
+                    {takenEmail ? (
+                      <button
+                        type="button"
+                        className="mt-2 font-bold underline underline-offset-2"
+                        onClick={() => {
+                          if (save.phase !== "form") return;
+                          setFormError(null);
+                          setSave({
+                            phase: "confirm",
+                            email: takenEmail,
+                            back: save,
+                          });
+                        }}
+                      >
+                        {t.confirmInstead}
+                      </button>
+                    ) : null}
+                  </div>
                 ) : null}
 
                 <button
