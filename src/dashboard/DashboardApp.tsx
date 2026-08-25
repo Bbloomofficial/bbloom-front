@@ -7,6 +7,7 @@ import {
   useParams,
 } from "react-router-dom";
 import { useI18n } from "../i18n";
+import { claimDocumentTitle } from "../documentTitle";
 import type { AccountSite } from "./api/types";
 import { AuthProvider, sitesOf, useAuth, useSession } from "./auth";
 import Layout from "./components/Layout";
@@ -203,6 +204,7 @@ function Shell() {
   const { token, user, restoring } = useAuth();
 
   useEffect(() => {
+    const release = claimDocumentTitle();
     document.title = user
       ? `${t.nav.sites} · ${t.brand}`
       : `${t.login.title} · bbloom`;
@@ -217,6 +219,7 @@ function Shell() {
     // `I18nProvider` — a child's effects run first — so the title captured then
     // would be whatever `index.html` shipped, not the visitor's language.
     return () => {
+      release();
       document.title = marketing.meta.title;
     };
   }, [user, t, marketing]);

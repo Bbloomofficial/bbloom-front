@@ -3,6 +3,7 @@ import type { ReactNode } from 'react'
 import { en } from './en'
 import { ka } from './ka'
 import type { Dict } from './types'
+import { documentTitleIsClaimed } from '../documentTitle'
 
 export const locales = [
   { code: 'ka', label: 'ქართული', short: 'KA' },
@@ -38,7 +39,11 @@ export function I18nProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     document.documentElement.lang = locale
-    document.title = dictionaries[locale].meta.title
+    // Not while a screen owns the title — see `documentTitle.ts`. The
+    // description is unconditional: nothing else claims it.
+    if (!documentTitleIsClaimed()) {
+      document.title = dictionaries[locale].meta.title
+    }
     document
       .querySelector('meta[name="description"]')
       ?.setAttribute('content', dictionaries[locale].meta.description)
