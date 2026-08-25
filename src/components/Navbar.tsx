@@ -5,6 +5,7 @@ import ThemeToggle from './ThemeToggle'
 import LanguageSwitcher from './LanguageSwitcher'
 import { useI18n } from '../i18n'
 import { useClientSession } from '../clientSession'
+import { dashPath } from '../routes'
 
 export default function Navbar() {
   const [open, setOpen] = useState(false)
@@ -62,11 +63,13 @@ export default function Navbar() {
           <ThemeToggle />
           {/* Signing in has to be reachable from every marketing page, not only
               from a plan card — and to someone already signed in, the pair is
-              replaced by the one link that is true for them. `/` is their
-              dashboard now, so this is a link home rather than a link away. */}
+              replaced by the one link that is true for them. This is a link
+              away, to `/dashboard`: the landing page is the landing page for
+              everyone, so being signed in changes where you can go, not what
+              this page is. */}
           {signedIn ? (
             <Link
-              to="/"
+              to={dashPath()}
               className="btn btn-primary btn-sm hidden whitespace-nowrap xl:inline-flex"
             >
               {t.nav.dashboard}
@@ -147,7 +150,7 @@ export default function Navbar() {
             <div className="mt-1 grid grid-cols-2 gap-2">
               {signedIn ? (
                 <Link
-                  to="/"
+                  to={dashPath()}
                   className="col-span-2 rounded-xl border border-ink-100 bg-control px-4 py-3 text-center text-sm font-semibold text-ink-600 transition hover:border-bloom-300 hover:bg-tint hover:text-bloom-600 active:scale-95"
                 >
                   {t.nav.dashboard}

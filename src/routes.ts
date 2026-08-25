@@ -5,13 +5,14 @@
  * served from the root, and stays on `/admin` on the marketing domain so old
  * links keep working.
  *
- * The client dashboard is no longer a separate destination at all. It is served
- * from the **root of the marketing domain**: `bbloom.ge/` is the pitch to a
- * stranger and their websites to a signed-in client, and every screen under it
- * — `/s/{id}`, `/account`, `/new` — sits directly at the root. `panel.bbloom.ge`
- * redirects there path-for-path, and the in-app `panel` host below stays as the
- * fallback for anyone who reaches the bundle on that hostname anyway, so links
- * in mail we have already sent keep working.
+ * The client dashboard is no longer a destination of its own. It is a page on
+ * the marketing site: `/` is the landing page for everyone, signed in or not,
+ * and `/dashboard` is a signed-in client's websites. Its screens sit at the
+ * root — `/s/{id}`, `/account`, `/new` — because the backend composes mail
+ * links against those paths. `panel.bbloom.ge` redirects there path-for-path,
+ * and the in-app `panel` host below stays as the fallback for anyone who
+ * reaches the bundle on that hostname anyway, so links in mail we have already
+ * sent keep working.
  *
  * Every internal link is still built from these helpers rather than written out.
  * The staff panel is the case that needs it — the same `<Link>` has to render
@@ -94,21 +95,37 @@ export function panelHostExit(): string | null {
   const base = baseDomain();
   if (host !== `panel.${base}`) return null;
   const { pathname, search, hash } = window.location;
-  return `https://${base}${pathname}${search}${hash}`;
+  // Path-for-path, with one exception: the panel's home was `/`, and `/` on the
+  // marketing domain is the landing page. Someone arriving from a bookmark of
+  // the panel wanted their websites, so they get `/dashboard` rather than the
+  // pitch. Every other path already names the screen it wants.
+  const path = pathname === "/" || pathname === "" ? DASH_HOME : pathname;
+  return `https://${base}${path}${search}${hash}`;
 }
 
 /** `""` when the app owns the whole hostname, otherwise its path prefix. */
 export const ADMIN_BASE = appHost === "admin" ? "" : "/admin";
 
 /**
- * The client dashboard is at the root of every hostname that serves it — its
- * own, and the marketing domain, where it has been merged into the home page.
+ * The client dashboard is a *page* on the marketing site, not a site of its own
+ * and not the site's home page.
  *
- * Kept as a constant rather than inlined so `dashPath()` stays the single place
- * every dashboard link is built, which is what made moving it a one-line change
- * here instead of an edit to fifty call sites.
+ * Two constants rather than one, because the dashboard's home and its screens
+ * are at different depths on purpose:
+ *
+ * - `DASH_HOME` is `/dashboard`. `/` belongs to the marketing landing page and
+ *   always renders it, signed in or out.
+ * - `DASH_BASE` is `""`, so the screens stay at `/s/{id}`, `/account`, `/new`.
+ *   That is not cosmetic: the backend composes enquiry notification links as
+ *   `<origin>/s/{siteId}/inbox`, so moving these would silently break mail that
+ *   has already been sent.
+ *
+ * Kept as constants rather than inlined so `dashPath()` stays the single place
+ * every dashboard link is built — which is what has made each of today's moves
+ * an edit here instead of an edit to fifty call sites.
  */
 export const DASH_BASE = "";
+export const DASH_HOME = "/dashboard";
 
 function join(base: string, path: string): string {
   if (!path || path === "/") return base || "/";
@@ -122,6 +139,7 @@ export function adminPath(path = ""): string {
 
 /** A link into the client dashboard. `dashPath()` is its home. */
 export function dashPath(path = ""): string {
+  if (!path || path === "/") return DASH_HOME;
   return join(DASH_BASE, path);
 }
 
@@ -141,18 +159,17 @@ export function isAppHost(): boolean {
 
 /**
  * Absolute homes, for links that have to cross from one hostname to another —
- * the staff panel pointing at the client dashboard, say. On a hostname that is
+ * the staff panel pointing at a client's dashboard, say. On a hostname that is
  * not under the base domain these stay relative so a preview deployment keeps
  * working.
  *
- * Both now name the same URL, because the client dashboard *is* the marketing
- * home: signed in, `/` renders the dashboard. They stay separate functions
- * because they answer different questions, and a staff link labelled "the
- * client's dashboard" should not silently start meaning something else if the
- * marketing home ever moves.
+ * They name different pages again. The dashboard is a page *on* the marketing
+ * site rather than its home: `/` is the landing page for everyone, and
+ * `/dashboard` is where a signed-in client's websites are.
  */
 export function dashboardHome(): string {
-  return marketingHome();
+  const base = marketingHome();
+  return base === "/" ? DASH_HOME : `${base.replace(/\/$/, "")}${DASH_HOME}`;
 }
 
 /**

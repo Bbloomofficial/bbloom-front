@@ -422,20 +422,16 @@ export default function Layout({
               {t.signedInAs} {user.email}
             </span>
             {/*
-              Only when bbloom.ge is somewhere else. On the marketing domain the
-              dashboard *is* the home page, so this would be a link to the page
-              it sits on, under a label promising to take you somewhere — and a
-              signed-in client following it would arrive back here, which reads
-              as the link being broken.
+              The dashboard sits at `/dashboard` and the landing page at `/`, so
+              this leads somewhere again — which it did not when the two shared
+              a URL.
             */}
-            {marketingHome() !== "/" && (
-              <a
-                href={marketingHome()}
-                className="font-semibold hover:text-bloom-600"
-              >
-                {t.backToBbloom}
-              </a>
-            )}
+            <a
+              href={marketingHome()}
+              className="font-semibold hover:text-bloom-600"
+            >
+              {t.backToBbloom}
+            </a>
           </div>
         </footer>
       </div>

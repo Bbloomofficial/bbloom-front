@@ -13,7 +13,6 @@ import Contact from "./pages/Contact";
 import NotFound from "./pages/NotFound";
 import { resolveSiteHost } from "./site/host";
 import { resolveAppHost } from "./routes";
-import { useClientSession } from "./clientSession";
 
 // Client sites are a separate product from the marketing site, so visitors to
 // either only download the half they need. The dashboard is a third audience —
@@ -92,20 +91,25 @@ function MarketingApp() {
 }
 
 /**
- * The first path segment of every screen the client dashboard owns, now that it
- * is served from the root of the marketing domain rather than from
- * `/dashboard`.
+ * The first path segment of every screen the client dashboard owns.
+ *
+ * `dashboard` is its home. The rest sit at the root rather than under it, and
+ * that is deliberate rather than left over: the backend composes enquiry
+ * notification links as `<origin>/s/{siteId}/inbox`, so these paths are part of
+ * a contract with mail that has already been sent.
  *
  * Listed rather than inferred, because the alternative — hand every unknown
  * path to the dashboard and let it fall through — would mean a typo like
  * `/pricng` reaching the dashboard's catch-all and being answered with a login
- * screen instead of a 404. The marketing site keeps every path not named here.
+ * screen instead of a 404. The marketing site keeps every path not named here,
+ * `/` above all.
  *
  * `s`, `account` and `new` are the live screens; `page`, `inbox` and `messages`
  * are the single-site paths the dashboard still answers with a redirect, and
  * they are listed for the same reason it keeps them.
  */
 const CLIENT_APP_SEGMENTS = new Set([
+  "dashboard",
   "s",
   "account",
   "new",
@@ -119,24 +123,30 @@ const CLIENT_APP_SEGMENTS = new Set([
 /**
  * Whether the client dashboard, rather than the marketing site, answers here.
  *
- * `/` is the interesting one: it is the marketing home to a stranger and the
- * dashboard to a signed-in client. That is the merge — there is no separate
- * dashboard landing page any more.
+ * `/` is not in the set and never will be. The landing page is the landing page
+ * for everyone: a signed-in client sees the same pitch a stranger does, and
+ * reaches their websites through a link to `/dashboard`. Making the root
+ * conditional on a session is what we got wrong the first time, and it is
+ * invisible to anyone signed out — which is why it survived a full round of
+ * verification.
  */
-function clientAppOwns(pathname: string, signedIn: boolean): boolean {
-  if (pathname === "/") return signedIn;
+function clientAppOwns(pathname: string): boolean {
   return CLIENT_APP_SEGMENTS.has(pathname.split("/")[1] ?? "");
 }
 
 /**
- * `/dashboard/...` — where the client panel used to live — folded onto the root
- * it now occupies.
+ * `/dashboard/...` — where the whole panel used to live — folded onto the paths
+ * its screens occupy now.
  *
- * Kept rather than deleted, because these paths are in bookmarks and in mail
- * that has already been sent. The query and fragment come along:
+ * Only ever the *sub*paths: `/dashboard` itself is the dashboard's home again,
+ * so this must not touch it. The query and fragment come along, because
  * `/dashboard/s/1/inbox?selected=X` has to land on the same enquiry it always
  * did.
  */
+function isLegacyDashboardSubpath(pathname: string): boolean {
+  return pathname.startsWith("/dashboard/") && pathname !== "/dashboard/";
+}
+
 function LegacyDashboardPath() {
   const { pathname, search, hash } = useLocation();
   const rest = pathname.replace(/^\/dashboard/, "");
@@ -144,11 +154,10 @@ function LegacyDashboardPath() {
 }
 
 export default function App() {
-  // Both are read unconditionally, before any branch returns: the client
-  // dashboard now shares the marketing domain, so which app answers depends on
-  // the path and on whether anyone is signed in, not on the hostname alone.
+  // Read before any branch returns: the client dashboard shares the marketing
+  // domain now, so which app answers depends on the path rather than on the
+  // hostname alone.
   const { pathname } = useLocation();
-  const signedIn = useClientSession();
 
   // Each signed-in app has a hostname of its own, where it is served from the
   // root rather than from a path. This is checked before the client-site
@@ -164,10 +173,10 @@ export default function App() {
     );
   }
 
-  // `panel.bbloom.ge` is a compatibility hostname now: the dashboard's home is
-  // the marketing root, and `main.tsx` forwards that hostname there before this
-  // ever renders. The branch stays because it is how the dashboard is run at
-  // the root locally (`VITE_APP_HOST=panel`), which the forward deliberately
+  // `panel.bbloom.ge` is a compatibility hostname now: the dashboard lives on
+  // the marketing domain, and `main.tsx` forwards that hostname there before
+  // this ever renders. The branch stays because it is how the dashboard is run
+  // at the root locally (`VITE_APP_HOST=panel`), which the forward deliberately
   // ignores, and because a forward that is ever removed should land on a
   // working dashboard rather than on nothing.
   if (appHost === "panel") {
@@ -212,17 +221,26 @@ export default function App() {
   }
 
   /*
-    The client dashboard, which lives on this domain now rather than on one of
-    its own. It answers for its own paths, and for `/` when there is a session
-    to render — the marketing home and the dashboard are the same URL, told
-    apart by who is asking.
+    The client dashboard, which is a page on this site now rather than a site of
+    its own. It answers for `/dashboard` and for its own screens, and never for
+    `/` — the landing page belongs to the marketing site for everyone.
 
-    Mounted at `/*` so its internal routes see the same paths they see on the
-    panel hostname, and mounted as one element for every path it owns so that
-    moving between `/login` and `/` does not unmount and remount the whole app
+    Mounted at `/*` as one element for every path it owns, so that moving
+    between `/login` and `/dashboard` does not unmount and remount the whole app
     mid sign-in.
+
+    The legacy check comes first because `/dashboard/account` is an old link
+    that must fold onto `/account`, while `/dashboard` itself is the live home.
   */
-  if (clientAppOwns(pathname, signedIn)) {
+  if (isLegacyDashboardSubpath(pathname)) {
+    return (
+      <Routes>
+        <Route path="*" element={<LegacyDashboardPath />} />
+      </Routes>
+    );
+  }
+
+  if (clientAppOwns(pathname)) {
     return (
       <Routes>
         <Route path="/*" element={<Dashboard />} />
@@ -235,13 +253,11 @@ export default function App() {
       <Route path="/site/:slug" element={<Site mode="ref" />} />
       <Route path="/site/:slug/p/:productSlug" element={<Site mode="ref" />} />
       {/*
-        The client dashboard used to be mounted here, under `/dashboard`. It is
-        now part of this site rather than a place you go to: see the branch
-        above, which hands it the root and its own paths. What is left is the
-        old prefix, redirecting.
+        The client dashboard used to be mounted here, under `/dashboard`, as a
+        prefix owning everything beneath it. It is a page on this site now: `/`
+        is the landing page for everyone, `/dashboard` is a client's websites,
+        and the branch above hands the dashboard that path and its own screens.
       */}
-      <Route path="/dashboard/*" element={<LegacyDashboardPath />} />
-      <Route path="/dashboard" element={<LegacyDashboardPath />} />
       {/* The editor is its own full-height workspace, so it sits outside the
           marketing chrome rather than inside a page with a navbar. */}
       <Route

@@ -149,8 +149,13 @@ function SiteRoutes() {
 function SignedIn() {
   return (
     <Routes>
+      {/*
+        The dashboard's home is a path — `/dashboard` — not an index route.
+        `/` is the marketing landing page for everyone, signed in or not, so
+        there is no index for this app to claim.
+      */}
       <Route
-        index
+        path="dashboard"
         element={
           <Layout>
             <Sites />

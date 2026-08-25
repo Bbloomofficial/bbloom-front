@@ -14,15 +14,9 @@
       "permanent": false
     },
     {
-      "source": "/dashboard",
+      "source": "/dashboard/:path+",
       "has": [{ "type": "host", "value": "(www\\.)?bbloom\\.ge" }],
-      "destination": "/",
-      "permanent": false
-    },
-    {
-      "source": "/dashboard/:path*",
-      "has": [{ "type": "host", "value": "(www\\.)?bbloom\\.ge" }],
-      "destination": "/:path*",
+      "destination": "/:path+",
       "permanent": false
     },
     {
