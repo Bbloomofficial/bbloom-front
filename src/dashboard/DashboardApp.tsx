@@ -198,7 +198,7 @@ function SignedIn() {
 }
 
 function Shell() {
-  const { locale } = useI18n();
+  const { locale, t: marketing } = useI18n();
   const t = dashboardStrings(locale);
   const { token, user, restoring } = useAuth();
 
@@ -206,7 +206,20 @@ function Shell() {
     document.title = user
       ? `${t.nav.sites} · ${t.brand}`
       : `${t.login.title} · bbloom`;
-  }, [user, t]);
+    // Put the marketing title back on the way out. The dashboard is a page on
+    // the marketing site now, so leaving it — by the „ჩემი ვებგვერდები" link in
+    // reverse, say — is an ordinary in-app navigation with no reload to reset
+    // this. Without the cleanup the landing page keeps the dashboard's title,
+    // and the tab reads „ვებგვერდები" while showing the pitch.
+    //
+    // Recomputed from the dictionary rather than captured on mount, because on
+    // a cold load straight into `/dashboard` this effect runs before the one in
+    // `I18nProvider` — a child's effects run first — so the title captured then
+    // would be whatever `index.html` shipped, not the visitor's language.
+    return () => {
+      document.title = marketing.meta.title;
+    };
+  }, [user, t, marketing]);
 
   if (restoring) {
     return (
