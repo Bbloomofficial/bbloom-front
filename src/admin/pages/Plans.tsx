@@ -174,6 +174,11 @@ export default function Plans() {
                           {t.plans.purchasable}: {t.no}
                         </p>
                       )}
+                      {plan.comingSoon && (
+                        <p className="mt-0.5 text-xs font-semibold text-ink-500">
+                          {t.plans.comingSoon}
+                        </p>
+                      )}
                     </td>
                     <td className="px-5 py-4">
                       <div className="flex items-center justify-end gap-3">

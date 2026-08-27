@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { formatMinor } from "../../api/plans";
+import { formatMinor, isComingSoon } from "../../api/plans";
 import { describeProblem } from "../../api/problem";
 import { ApiError } from "../../api/http";
 import { PlanCard, usePlans } from "../../components/PlanCard";
@@ -123,7 +123,11 @@ export default function Billing() {
   // The public plan list now carries advertised-but-negotiated tiers too. The
   // API refuses a subscription to one with a 409, so offering it a "Choose"
   // button here would be a checkout that cannot complete.
-  const buyablePlans = plans?.filter((plan) => plan.purchasable !== false) ?? null;
+  const shownPlans = plans?.filter((plan) => plan.purchasable !== false) ?? null;
+  // Coming-soon tiers are shown but never quoted or bought: /quote refuses them
+  // with the same 409 /checkout would, so asking would spend a request per plan
+  // per keystroke to be told what the flag already said.
+  const buyablePlans = shownPlans?.filter((plan) => !isComingSoon(plan)) ?? null;
 
   const [subscription, setSubscription] = useState<SubscriptionDetail | null>(
     null,
@@ -505,15 +509,16 @@ export default function Billing() {
               )}
           </div>
 
-          {!buyablePlans ? (
+          {!shownPlans ? (
             <p className="mt-4 text-sm text-ink-400">{t.loading}</p>
           ) : (
             <div className="mt-4 grid items-start gap-6 lg:grid-cols-3">
-              {buyablePlans.map((plan) => (
+              {shownPlans.map((plan) => (
                 <PlanCard
                   key={plan.code}
                   plan={plan}
                   featuredLabel={t.plans.featured}
+                  comingSoonLabel={t.plans.comingSoon}
                   periodLabel={
                     plan.billingPeriod === "YEARLY"
                       ? t.plans.perYear
@@ -522,26 +527,40 @@ export default function Billing() {
                   current={plan.code === subscription.planCode}
                   currentLabel={t.plans.current}
                   action={
-                    <div className="space-y-3">
-                      <QuoteLine
-                        quote={quotes[plan.code]}
-                        locale={locale}
-                        totalLabel={t.billing.quoteTotal}
-                        savingLabel={t.billing.quoteSaving}
-                      />
+                    isComingSoon(plan) ? (
+                      // No quote line above it either: there is no quote, and an
+                      // empty gap where every other card shows a total reads as
+                      // a price that failed to load rather than as one that does
+                      // not exist yet.
                       <button
                         type="button"
-                        onClick={() => void choose(plan.code)}
-                        disabled={busy !== null}
-                        className={`w-full disabled:opacity-60 ${
-                          plan.featured ? "btn-primary" : "btn-secondary"
-                        }`}
+                        disabled
+                        className="btn btn-secondary w-full"
                       >
-                        {busy === plan.code
-                          ? t.billing.checkoutStarting
-                          : t.plans.choose}
+                        {t.plans.comingSoonCta}
                       </button>
-                    </div>
+                    ) : (
+                      <div className="space-y-3">
+                        <QuoteLine
+                          quote={quotes[plan.code]}
+                          locale={locale}
+                          totalLabel={t.billing.quoteTotal}
+                          savingLabel={t.billing.quoteSaving}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => void choose(plan.code)}
+                          disabled={busy !== null}
+                          className={`w-full disabled:opacity-60 ${
+                            plan.featured ? "btn-primary" : "btn-secondary"
+                          }`}
+                        >
+                          {busy === plan.code
+                            ? t.billing.checkoutStarting
+                            : t.plans.choose}
+                        </button>
+                      </div>
+                    )
                   }
                 />
               ))}

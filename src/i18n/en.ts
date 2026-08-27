@@ -142,6 +142,8 @@ export const en: Dict = {
     freeTierIntro:
       'Every website starts free. Pick a template, fill in your products and photos, and go live on a bbloom.ge address in minutes. Upgrade when you need more.',
     mostPopular: 'Most popular',
+    comingSoon: 'Coming soon',
+    comingSoonCta: 'Coming soon',
     perMonth: 'per month',
     perYear: 'per year',
     signUp: 'Get started',

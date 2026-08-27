@@ -218,6 +218,8 @@ export type DashboardStrings = {
     perYear: string;
     featured: string;
     choose: string;
+    comingSoon: string;
+    comingSoonCta: string;
     current: string;
     loadFailed: string;
   };
@@ -605,6 +607,8 @@ const en: DashboardStrings = {
     perYear: "/year",
     featured: "Most popular",
     choose: "Choose",
+    comingSoon: "Coming soon",
+    comingSoonCta: "Coming soon",
     current: "Your plan",
     loadFailed: "We could not load the plans.",
   },
@@ -1017,6 +1021,8 @@ const ka: DashboardStrings = {
     perYear: "/წელი",
     featured: "ყველაზე პოპულარული",
     choose: "არჩევა",
+    comingSoon: "მალე",
+    comingSoonCta: "მალე დაემატება",
     current: "თქვენი პაკეტი",
     loadFailed: "პაკეტები ვერ ჩაიტვირთა.",
   },

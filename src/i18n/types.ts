@@ -102,6 +102,8 @@ export type Dict = {
     description: string
     freeTierIntro: string
     mostPopular: string
+    comingSoon: string
+    comingSoonCta: string
     perMonth: string
     perYear: string
     signUp: string

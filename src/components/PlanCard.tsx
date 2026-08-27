@@ -3,6 +3,7 @@ import {
   fetchWebsitePlans,
   formatPlanPrice,
   formatPlanWasPrice,
+  isComingSoon,
   isNegotiable,
 } from "../api/plans";
 import type { WebsitePlan } from "../api/plans";
@@ -58,6 +59,7 @@ function Check() {
 export function PlanCard({
   plan,
   featuredLabel,
+  comingSoonLabel,
   periodLabel,
   action,
   current,
@@ -65,6 +67,7 @@ export function PlanCard({
 }: {
   plan: WebsitePlan;
   featuredLabel: string;
+  comingSoonLabel?: string;
   periodLabel: string;
   action: React.ReactNode;
   current?: boolean;
@@ -86,17 +89,34 @@ export function PlanCard({
   // them, and the one number a pricing page must never get wrong is the price.
   const was = negotiable ? null : formatPlanWasPrice(plan, locale);
 
+  // Both badges want the same corner, so one has to yield, and "most popular"
+  // is the one that should: a tier nobody can buy yet cannot be the popular
+  // choice, and the claim would be read as a lie rather than as a leftover
+  // setting. The raised, shadowed treatment goes with it for the same reason —
+  // the eye should not be steered towards the one card that refuses the click.
+  const soon = isComingSoon(plan);
+  const featured = plan.featured && !soon;
+
   return (
     <div
       className={`relative flex min-w-0 flex-col break-words rounded-[2rem] border bg-surface p-6 ${
-        plan.featured
+        featured
           ? "border-bloom-200 shadow-2xl shadow-bloom-600/10 dark:border-bloom-700 lg:-mt-4"
-          : "border-ink-100"
+          : soon
+            // Dashed reads as provisional at a glance, before any label is
+            // read, and does it without dimming a price we want people to see.
+            ? "border-dashed border-ink-300"
+            : "border-ink-100"
       }`}
     >
-      {plan.featured && (
+      {featured && (
         <span className="absolute -top-3 start-6 rounded-full bg-bloom-600 px-3 py-1 text-xs font-bold text-white sm:start-8">
           {featuredLabel}
+        </span>
+      )}
+      {soon && comingSoonLabel && (
+        <span className="absolute -top-3 start-6 rounded-full bg-ink-800 px-3 py-1 text-xs font-bold text-surface sm:start-8">
+          {comingSoonLabel}
         </span>
       )}
       {current && currentLabel && (

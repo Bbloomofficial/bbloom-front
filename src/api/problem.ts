@@ -108,6 +108,13 @@ export type ProblemStrings = {
   promoExpired: string;
   promoNotForPlan: string;
   /**
+   * A plan that is advertised but not open for business yet.
+   *
+   * Reachable without any UI bug: the plan's code is in the public pricing
+   * payload, and the disabled button only stops people who use the button.
+   */
+  planComingSoon: string;
+  /**
    * A code that has been used its maximum number of times.
    *
    * Deliberately not "you have used this too often" and not "invalid": the
@@ -397,6 +404,7 @@ export function describeProblem(
         return strings.promoNotForPlan;
       if (caught.code === "PROMO_CODE_LIMIT_REACHED")
         return strings.promoLimitReached;
+      if (caught.code === "PLAN_COMING_SOON") return strings.planComingSoon;
       // Matched on the code first. The message test behind it is the older
       // check and stays only as tolerance for a backend that predates the
       // code — reading English prose to decide what happened is exactly the

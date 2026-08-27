@@ -42,6 +42,7 @@ function emptyPlan(): PlanUpsertRequest {
     currency: "USD",
     billingPeriod: "MONTHLY",
     purchasable: true,
+    comingSoon: false,
     translations: LANGUAGES.map((language) => ({
       language,
       name: "",
@@ -72,6 +73,11 @@ function toForm(plan: AdminPlanDto): PlanUpsertRequest {
   return {
     ...blank,
     ...editable,
+    // Forced to a real boolean rather than trusted from the payload. The API
+    // takes it as a primitive, so posting `undefined` back is a malformed body
+    // rather than a default — which is exactly what a plan loaded from a
+    // backend that predates the field would otherwise send on the next save.
+    comingSoon: plan.comingSoon === true,
     translations: LANGUAGES.map(
       (language) =>
         plan.translations.find((item) => item.language === language) ?? {
@@ -451,12 +457,28 @@ export default function PlanEditor() {
               onChange={(purchasable) => patch({ purchasable })}
             />
             <Toggle
+              id="plan-coming-soon"
+              label={t.plans.comingSoon}
+              hint={t.plans.comingSoonHint}
+              checked={form.comingSoon}
+              onChange={(comingSoon) => patch({ comingSoon })}
+            />
+            <Toggle
               id="plan-featured"
               label={t.plans.featured}
               hint={t.plans.featuredHint}
               checked={form.featured}
               onChange={(featured) => patch({ featured })}
             />
+            {form.comingSoon && form.featured && (
+              /* Both are saved, but only one can be shown, and the card drops
+                 "most popular" rather than the coming-soon badge. Better said
+                 here than discovered by staring at a pricing page wondering
+                 which of two switches is being ignored. */
+              <p className="rounded-2xl bg-tint px-4 py-3 text-sm text-ink-600">
+                {t.plans.comingSoonBeatsFeatured}
+              </p>
+            )}
           </div>
         </section>
 

@@ -437,6 +437,16 @@ export type AdminPlanDto = {
   currency: string;
   billingPeriod: string;
   purchasable: boolean;
+  /**
+   * Announced on the pricing page but not open for business. Distinct from
+   * `purchasable` on purpose: that one is the negotiated tier, whose price is a
+   * conversation, while this one advertises a real price that simply cannot be
+   * paid yet. Self-serve checkout is refused with a `PLAN_COMING_SOON` 409.
+   *
+   * A sale is still allowed on one of these, unlike on a negotiated tier — a
+   * launch offer set up in advance is already running the day the plan opens.
+   */
+  comingSoon: boolean;
   translations: AdminPlanTranslationDto[];
   /**
    * A sale on this plan: how much off, and for how long.

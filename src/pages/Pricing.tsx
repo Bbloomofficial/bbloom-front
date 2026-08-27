@@ -4,6 +4,7 @@ import AuthLink from '../components/AuthLink'
 import FaqAccordion from '../components/FaqAccordion'
 import CtaBand from '../components/CtaBand'
 import { PlanCard, usePlans } from '../components/PlanCard'
+import { isComingSoon } from '../api/plans'
 import { useI18n } from '../i18n'
 
 /**
@@ -65,13 +66,26 @@ export default function Pricing() {
                 key={plan.code}
                 plan={plan}
                 featuredLabel={t.pricingPage.mostPopular}
+                comingSoonLabel={t.pricingPage.comingSoon}
                 periodLabel={
                   plan.billingPeriod === 'YEARLY'
                     ? t.pricingPage.perYear
                     : t.pricingPage.perMonth
                 }
                 action={
-                  // A negotiated tier has no checkout to send anyone to, and the
+                  // Announced but not open yet. No arrow and no destination:
+                  // the arrow is the part that promises the button goes
+                  // somewhere, so it would be the one detail actively lying.
+                  //
+                  // `btn` is spelled out alongside `btn-secondary` because it is
+                  // an `@utility` — `@apply btn` copies its declarations but
+                  // leaves the element without the class, so `.btn:disabled`
+                  // matches nothing and the button looks entirely pressable.
+                  isComingSoon(plan) ? (
+                    <button type="button" disabled className="btn btn-secondary w-full">
+                      {t.pricingPage.comingSoonCta}
+                    </button>
+                  ) : // A negotiated tier has no checkout to send anyone to, and the
                   // API refuses a subscription to it, so sign-up would be a dead
                   // end wearing a primary button.
                   plan.purchasable === false ? (

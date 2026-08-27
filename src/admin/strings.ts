@@ -327,6 +327,9 @@ export type AdminStrings = {
     activeHint: string;
     purchasable: string;
     purchasableHint: string;
+    comingSoon: string;
+    comingSoonHint: string;
+    comingSoonBeatsFeatured: string;
     status: string;
     translations: string;
     translationsHint: string;
@@ -784,6 +787,11 @@ const en: AdminStrings = {
     purchasable: "Clients can buy it themselves",
     purchasableHint:
       "Turn this off for a negotiated tier: it stays on the pricing page with its contact-us wording, but no checkout.",
+    comingSoon: "Coming soon",
+    comingSoonHint:
+      "Advertises the plan in full — price, features and all — with the buy button switched off. Checkout is refused, not just hidden. Use it to announce a tier before it opens; a sale can be set up now and will be running the day you turn this off.",
+    comingSoonBeatsFeatured:
+      "This plan is also marked most popular. Only the coming-soon badge will show, since a plan nobody can buy yet cannot be the popular choice.",
     status: "Status",
     translations: "Copy",
     translationsHint:
@@ -1254,6 +1262,11 @@ const ka: AdminStrings = {
     purchasable: "კლიენტს შეუძლია თავად შეიძინოს",
     purchasableHint:
       "გამორთეთ მოსალაპარაკებელი პაკეტისთვის: ფასების გვერდზე დარჩება „დაგვიკავშირდით“ ტექსტით, ყიდვის გარეშე.",
+    comingSoon: "მალე",
+    comingSoonHint:
+      "პაკეტი სრულად გამოჩნდება — ფასითა და ფუნქციებით — ყიდვის ღილაკი კი გამორთული იქნება. ყიდვა აიკრძალება და არა უბრალოდ დაიმალება. გამოიყენეთ გაშვებამდე გამოსაცხადებლად; ფასდაკლება ახლაც შეგიძლიათ დააყენოთ და ის უკვე იმუშავებს იმ დღეს, როცა ამას გამორთავთ.",
+    comingSoonBeatsFeatured:
+      "ეს პაკეტი ამავდროულად ყველაზე პოპულარადაა მონიშნული. გამოჩნდება მხოლოდ „მალე“ — პაკეტი, რომლის ყიდვაც ჯერ არავის შეუძლია, პოპულარული არჩევანი ვერ იქნება.",
     status: "სტატუსი",
     translations: "ტექსტები",
     translationsHint:

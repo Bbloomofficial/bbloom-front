@@ -56,6 +56,20 @@ export type WebsitePlan = {
   currency: string;
   billingPeriod?: string;
   featured?: boolean;
+  /**
+   * Announced but not open yet. The plan is advertised in full — price, features,
+   * everything — and simply cannot be bought today.
+   *
+   * Deliberately **not** `purchasable: false`, which is the negotiated tier and
+   * means something else entirely: that price is a conversation, and it reports
+   * `priceMinor: 0`. This one has a real price we want read. The two can both be
+   * set, and coming-soon wins whatever it is paired with.
+   *
+   * The API refuses a checkout for one of these with a `PLAN_COMING_SOON` 409,
+   * which is the actual control — the plan's code sits in a public payload, so a
+   * disabled button stops nobody who is not using the button.
+   */
+  comingSoon?: boolean;
 };
 
 /**
@@ -102,6 +116,18 @@ export function formatPlanPrice(plan: WebsitePlan, locale: string): string {
 /** A tier whose price is agreed rather than listed. */
 export function isNegotiable(plan: WebsitePlan): boolean {
   return plan.purchasable === false;
+}
+
+/**
+ * A tier that is advertised but not open for business yet.
+ *
+ * Read as `=== true` rather than for truthiness so that a payload which omits
+ * the field entirely — an older backend, or a Jackson `non_null` build that
+ * drops `false` — reads as "on sale now" rather than as coming soon. The
+ * failure that matters is the one that hides a plan people can buy.
+ */
+export function isComingSoon(plan: WebsitePlan): boolean {
+  return plan.comingSoon === true;
 }
 
 /** Whether a sale is running on this plan right now. */
