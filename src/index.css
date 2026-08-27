@@ -184,6 +184,53 @@
     @apply btn border border-ink-100 bg-control text-ink-800 hover:border-bloom-200 hover:bg-tint dark:hover:border-bloom-700;
   }
 
+  /*
+    The plan buttons on the pricing page. They carry more weight than a button
+    elsewhere — this is the one click the page exists to earn — so they answer a
+    pointer more visibly than the 1px the base gives everything else.
+
+    Still restrained: 3px and a deepened shadow reads as the control rising to
+    meet the cursor. Much beyond that and a grid of four starts twitching as the
+    pointer crosses it.
+  */
+  .btn-plan:hover:not(:disabled) {
+    transform: translateY(-3px);
+  }
+
+  .btn-plan.btn-primary:hover:not(:disabled) {
+    @apply shadow-2xl shadow-bloom-600/35;
+  }
+
+  .btn-plan.btn-secondary:hover:not(:disabled) {
+    @apply border-bloom-300 shadow-lg shadow-bloom-600/10 dark:border-bloom-600;
+  }
+
+  /* Nudged along on hover, so the button reads as leading somewhere. Its box is
+     reserved whether or not it moves, otherwise the label shifts underneath the
+     cursor as the arrow arrives. */
+  .btn-plan svg {
+    @apply transition-transform duration-200;
+  }
+
+  .btn-plan:hover:not(:disabled) svg {
+    transform: translateX(3px);
+  }
+
+  /* A pointer gets the lift; a finger does not, because there is no hover to
+     leave and the button would stay raised after the tap. */
+  @media (hover: none) {
+    .btn-plan:hover:not(:disabled) {
+      transform: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .btn-plan:hover:not(:disabled),
+    .btn-plan:hover:not(:disabled) svg {
+      transform: none;
+    }
+  }
+
   /* Buttons inside a dense editing panel, where a full-size pill would take
      more room than the field it belongs to. */
   .btn-sm {

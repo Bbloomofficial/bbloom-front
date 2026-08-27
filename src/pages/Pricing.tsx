@@ -6,6 +6,24 @@ import CtaBand from '../components/CtaBand'
 import { PlanCard, usePlans } from '../components/PlanCard'
 import { useI18n } from '../i18n'
 
+/**
+ * Decoration, so it is hidden from assistive technology: the button's own words
+ * already say where it goes, and "arrow right" read aloud after them adds
+ * nothing but noise.
+ */
+function Arrow() {
+  return (
+    <svg
+      viewBox="0 0 20 20"
+      className="h-4 w-4 shrink-0"
+      fill="currentColor"
+      aria-hidden="true"
+    >
+      <path d="M11.3 4.3a1 1 0 0 1 1.4 0l5 5a1 1 0 0 1 0 1.4l-5 5a1 1 0 0 1-1.4-1.4l3.29-3.3H3a1 1 0 1 1 0-2h11.59l-3.3-3.3a1 1 0 0 1 0-1.4Z" />
+    </svg>
+  )
+}
+
 export default function Pricing() {
   const { t } = useI18n()
   const { plans, error } = usePlans()
@@ -57,17 +75,19 @@ export default function Pricing() {
                   // API refuses a subscription to it, so sign-up would be a dead
                   // end wearing a primary button.
                   plan.purchasable === false ? (
-                    <Link to="/contact" className="btn-secondary w-full">
+                    <Link to="/contact" className="btn-plan btn-secondary w-full">
                       {plan.cta || t.pricingPage.contactUs}
+                      <Arrow />
                     </Link>
                   ) : (
                     <AuthLink
                       to="/register"
-                      className={`w-full ${plan.featured ? 'btn-primary' : 'btn-secondary'}`}
+                      className={`btn-plan w-full ${plan.featured ? 'btn-primary' : 'btn-secondary'}`}
                     >
                       {/* The plan's own call to action is written for it; ours is
                           the fallback when the backend has not supplied one. */}
                       {plan.cta || t.pricingPage.signUp}
+                      <Arrow />
                     </AuthLink>
                   )
                 }
