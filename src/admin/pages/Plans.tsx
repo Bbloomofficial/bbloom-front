@@ -1,8 +1,9 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useI18n } from "../../i18n";
 import { useSession } from "../auth";
 import { useResource } from "../hooks";
-import { fetchPlans } from "../api/client";
+import { deletePlan, fetchPlans } from "../api/client";
 import { formatMinor } from "../../api/plans";
 import { adminStrings } from "../strings";
 import { adminPath } from "../../routes";
@@ -21,6 +22,25 @@ export default function Plans() {
     () => fetchPlans(token),
     [token],
   );
+
+  const [removing, setRemoving] = useState<number | null>(null);
+  const [problem, setProblem] = useState<string | null>(null);
+
+  async function remove(planId: number) {
+    if (!window.confirm(t.plans.deleteConfirm)) return;
+    setProblem(null);
+    setRemoving(planId);
+    try {
+      await deletePlan(token, planId);
+      reload();
+    } catch (cause) {
+      // The API refuses to delete a plan clients are subscribed to. Its own
+      // wording is more specific than ours, so prefer it.
+      setProblem((cause as Error).message || t.plans.deleteBlocked);
+    } finally {
+      setRemoving(null);
+    }
+  }
 
   const plans = data ?? [];
 
@@ -49,6 +69,10 @@ export default function Plans() {
 
       {loading && !data && <p className="mt-8 text-sm text-ink-400">{t.loading}</p>}
 
+      {problem && (
+        <p className="mt-6 text-sm font-semibold text-danger">{problem}</p>
+      )}
+
       {data && plans.length === 0 && (
         <p className="mt-8 rounded-3xl border border-ink-100 bg-surface p-8 text-center text-sm text-ink-600">
           {t.plans.empty}
@@ -69,6 +93,9 @@ export default function Plans() {
                   {t.plans.billingPeriod}
                 </th>
                 <th className="px-5 py-3 text-start font-semibold">{t.plans.status}</th>
+                <th className="px-5 py-3 text-end font-semibold">
+                  <span className="sr-only">{t.plans.edit}</span>
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -119,6 +146,24 @@ export default function Plans() {
                           {t.plans.purchasable}: {t.no}
                         </p>
                       )}
+                    </td>
+                    <td className="px-5 py-4">
+                      <div className="flex items-center justify-end gap-3">
+                        <Link
+                          to={adminPath(`/plans/${plan.id}`)}
+                          className="text-sm font-semibold text-ink-600 hover:text-bloom-600"
+                        >
+                          {t.plans.edit}
+                        </Link>
+                        <button
+                          type="button"
+                          onClick={() => void remove(plan.id)}
+                          disabled={removing !== null}
+                          className="text-sm font-semibold text-danger hover:underline disabled:opacity-50"
+                        >
+                          {removing === plan.id ? t.plans.deleting : t.plans.delete}
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 );

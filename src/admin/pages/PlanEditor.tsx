@@ -100,8 +100,17 @@ export default function PlanEditor() {
   const [priceText, setPriceText] = useState("0");
   const [language, setLanguage] = useState<string>(LANGUAGES[0]);
   const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [problem, setProblem] = useState<string | null>(null);
+
+  // The confirmation clears itself, so it cannot still be claiming success over
+  // a form that has been edited since.
+  useEffect(() => {
+    if (!saved) return;
+    const timer = window.setTimeout(() => setSaved(false), 4000);
+    return () => window.clearTimeout(timer);
+  }, [saved]);
 
   useEffect(() => {
     if (!data) return;
@@ -117,12 +126,14 @@ export default function PlanEditor() {
   );
 
   function patch(changes: Partial<PlanUpsertRequest>) {
+    setSaved(false);
     setForm((current) => ({ ...current, ...changes }));
   }
 
   function patchTranslation(
     changes: Partial<PlanUpsertRequest["translations"][number]>,
   ) {
+    setSaved(false);
     setForm((current) => ({
       ...current,
       translations: current.translations.map((item) =>
@@ -134,6 +145,7 @@ export default function PlanEditor() {
   async function save(event: React.FormEvent) {
     event.preventDefault();
     setProblem(null);
+    setSaved(false);
 
     if (!form.code.trim()) {
       setProblem(t.plans.codeRequired);
@@ -166,13 +178,14 @@ export default function PlanEditor() {
 
     setSaving(true);
     try {
-      const saved =
+      const result =
         numericId === null
           ? await createPlan(token, body)
           : await updatePlan(token, numericId, body);
-      navigate(adminPath(`/plans/${saved.id}`), { replace: true });
-      setForm(toForm(saved));
-      setPriceText(majorFromMinor(saved.priceMinor));
+      navigate(adminPath(`/plans/${result.id}`), { replace: true });
+      setForm(toForm(result));
+      setPriceText(majorFromMinor(result.priceMinor));
+      setSaved(true);
     } catch (cause) {
       setProblem((cause as Error).message || t.plans.saveFailed);
     } finally {
@@ -438,6 +451,12 @@ export default function PlanEditor() {
 
         {problem && (
           <p className="text-sm font-semibold text-danger">{problem}</p>
+        )}
+
+        {saved && !problem && (
+          <p className="rounded-2xl border border-success-border bg-success-soft px-4 py-3 text-sm font-semibold text-success">
+            {t.saved}
+          </p>
         )}
 
         <div className="flex flex-wrap items-center gap-3">

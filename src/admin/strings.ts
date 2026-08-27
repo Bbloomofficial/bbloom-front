@@ -342,6 +342,7 @@ export type AdminStrings = {
     addFeature: string;
     removeFeature: string;
     languageNames: Record<string, string>;
+    edit: string;
     delete: string;
     deleting: string;
     deleteConfirm: string;
@@ -748,6 +749,7 @@ const en: AdminStrings = {
     addFeature: "Add feature",
     removeFeature: "Remove",
     languageNames: { en: "English", ka: "Georgian" },
+    edit: "Edit",
     delete: "Delete plan",
     deleting: "Deleting…",
     deleteConfirm:
@@ -1153,6 +1155,7 @@ const ka: AdminStrings = {
     addFeature: "მახასიათებლის დამატება",
     removeFeature: "წაშლა",
     languageNames: { en: "ინგლისური", ka: "ქართული" },
+    edit: "რედაქტირება",
     delete: "პაკეტის წაშლა",
     deleting: "იშლება…",
     deleteConfirm:
