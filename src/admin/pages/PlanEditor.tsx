@@ -470,6 +470,16 @@ export default function PlanEditor() {
               checked={form.featured}
               onChange={(featured) => patch({ featured })}
             />
+            {form.comingSoon && !form.active && (
+              /* The two toggles overlap in a way that quietly cancels the one
+                 that was just flipped: `active` off takes the plan off the
+                 pricing page entirely, so there is nowhere for the announcement
+                 to appear. Legitimate while a tier is being drafted, so it is a
+                 note rather than a rule. */
+              <p className="rounded-2xl bg-tint px-4 py-3 text-sm text-ink-600">
+                {t.plans.comingSoonHidden}
+              </p>
+            )}
             {form.comingSoon && form.featured && (
               /* Both are saved, but only one can be shown, and the card drops
                  "most popular" rather than the coming-soon badge. Better said

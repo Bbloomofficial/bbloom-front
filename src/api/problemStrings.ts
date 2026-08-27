@@ -42,6 +42,7 @@ const en: ProblemStrings = {
   promoExpired: "That code has expired.",
   promoNotForPlan: "That code doesn't apply to this plan.",
   planComingSoon: "That plan isn't available yet.",
+  planNotPurchasable: "That plan is arranged with us directly. Get in touch and we'll set it up.",
   promoLimitReached: "This code isn't available any more.",
   throttled: "Too many attempts. Wait a moment and try again.",
   signInThrottled:
@@ -90,6 +91,8 @@ const ka: ProblemStrings = {
   promoExpired: "ამ კოდს ვადა გაუვიდა.",
   promoNotForPlan: "ეს კოდი ამ პაკეტზე არ მოქმედებს.",
   planComingSoon: "ეს პაკეტი ჯერ არ არის ხელმისაწვდომი.",
+  planNotPurchasable:
+    "ეს პაკეტი პირდაპირ ჩვენთან თანხმდება. დაგვიკავშირდით და მოვაწყობთ.",
   promoLimitReached: "ეს კოდი აღარ არის ხელმისაწვდომი.",
   throttled: "ბევრი მცდელობა იყო. მოიცადეთ და სცადეთ თავიდან.",
   signInThrottled: "ამ ანგარიშზე შესვლა დროებით შეჩერებულია. სცადეთ ცოტა ხანში.",

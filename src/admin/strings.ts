@@ -330,6 +330,7 @@ export type AdminStrings = {
     comingSoon: string;
     comingSoonHint: string;
     comingSoonBeatsFeatured: string;
+    comingSoonHidden: string;
     status: string;
     translations: string;
     translationsHint: string;
@@ -789,9 +790,11 @@ const en: AdminStrings = {
       "Turn this off for a negotiated tier: it stays on the pricing page with its contact-us wording, but no checkout.",
     comingSoon: "Coming soon",
     comingSoonHint:
-      "Advertises the plan in full — price, features and all — with the buy button switched off. Checkout is refused, not just hidden. Use it to announce a tier before it opens; a sale can be set up now and will be running the day you turn this off.",
+      "Advertises the plan in full — price, features and all — with the buy button switched off. Checkout is refused, not just hidden. Anyone already subscribed keeps their plan and keeps renewing, so this only closes the door to new sign-ups. A sale can be set up now and will be running the day you turn this off.",
     comingSoonBeatsFeatured:
       "This plan is also marked most popular. Only the coming-soon badge will show, since a plan nobody can buy yet cannot be the popular choice.",
+    comingSoonHidden:
+      "This plan is not shown on the pricing page, so nobody will see that it is coming. Turn on \"Shown on the pricing page\" as well if you meant to announce it.",
     status: "Status",
     translations: "Copy",
     translationsHint:
@@ -1264,9 +1267,11 @@ const ka: AdminStrings = {
       "გამორთეთ მოსალაპარაკებელი პაკეტისთვის: ფასების გვერდზე დარჩება „დაგვიკავშირდით“ ტექსტით, ყიდვის გარეშე.",
     comingSoon: "მალე",
     comingSoonHint:
-      "პაკეტი სრულად გამოჩნდება — ფასითა და ფუნქციებით — ყიდვის ღილაკი კი გამორთული იქნება. ყიდვა აიკრძალება და არა უბრალოდ დაიმალება. გამოიყენეთ გაშვებამდე გამოსაცხადებლად; ფასდაკლება ახლაც შეგიძლიათ დააყენოთ და ის უკვე იმუშავებს იმ დღეს, როცა ამას გამორთავთ.",
+      "პაკეტი სრულად გამოჩნდება — ფასითა და ფუნქციებით — ყიდვის ღილაკი კი გამორთული იქნება. ყიდვა აიკრძალება და არა უბრალოდ დაიმალება. ვისაც უკვე შეძენილი აქვს, პაკეტი რჩება და განახლებაც გრძელდება — ეს მხოლოდ ახალ შეძენებს კეტავს. ფასდაკლება ახლაც შეგიძლიათ დააყენოთ და ის უკვე იმუშავებს იმ დღეს, როცა ამას გამორთავთ.",
     comingSoonBeatsFeatured:
       "ეს პაკეტი ამავდროულად ყველაზე პოპულარადაა მონიშნული. გამოჩნდება მხოლოდ „მალე“ — პაკეტი, რომლის ყიდვაც ჯერ არავის შეუძლია, პოპულარული არჩევანი ვერ იქნება.",
+    comingSoonHidden:
+      "ეს პაკეტი ფასების გვერდზე არ ჩანს, ამიტომ ვერავინ ნახავს, რომ ის მალე დაემატება. თუ გამოცხადება გინდოდათ, ჩართეთ „ჩანს ფასების გვერდზე“ კიდეც.",
     status: "სტატუსი",
     translations: "ტექსტები",
     translationsHint:

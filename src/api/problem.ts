@@ -115,6 +115,15 @@ export type ProblemStrings = {
    */
   planComingSoon: string;
   /**
+   * A negotiated tier, which has no self-serve checkout at all.
+   *
+   * Distinct from `planComingSoon`: this one will never open on its own, and
+   * the way forward is to talk to us rather than to wait. The API used to
+   * refuse both as a bare `CONFLICT`, so telling them apart meant reading its
+   * English.
+   */
+  planNotPurchasable: string;
+  /**
    * A code that has been used its maximum number of times.
    *
    * Deliberately not "you have used this too often" and not "invalid": the
@@ -405,6 +414,8 @@ export function describeProblem(
       if (caught.code === "PROMO_CODE_LIMIT_REACHED")
         return strings.promoLimitReached;
       if (caught.code === "PLAN_COMING_SOON") return strings.planComingSoon;
+      if (caught.code === "PLAN_NOT_PURCHASABLE")
+        return strings.planNotPurchasable;
       // Matched on the code first. The message test behind it is the older
       // check and stays only as tolerance for a backend that predates the
       // code — reading English prose to decide what happened is exactly the
