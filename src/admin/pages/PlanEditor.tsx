@@ -151,10 +151,17 @@ export default function PlanEditor() {
 
     // Rounded rather than truncated: 199.999 typed by hand should not quietly
     // become 199.99 in the ledger.
+    //
+    // Features are tidied here rather than while typing: a blank line renders
+    // as a tick beside nothing, but removing it mid-keystroke fights the caret.
     const body: PlanUpsertRequest = {
       ...form,
       code: form.code.trim(),
       priceMinor: Math.round(major * 100),
+      translations: form.translations.map((item) => ({
+        ...item,
+        features: item.features.map((line) => line.trim()).filter(Boolean),
+      })),
     };
 
     setSaving(true);
@@ -415,12 +422,11 @@ export default function PlanEditor() {
                   value={translation.features.join("\n")}
                   onChange={(e) =>
                     patchTranslation({
-                      // Blank lines are dropped rather than stored: an empty
-                      // feature renders as a tick beside nothing.
-                      features: e.target.value
-                        .split("\n")
-                        .map((line) => line.trim())
-                        .filter(Boolean),
+                      // Split only. Trimming or dropping blank lines here would
+                      // edit the text from under the caret — a typed space at
+                      // the end of a line vanishes and the cursor jumps to the
+                      // end of the box. Normalising happens on save instead.
+                      features: e.target.value.split("\n"),
                     })
                   }
                 />
