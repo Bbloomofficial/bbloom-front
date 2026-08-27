@@ -173,6 +173,20 @@ export default function PlanEditor() {
   );
 
   /**
+   * The list price as typed, in minor units.
+   *
+   * Read from the text box rather than from `form.priceMinor`, which is only
+   * computed on save — so the read-only display price answers what is on screen
+   * now rather than what was last stored.
+   */
+  const livePriceMinor = useMemo(() => {
+    const major = Number(priceText);
+    return Number.isFinite(major) && major >= 0
+      ? Math.round(major * 100)
+      : form.priceMinor;
+  }, [priceText, form.priceMinor]);
+
+  /**
    * What the sale currently in the form comes to.
    *
    * `null` when there is nothing to preview. Live is judged here rather than
@@ -639,18 +653,42 @@ export default function PlanEditor() {
               </div>
 
               <div>
-                <label className="label" htmlFor="plan-display-price">
-                  {t.plans.displayPrice}
-                </label>
-                <input
-                  id="plan-display-price"
-                  className="field"
-                  value={translation.price}
-                  onChange={(e) => patchTranslation({ price: e.target.value })}
-                />
-                <p className="mt-1 text-xs text-ink-400">
-                  {t.plans.displayPriceHint}
-                </p>
+                {form.purchasable ? (
+                  /* The number is already authoritative and already formatted
+                     from `currency`, so offering a freeform box beside it
+                     invites exactly the drift that made production look like it
+                     was advertising one price and charging another. Shown
+                     read-only rather than hidden, because staff arriving with a
+                     stale "$499" in mind need to see what replaced it. */
+                  <>
+                    <span className="label">{t.plans.displayPrice}</span>
+                    <p className="field text-ink-500" dir="ltr">
+                      {formatMinor(
+                        livePriceMinor,
+                        form.currency,
+                        translation.language,
+                      )}
+                    </p>
+                    <p className="mt-1 text-xs text-ink-400">
+                      {t.plans.displayPriceAuto}
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <label className="label" htmlFor="plan-display-price">
+                      {t.plans.displayPrice}
+                    </label>
+                    <input
+                      id="plan-display-price"
+                      className="field"
+                      value={translation.price}
+                      onChange={(e) => patchTranslation({ price: e.target.value })}
+                    />
+                    <p className="mt-1 text-xs text-ink-400">
+                      {t.plans.displayPriceHint}
+                    </p>
+                  </>
+                )}
               </div>
 
               <div>

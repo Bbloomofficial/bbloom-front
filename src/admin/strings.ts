@@ -337,6 +337,7 @@ export type AdminStrings = {
     name: string;
     displayPrice: string;
     displayPriceHint: string;
+    displayPriceAuto: string;
     cadence: string;
     cadenceHint: string;
     summary: string;
@@ -803,6 +804,8 @@ const en: AdminStrings = {
     displayPrice: "Displayed price",
     displayPriceHint:
       'What visitors read, e.g. "$199" or "negotiable". Copy only — never billed.',
+    displayPriceAuto:
+      "Worked out from Price and Currency, so it cannot drift when someone reprices. Only a negotiated tier needs wording of its own here.",
     cadence: "Cadence wording",
     cadenceHint: 'Shown after the price, e.g. "per month". Leave empty for none.',
     summary: "Summary",
@@ -1280,6 +1283,8 @@ const ka: AdminStrings = {
     displayPrice: "ნაჩვენები ფასი",
     displayPriceHint:
       'რასაც ვიზიტორი კითხულობს, მაგ. „$199“ ან „მოსალაპარაკებელი“. მხოლოდ ტექსტი — ბილინგში არ მონაწილეობს.',
+    displayPriceAuto:
+      "გამოითვლება „ფასისა“ და ვალუტისგან, ამიტომ ფასის შეცვლისას ვეღარ აცდება. საკუთარი ტექსტი მხოლოდ მოსალაპარაკებელ პაკეტს სჭირდება.",
     cadence: "პერიოდის ტექსტი",
     cadenceHint: 'ჩნდება ფასის შემდეგ, მაგ. „თვეში“. ცარიელი დატოვეთ, თუ არ გჭირდებათ.',
     summary: "მოკლე აღწერა",
