@@ -1,35 +1,14 @@
 import { useCallback, useEffect } from "react";
 import type { Location } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import { AuthProvider, useAuth } from "../dashboard/auth";
+import { AuthProvider } from "../dashboard/auth";
 import Login from "../dashboard/pages/Login";
 import Register from "../dashboard/pages/Register";
 import { AuthSurfaceProvider } from "../dashboard/pages/authSurface";
 import { dashboardStrings } from "../dashboard/strings";
 import { useI18n } from "../i18n";
-import { dashPath } from "../routes";
 
 export type AuthMode = "login" | "register";
-
-/**
- * Leaves for the panel the moment a session lands.
- *
- * The standalone screens never needed this: they are the dashboard's own
- * signed-out state, so signing in re-rendered them into the panel where they
- * stood. Here the forms are guests on a marketing page, and nothing else is
- * watching for the session they produce — including the one that arrives from
- * confirming a code rather than from the sign-in form.
- */
-function LeaveOnSession() {
-  const { token, user } = useAuth();
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    if (token && user) navigate(dashPath(), { replace: true });
-  }, [token, user, navigate]);
-
-  return null;
-}
 
 /**
  * Signing in and signing up, over whatever page the visitor was reading.
@@ -119,7 +98,6 @@ export default function AuthModal({
           </button>
 
           <AuthProvider>
-            <LeaveOnSession />
             <AuthSurfaceProvider value={{ modal: true, go }}>
               {mode === "register" ? <Register /> : <Login />}
             </AuthSurfaceProvider>

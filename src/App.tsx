@@ -85,9 +85,33 @@ function MarketingApp() {
     ? (from ?? { ...location, pathname: "/", search: "", hash: "", state: null })
     : location;
 
-  // Someone already signed in has no business on either form. Their own panel
-  // is the honest answer, and it is also what the old standalone screens did.
-  if (mode && signedIn) return <Navigate to={dashPath()} replace />;
+  /*
+    Someone signed in has no business on either form, so the dialog goes — but
+    where they land depends on how they got here.
+
+    `from` is present only when the dialog was opened over a page they were
+    reading, which is also the case where the session was almost certainly
+    created by the form they just filled in. Sending those visitors to the panel
+    takes them off the pricing page, or the template they were halfway through
+    reading, to go somewhere they did not ask for. Signing in is something they
+    did *to* the page, not instead of it, and the navbar rerenders on the same
+    event, so the page they return to already knows who they are.
+
+    Arriving cold — a bookmark, a link in mail, a typed address — there is no
+    page to return to, and the panel stays the honest answer.
+  */
+  if (mode && signedIn) {
+    return (
+      <Navigate
+        to={
+          from
+            ? `${from.pathname}${from.search}${from.hash}`
+            : dashPath()
+        }
+        replace
+      />
+    );
+  }
 
   return (
     <div className="flex min-h-screen flex-col">
