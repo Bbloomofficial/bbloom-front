@@ -8,15 +8,6 @@ export type Service = {
 
 export type Step = { number: string; title: string; description: string }
 
-export type Plan = {
-  id: string
-  name: string
-  summary: string
-  features: string[]
-  featured?: boolean
-  cta: string
-}
-
 export type Faq = { question: string; answer: string }
 
 /**
@@ -112,6 +103,7 @@ export type Dict = {
     perMonth: string
     perYear: string
     signUp: string
+    contactUs: string
     loading: string
     loadFailed: string
     note: string
@@ -169,7 +161,11 @@ export type Dict = {
   }
   services: Service[]
   steps: Step[]
-  plans: Plan[]
+  /**
+   * No `plans` here on purpose. The pricing tiers, their copy and their prices
+   * come from `GET /plans/website` and are edited by staff at `/admin/plans`;
+   * a second copy in the bundle is a price that changes only on a deploy.
+   */
   faqs: Faq[]
   templateCopy: Record<string, TemplateCopy>
 }

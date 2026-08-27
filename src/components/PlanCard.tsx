@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { fetchWebsitePlans, formatPlanPrice } from "../api/plans";
+import { fetchWebsitePlans, formatPlanPrice, isNegotiable } from "../api/plans";
 import type { WebsitePlan } from "../api/plans";
 import { useI18n } from "../i18n";
 
@@ -67,6 +67,16 @@ export function PlanCard({
 }) {
   const { locale } = useI18n();
 
+  // A negotiated tier reports `priceMinor: 0`, so formatting it would advertise
+  // the plan as free. Its price is the copy the backend localised for it, and
+  // the period label is dropped: "per month" under "Negotiable" promises a
+  // cadence nobody has agreed to yet.
+  const negotiable = isNegotiable(plan);
+  const price = negotiable
+    ? (plan.price ?? plan.name)
+    : formatPlanPrice(plan, locale);
+  const period = negotiable ? (plan.cadence ?? "") : periodLabel;
+
   return (
     <div
       className={`relative flex min-w-0 flex-col break-words rounded-[2rem] border bg-surface p-6 sm:p-8 ${
@@ -90,10 +100,17 @@ export function PlanCard({
       {plan.summary && <p className="mt-1 text-sm text-ink-600">{plan.summary}</p>}
 
       <p className="mt-6 flex flex-wrap items-baseline gap-x-2">
-        <span className="text-4xl font-extrabold tracking-tight text-ink-900" dir="ltr">
-          {formatPlanPrice(plan, locale)}
+        <span
+          className={`font-extrabold tracking-tight text-ink-900 ${
+            negotiable ? "text-2xl" : "text-4xl"
+          }`}
+          dir={negotiable ? undefined : "ltr"}
+        >
+          {price}
         </span>
-        <span className="text-sm font-semibold text-ink-400">{periodLabel}</span>
+        {period && (
+          <span className="text-sm font-semibold text-ink-400">{period}</span>
+        )}
       </p>
 
       {plan.features && plan.features.length > 0 && (

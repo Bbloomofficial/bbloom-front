@@ -30,7 +30,13 @@ export default function Pricing() {
         ) : !plans ? (
           <p className="text-center text-sm text-ink-400">{t.pricingPage.loading}</p>
         ) : (
-          <div className="grid items-start gap-6 lg:grid-cols-3">
+          <div
+            className={`grid items-start gap-6 ${
+              plans.length >= 4
+                ? 'sm:grid-cols-2 xl:grid-cols-4'
+                : 'lg:grid-cols-3'
+            }`}
+          >
             {plans.map((plan) => (
               <PlanCard
                 key={plan.code}
@@ -42,14 +48,23 @@ export default function Pricing() {
                     : t.pricingPage.perMonth
                 }
                 action={
-                  <Link
-                    to="/register"
-                    className={`w-full ${plan.featured ? 'btn-primary' : 'btn-secondary'}`}
-                  >
-                    {/* The plan's own call to action is written for it; ours is
-                        the fallback when the backend has not supplied one. */}
-                    {plan.cta || t.pricingPage.signUp}
-                  </Link>
+                  // A negotiated tier has no checkout to send anyone to, and the
+                  // API refuses a subscription to it, so sign-up would be a dead
+                  // end wearing a primary button.
+                  plan.purchasable === false ? (
+                    <Link to="/contact" className="btn-secondary w-full">
+                      {plan.cta || t.pricingPage.contactUs}
+                    </Link>
+                  ) : (
+                    <Link
+                      to="/register"
+                      className={`w-full ${plan.featured ? 'btn-primary' : 'btn-secondary'}`}
+                    >
+                      {/* The plan's own call to action is written for it; ours is
+                          the fallback when the backend has not supplied one. */}
+                      {plan.cta || t.pricingPage.signUp}
+                    </Link>
+                  )
                 }
               />
             ))}

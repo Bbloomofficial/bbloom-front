@@ -144,6 +144,7 @@ export const en: Dict = {
     perMonth: 'per month',
     perYear: 'per year',
     signUp: 'Get started',
+    contactUs: 'Contact us',
     loading: 'Loading plans…',
     loadFailed: 'We could not load the plans just now. Please try again shortly.',
     note: 'Your advertising budget is separate and paid directly to Meta. Contact us if you would like us to build the site for you.',
@@ -346,50 +347,6 @@ export const en: Dict = {
       title: 'Optimise & scale',
       description:
         'Every week we review the data, cut what does not work and put more budget behind what does.',
-    },
-  ],
-
-  plans: [
-    {
-      id: 'starter',
-      name: 'Simple',
-      summary: 'For businesses running their first serious campaigns.',
-      features: [
-        '1 advertising channel',
-        'Up to 4 ad creatives per month',
-        'Campaign setup & weekly optimisation',
-        'Monthly performance report',
-        'Email support',
-      ],
-      cta: 'Choose Simple',
-    },
-    {
-      id: 'growth',
-      name: 'Classic',
-      summary: 'Our most complete plan — ads plus a site that converts.',
-      features: [
-        'Instagram + Facebook campaigns',
-        'Up to 10 ad creatives per month',
-        'Landing page design & build',
-        'Full tracking + live dashboard',
-        'Monthly strategy call',
-        'WhatsApp support',
-      ],
-      featured: true,
-      cta: 'Choose Classic',
-    },
-    {
-      id: 'full-bloom',
-      name: 'Modern',
-      summary: 'For multi-location businesses ready to scale hard.',
-      features: [
-        'Everything in Classic',
-        'Full multi-page website',
-        'Monthly content shoot',
-        'Dedicated growth manager',
-        'Quarterly roadmap & workshops',
-      ],
-      cta: 'Talk to us',
     },
   ],
 

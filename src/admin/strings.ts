@@ -7,7 +7,7 @@ import type { Locale } from "../i18n";
  */
 export type AdminStrings = {
   brand: string;
-  nav: { sites: string; newSite: string; system: string; accounts: string };
+  nav: { sites: string; newSite: string; system: string; accounts: string; plans: string };
   signedInAs: string;
   signOut: string;
   backToBbloom: string;
@@ -304,11 +304,58 @@ export type AdminStrings = {
     disabled: string;
     language: string;
   };
+  plans: {
+    title: string;
+    subtitle: string;
+    create: string;
+    empty: string;
+    back: string;
+    newTitle: string;
+    editTitle: string;
+    code: string;
+    codeHint: string;
+    price: string;
+    priceHint: string;
+    currency: string;
+    billingPeriod: string;
+    periods: Record<string, string>;
+    sortOrder: string;
+    sortOrderHint: string;
+    featured: string;
+    featuredHint: string;
+    active: string;
+    activeHint: string;
+    purchasable: string;
+    purchasableHint: string;
+    status: string;
+    translations: string;
+    translationsHint: string;
+    name: string;
+    displayPrice: string;
+    displayPriceHint: string;
+    cadence: string;
+    cadenceHint: string;
+    summary: string;
+    cta: string;
+    features: string;
+    featuresHint: string;
+    addFeature: string;
+    removeFeature: string;
+    languageNames: Record<string, string>;
+    delete: string;
+    deleting: string;
+    deleteConfirm: string;
+    deleteBlocked: string;
+    codeRequired: string;
+    priceInvalid: string;
+    nameRequired: string;
+    saveFailed: string;
+  };
 };
 
 const en: AdminStrings = {
   brand: "bbloom staff",
-  nav: { sites: "Sites", newSite: "New site", system: "System", accounts: "Accounts" },
+  nav: { sites: "Sites", newSite: "New site", system: "System", accounts: "Accounts", plans: "Plans" },
   signedInAs: "Signed in as",
   signOut: "Sign out",
   backToBbloom: "Back to bbloom.ge",
@@ -658,11 +705,65 @@ const en: AdminStrings = {
     disabled: "Disabled",
     language: "Language",
   },
+  plans: {
+    title: "Pricing plans",
+    subtitle: "What the pricing page offers and what the panel charges.",
+    create: "New plan",
+    empty: "No plans yet. Create the first one.",
+    back: "All plans",
+    newTitle: "New plan",
+    editTitle: "Edit plan",
+    code: "Code",
+    codeHint:
+      "The identifier subscriptions are recorded against. Changing it on a plan clients already bought will orphan their records.",
+    price: "Price",
+    priceHint:
+      "What the client is actually charged. Enter it in whole currency, e.g. 199 — the copy below is never billed against.",
+    currency: "Currency",
+    billingPeriod: "Billing period",
+    periods: { MONTHLY: "Monthly", YEARLY: "Yearly" },
+    sortOrder: "Position",
+    sortOrderHint: "Lower numbers come first on the pricing page.",
+    featured: "Highlight as most popular",
+    featuredHint: "Only one plan should carry this.",
+    active: "Shown on the pricing page",
+    activeHint: "Turn this off to retire a plan without deleting it.",
+    purchasable: "Clients can buy it themselves",
+    purchasableHint:
+      "Turn this off for a negotiated tier: it stays on the pricing page with its contact-us wording, but no checkout.",
+    status: "Status",
+    translations: "Copy",
+    translationsHint:
+      "Both languages are edited here. A missing language falls back to the plan code on the public site.",
+    name: "Name",
+    displayPrice: "Displayed price",
+    displayPriceHint:
+      'What visitors read, e.g. "$199" or "negotiable". Copy only — never billed.',
+    cadence: "Cadence wording",
+    cadenceHint: 'Shown after the price, e.g. "per month". Leave empty for none.',
+    summary: "Summary",
+    cta: "Button label",
+    features: "Features",
+    featuresHint: "One per line, in the order they should appear.",
+    addFeature: "Add feature",
+    removeFeature: "Remove",
+    languageNames: { en: "English", ka: "Georgian" },
+    delete: "Delete plan",
+    deleting: "Deleting…",
+    deleteConfirm:
+      "Delete this plan? If any client is subscribed to it, deactivate it instead.",
+    deleteBlocked:
+      "This plan cannot be deleted because clients are subscribed to it. Turn off “Shown on the pricing page” instead.",
+    codeRequired: "Give the plan a code.",
+    priceInvalid: "Enter the price as a number, e.g. 199.",
+    nameRequired: "Every language needs a name.",
+    saveFailed: "The plan could not be saved.",
+  },
 };
 
 const ka: AdminStrings = {
   brand: "bbloom გუნდი",
-  nav: { sites: "საიტები", newSite: "ახალი საიტი", system: "სისტემა", accounts: "ანგარიშები" },
+  nav: { sites: "საიტები", newSite: "ახალი საიტი", system: "სისტემა", accounts: "ანგარიშები", plans: "პაკეტები" },
   signedInAs: "შესული ხართ როგორც",
   signOut: "გამოსვლა",
   backToBbloom: "დაბრუნება bbloom.ge-ზე",
@@ -1008,6 +1109,60 @@ const ka: AdminStrings = {
     enabled: "აქტიური",
     disabled: "გათიშული",
     language: "ენა",
+  },
+  plans: {
+    title: "ფასების პაკეტები",
+    subtitle: "რას სთავაზობს ფასების გვერდი და რას ახდევინებს პანელი.",
+    create: "ახალი პაკეტი",
+    empty: "პაკეტები ჯერ არ არის. შექმენით პირველი.",
+    back: "ყველა პაკეტი",
+    newTitle: "ახალი პაკეტი",
+    editTitle: "პაკეტის რედაქტირება",
+    code: "კოდი",
+    codeHint:
+      "იდენტიფიკატორი, რომელზეც გამოწერები ინახება. თუ შეცვლით უკვე გაყიდულ პაკეტს, კლიენტების ჩანაწერები დაიკარგება.",
+    price: "ფასი",
+    priceHint:
+      "რეალურად ჩამოსაჭრელი თანხა. შეიყვანეთ მთელ ვალუტაში, მაგ. 199 — ქვემოთ მოცემული ტექსტი არასდროს გამოიყენება ბილინგისთვის.",
+    currency: "ვალუტა",
+    billingPeriod: "ბილინგის პერიოდი",
+    periods: { MONTHLY: "თვიური", YEARLY: "წლიური" },
+    sortOrder: "პოზიცია",
+    sortOrderHint: "ნაკლები რიცხვი ფასების გვერდზე წინ ჩნდება.",
+    featured: "გამოიკვეთოს როგორც ყველაზე პოპულარული",
+    featuredHint: "ეს მხოლოდ ერთ პაკეტს უნდა ჰქონდეს.",
+    active: "ჩანს ფასების გვერდზე",
+    activeHint: "გამორთეთ, რომ პაკეტი წაშლის გარეშე გააჩეროთ.",
+    purchasable: "კლიენტს შეუძლია თავად შეიძინოს",
+    purchasableHint:
+      "გამორთეთ მოსალაპარაკებელი პაკეტისთვის: ფასების გვერდზე დარჩება „დაგვიკავშირდით“ ტექსტით, ყიდვის გარეშე.",
+    status: "სტატუსი",
+    translations: "ტექსტები",
+    translationsHint:
+      "ორივე ენა აქ იწერება. თუ ენა აკლია, საიტზე პაკეტის კოდი გამოჩნდება.",
+    name: "დასახელება",
+    displayPrice: "ნაჩვენები ფასი",
+    displayPriceHint:
+      'რასაც ვიზიტორი კითხულობს, მაგ. „$199“ ან „მოსალაპარაკებელი“. მხოლოდ ტექსტი — ბილინგში არ მონაწილეობს.',
+    cadence: "პერიოდის ტექსტი",
+    cadenceHint: 'ჩნდება ფასის შემდეგ, მაგ. „თვეში“. ცარიელი დატოვეთ, თუ არ გჭირდებათ.',
+    summary: "მოკლე აღწერა",
+    cta: "ღილაკის ტექსტი",
+    features: "მახასიათებლები",
+    featuresHint: "თითო ხაზზე თითო, იმ თანმიმდევრობით, როგორც უნდა გამოჩნდეს.",
+    addFeature: "მახასიათებლის დამატება",
+    removeFeature: "წაშლა",
+    languageNames: { en: "ინგლისური", ka: "ქართული" },
+    delete: "პაკეტის წაშლა",
+    deleting: "იშლება…",
+    deleteConfirm:
+      "წავშალოთ ეს პაკეტი? თუ რომელიმე კლიენტს აქვს გამოწერილი, სჯობს გამორთოთ.",
+    deleteBlocked:
+      "პაკეტი ვერ წაიშლება, რადგან კლიენტებს აქვთ გამოწერილი. სანაცვლოდ გამორთეთ „ჩანს ფასების გვერდზე“.",
+    codeRequired: "მიუთითეთ პაკეტის კოდი.",
+    priceInvalid: "ფასი შეიყვანეთ რიცხვად, მაგ. 199.",
+    nameRequired: "თითოეულ ენას დასახელება სჭირდება.",
+    saveFailed: "პაკეტი ვერ შეინახა.",
   },
 };
 

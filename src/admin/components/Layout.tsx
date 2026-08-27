@@ -32,6 +32,7 @@ export default function Layout({ children }: { children: ReactNode }) {
   const links = [
     { to: adminPath(), label: t.nav.sites, end: true },
     { to: adminPath("/accounts"), label: t.nav.accounts, end: false },
+    { to: adminPath("/plans"), label: t.nav.plans, end: false },
     { to: adminPath("/sites/new"), label: t.nav.newSite, end: false },
     ...(forbidden
       ? []

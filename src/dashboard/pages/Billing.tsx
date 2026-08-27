@@ -68,6 +68,10 @@ export default function Billing() {
   const site = useActiveSite();
   const isOwner = useIsOwner();
   const { plans } = usePlans();
+  // The public plan list now carries advertised-but-negotiated tiers too. The
+  // API refuses a subscription to one with a 409, so offering it a "Choose"
+  // button here would be a checkout that cannot complete.
+  const buyablePlans = plans?.filter((plan) => plan.purchasable !== false) ?? null;
 
   const [subscription, setSubscription] = useState<SubscriptionDetail | null>(
     null,
@@ -290,11 +294,11 @@ export default function Billing() {
             </label>
           </div>
 
-          {!plans ? (
+          {!buyablePlans ? (
             <p className="mt-4 text-sm text-ink-400">{t.loading}</p>
           ) : (
             <div className="mt-4 grid items-start gap-6 lg:grid-cols-3">
-              {plans.map((plan) => (
+              {buyablePlans.map((plan) => (
                 <PlanCard
                   key={plan.code}
                   plan={plan}
