@@ -400,3 +400,45 @@ export type AdminAccountDto = {
   atFreeLimit: boolean;
   sites: AdminAccountSiteDto[];
 };
+
+/**
+ * One language's copy for a plan. `price` is a display string ("negotiable",
+ * "from $199") and is never what a client is charged — the plan's `priceMinor`
+ * is. Both exist because a "contact us" tier has copy where a number would go.
+ */
+export type AdminPlanTranslationDto = {
+  /** Lowercase, as the API writes it: `ka`, `en`. */
+  language: string;
+  name: string;
+  price: string;
+  cadence: string;
+  summary: string;
+  cta: string;
+  features: string[];
+};
+
+/**
+ * A plan as staff edit it, which is more than the public pricing page sees:
+ * inactive and non-purchasable tiers are included so they can be brought back
+ * without a database session.
+ *
+ * `purchasable` and `active` are separate on purpose. An inactive plan is gone
+ * from the site; a non-purchasable one is advertised but has no self-serve
+ * checkout, which is what the negotiated "Custom" tier is.
+ */
+export type AdminPlanDto = {
+  id: number;
+  code: string;
+  featured: boolean;
+  sortOrder: number;
+  active: boolean;
+  /** Minor units — 19900 is $199.00. The only billable number here. */
+  priceMinor: number;
+  currency: string;
+  billingPeriod: string;
+  purchasable: boolean;
+  translations: AdminPlanTranslationDto[];
+};
+
+/** The body of a create or update. Identical to the DTO minus the identity. */
+export type PlanUpsertRequest = Omit<AdminPlanDto, "id">;

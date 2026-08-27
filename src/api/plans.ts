@@ -13,6 +13,24 @@ export type WebsitePlan = {
   features?: string[];
   cta?: string;
   /**
+   * The localised display price and the wording after it — "Negotiable", "$199",
+   * "/month". Copy, not a figure: a tier whose price is a conversation has no
+   * number to show, which is the reason these exist alongside `priceMinor`.
+   * Absent (not null) when the plan has no translation in the requested
+   * language, so read them with `??` rather than a truthiness check on null.
+   */
+  price?: string;
+  cadence?: string;
+  /**
+   * Whether a client can buy this themselves. `false` is the negotiated tier:
+   * it is advertised on the pricing page but has no checkout, and the API
+   * refuses a subscription to it with a 409 regardless of what the UI does.
+   *
+   * A non-purchasable plan reports `priceMinor: 0`, which does **not** mean
+   * free — never render it as a price.
+   */
+  purchasable?: boolean;
+  /**
    * Minor units — 2900 is 29.00 GEL. This is the only billable number in the
    * payload; the copy above it must never be parsed for a price, and no price
    * may be hardcoded in the UI, because these change.
@@ -62,4 +80,9 @@ export function formatMinor(
 
 export function formatPlanPrice(plan: WebsitePlan, locale: string): string {
   return formatMinor(plan.priceMinor, plan.currency, locale);
+}
+
+/** A tier whose price is agreed rather than listed. */
+export function isNegotiable(plan: WebsitePlan): boolean {
+  return plan.purchasable === false;
 }

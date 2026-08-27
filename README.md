@@ -106,7 +106,8 @@ Georgian uses **Noto Sans Georgian**, which is already loaded as a fallback in t
 - Social links in `Footer.tsx` point at the live bbloom Instagram and Facebook profiles.
 - The site deliberately makes **no performance claims** — there are no statistics, case studies or
   testimonials, since there is nothing real to cite yet. Add them only with figures you can back up.
-- The pricing figures in `src/i18n/*.ts` (`plans`) are placeholders — confirm them before launch.
+- The pricing tiers, their copy and their prices come from the API (`GET /plans/website`) and are
+  edited by staff at `/admin/plans` — not from `src/i18n/*.ts`. Never hardcode a price in the UI.
 
 ## Deployment
 

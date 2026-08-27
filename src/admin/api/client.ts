@@ -3,6 +3,8 @@ import type {
   CreateSiteRequest,
   Page,
   AdminAccountDto,
+  AdminPlanDto,
+  PlanUpsertRequest,
   SiteDetail,
   SiteSummary,
   SiteUser,
@@ -267,6 +269,49 @@ export function resendAccountConfirmation(
     `/admin/accounts/${accountId}/resend-confirmation`,
     { method: "POST" },
   );
+}
+
+/**
+ * The pricing plans, as staff edit them. Unlike `/plans/website`, this returns
+ * inactive and non-purchasable tiers too, and every translation rather than one
+ * resolved language — staff edit both languages on one screen.
+ */
+export function fetchPlans(token: string): Promise<AdminPlanDto[]> {
+  return authed<AdminPlanDto[]>(token, "/admin/plans");
+}
+
+export function fetchPlan(token: string, planId: number): Promise<AdminPlanDto> {
+  return authed<AdminPlanDto>(token, `/admin/plans/${planId}`);
+}
+
+export function createPlan(
+  token: string,
+  body: PlanUpsertRequest,
+): Promise<AdminPlanDto> {
+  return authed<AdminPlanDto>(token, "/admin/plans", {
+    method: "POST",
+    body: JSON.stringify(body),
+  });
+}
+
+export function updatePlan(
+  token: string,
+  planId: number,
+  body: PlanUpsertRequest,
+): Promise<AdminPlanDto> {
+  return authed<AdminPlanDto>(token, `/admin/plans/${planId}`, {
+    method: "PUT",
+    body: JSON.stringify(body),
+  });
+}
+
+/**
+ * Removes a plan. The API refuses this while a subscription still points at it,
+ * in which case deactivate it instead — an unsellable plan and a plan that
+ * never existed are different things to a client holding an invoice.
+ */
+export function deletePlan(token: string, planId: number): Promise<void> {
+  return authed<void>(token, `/admin/plans/${planId}`, { method: "DELETE" });
 }
 
 export function updateFreeAllowance(

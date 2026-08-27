@@ -10,6 +10,8 @@ import SiteDetail from "./pages/SiteDetail";
 import SystemStatus from "./pages/SystemStatus";
 import Accounts from "./pages/Accounts";
 import AccountDetail from "./pages/AccountDetail";
+import Plans from "./pages/Plans";
+import PlanEditor from "./pages/PlanEditor";
 
 function Routed() {
   const { token, restoring } = useAuth();
@@ -28,6 +30,11 @@ function Routed() {
           <Route path="sites/:siteId" element={<SiteDetail />} />
           <Route path="accounts" element={<Accounts />} />
           <Route path="accounts/:accountId" element={<AccountDetail />} />
+          <Route path="plans" element={<Plans />} />
+          {/* `new` is matched by the same route as an id: one editor, so a
+              field added to the create form cannot go missing from the edit
+              form. */}
+          <Route path="plans/:planId" element={<PlanEditor />} />
           <Route path="system" element={<SystemStatus />} />
           <Route path="*" element={<Navigate to={adminPath()} replace />} />
         </Routes>
