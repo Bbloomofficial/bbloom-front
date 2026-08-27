@@ -12,7 +12,7 @@ import {
 } from "../api/client";
 import type { AdminPromoCodeDto, PromoCodeUpsertRequest } from "../api/types";
 import { adminStrings } from "../strings";
-import { formatInstant, fromLocalInput, toLocalInput } from "../datetime";
+import { formatInstant, fromEndOfDay, toEndDateInput } from "../datetime";
 import { adminPath } from "../../routes";
 
 function emptyPromo(): PromoCodeUpsertRequest {
@@ -79,7 +79,7 @@ export default function PromoCodeEditor() {
       planCodes: promo.planCodes,
     });
     setPercentText(String(promo.percentOff));
-    setExpiresText(toLocalInput(promo.expiresAt));
+    setExpiresText(toEndDateInput(promo.expiresAt));
     setMaxText(
       promo.maxRedemptions === undefined ? "" : String(promo.maxRedemptions),
     );
@@ -127,7 +127,9 @@ export default function PromoCodeEditor() {
       // thing the client will type rather than settling on save.
       code: form.code.trim().toUpperCase(),
       percentOff: percent,
-      expiresAt: fromLocalInput(expiresText),
+      // The last day the code works, so the instant sent is midnight at the
+      // start of the day after it — the API's check is "past `expiresAt`".
+      expiresAt: fromEndOfDay(expiresText),
       maxRedemptions: max,
     };
 
@@ -229,7 +231,7 @@ export default function PromoCodeEditor() {
               <input
                 id="promo-expires"
                 className="field"
-                type="datetime-local"
+                type="date"
                 value={expiresText}
                 onChange={(e) => {
                   setSaved(false);

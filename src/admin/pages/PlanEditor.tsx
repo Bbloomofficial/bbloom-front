@@ -11,7 +11,12 @@ import {
 } from "../api/client";
 import type { AdminPlanDto, PlanUpsertRequest } from "../api/types";
 import { adminStrings } from "../strings";
-import { fromLocalInput, toLocalInput } from "../datetime";
+import {
+  fromEndOfDay,
+  fromStartOfDay,
+  toDateInput,
+  toEndDateInput,
+} from "../datetime";
 import { formatMinor } from "../../api/plans";
 import { adminPath } from "../../routes";
 
@@ -150,8 +155,8 @@ export default function PlanEditor() {
     setDiscountText(
       data.discountPercent === undefined ? "" : String(data.discountPercent),
     );
-    setStartsAtText(toLocalInput(data.discountStartsAt));
-    setEndsAtText(toLocalInput(data.discountEndsAt));
+    setStartsAtText(toDateInput(data.discountStartsAt));
+    setEndsAtText(toEndDateInput(data.discountEndsAt));
   }, [data]);
 
   const translation = useMemo(
@@ -183,8 +188,8 @@ export default function PlanEditor() {
 
     const minor = Math.round(major * 100);
     const now = Date.now();
-    const startsAt = fromLocalInput(startsAtText);
-    const endsAt = fromLocalInput(endsAtText);
+    const startsAt = fromStartOfDay(startsAtText);
+    const endsAt = fromEndOfDay(endsAtText);
     return {
       was: formatMinor(minor, form.currency, locale),
       now: formatMinor(
@@ -260,8 +265,8 @@ export default function PlanEditor() {
       setProblem(t.plans.discountWindowWithoutPercent);
       return;
     }
-    const startsAt = fromLocalInput(startsAtText);
-    const endsAt = fromLocalInput(endsAtText);
+    const startsAt = fromStartOfDay(startsAtText);
+    const endsAt = fromEndOfDay(endsAtText);
     if (startsAt && endsAt && Date.parse(endsAt) <= Date.parse(startsAt)) {
       setProblem(t.plans.discountWindowBackwards);
       return;
@@ -302,8 +307,8 @@ export default function PlanEditor() {
           ? ""
           : String(result.discountPercent),
       );
-      setStartsAtText(toLocalInput(result.discountStartsAt));
-      setEndsAtText(toLocalInput(result.discountEndsAt));
+      setStartsAtText(toDateInput(result.discountStartsAt));
+      setEndsAtText(toEndDateInput(result.discountEndsAt));
       setSaved(true);
     } catch (cause) {
       setProblem((cause as Error).message || t.plans.saveFailed);
@@ -498,7 +503,7 @@ export default function PlanEditor() {
                   <input
                     id="plan-discount-start"
                     className="field"
-                    type="datetime-local"
+                    type="date"
                     value={startsAtText}
                     onChange={(e) => {
                       setSaved(false);
@@ -517,7 +522,7 @@ export default function PlanEditor() {
                   <input
                     id="plan-discount-end"
                     className="field"
-                    type="datetime-local"
+                    type="date"
                     value={endsAtText}
                     onChange={(e) => {
                       setSaved(false);

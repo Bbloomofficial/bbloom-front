@@ -5,7 +5,7 @@ import { useSession } from "../auth";
 import { useResource } from "../hooks";
 import { deletePromoCode, fetchPromoCodes } from "../api/client";
 import { adminStrings } from "../strings";
-import { formatInstant } from "../datetime";
+import { formatEndDay } from "../datetime";
 import { adminPath } from "../../routes";
 
 /**
@@ -155,7 +155,7 @@ export default function PromoCodes() {
                     {promo.expiresAt && (
                       <p className="mt-0.5 text-xs text-ink-400">
                         {t.promoCodes.expires}{" "}
-                        {formatInstant(promo.expiresAt, locale)}
+                        {formatEndDay(promo.expiresAt, locale)}
                       </p>
                     )}
                   </td>

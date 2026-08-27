@@ -817,10 +817,11 @@ const en: AdminStrings = {
       "Takes a percentage off this plan for everyone, on the pricing page and at checkout. Leave the percentage blank for no sale.",
     discountPercent: "Percent off",
     discountPercentHint: "A whole number from 1 to 100. Blank means no sale.",
-    discountStarts: "Starts",
+    discountStarts: "First day",
     discountStartsHint: "Leave blank to start straight away.",
-    discountEnds: "Ends",
-    discountEndsHint: "Leave blank to run until you stop it.",
+    discountEnds: "Last day",
+    discountEndsHint:
+      "The last day the sale runs, included. Leave blank to run until you stop it.",
     discountPreview: "Clients will pay",
     discountNotLive:
       "Not running right now — this is what the price will be during the sale.",
@@ -846,7 +847,8 @@ const en: AdminStrings = {
     percentOff: "Percent off",
     percentHint: "A whole number from 1 to 100.",
     expiresAt: "Expires",
-    expiresHint: "Leave blank to never expire.",
+    expiresHint:
+      "The last day the code works, included. Leave blank to never expire.",
     expires: "Expires",
     maxRedemptions: "Use limit",
     maxHint: "Leave blank for no limit.",
@@ -1286,10 +1288,11 @@ const ka: AdminStrings = {
     discountPercent: "პროცენტი",
     discountPercentHint:
       "მთელი რიცხვი 1-დან 100-მდე. ცარიელი ნიშნავს ფასდაკლების გარეშე.",
-    discountStarts: "დაწყება",
+    discountStarts: "პირველი დღე",
     discountStartsHint: "ცარიელი — მაშინვე იწყება.",
-    discountEnds: "დასრულება",
-    discountEndsHint: "ცარიელი — გაგრძელდება, სანამ თქვენ არ გამორთავთ.",
+    discountEnds: "ბოლო დღე",
+    discountEndsHint:
+      "ბოლო დღე, როცა ფასდაკლება მოქმედებს — ჩათვლით. ცარიელი — გაგრძელდება, სანამ თქვენ არ გამორთავთ.",
     discountPreview: "კლიენტი გადაიხდის",
     discountNotLive:
       "ამჟამად არ მოქმედებს — ეს ის ფასია, რომელიც ფასდაკლების პერიოდში იქნება.",
@@ -1316,7 +1319,8 @@ const ka: AdminStrings = {
     percentOff: "პროცენტი",
     percentHint: "მთელი რიცხვი 1-დან 100-მდე.",
     expiresAt: "ვადა",
-    expiresHint: "ცარიელი — ვადა არ ეწურება.",
+    expiresHint:
+      "ბოლო დღე, როცა კოდი მუშაობს — ჩათვლით. ცარიელი — ვადა არ ეწურება.",
     expires: "ვადა",
     maxRedemptions: "გამოყენების ლიმიტი",
     maxHint: "ცარიელი — ლიმიტის გარეშე.",

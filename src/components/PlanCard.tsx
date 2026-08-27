@@ -88,7 +88,7 @@ export function PlanCard({
 
   return (
     <div
-      className={`relative flex min-w-0 flex-col break-words rounded-[2rem] border bg-surface p-6 sm:p-8 ${
+      className={`relative flex min-w-0 flex-col break-words rounded-[2rem] border bg-surface p-6 ${
         plan.featured
           ? "border-bloom-200 shadow-2xl shadow-bloom-600/10 dark:border-bloom-700 lg:-mt-4"
           : "border-ink-100"
@@ -108,44 +108,46 @@ export function PlanCard({
       <h3 className="text-lg font-bold text-ink-900">{plan.name}</h3>
       {plan.summary && <p className="mt-1 text-sm text-ink-600">{plan.summary}</p>}
 
-      <p className="mt-6 flex flex-wrap items-baseline gap-x-2">
+      {/* The old price and the badge sit on their own line above the new one.
+          Inline, four items of unpredictable width wrapped into a three-line
+          jumble in the narrow columns a four-tier grid produces. */}
+      <div className="mt-6">
         {was && (
+          <p className="mb-1 flex flex-wrap items-center gap-2">
+            <span className="text-base font-semibold text-ink-400 line-through" dir="ltr">
+              {was}
+            </span>
+            {plan.discountPercent !== undefined && (
+              <span
+                className="rounded-full bg-bloom-600 px-2 py-0.5 text-xs font-bold text-white"
+                dir="ltr"
+              >
+                −{plan.discountPercent}%
+              </span>
+            )}
+          </p>
+        )}
+        <p className="flex flex-wrap items-baseline gap-x-2">
           <span
-            className="text-lg font-semibold text-ink-400 line-through"
-            dir="ltr"
+            className={`font-extrabold tracking-tight text-ink-900 ${
+              negotiable ? "text-2xl" : "text-3xl sm:text-4xl"
+            }`}
+            dir={negotiable ? undefined : "ltr"}
           >
-            {was}
+            {price}
           </span>
-        )}
-        <span
-          className={`font-extrabold tracking-tight text-ink-900 ${
-            negotiable ? "text-2xl" : "text-4xl"
-          }`}
-          dir={negotiable ? undefined : "ltr"}
-        >
-          {price}
-        </span>
-        {period && (
-          <span className="text-sm font-semibold text-ink-400">{period}</span>
-        )}
-        {/* Wordless on purpose: "−20%" needs no translation and cannot fall out
-            of step with the two figures beside it. */}
-        {was && plan.discountPercent !== undefined && (
-          <span
-            className="rounded-full bg-bloom-600 px-2.5 py-0.5 text-xs font-bold text-white"
-            dir="ltr"
-          >
-            −{plan.discountPercent}%
-          </span>
-        )}
-      </p>
+          {period && (
+            <span className="text-sm font-semibold text-ink-400">{period}</span>
+          )}
+        </p>
+      </div>
 
       {plan.features && plan.features.length > 0 && (
-        <ul className="mt-7 flex-1 space-y-3 border-t border-ink-100 pt-7">
+        <ul className="mt-6 flex-1 space-y-2.5 border-t border-ink-100 pt-6">
           {plan.features.map((feature) => (
             <li
               key={feature}
-              className="flex items-start gap-2.5 text-sm text-ink-600"
+              className="flex items-start gap-2 text-sm leading-snug text-ink-600"
             >
               <Check />
               {feature}
@@ -154,7 +156,7 @@ export function PlanCard({
         </ul>
       )}
 
-      <div className="mt-8">{action}</div>
+      <div className="mt-7">{action}</div>
     </div>
   );
 }

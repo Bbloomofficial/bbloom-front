@@ -25,12 +25,16 @@ export default function Pricing() {
         </div>
       </section>
 
-      <section className="container-page py-16 sm:py-20">
+      <section className="container-page py-16 sm:py-20 xl:max-w-[86rem]">
         {error ? (
           <p className="text-center text-sm text-ink-400">{t.pricingPage.loadFailed}</p>
         ) : !plans ? (
           <p className="text-center text-sm text-ink-400">{t.pricingPage.loading}</p>
         ) : (
+          // Four tiers inside the usual 6xl page were 250px wide, which turns
+          // every Georgian feature into three lines and the card into a column.
+          // The section gets its own wider ceiling rather than the whole site's,
+          // and the grid stays two-up until there is genuinely room for four.
           <div
             className={`grid items-start gap-6 ${
               plans.length >= 4
