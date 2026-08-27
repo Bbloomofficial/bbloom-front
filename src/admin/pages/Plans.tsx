@@ -128,7 +128,28 @@ export default function Plans() {
                       {plan.code}
                     </td>
                     <td className="px-5 py-4 text-ink-900" dir="ltr">
-                      {formatMinor(plan.priceMinor, plan.currency, locale)}
+                      {/* `effectivePriceMinor` rather than a sum worked out
+                          here: the price staff read on this row and the price a
+                          client is charged must come from the same place. */}
+                      {plan.discountLive ? (
+                        <>
+                          <span className="text-ink-400 line-through">
+                            {formatMinor(plan.priceMinor, plan.currency, locale)}
+                          </span>{" "}
+                          <span className="font-semibold">
+                            {formatMinor(
+                              plan.effectivePriceMinor,
+                              plan.currency,
+                              locale,
+                            )}
+                          </span>
+                          <span className="ms-2 inline-flex items-center rounded-full bg-tint px-2 py-0.5 text-xs font-semibold text-tint-fg">
+                            −{plan.discountPercent}%
+                          </span>
+                        </>
+                      ) : (
+                        formatMinor(plan.priceMinor, plan.currency, locale)
+                      )}
                     </td>
                     <td className="hidden px-5 py-4 text-ink-600 md:table-cell">
                       {t.plans.periods[plan.billingPeriod] ?? plan.billingPeriod}

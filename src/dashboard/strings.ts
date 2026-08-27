@@ -182,6 +182,21 @@ export type DashboardStrings = {
     checkoutTitle: string;
     checkoutStarting: string;
     checkoutFailed: string;
+    /** Promo codes, and the breakdown a quote produces. */
+    promoLabel: string;
+    promoPlaceholder: string;
+    promoApply: string;
+    promoChecking: string;
+    promoClear: string;
+    /** A code that worked, named so the client can see which one is on. */
+    promoOn: (code: string) => string;
+    /**
+     * A valid code that lost to a better sale price. Not an error: it was not
+     * refused and has not been spent.
+     */
+    promoBeaten: string;
+    quoteTotal: string;
+    quoteSaving: (amount: string) => string;
     cancelFailed: string;
     bankTitle: string;
     bankHint: string;
@@ -544,6 +559,16 @@ const en: DashboardStrings = {
     checkoutTitle: "Payment",
     checkoutStarting: "Preparing…",
     checkoutFailed: "We couldn't start the payment. Please try again.",
+    promoLabel: "Discount code",
+    promoPlaceholder: "Enter a code",
+    promoApply: "Apply",
+    promoChecking: "Checking…",
+    promoClear: "Remove",
+    promoOn: (code) => `Code ${code} applied.`,
+    promoBeaten:
+      "Your code is valid, but the sale price is better, so we've used that. Your code hasn't been used up.",
+    quoteTotal: "Total",
+    quoteSaving: (amount) => `You save ${amount}`,
     cancelFailed: "We couldn't cancel the renewal. Please try again.",
     bankTitle: "Bank transfer",
     bankHint: "Your plan starts as soon as the payment reaches us.",
@@ -946,6 +971,16 @@ const ka: DashboardStrings = {
     checkoutTitle: "გადახდა",
     checkoutStarting: "მზადდება…",
     checkoutFailed: "გადახდის დაწყება ვერ მოხერხდა. სცადეთ თავიდან.",
+    promoLabel: "ფასდაკლების კოდი",
+    promoPlaceholder: "შეიყვანეთ კოდი",
+    promoApply: "გამოყენება",
+    promoChecking: "მოწმდება…",
+    promoClear: "მოხსნა",
+    promoOn: (code) => `კოდი ${code} გააქტიურდა.`,
+    promoBeaten:
+      "თქვენი კოდი მოქმედია, მაგრამ ფასდაკლებული ფასი უფრო ხელსაყრელია და ის გამოვიყენეთ. კოდი დაუხარჯავი დაგრჩათ.",
+    quoteTotal: "სულ",
+    quoteSaving: (amount) => `დაზოგავთ ${amount}`,
     cancelFailed: "განახლების გაუქმება ვერ მოხერხდა. სცადეთ თავიდან.",
     bankTitle: "საბანკო გადარიცხვა",
     bankHint: "პაკეტი ამოქმედდება, როგორც კი თანხა ჩამოგვივა.",

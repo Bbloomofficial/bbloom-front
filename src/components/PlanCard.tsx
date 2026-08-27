@@ -1,5 +1,10 @@
 import { useEffect, useState } from "react";
-import { fetchWebsitePlans, formatPlanPrice, isNegotiable } from "../api/plans";
+import {
+  fetchWebsitePlans,
+  formatPlanPrice,
+  formatPlanWasPrice,
+  isNegotiable,
+} from "../api/plans";
 import type { WebsitePlan } from "../api/plans";
 import { useI18n } from "../i18n";
 
@@ -76,6 +81,10 @@ export function PlanCard({
     ? (plan.price ?? plan.name)
     : formatPlanPrice(plan, locale);
   const period = negotiable ? (plan.cadence ?? "") : periodLabel;
+  // The struck-through figure comes from the API too. Working it back out from
+  // a percentage here would disagree with the invoice by a cent on some of
+  // them, and the one number a pricing page must never get wrong is the price.
+  const was = negotiable ? null : formatPlanWasPrice(plan, locale);
 
   return (
     <div
@@ -100,6 +109,14 @@ export function PlanCard({
       {plan.summary && <p className="mt-1 text-sm text-ink-600">{plan.summary}</p>}
 
       <p className="mt-6 flex flex-wrap items-baseline gap-x-2">
+        {was && (
+          <span
+            className="text-lg font-semibold text-ink-400 line-through"
+            dir="ltr"
+          >
+            {was}
+          </span>
+        )}
         <span
           className={`font-extrabold tracking-tight text-ink-900 ${
             negotiable ? "text-2xl" : "text-4xl"
@@ -110,6 +127,16 @@ export function PlanCard({
         </span>
         {period && (
           <span className="text-sm font-semibold text-ink-400">{period}</span>
+        )}
+        {/* Wordless on purpose: "−20%" needs no translation and cannot fall out
+            of step with the two figures beside it. */}
+        {was && plan.discountPercent !== undefined && (
+          <span
+            className="rounded-full bg-bloom-600 px-2.5 py-0.5 text-xs font-bold text-white"
+            dir="ltr"
+          >
+            −{plan.discountPercent}%
+          </span>
         )}
       </p>
 

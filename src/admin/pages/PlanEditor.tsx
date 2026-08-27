@@ -11,6 +11,8 @@ import {
 } from "../api/client";
 import type { AdminPlanDto, PlanUpsertRequest } from "../api/types";
 import { adminStrings } from "../strings";
+import { fromLocalInput, toLocalInput } from "../datetime";
+import { formatMinor } from "../../api/plans";
 import { adminPath } from "../../routes";
 
 /** The languages a plan is published in, in the order they are edited. */
@@ -55,9 +57,16 @@ function emptyPlan(): PlanUpsertRequest {
  */
 function toForm(plan: AdminPlanDto): PlanUpsertRequest {
   const blank = emptyPlan();
+  const {
+    // Answers rather than settings, and dropped so a form that has been open a
+    // while cannot post yesterday's arithmetic back as a price.
+    discountLive: _live,
+    effectivePriceMinor: _effective,
+    ...editable
+  } = plan;
   return {
     ...blank,
-    ...plan,
+    ...editable,
     translations: LANGUAGES.map(
       (language) =>
         plan.translations.find((item) => item.language === language) ?? {
@@ -71,6 +80,19 @@ function toForm(plan: AdminPlanDto): PlanUpsertRequest {
         },
     ),
   };
+}
+
+/**
+ * The discount as the client will see it applied, worked out the same way the
+ * API does: round the discount half-up, then subtract it.
+ *
+ * Reproduced here only to preview an unsaved percentage — the moment a plan is
+ * saved, `effectivePriceMinor` off the response is the figure shown, because a
+ * price the screen calculates and a price the server charges must never be two
+ * different opinions.
+ */
+function previewOff(minor: number, percent: number): number {
+  return Math.floor((minor * percent + 50) / 100);
 }
 
 /** Minor units in, whole currency out — "19900" becomes "199". */
@@ -98,6 +120,15 @@ export default function PlanEditor() {
   // Kept as text so a half-typed "1" is not rounded into the model on every
   // keystroke, and so clearing the field does not read as a free plan.
   const [priceText, setPriceText] = useState("0");
+  /**
+   * The sale, held as the strings its inputs read and write: a percentage
+   * mid-typing, and two local wall-clock times. Empty is meaningful for all
+   * three — no percentage is "not on sale", and a missing bound is "already on"
+   * or "until someone stops it" — so they are cleared rather than defaulted.
+   */
+  const [discountText, setDiscountText] = useState("");
+  const [startsAtText, setStartsAtText] = useState("");
+  const [endsAtText, setEndsAtText] = useState("");
   const [language, setLanguage] = useState<string>(LANGUAGES[0]);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -116,6 +147,11 @@ export default function PlanEditor() {
     if (!data) return;
     setForm(toForm(data));
     setPriceText(majorFromMinor(data.priceMinor));
+    setDiscountText(
+      data.discountPercent === undefined ? "" : String(data.discountPercent),
+    );
+    setStartsAtText(toLocalInput(data.discountStartsAt));
+    setEndsAtText(toLocalInput(data.discountEndsAt));
   }, [data]);
 
   const translation = useMemo(
@@ -124,6 +160,50 @@ export default function PlanEditor() {
       form.translations[0],
     [form.translations, language],
   );
+
+  /**
+   * What the sale currently in the form comes to.
+   *
+   * `null` when there is nothing to preview. Live is judged here rather than
+   * read off `discountLive`, because the point of this box is to show the
+   * effect of a percentage typed a second ago that the server has not seen.
+   */
+  const preview = useMemo(() => {
+    const percent = Number(discountText);
+    if (
+      !discountText.trim() ||
+      !Number.isFinite(percent) ||
+      percent <= 0 ||
+      percent > 100
+    ) {
+      return null;
+    }
+    const major = Number(priceText);
+    if (!Number.isFinite(major) || major < 0) return null;
+
+    const minor = Math.round(major * 100);
+    const now = Date.now();
+    const startsAt = fromLocalInput(startsAtText);
+    const endsAt = fromLocalInput(endsAtText);
+    return {
+      was: formatMinor(minor, form.currency, locale),
+      now: formatMinor(
+        minor - previewOff(minor, percent),
+        form.currency,
+        locale,
+      ),
+      live:
+        (!startsAt || Date.parse(startsAt) <= now) &&
+        (!endsAt || Date.parse(endsAt) > now),
+    };
+  }, [
+    discountText,
+    priceText,
+    startsAtText,
+    endsAtText,
+    form.currency,
+    locale,
+  ]);
 
   function patch(changes: Partial<PlanUpsertRequest>) {
     setSaved(false);
@@ -161,15 +241,47 @@ export default function PlanEditor() {
       return;
     }
 
+    const percent = discountText.trim() === "" ? null : Number(discountText);
+    if (
+      percent !== null &&
+      (!Number.isInteger(percent) || percent < 1 || percent > 100)
+    ) {
+      setProblem(t.plans.discountInvalid);
+      return;
+    }
+    // Caught here as well as by the API, because the API's refusal names a
+    // field this form would otherwise have to translate back into "you can't
+    // discount a tier that isn't for sale".
+    if (percent !== null && !form.purchasable) {
+      setProblem(t.plans.discountNotPurchasable);
+      return;
+    }
+    if (percent === null && (startsAtText || endsAtText)) {
+      setProblem(t.plans.discountWindowWithoutPercent);
+      return;
+    }
+    const startsAt = fromLocalInput(startsAtText);
+    const endsAt = fromLocalInput(endsAtText);
+    if (startsAt && endsAt && Date.parse(endsAt) <= Date.parse(startsAt)) {
+      setProblem(t.plans.discountWindowBackwards);
+      return;
+    }
+
     // Rounded rather than truncated: 199.999 typed by hand should not quietly
     // become 199.99 in the ledger.
     //
     // Features are tidied here rather than while typing: a blank line renders
     // as a tick beside nothing, but removing it mid-keystroke fights the caret.
+    //
+    // Clearing the percentage clears its window with it, so a plan taken off
+    // sale does not keep last quarter's dates waiting to be noticed.
     const body: PlanUpsertRequest = {
       ...form,
       code: form.code.trim(),
       priceMinor: Math.round(major * 100),
+      discountPercent: percent ?? undefined,
+      discountStartsAt: percent === null ? undefined : startsAt,
+      discountEndsAt: percent === null ? undefined : endsAt,
       translations: form.translations.map((item) => ({
         ...item,
         features: item.features.map((line) => line.trim()).filter(Boolean),
@@ -185,6 +297,13 @@ export default function PlanEditor() {
       navigate(adminPath(`/plans/${result.id}`), { replace: true });
       setForm(toForm(result));
       setPriceText(majorFromMinor(result.priceMinor));
+      setDiscountText(
+        result.discountPercent === undefined
+          ? ""
+          : String(result.discountPercent),
+      );
+      setStartsAtText(toLocalInput(result.discountStartsAt));
+      setEndsAtText(toLocalInput(result.discountEndsAt));
       setSaved(true);
     } catch (cause) {
       setProblem((cause as Error).message || t.plans.saveFailed);
@@ -336,6 +455,105 @@ export default function PlanEditor() {
           </div>
         </section>
 
+        <section className="rounded-3xl border border-ink-100 bg-surface p-6">
+          <h2 className="text-lg font-bold text-ink-900">{t.plans.discount}</h2>
+          <p className="mt-1 text-sm text-ink-600">{t.plans.discountHint}</p>
+
+          {!form.purchasable ? (
+            /* A negotiated tier has no listed price to take a percentage off,
+               and the API refuses one rather than saving a setting that would
+               show up nowhere. Saying so is kinder than a disabled field with
+               no explanation. */
+            <p className="mt-4 rounded-2xl bg-tint px-4 py-3 text-sm text-ink-600">
+              {t.plans.discountNotPurchasable}
+            </p>
+          ) : (
+            <>
+              <div className="mt-4 grid gap-5 sm:grid-cols-3">
+                <div>
+                  <label className="label" htmlFor="plan-discount">
+                    {t.plans.discountPercent}
+                  </label>
+                  <input
+                    id="plan-discount"
+                    className="field"
+                    inputMode="numeric"
+                    dir="ltr"
+                    placeholder="0"
+                    value={discountText}
+                    onChange={(e) => {
+                      setSaved(false);
+                      setDiscountText(e.target.value);
+                    }}
+                  />
+                  <p className="mt-1 text-xs text-ink-400">
+                    {t.plans.discountPercentHint}
+                  </p>
+                </div>
+
+                <div>
+                  <label className="label" htmlFor="plan-discount-start">
+                    {t.plans.discountStarts}
+                  </label>
+                  <input
+                    id="plan-discount-start"
+                    className="field"
+                    type="datetime-local"
+                    value={startsAtText}
+                    onChange={(e) => {
+                      setSaved(false);
+                      setStartsAtText(e.target.value);
+                    }}
+                  />
+                  <p className="mt-1 text-xs text-ink-400">
+                    {t.plans.discountStartsHint}
+                  </p>
+                </div>
+
+                <div>
+                  <label className="label" htmlFor="plan-discount-end">
+                    {t.plans.discountEnds}
+                  </label>
+                  <input
+                    id="plan-discount-end"
+                    className="field"
+                    type="datetime-local"
+                    value={endsAtText}
+                    onChange={(e) => {
+                      setSaved(false);
+                      setEndsAtText(e.target.value);
+                    }}
+                  />
+                  <p className="mt-1 text-xs text-ink-400">
+                    {t.plans.discountEndsHint}
+                  </p>
+                </div>
+              </div>
+
+              {preview && (
+                <div className="mt-5 rounded-2xl border border-ink-100 bg-sunken px-4 py-3">
+                  <p className="text-sm text-ink-600">
+                    {t.plans.discountPreview}{" "}
+                    <span className="text-ink-400 line-through" dir="ltr">
+                      {preview.was}
+                    </span>{" "}
+                    <span className="font-bold text-ink-900" dir="ltr">
+                      {preview.now}
+                    </span>
+                  </p>
+                  {/* Scheduled but not started, or already finished — the price
+                      above is what it *would* be, and saying so stops it being
+                      read as what the pricing page is showing right now. */}
+                  {!preview.live && (
+                    <p className="mt-1 text-xs font-semibold text-ink-600">
+                      {t.plans.discountNotLive}
+                    </p>
+                  )}
+                </div>
+              )}
+            </>
+          )}
+        </section>
         <section className="rounded-3xl border border-ink-100 bg-surface p-6">
           <h2 className="text-lg font-bold text-ink-900">{t.plans.translations}</h2>
           <p className="mt-1 text-sm text-ink-600">{t.plans.translationsHint}</p>

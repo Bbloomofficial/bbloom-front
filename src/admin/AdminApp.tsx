@@ -12,6 +12,8 @@ import Accounts from "./pages/Accounts";
 import AccountDetail from "./pages/AccountDetail";
 import Plans from "./pages/Plans";
 import PlanEditor from "./pages/PlanEditor";
+import PromoCodes from "./pages/PromoCodes";
+import PromoCodeEditor from "./pages/PromoCodeEditor";
 
 function Routed() {
   const { token, restoring } = useAuth();
@@ -35,6 +37,8 @@ function Routed() {
               field added to the create form cannot go missing from the edit
               form. */}
           <Route path="plans/:planId" element={<PlanEditor />} />
+          <Route path="promo-codes" element={<PromoCodes />} />
+          <Route path="promo-codes/:promoId" element={<PromoCodeEditor />} />
           <Route path="system" element={<SystemStatus />} />
           <Route path="*" element={<Navigate to={adminPath()} replace />} />
         </Routes>

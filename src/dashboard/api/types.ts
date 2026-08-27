@@ -166,6 +166,10 @@ export type SubscriptionPayment = {
   periodStart?: string;
   periodEnd?: string;
   note?: string;
+  /** The code that was used, if one was. */
+  promoCode?: string;
+  /** How much came off. `amountMinor` is already net of it. */
+  discountMinor?: number;
   paidAt?: string;
   createdAt?: string;
 };
@@ -201,10 +205,42 @@ export type SubscriptionDetail = {
  * all. Card providers will answer with a `redirectUrl`, so callers branch on
  * which one arrived rather than on the provider name.
  */
+/**
+ * What a checkout will cost, worked out by the API.
+ *
+ * Every figure here is the server's, and none of them may be recomputed on this
+ * side: the discount is rounded server-side and a multi-period purchase is
+ * discounted once on the total rather than per period, so arithmetic done here
+ * disagrees with the invoice by a cent on some percentages.
+ */
+export type CheckoutQuote = {
+  planCode: string;
+  currency: string;
+  periods: number;
+  /** One period at list price. */
+  unitPriceMinor: number;
+  /** The whole purchase at list price — the figure to strike through. */
+  listAmountMinor: number;
+  discountMinor: number;
+  /** What will actually be charged. */
+  amountMinor: number;
+  discountPercent?: number;
+  discountSource?: "PLAN_SALE" | "PROMO_CODE";
+  /**
+   * The code that was sent, echoed back **even when it lost** to a better sale
+   * price. Read with `promoCodeApplied` — a code that lost is not refused and
+   * is not spent, and telling the client it was invalid would be a lie.
+   */
+  promoCode?: string;
+  promoCodeApplied: boolean;
+};
+
 export type CheckoutResponse = {
   provider: string;
   redirectUrl?: string;
   instructions?: string;
+  /** The final breakdown, so the result needs no second call to explain itself. */
+  quote?: CheckoutQuote;
 };
 
 export type SiteMember = {

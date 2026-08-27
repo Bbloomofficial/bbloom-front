@@ -7,7 +7,7 @@ import type { Locale } from "../i18n";
  */
 export type AdminStrings = {
   brand: string;
-  nav: { sites: string; newSite: string; system: string; accounts: string; plans: string };
+  nav: { sites: string; newSite: string; system: string; accounts: string; plans: string; promoCodes: string };
   signedInAs: string;
   signOut: string;
   backToBbloom: string;
@@ -351,12 +351,64 @@ export type AdminStrings = {
     priceInvalid: string;
     nameRequired: string;
     saveFailed: string;
+    discount: string;
+    discountHint: string;
+    discountPercent: string;
+    discountPercentHint: string;
+    discountStarts: string;
+    discountStartsHint: string;
+    discountEnds: string;
+    discountEndsHint: string;
+    discountPreview: string;
+    discountNotLive: string;
+    discountInvalid: string;
+    discountNotPurchasable: string;
+    discountWindowWithoutPercent: string;
+    discountWindowBackwards: string;
+  };
+  promoCodes: {
+    title: string;
+    subtitle: string;
+    create: string;
+    empty: string;
+    back: string;
+    newTitle: string;
+    editTitle: string;
+    code: string;
+    codeHint: string;
+    percentOff: string;
+    percentHint: string;
+    expiresAt: string;
+    expiresHint: string;
+    expires: string;
+    maxRedemptions: string;
+    maxHint: string;
+    used: string;
+    created: string;
+    active: string;
+    activeHint: string;
+    status: string;
+    usable: string;
+    notUsable: string;
+    appliesTo: string;
+    appliesToHint: string;
+    allPlans: string;
+    allPlansNotice: string;
+    edit: string;
+    delete: string;
+    deleting: string;
+    deleteConfirm: string;
+    deleteBlocked: string;
+    codeRequired: string;
+    percentInvalid: string;
+    maxInvalid: string;
+    saveFailed: string;
   };
 };
 
 const en: AdminStrings = {
   brand: "bbloom staff",
-  nav: { sites: "Sites", newSite: "New site", system: "System", accounts: "Accounts", plans: "Plans" },
+  nav: { sites: "Sites", newSite: "New site", system: "System", accounts: "Accounts", plans: "Plans", promoCodes: "Discounts" },
   signedInAs: "Signed in as",
   signOut: "Sign out",
   backToBbloom: "Back to bbloom.ge",
@@ -760,12 +812,74 @@ const en: AdminStrings = {
     priceInvalid: "Enter the price as a number, e.g. 199.",
     nameRequired: "Every language needs a name.",
     saveFailed: "The plan could not be saved.",
+    discount: "Sale price",
+    discountHint:
+      "Takes a percentage off this plan for everyone, on the pricing page and at checkout. Leave the percentage blank for no sale.",
+    discountPercent: "Percent off",
+    discountPercentHint: "A whole number from 1 to 100. Blank means no sale.",
+    discountStarts: "Starts",
+    discountStartsHint: "Leave blank to start straight away.",
+    discountEnds: "Ends",
+    discountEndsHint: "Leave blank to run until you stop it.",
+    discountPreview: "Clients will pay",
+    discountNotLive:
+      "Not running right now — this is what the price will be during the sale.",
+    discountInvalid: "Enter the discount as a whole number from 1 to 100.",
+    discountNotPurchasable:
+      "A plan that clients cannot buy has no listed price to discount. Turn on “Clients can buy this” first.",
+    discountWindowWithoutPercent:
+      "Set a percentage, or clear the sale dates.",
+    discountWindowBackwards: "The sale must end after it starts.",
+  },
+  promoCodes: {
+    title: "Discounts",
+    subtitle:
+      "Codes clients type at checkout. A sale price on a plan and a code never add up — whichever is better for the client is the one that applies.",
+    create: "New code",
+    empty: "No codes yet.",
+    back: "← All codes",
+    newTitle: "New code",
+    editTitle: "Edit code",
+    code: "Code",
+    codeHint:
+      "What the client types. Saved in capitals, and matched however they type it.",
+    percentOff: "Percent off",
+    percentHint: "A whole number from 1 to 100.",
+    expiresAt: "Expires",
+    expiresHint: "Leave blank to never expire.",
+    expires: "Expires",
+    maxRedemptions: "Use limit",
+    maxHint: "Leave blank for no limit.",
+    used: "Used",
+    created: "Created",
+    active: "Code is switched on",
+    activeHint:
+      "Off means it stops working, without deleting it or losing the record of who used it.",
+    status: "Status",
+    usable: "Working",
+    notUsable: "Not working",
+    appliesTo: "Plans",
+    appliesToHint:
+      "Tick plans to limit the code to them. Tick nothing and it works on every plan.",
+    allPlans: "All plans",
+    allPlansNotice: "Nothing ticked, so this code works on every plan.",
+    edit: "Edit",
+    delete: "Delete code",
+    deleting: "Deleting…",
+    deleteConfirm:
+      "Delete this code? If anyone has used it, switch it off instead.",
+    deleteBlocked:
+      "This code cannot be deleted because it has been used on a payment. Switch it off instead.",
+    codeRequired: "Give the code a name clients can type.",
+    percentInvalid: "Enter the discount as a whole number from 1 to 100.",
+    maxInvalid: "The use limit must be a whole number, or blank for no limit.",
+    saveFailed: "The code could not be saved.",
   },
 };
 
 const ka: AdminStrings = {
   brand: "bbloom გუნდი",
-  nav: { sites: "საიტები", newSite: "ახალი საიტი", system: "სისტემა", accounts: "ანგარიშები", plans: "პაკეტები" },
+  nav: { sites: "საიტები", newSite: "ახალი საიტი", system: "სისტემა", accounts: "ანგარიშები", plans: "პაკეტები", promoCodes: "ფასდაკლებები" },
   signedInAs: "შესული ხართ როგორც",
   signOut: "გამოსვლა",
   backToBbloom: "დაბრუნება bbloom.ge-ზე",
@@ -1166,6 +1280,72 @@ const ka: AdminStrings = {
     priceInvalid: "ფასი შეიყვანეთ რიცხვად, მაგ. 199.",
     nameRequired: "თითოეულ ენას დასახელება სჭირდება.",
     saveFailed: "პაკეტი ვერ შეინახა.",
+    discount: "ფასდაკლება",
+    discountHint:
+      "აკლებს პროცენტს ამ პაკეტის ფასს ყველასთვის — ფასების გვერდზეც და გადახდისასაც. თუ ფასდაკლება არ გინდათ, დატოვეთ პროცენტი ცარიელი.",
+    discountPercent: "პროცენტი",
+    discountPercentHint:
+      "მთელი რიცხვი 1-დან 100-მდე. ცარიელი ნიშნავს ფასდაკლების გარეშე.",
+    discountStarts: "დაწყება",
+    discountStartsHint: "ცარიელი — მაშინვე იწყება.",
+    discountEnds: "დასრულება",
+    discountEndsHint: "ცარიელი — გაგრძელდება, სანამ თქვენ არ გამორთავთ.",
+    discountPreview: "კლიენტი გადაიხდის",
+    discountNotLive:
+      "ამჟამად არ მოქმედებს — ეს ის ფასია, რომელიც ფასდაკლების პერიოდში იქნება.",
+    discountInvalid: "ფასდაკლება შეიყვანეთ მთელ რიცხვად 1-დან 100-მდე.",
+    discountNotPurchasable:
+      "პაკეტს, რომელსაც კლიენტი ვერ ყიდულობს, ფასი არ აქვს გამოსაკლები. ჯერ ჩართეთ „კლიენტს შეუძლია შეძენა“.",
+    discountWindowWithoutPercent:
+      "მიუთითეთ პროცენტი, ან წაშალეთ ფასდაკლების თარიღები.",
+    discountWindowBackwards:
+      "ფასდაკლება დაწყების შემდეგ უნდა სრულდებოდეს.",
+  },
+  promoCodes: {
+    title: "ფასდაკლებები",
+    subtitle:
+      "კოდები, რომლებსაც კლიენტი გადახდისას წერს. პაკეტის ფასდაკლება და კოდი არ ჯამდება — მოქმედებს ის, რომელიც კლიენტისთვის უფრო ხელსაყრელია.",
+    create: "ახალი კოდი",
+    empty: "კოდები ჯერ არ არის.",
+    back: "← ყველა კოდი",
+    newTitle: "ახალი კოდი",
+    editTitle: "კოდის რედაქტირება",
+    code: "კოდი",
+    codeHint:
+      "ის, რასაც კლიენტი წერს. ინახება მაღალი რეგისტრით და მუშაობს ნებისმიერი აკრეფისას.",
+    percentOff: "პროცენტი",
+    percentHint: "მთელი რიცხვი 1-დან 100-მდე.",
+    expiresAt: "ვადა",
+    expiresHint: "ცარიელი — ვადა არ ეწურება.",
+    expires: "ვადა",
+    maxRedemptions: "გამოყენების ლიმიტი",
+    maxHint: "ცარიელი — ლიმიტის გარეშე.",
+    used: "გამოყენებულია",
+    created: "შექმნილია",
+    active: "კოდი ჩართულია",
+    activeHint:
+      "გამორთვა აჩერებს კოდის მუშაობას ისე, რომ არ იშლება და გამოყენების ისტორია რჩება.",
+    status: "სტატუსი",
+    usable: "მუშაობს",
+    notUsable: "არ მუშაობს",
+    appliesTo: "პაკეტები",
+    appliesToHint:
+      "მონიშნეთ პაკეტები, რომ კოდი მხოლოდ მათზე მოქმედებდეს. თუ არაფერს მონიშნავთ, ყველა პაკეტზე იმუშავებს.",
+    allPlans: "ყველა პაკეტი",
+    allPlansNotice:
+      "არაფერია მონიშნული, ამიტომ კოდი ყველა პაკეტზე მუშაობს.",
+    edit: "რედაქტირება",
+    delete: "კოდის წაშლა",
+    deleting: "იშლება…",
+    deleteConfirm:
+      "წავშალოთ ეს კოდი? თუ ვინმემ უკვე გამოიყენა, სჯობს გამორთოთ.",
+    deleteBlocked:
+      "კოდი ვერ წაიშლება, რადგან გადახდაშია გამოყენებული. სანაცვლოდ გამორთეთ.",
+    codeRequired: "მიუთითეთ კოდი, რომელსაც კლიენტი აკრეფს.",
+    percentInvalid: "ფასდაკლება შეიყვანეთ მთელ რიცხვად 1-დან 100-მდე.",
+    maxInvalid:
+      "გამოყენების ლიმიტი მთელი რიცხვი უნდა იყოს, ან ცარიელი — ლიმიტის გარეშე.",
+    saveFailed: "კოდი ვერ შეინახა.",
   },
 };
 

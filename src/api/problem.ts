@@ -93,6 +93,21 @@ export type ProblemStrings = {
    * Georgian rather than in the backend's English.
    */
   memberNameRequired: string;
+  /**
+   * The four ways a promo code can be refused.
+   *
+   * An unknown code and one staff switched off are deliberately indistinguishable
+   * — the API answers `PROMO_CODE_UNKNOWN` for both, because telling them apart
+   * tells anyone guessing which guesses are real.
+   *
+   * None of these covers a *valid* code that simply lost to a better sale price:
+   * that is not a refusal, comes back on the quote rather than as an error, and
+   * does not spend the code.
+   */
+  promoUnknown: string;
+  promoExpired: string;
+  promoNotForPlan: string;
+  promoLimitReached: string;
   /** Too many requests, throttled. */
   throttled: string;
   /**
@@ -368,6 +383,12 @@ export function describeProblem(
         return strings.memberAccountMissing;
       if (caught.code === "MEMBER_NAME_REQUIRED")
         return strings.memberNameRequired;
+      if (caught.code === "PROMO_CODE_UNKNOWN") return strings.promoUnknown;
+      if (caught.code === "PROMO_CODE_EXPIRED") return strings.promoExpired;
+      if (caught.code === "PROMO_CODE_NOT_FOR_PLAN")
+        return strings.promoNotForPlan;
+      if (caught.code === "PROMO_CODE_LIMIT_REACHED")
+        return strings.promoLimitReached;
       // Matched on the code first. The message test behind it is the older
       // check and stays only as tolerance for a backend that predates the
       // code — reading English prose to decide what happened is exactly the

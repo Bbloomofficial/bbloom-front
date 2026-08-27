@@ -6,9 +6,14 @@ import { useI18n } from "../../i18n";
 import {
   cancelSubscription,
   fetchSubscription,
+  quoteCheckout,
   startCheckout,
 } from "../api/account";
-import type { CheckoutResponse, SubscriptionDetail } from "../api/types";
+import type {
+  CheckoutQuote,
+  CheckoutResponse,
+  SubscriptionDetail,
+} from "../api/types";
 import { useSession } from "../auth";
 import { SubscriptionBadge } from "../components/Badges";
 import { paidBlock } from "../gate";
@@ -61,6 +66,52 @@ function CheckoutResult({ result }: { result: CheckoutResponse }) {
   );
 }
 
+/**
+ * What this plan costs for the chosen number of periods, straight from the API.
+ *
+ * Rendered even when nothing is discounted, because the card above it shows a
+ * per-period price and the client is about to be charged for several. Silent
+ * while the quote is in flight rather than showing a figure that then changes.
+ */
+function QuoteLine({
+  quote,
+  locale,
+  totalLabel,
+  savingLabel,
+}: {
+  quote?: CheckoutQuote;
+  locale: string;
+  totalLabel: string;
+  savingLabel: (amount: string) => string;
+}) {
+  if (!quote) return null;
+  const discounted = quote.discountMinor > 0;
+  return (
+    <div className="rounded-2xl bg-sunken px-4 py-3">
+      <div className="flex flex-wrap items-baseline justify-between gap-2">
+        <span className="text-sm text-ink-400">{totalLabel}</span>
+        <span className="flex items-baseline gap-2">
+          {discounted && (
+            <span className="text-sm text-ink-400 line-through" dir="ltr">
+              {formatMinor(quote.listAmountMinor, quote.currency, locale)}
+            </span>
+          )}
+          <span className="text-base font-extrabold text-ink-900" dir="ltr">
+            {formatMinor(quote.amountMinor, quote.currency, locale)}
+          </span>
+        </span>
+      </div>
+      {discounted && (
+        <p className="mt-1 text-end text-xs font-semibold text-success">
+          {savingLabel(
+            formatMinor(quote.discountMinor, quote.currency, locale),
+          )}
+        </p>
+      )}
+    </div>
+  );
+}
+
 export default function Billing() {
   const { locale } = useI18n();
   const t = dashboardStrings(locale);
@@ -81,6 +132,84 @@ export default function Billing() {
   const [busy, setBusy] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [periods, setPeriods] = useState(1);
+  const [promoInput, setPromoInput] = useState("");
+  const [promo, setPromo] = useState<string | null>(null);
+  const [promoProblem, setPromoProblem] = useState<string | null>(null);
+  const [checkingPromo, setCheckingPromo] = useState(false);
+  const [quotes, setQuotes] = useState<Record<string, CheckoutQuote>>({});
+
+  // Joined rather than passed as an array so the effect below does not re-run on
+  // every render just because `filter` handed it a new array with the same
+  // contents in it.
+  const buyableCodes = buyablePlans?.map((plan) => plan.code).join(",") ?? "";
+
+  // Every price shown next to a "Choose" button is quoted by the API, including
+  // the undiscounted ones. Nothing here multiplies, rounds or subtracts: a
+  // multi-period purchase is discounted once on the total rather than per
+  // period, and arithmetic done on this side would disagree with the invoice.
+  useEffect(() => {
+    if (!buyableCodes) {
+      setQuotes({});
+      return;
+    }
+    let cancelled = false;
+    Promise.all(
+      buyableCodes.split(",").map((code) =>
+        quoteCheckout(token, site.id, code, periods, promo ?? undefined)
+          .then((quote) => [code, quote] as const)
+          // A code restricted to other plans is refused for this one. That is
+          // not a failure of the screen — the card just shows its list price.
+          .catch(() => null),
+      ),
+    ).then((results) => {
+      if (cancelled) return;
+      const next: Record<string, CheckoutQuote> = {};
+      for (const entry of results) if (entry) next[entry[0]] = entry[1];
+      setQuotes(next);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [token, site.id, buyableCodes, periods, promo]);
+
+  async function applyPromo() {
+    const typed = promoInput.trim();
+    if (!typed || !buyablePlans?.length) return;
+    setCheckingPromo(true);
+    setPromoProblem(null);
+    try {
+      // Asked of every buyable plan, because a code restricted to one of them
+      // is refused for the rest: "is this code any good" is only answerable by
+      // asking about all of them. Quoting spends nothing.
+      const results = await Promise.allSettled(
+        buyablePlans.map((plan) =>
+          quoteCheckout(token, site.id, plan.code, periods, typed),
+        ),
+      );
+      const accepted = results.find((result) => result.status === "fulfilled");
+      if (!accepted) {
+        setPromoProblem(
+          describeProblem(
+            (results[0] as PromiseRejectedResult).reason,
+            t.errors,
+            t.billing.checkoutFailed,
+          ),
+        );
+        return;
+      }
+      // Codes are stored upper-cased and trimmed, so the canonical form comes
+      // back from the API rather than from what was typed.
+      setPromo(accepted.value.promoCode ?? typed.toUpperCase());
+    } finally {
+      setCheckingPromo(false);
+    }
+  }
+
+  function clearPromo() {
+    setPromo(null);
+    setPromoInput("");
+    setPromoProblem(null);
+  }
 
   const load = useCallback(() => {
     setLoadError(null);
@@ -101,7 +230,13 @@ export default function Billing() {
     setBusy(planCode);
     setError(null);
     try {
-      const result = await startCheckout(token, site.id, planCode, periods);
+      const result = await startCheckout(
+        token,
+        site.id,
+        planCode,
+        periods,
+        promo ?? undefined,
+      );
       setCheckout(result);
       // The pending amount lives on the subscription, so both this screen and
       // the site list learn about it from the backend rather than from memory.
@@ -294,6 +429,74 @@ export default function Billing() {
             </label>
           </div>
 
+          {/* One code for the whole grid rather than one per card: a client has
+              a code, not a code for a plan they have not chosen yet. */}
+          <div className="mt-4 rounded-2xl border border-ink-100 bg-sunken p-4">
+            <label
+              className="text-sm font-semibold text-ink-900"
+              htmlFor="promo-code"
+            >
+              {t.billing.promoLabel}
+            </label>
+            {promo ? (
+              <div className="mt-2 flex flex-wrap items-center gap-3">
+                <span className="rounded-full bg-success-soft px-3 py-1 text-sm font-bold text-success">
+                  {t.billing.promoOn(promo)}
+                </span>
+                <button
+                  type="button"
+                  onClick={clearPromo}
+                  className="text-sm font-semibold text-ink-600 underline"
+                >
+                  {t.billing.promoClear}
+                </button>
+              </div>
+            ) : (
+              <form
+                className="mt-2 flex flex-wrap gap-2"
+                onSubmit={(event) => {
+                  event.preventDefault();
+                  void applyPromo();
+                }}
+              >
+                <input
+                  id="promo-code"
+                  className="field max-w-56 flex-1"
+                  value={promoInput}
+                  onChange={(event) => setPromoInput(event.target.value)}
+                  placeholder={t.billing.promoPlaceholder}
+                  autoComplete="off"
+                  dir="ltr"
+                />
+                <button
+                  type="submit"
+                  className="btn-secondary"
+                  disabled={checkingPromo || promoInput.trim() === ""}
+                >
+                  {checkingPromo
+                    ? t.billing.promoChecking
+                    : t.billing.promoApply}
+                </button>
+              </form>
+            )}
+            {promoProblem && (
+              <p role="alert" className="mt-2 text-sm font-semibold text-danger">
+                {promoProblem}
+              </p>
+            )}
+            {/* A code that lost to a better sale price is not an error: it was
+                not refused and it has not been spent. Saying "invalid" here
+                would be both wrong and alarming. */}
+            {promo &&
+              Object.values(quotes).some(
+                (quote) => quote.promoCode && !quote.promoCodeApplied,
+              ) && (
+                <p className="mt-2 text-sm text-ink-600">
+                  {t.billing.promoBeaten}
+                </p>
+              )}
+          </div>
+
           {!buyablePlans ? (
             <p className="mt-4 text-sm text-ink-400">{t.loading}</p>
           ) : (
@@ -311,18 +514,26 @@ export default function Billing() {
                   current={plan.code === subscription.planCode}
                   currentLabel={t.plans.current}
                   action={
-                    <button
-                      type="button"
-                      onClick={() => void choose(plan.code)}
-                      disabled={busy !== null}
-                      className={`w-full disabled:opacity-60 ${
-                        plan.featured ? "btn-primary" : "btn-secondary"
-                      }`}
-                    >
-                      {busy === plan.code
-                        ? t.billing.checkoutStarting
-                        : t.plans.choose}
-                    </button>
+                    <div className="space-y-3">
+                      <QuoteLine
+                        quote={quotes[plan.code]}
+                        locale={locale}
+                        totalLabel={t.billing.quoteTotal}
+                        savingLabel={t.billing.quoteSaving}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => void choose(plan.code)}
+                        disabled={busy !== null}
+                        className={`w-full disabled:opacity-60 ${
+                          plan.featured ? "btn-primary" : "btn-secondary"
+                        }`}
+                      >
+                        {busy === plan.code
+                          ? t.billing.checkoutStarting
+                          : t.plans.choose}
+                      </button>
+                    </div>
                   }
                 />
               ))}
@@ -367,6 +578,7 @@ export default function Billing() {
                 <span className="text-sm text-ink-600">
                   {date(payment.paidAt ?? payment.createdAt)}
                   {payment.planCode ? ` · ${payment.planCode}` : ""}
+                  {payment.promoCode ? ` · ${payment.promoCode}` : ""}
                 </span>
                 <span className="flex items-center gap-3">
                   <span className="text-sm font-semibold text-ink-900" dir="ltr">

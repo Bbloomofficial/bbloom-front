@@ -438,7 +438,86 @@ export type AdminPlanDto = {
   billingPeriod: string;
   purchasable: boolean;
   translations: AdminPlanTranslationDto[];
+  /**
+   * A sale on this plan: how much off, and for how long.
+   *
+   * Both dates are optional and mean different things by their absence — no
+   * start is "already running", no end is "until someone stops it". The window
+   * is judged against the clock on every read, so a sale that has run out stops
+   * applying with nobody touching the record.
+   *
+   * The API refuses a discount on a non-purchasable plan rather than ignoring
+   * one: a percentage off a negotiated tier would be accepted, saved, and show
+   * up nowhere.
+   */
+  discountPercent?: number;
+  discountStartsAt?: string;
+  discountEndsAt?: string;
+  /** Read-only. Whether the window above covers right now. */
+  discountLive: boolean;
+  /**
+   * Read-only. What a client would be charged today — `priceMinor` when no sale
+   * is live. Computed by the API so the editor never has to agree with the
+   * server's rounding.
+   */
+  effectivePriceMinor: number;
 };
 
-/** The body of a create or update. Identical to the DTO minus the identity. */
-export type PlanUpsertRequest = Omit<AdminPlanDto, "id">;
+/**
+ * The body of a create or update.
+ *
+ * The two derived fields are dropped rather than sent back: they are answers,
+ * not settings, and a stale `effectivePriceMinor` posted from a form that has
+ * been open a while would be a price nobody typed.
+ */
+export type PlanUpsertRequest = Omit<
+  AdminPlanDto,
+  "id" | "discountLive" | "effectivePriceMinor"
+>;
+
+/**
+ * A promo code, as staff manage it.
+ *
+ * `planCodes` is a *restriction*, and an empty list means it applies to every
+ * plan rather than to none — the permissive default. Each entry must name a
+ * plan that exists; a typo is refused rather than saved, because a mistyped
+ * restriction is a code that looks configured and works nowhere.
+ *
+ * The code itself is stored upper-cased and trimmed, so a client typing
+ * `spring` matches `SPRING`. Read the canonical form back off the response
+ * rather than assuming the input survived.
+ */
+export type AdminPromoCodeDto = {
+  id: number;
+  code: string;
+  percentOff: number;
+  active: boolean;
+  expiresAt?: string;
+  maxRedemptions?: number;
+  /**
+   * Both derived on read, never stored.
+   *
+   * A redemption is a payment naming the code, so an outstanding checkout holds
+   * a use and abandoning it releases one — this figure moves without anybody
+   * editing the code.
+   */
+  redemptions: number;
+  usable: boolean;
+  planCodes: string[];
+  createdAt: string;
+};
+
+/**
+ * The body of a create or update.
+ *
+ * `percentOff` is a primitive on the API side: omitting it is a 400 rather than
+ * a defaulted zero, so it is required here too.
+ */
+export type PromoCodeUpsertRequest = {
+  code: string;
+  percentOff: number;
+  active: boolean;
+  expiresAt?: string;
+  maxRedemptions?: number;
+  planCodes: string[];
+};

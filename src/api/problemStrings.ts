@@ -38,6 +38,10 @@ const en: ProblemStrings = {
     "Nobody with this email has a bbloom account yet. Ask them to sign up first, then invite them.",
   memberNameRequired:
     "Give this person's name so we can create their account.",
+  promoUnknown: "We don't recognise that code. Check it and try again.",
+  promoExpired: "That code has expired.",
+  promoNotForPlan: "That code doesn't apply to this plan.",
+  promoLimitReached: "That code has been used the maximum number of times.",
   throttled: "Too many attempts. Wait a moment and try again.",
   signInThrottled:
     "Signing in to this account is paused for a moment. Please try again shortly.",
@@ -81,6 +85,10 @@ const ka: ProblemStrings = {
     "ამ ელფოსტით bbloom-ის ანგარიში ჯერ არავის აქვს. სთხოვეთ დარეგისტრირდეს და შემდეგ მოიწვიეთ.",
   memberNameRequired:
     "მიუთითეთ ამ ადამიანის სახელი, რომ ანგარიში შევქმნათ.",
+  promoUnknown: "ასეთი კოდი ვერ ვიპოვეთ. შეამოწმეთ და სცადეთ თავიდან.",
+  promoExpired: "ამ კოდს ვადა გაუვიდა.",
+  promoNotForPlan: "ეს კოდი ამ პაკეტზე არ მოქმედებს.",
+  promoLimitReached: "ეს კოდი უკვე მაქსიმალურად არის გამოყენებული.",
   throttled: "ბევრი მცდელობა იყო. მოიცადეთ და სცადეთ თავიდან.",
   signInThrottled: "ამ ანგარიშზე შესვლა დროებით შეჩერებულია. სცადეთ ცოტა ხანში.",
   signInThrottledFor: (minutes) =>

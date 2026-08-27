@@ -34,8 +34,25 @@ export type WebsitePlan = {
    * Minor units — 2900 is 29.00 GEL. This is the only billable number in the
    * payload; the copy above it must never be parsed for a price, and no price
    * may be hardcoded in the UI, because these change.
+   *
+   * **This is the price after any live sale** — what the client will actually
+   * be charged. The name is unchanged on purpose, so anything that reads it
+   * knowing nothing about sales still quotes the right figure.
    */
   priceMinor: number;
+  /**
+   * The sale, present only while one is running.
+   *
+   * Their *presence* is the signal — `originalPriceMinor !== undefined` is the
+   * test for "strike a price through", not a comparison against `priceMinor`,
+   * which would miss a 0% edge and read as a sale that isn't one.
+   *
+   * `discountEndsAt` is absent for an open-ended sale even while it is running,
+   * so it says when a sale stops, never whether one is on.
+   */
+  originalPriceMinor?: number;
+  discountPercent?: number;
+  discountEndsAt?: string;
   currency: string;
   billingPeriod?: string;
   featured?: boolean;
@@ -85,4 +102,24 @@ export function formatPlanPrice(plan: WebsitePlan, locale: string): string {
 /** A tier whose price is agreed rather than listed. */
 export function isNegotiable(plan: WebsitePlan): boolean {
   return plan.purchasable === false;
+}
+
+/** Whether a sale is running on this plan right now. */
+export function isDiscounted(plan: WebsitePlan): boolean {
+  return plan.originalPriceMinor !== undefined;
+}
+
+/**
+ * The price to strike through, or `null` when there is nothing to strike.
+ *
+ * Both figures come from the API rather than from a percentage applied here:
+ * the discount is rounded server-side, and a page that does its own arithmetic
+ * will disagree with the invoice by a cent on some percentages.
+ */
+export function formatPlanWasPrice(
+  plan: WebsitePlan,
+  locale: string,
+): string | null {
+  if (plan.originalPriceMinor === undefined) return null;
+  return formatMinor(plan.originalPriceMinor, plan.currency, locale);
 }

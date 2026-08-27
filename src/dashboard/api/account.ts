@@ -3,6 +3,7 @@ import type {
   AccountProfile,
   AccountSite,
   CheckoutResponse,
+  CheckoutQuote,
   CreateSiteRequest,
   EmailLanguage,
   MemberRole,
@@ -220,11 +221,43 @@ export function startCheckout(
   siteId: string,
   planCode: string,
   periods = 1,
+  promoCode?: string,
 ): Promise<CheckoutResponse> {
   return authed<CheckoutResponse>(
     token,
     `/manage/sites/${siteId}/subscription/checkout`,
-    { method: "POST", body: JSON.stringify({ planCode, periods }) },
+    {
+      method: "POST",
+      // The price is never sent. The API re-prices from the plan code, the
+      // period count and the typed code, so a stale quote on this screen cannot
+      // become a stale charge.
+      body: JSON.stringify({ planCode, periods, promoCode }),
+    },
+  );
+}
+
+/**
+ * What a purchase would cost, without starting one.
+ *
+ * Holds nothing and spends nothing — quoting a code is not using it. Entirely
+ * optional too: `startCheckout` re-prices through the same code path, so a
+ * client who skips this, or changes the code afterwards, is charged correctly
+ * either way.
+ */
+export function quoteCheckout(
+  token: string,
+  siteId: string,
+  planCode: string,
+  periods = 1,
+  promoCode?: string,
+): Promise<CheckoutQuote> {
+  return authed<CheckoutQuote>(
+    token,
+    `/manage/sites/${siteId}/subscription/quote`,
+    {
+      method: "POST",
+      body: JSON.stringify({ planCode, periods, promoCode }),
+    },
   );
 }
 

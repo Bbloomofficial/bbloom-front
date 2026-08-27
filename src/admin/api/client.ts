@@ -4,6 +4,8 @@ import type {
   Page,
   AdminAccountDto,
   AdminPlanDto,
+  AdminPromoCodeDto,
+  PromoCodeUpsertRequest,
   PlanUpsertRequest,
   SiteDetail,
   SiteSummary,
@@ -312,6 +314,56 @@ export function updatePlan(
  */
 export function deletePlan(token: string, planId: number): Promise<void> {
   return authed<void>(token, `/admin/plans/${planId}`, { method: "DELETE" });
+}
+
+/**
+ * Promo codes. The same staff can set a plan's price and hand out a percentage
+ * off it, so these carry no narrower guard than the plan endpoints do.
+ */
+export function fetchPromoCodes(token: string): Promise<AdminPromoCodeDto[]> {
+  return authed<AdminPromoCodeDto[]>(token, "/admin/promo-codes");
+}
+
+export function fetchPromoCode(
+  token: string,
+  promoId: number,
+): Promise<AdminPromoCodeDto> {
+  return authed<AdminPromoCodeDto>(token, `/admin/promo-codes/${promoId}`);
+}
+
+export function createPromoCode(
+  token: string,
+  body: PromoCodeUpsertRequest,
+): Promise<AdminPromoCodeDto> {
+  return authed<AdminPromoCodeDto>(token, "/admin/promo-codes", {
+    method: "POST",
+    body: JSON.stringify(body),
+  });
+}
+
+export function updatePromoCode(
+  token: string,
+  promoId: number,
+  body: PromoCodeUpsertRequest,
+): Promise<AdminPromoCodeDto> {
+  return authed<AdminPromoCodeDto>(token, `/admin/promo-codes/${promoId}`, {
+    method: "PUT",
+    body: JSON.stringify(body),
+  });
+}
+
+/**
+ * Refused with `PROMO_CODE_IN_USE` once any payment names the code — the takings
+ * audit reads the code off the payment, so removing it would orphan the record.
+ * Switch it off instead.
+ */
+export function deletePromoCode(
+  token: string,
+  promoId: number,
+): Promise<void> {
+  return authed<void>(token, `/admin/promo-codes/${promoId}`, {
+    method: "DELETE",
+  });
 }
 
 export function updateFreeAllowance(
