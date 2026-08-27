@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import Logo from './Logo'
+import AuthLink from './AuthLink'
 import { contact } from '../data/contact'
 import { FacebookIcon, InstagramIcon } from './icons'
 import { useI18n } from '../i18n'
@@ -52,14 +53,14 @@ export default function Footer() {
               </Link>
             </li>
             <li>
-              <Link to="/login" className="hover:text-tint-fg">
+              <AuthLink to="/login" className="hover:text-tint-fg">
                 {t.nav.signIn}
-              </Link>
+              </AuthLink>
             </li>
             <li>
-              <Link to="/register" className="hover:text-tint-fg">
+              <AuthLink to="/register" className="hover:text-tint-fg">
                 {t.nav.register}
-              </Link>
+              </AuthLink>
             </li>
           </ul>
         </div>

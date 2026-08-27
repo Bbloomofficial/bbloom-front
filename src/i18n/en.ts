@@ -20,6 +20,7 @@ export const en: Dict = {
     start: 'Create your website',
     openMenu: 'Open menu',
     closeMenu: 'Close menu',
+    close: 'Close',
     home: 'bbloom home',
   },
 

@@ -1,5 +1,6 @@
 import { Suspense, lazy } from "react";
 import type { ReactNode } from "react";
+import type { Location } from "react-router-dom";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
@@ -12,7 +13,8 @@ import About from "./pages/About";
 import Contact from "./pages/Contact";
 import NotFound from "./pages/NotFound";
 import { resolveSiteHost } from "./site/host";
-import { resolveAppHost } from "./routes";
+import { resolveAppHost, dashPath, AUTH_MODES } from "./routes";
+import { useClientSession } from "./clientSession";
 
 // Client sites are a separate product from the marketing site, so visitors to
 // either only download the half they need. The dashboard is a third audience —
@@ -25,6 +27,9 @@ const AdminApp = lazy(() => import("./admin/AdminApp"));
 const Verify = lazy(() => import("./pages/Verify"));
 const TryStart = lazy(() => import("./pages/TryStart"));
 const TryEditor = lazy(() => import("./pages/TryEditor"));
+// Signing in pulls the dashboard's auth layer and API client, which no visitor
+// reading the pitch should have to download.
+const AuthModal = lazy(() => import("./components/AuthModal"));
 
 function Lazy({ children }: { children: ReactNode }) {
   return (
@@ -61,12 +66,37 @@ function Admin() {
 }
 
 function MarketingApp() {
+  const location = useLocation();
+  const signedIn = useClientSession();
+
+  const mode = AUTH_MODES[location.pathname];
+  const from = (location.state as { backgroundLocation?: Location } | null)
+    ?.backgroundLocation;
+  /*
+    What renders underneath the dialog.
+
+    `backgroundLocation` is the page the visitor pressed "sign in" on, so the
+    dialog opens over what they were reading. Arriving cold — a bookmark, a link
+    in an email, a typed address — there is no such page, and the landing page
+    stands in: an address that is only ever a dialog must still have something
+    behind it, or closing it lands on nothing.
+  */
+  const background = mode
+    ? (from ?? { ...location, pathname: "/", search: "", hash: "", state: null })
+    : location;
+
+  // Someone already signed in has no business on either form. Their own panel
+  // is the honest answer, and it is also what the old standalone screens did.
+  if (mode && signedIn) return <Navigate to={dashPath()} replace />;
+
   return (
     <div className="flex min-h-screen flex-col">
-      <ScrollToTop />
+      {/* Keyed on the page underneath, so opening the dialog does not scroll
+          the page behind it back to the top and lose the visitor's place. */}
+      <ScrollToTop path={background.pathname} />
       <Navbar />
       <main className="flex-1">
-        <Routes>
+        <Routes location={background}>
           <Route path="/" element={<Home />} />
           <Route path="/services" element={<Services />} />
           <Route path="/templates" element={<Templates />} />
@@ -86,6 +116,13 @@ function MarketingApp() {
         </Routes>
       </main>
       <Footer />
+      {mode && (
+        // No fallback: `Lazy`'s is a full-height white block, which would push
+        // the footer down for the moment the chunk takes to arrive.
+        <Suspense fallback={null}>
+          <AuthModal mode={mode} background={background as Location} />
+        </Suspense>
+      )}
     </div>
   );
 }
@@ -113,12 +150,22 @@ const CLIENT_APP_SEGMENTS = new Set([
   "s",
   "account",
   "new",
-  "login",
-  "register",
   "page",
   "inbox",
   "messages",
 ]);
+
+/**
+ * The addresses that open the sign-in dialog, and the form each one shows.
+ *
+ * They are still real addresses rather than a piece of component state: both
+ * are in sent mail and in bookmarks, and `/register` is the one link that has
+ * ever been given out as "where you sign up". What changed is what they render
+ * — a dialog over a page, rather than a page of their own.
+ *
+ * Which is why they are no longer listed above: on the marketing domain the
+ * dashboard does not answer for them any more.
+ */
 
 /**
  * Whether the client dashboard, rather than the marketing site, answers here.

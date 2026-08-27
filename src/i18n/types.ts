@@ -43,6 +43,8 @@ export type Dict = {
     start: string
     openMenu: string
     closeMenu: string
+    /** Dismisses the sign-in dialog. */
+    close: string
     home: string
   }
   theme: { toLight: string; toDark: string }

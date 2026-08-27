@@ -144,6 +144,27 @@ export function dashPath(path = ""): string {
 }
 
 /**
+ * The two addresses that open the sign-in dialog, and which form each shows.
+ *
+ * Signing in and signing up are a dialog over whatever page the visitor is
+ * reading rather than screens of their own, but they keep real addresses: both
+ * are in sent mail and in bookmarks, and someone who types `/register` should
+ * arrive at the form and not at a 404.
+ *
+ * Here rather than in `App.tsx` because the navbar needs the same answer, and
+ * importing it from `App` would be a cycle.
+ */
+export const AUTH_MODES: Record<string, "login" | "register"> = {
+  "/login": "login",
+  "/register": "register",
+};
+
+/** Whether this address is one the sign-in dialog answers for. */
+export function isAuthPath(pathname: string): boolean {
+  return pathname in AUTH_MODES;
+}
+
+/**
  * The route pattern each app is mounted on.
  *
  * At the root of its own hostname an app must claim `/*`, because there is no

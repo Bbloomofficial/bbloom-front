@@ -1,6 +1,5 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
-import { Link } from "react-router-dom";
 import Logo from "../../components/Logo";
 import LanguageSwitcher from "../../components/LanguageSwitcher";
 import PasswordField from "../../components/PasswordField";
@@ -11,10 +10,15 @@ import type { VerificationTicket } from "../api/types";
 import { useI18n } from "../../i18n";
 import { useAuth } from "../auth";
 import { dashboardStrings } from "../strings";
-import { dashPath } from "../../routes";
+import { AuthSwitch, useAuthSurface } from "./authSurface";
 
 /** Shared chrome for the signed-out screens. */
 export function AuthShell({ children }: { children: React.ReactNode }) {
+  // Inside the dialog this chrome is worse than useless: a second logo, a
+  // second language switcher and a `min-h-screen` that would push the form off
+  // the bottom of its own scroll container.
+  if (useAuthSurface()?.modal) return <>{children}</>;
+
   return (
     <div className="flex min-h-screen flex-col bg-sunken">
       <header className="container-page flex h-16 items-center justify-between">
@@ -143,12 +147,12 @@ export default function Register() {
           />
 
           <p className="mt-5 text-center text-sm text-ink-600">
-            <Link
-              to={dashPath("/login")}
+            <AuthSwitch
+              to="login"
               className="font-semibold text-tint-fg hover:underline"
             >
               {t.register.signIn}
-            </Link>
+            </AuthSwitch>
           </p>
         </div>
       </AuthShell>
@@ -252,12 +256,12 @@ export default function Register() {
 
         <p className="mt-5 text-center text-sm text-ink-600">
           {t.register.haveAccount}{" "}
-          <Link
-            to={dashPath("/login")}
+          <AuthSwitch
+            to="login"
             className="font-semibold text-tint-fg hover:underline"
           >
             {t.register.signIn}
-          </Link>
+          </AuthSwitch>
         </p>
       </div>
 

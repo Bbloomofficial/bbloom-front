@@ -20,6 +20,7 @@ export const ka: Dict = {
     start: 'ვებგვერდის შექმნა',
     openMenu: 'მენიუს გახსნა',
     closeMenu: 'მენიუს დახურვა',
+    close: 'დახურვა',
     home: 'bbloom მთავარი',
   },
 

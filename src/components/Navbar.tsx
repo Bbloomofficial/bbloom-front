@@ -5,6 +5,7 @@ import ThemeToggle from './ThemeToggle'
 import LanguageSwitcher from './LanguageSwitcher'
 import { useI18n } from '../i18n'
 import { useClientSession } from '../clientSession'
+import AuthLink from './AuthLink'
 import { dashPath } from '../routes'
 
 export default function Navbar() {
@@ -76,12 +77,12 @@ export default function Navbar() {
             </Link>
           ) : (
             <>
-              <Link
+              <AuthLink
                 to="/login"
                 className="hidden rounded-full px-3 py-2 text-sm font-semibold whitespace-nowrap text-ink-600 transition hover:text-ink-900 xl:inline-flex"
               >
                 {t.nav.signIn}
-              </Link>
+              </AuthLink>
               {/* Sign-up next to sign-in, because someone who has already
                   decided should not have to go through the anonymous editor to
                   find the form.
@@ -95,12 +96,12 @@ export default function Navbar() {
                   either auth link would leave an existing client with no way in.
                   `/try` is still in the menu below, and on the home page's own
                   hero. */}
-              <Link
+              <AuthLink
                 to="/register"
                 className="btn btn-primary btn-sm hidden whitespace-nowrap xl:inline-flex"
               >
                 {t.nav.register}
-              </Link>
+              </AuthLink>
             </>
           )}
 
@@ -157,18 +158,18 @@ export default function Navbar() {
                 </Link>
               ) : (
                 <>
-                  <Link
+                  <AuthLink
                     to="/login"
                     className="rounded-xl border border-ink-100 bg-control px-4 py-3 text-center text-sm font-semibold text-ink-600 transition hover:border-bloom-300 hover:bg-tint hover:text-bloom-600 active:scale-95"
                   >
                     {t.nav.signIn}
-                  </Link>
-                  <Link
+                  </AuthLink>
+                  <AuthLink
                     to="/register"
                     className="rounded-xl border border-ink-100 bg-control px-4 py-3 text-center text-sm font-semibold text-ink-600 transition hover:border-bloom-300 hover:bg-tint hover:text-bloom-600 active:scale-95"
                   >
                     {t.nav.register}
-                  </Link>
+                  </AuthLink>
                 </>
               )}
             </div>

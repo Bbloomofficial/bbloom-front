@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import SectionHeading from '../components/SectionHeading'
+import AuthLink from '../components/AuthLink'
 import FaqAccordion from '../components/FaqAccordion'
 import CtaBand from '../components/CtaBand'
 import { PlanCard, usePlans } from '../components/PlanCard'
@@ -56,14 +57,14 @@ export default function Pricing() {
                       {plan.cta || t.pricingPage.contactUs}
                     </Link>
                   ) : (
-                    <Link
+                    <AuthLink
                       to="/register"
                       className={`w-full ${plan.featured ? 'btn-primary' : 'btn-secondary'}`}
                     >
                       {/* The plan's own call to action is written for it; ours is
                           the fallback when the backend has not supplied one. */}
                       {plan.cta || t.pricingPage.signUp}
-                    </Link>
+                    </AuthLink>
                   )
                 }
               />

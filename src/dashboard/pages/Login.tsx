@@ -1,6 +1,5 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
-import { Link } from "react-router-dom";
 import PasswordField from "../../components/PasswordField";
 import VerifyCodeForm from "../components/VerifyCodeForm";
 import { ApiError } from "../../api/http";
@@ -9,7 +8,7 @@ import { useI18n } from "../../i18n";
 import { useAuth } from "../auth";
 import { dashboardStrings } from "../strings";
 import { AuthShell } from "./Register";
-import { dashPath } from "../../routes";
+import { AuthSwitch } from "./authSurface";
 
 export default function Login() {
   const { locale } = useI18n();
@@ -162,12 +161,12 @@ export default function Login() {
 
         <p className="mt-5 text-center text-sm text-ink-600">
           {t.login.noAccount}{" "}
-          <Link
-            to={dashPath("/register")}
+          <AuthSwitch
+            to="register"
             className="font-semibold text-tint-fg hover:underline"
           >
             {t.login.createAccount}
-          </Link>
+          </AuthSwitch>
         </p>
       </div>
 

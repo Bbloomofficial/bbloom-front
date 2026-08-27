@@ -23,7 +23,7 @@ import Sites from "./pages/Sites";
 import Team from "./pages/Team";
 import { SiteScope } from "./site";
 import { dashboardStrings } from "./strings";
-import { dashPath } from "../routes";
+import { dashPath, resolveAppHost } from "../routes";
 
 /**
  * The sub-millisecond digits of a wire timestamp, padded so they compare as
@@ -233,6 +233,18 @@ function Shell() {
   }
 
   if (!token || !user) {
+    /*
+      Signing in is a dialog over the marketing site now, so a signed-out
+      visitor who asks for a panel screen is sent to the address that opens it
+      rather than shown a screen of its own. The landing page renders behind it,
+      which is what `/login` does with no background named.
+
+      `panel.bbloom.ge` is the exception and keeps the standalone screens: on
+      that hostname this app answers for every path, so `/login` would come
+      straight back here and loop.
+    */
+    if (resolveAppHost() !== "panel") return <Navigate to="/login" replace />;
+
     return (
       <Routes>
         <Route path="register" element={<Register />} />
