@@ -107,6 +107,14 @@ export type ProblemStrings = {
   promoUnknown: string;
   promoExpired: string;
   promoNotForPlan: string;
+  /**
+   * A code that has been used its maximum number of times.
+   *
+   * Deliberately not "you have used this too often" and not "invalid": the
+   * count is of everyone's checkouts, an outstanding one holds a use, and
+   * abandoning it releases it again — so a code can be refused here and work
+   * ten minutes later. Nobody reading this did anything wrong.
+   */
   promoLimitReached: string;
   /** Too many requests, throttled. */
   throttled: string;

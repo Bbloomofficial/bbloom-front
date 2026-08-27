@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { formatMinor } from "../../api/plans";
 import { describeProblem } from "../../api/problem";
+import { ApiError } from "../../api/http";
 import { PlanCard, usePlans } from "../../components/PlanCard";
 import { useI18n } from "../../i18n";
 import {
@@ -244,6 +245,13 @@ export default function Billing() {
       await refresh();
     } catch (caught) {
       setError(describeProblem(caught, t.errors, t.billing.checkoutFailed));
+      // A code that passed on the grid can still be refused here: the last
+      // redemption goes to whoever reaches checkout first, and an outstanding
+      // checkout holds one. Drop it rather than leave the cards quoting a
+      // discount that no longer exists.
+      if (caught instanceof ApiError && caught.code?.startsWith("PROMO_CODE_")) {
+        setPromo(null);
+      }
     } finally {
       setBusy(null);
     }

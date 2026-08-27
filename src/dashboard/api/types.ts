@@ -168,8 +168,11 @@ export type SubscriptionPayment = {
   note?: string;
   /** The code that was used, if one was. */
   promoCode?: string;
-  /** How much came off. `amountMinor` is already net of it. */
-  discountMinor?: number;
+  /**
+   * How much came off. `amountMinor` is already net of it. Always present — a
+   * primitive on the API side, so `0` rather than absent when nothing came off.
+   */
+  discountMinor: number;
   paidAt?: string;
   createdAt?: string;
 };
