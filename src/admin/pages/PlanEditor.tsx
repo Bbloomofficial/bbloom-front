@@ -309,6 +309,18 @@ export default function PlanEditor() {
       discountEndsAt: percent === null ? undefined : endsAt,
       translations: form.translations.map((item) => ({
         ...item,
+        // Derived for a purchasable tier rather than carried over, from the
+        // same figure being sent as `priceMinor` so the two cannot disagree.
+        //
+        // The field is no longer editable for these, so passing the stored
+        // value through would send "" for a plan being created — which the API
+        // refuses as blank — and would freeze the drifted strings on every
+        // existing one. Writing it means a stale row heals the next time
+        // anybody saves, and a tier later flipped to negotiated inherits
+        // something true to edit instead of last year's price.
+        price: form.purchasable
+          ? formatMinor(Math.round(major * 100), form.currency, item.language)
+          : item.price,
         features: item.features.map((line) => line.trim()).filter(Boolean),
       })),
     };
