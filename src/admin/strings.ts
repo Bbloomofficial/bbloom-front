@@ -805,9 +805,9 @@ const en: AdminStrings = {
     delete: "Delete plan",
     deleting: "Deleting…",
     deleteConfirm:
-      "Delete this plan? If any client is subscribed to it, deactivate it instead.",
+      "Delete this plan? Only do this to remove a mistake. To withdraw a plan clients have already bought, turn off “Shown on the pricing page” instead.",
     deleteBlocked:
-      "This plan cannot be deleted because clients are subscribed to it. Turn off “Shown on the pricing page” instead.",
+      "This plan can't be deleted: a subscription or a past payment still names it — including payments from subscriptions that have since been cancelled, which is why it may not appear on any site today. Deleting it would leave those payments with nothing to explain them. Turn off “Shown on the pricing page” and “Clients can buy it themselves” instead: that withdraws it completely and keeps the history readable.",
     codeRequired: "Give the plan a code.",
     priceInvalid: "Enter the price as a number, e.g. 199.",
     nameRequired: "Every language needs a name.",
@@ -1273,9 +1273,9 @@ const ka: AdminStrings = {
     delete: "პაკეტის წაშლა",
     deleting: "იშლება…",
     deleteConfirm:
-      "წავშალოთ ეს პაკეტი? თუ რომელიმე კლიენტს აქვს გამოწერილი, სჯობს გამორთოთ.",
+      "წავშალოთ ეს პაკეტი? წაშლა მხოლოდ შეცდომით შექმნილისთვისაა. თუ პაკეტი კლიენტებს უკვე ჰქონდათ ნაყიდი, სანაცვლოდ გამორთეთ „ჩანს ფასების გვერდზე“.",
     deleteBlocked:
-      "პაკეტი ვერ წაიშლება, რადგან კლიენტებს აქვთ გამოწერილი. სანაცვლოდ გამორთეთ „ჩანს ფასების გვერდზე“.",
+      "პაკეტი ვერ წაიშლება: მას კვლავ იყენებს გამოწერა ან ძველი გადახდა — მათ შორის უკვე გაუქმებული გამოწერების გადახდები, ამიტომ შესაძლოა დღეს არცერთ საიტზე არ ჩანდეს. წაშლის შემთხვევაში ამ გადახდებს ახსნა აღარ ექნებათ. სანაცვლოდ გამორთეთ „ჩანს ფასების გვერდზე“ და „კლიენტებს შეუძლიათ თავად შეიძინონ“: ასე პაკეტი სრულად იხურება და ისტორია ხელუხლებელი რჩება.",
     codeRequired: "მიუთითეთ პაკეტის კოდი.",
     priceInvalid: "ფასი შეიყვანეთ რიცხვად, მაგ. 199.",
     nameRequired: "თითოეულ ენას დასახელება სჭირდება.",

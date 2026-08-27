@@ -5,6 +5,7 @@ import { useSession } from "../auth";
 import { useResource } from "../hooks";
 import { deletePlan, fetchPlans } from "../api/client";
 import { formatMinor } from "../../api/plans";
+import { ApiError } from "../../api/http";
 import { adminStrings } from "../strings";
 import { adminPath } from "../../routes";
 
@@ -34,9 +35,15 @@ export default function Plans() {
       await deletePlan(token, planId);
       reload();
     } catch (cause) {
-      // The API refuses to delete a plan clients are subscribed to. Its own
-      // wording is more specific than ours, so prefer it.
-      setProblem((cause as Error).message || t.plans.deleteBlocked);
+      // `PLAN_IN_USE` also covers payments left behind by subscriptions that
+      // have since been cancelled, so the server's "in use" is broader than it
+      // sounds and its English is not what a Georgian admin should be reading.
+      // Anything else keeps the server's wording, which is more specific.
+      setProblem(
+        cause instanceof ApiError && cause.code === "PLAN_IN_USE"
+          ? t.plans.deleteBlocked
+          : (cause as Error).message || t.plans.deleteBlocked,
+      );
     } finally {
       setRemoving(null);
     }

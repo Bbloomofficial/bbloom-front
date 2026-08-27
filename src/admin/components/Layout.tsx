@@ -12,7 +12,10 @@ import { adminStrings } from "../strings";
 
 function navClass({ isActive }: { isActive: boolean }) {
   return [
-    "rounded-xl px-3 py-2 text-sm font-semibold transition",
+    // `whitespace-nowrap` and `shrink-0` are both load-bearing: without them a
+    // flex item is free to shrink below its own text, and a two-word label like
+    // "ახალი საიტი" breaks across two lines inside a 16-unit-tall header.
+    "shrink-0 whitespace-nowrap rounded-xl px-3 py-2 text-sm font-semibold transition",
     isActive
       ? "bg-tint text-tint-fg"
       : "text-ink-600 hover:bg-ink-50 hover:text-ink-900",
@@ -51,7 +54,7 @@ export default function Layout({ children }: { children: ReactNode }) {
             {t.brand}
           </span>
 
-          <nav className="ms-4 hidden items-center gap-1 sm:flex">
+          <nav className="ms-4 hidden items-center gap-1 lg:flex">
             {links.map((link) => (
               <NavLink
                 key={link.to}
@@ -77,7 +80,11 @@ export default function Layout({ children }: { children: ReactNode }) {
           </div>
         </div>
 
-        <nav className="container-page flex items-center gap-1 overflow-x-auto border-t border-ink-100 py-2 sm:hidden">
+        {/* The scrolling nav carries on up to `lg` now. Six links stopped
+            fitting beside the brand and the sign-out button somewhere around a
+            tablet, and a nav that quietly overflows is worse than one that
+            scrolls on purpose. */}
+        <nav className="container-page flex items-center gap-1 overflow-x-auto border-t border-ink-100 py-2 lg:hidden">
           {links.map((link) => (
             <NavLink
               key={link.to}
