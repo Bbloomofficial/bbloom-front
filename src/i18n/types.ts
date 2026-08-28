@@ -106,13 +106,13 @@ export type Dict = {
     comingSoonCta: string
     /**
      * The new-customer offer, worded per billing period because the offer
-     * covers one period and "your first month" on a yearly plan would be
-     * eleven months short of the truth.
+     * covers one period and "first month" on a yearly plan would be eleven
+     * months of overclaim.
      *
-     * The prefix labels a figure the API sent — "First month" ~~198 ₾~~ 99 ₾.
-     * The functions are the fallback for when it sent a percentage and no
-     * figure, where naming a number would mean calculating one here and
-     * disagreeing with the invoice.
+     * The prefix is what the discount badge adds to the percentage — "−50%
+     * first month" against a sale's bare "−50%". The functions are the fallback
+     * sentence for when the API advertises a percentage but sends no figure to
+     * put beside it.
      */
     firstPurchaseMonthPrefix: string
     firstPurchaseYearPrefix: string

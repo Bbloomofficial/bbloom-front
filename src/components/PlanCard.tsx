@@ -74,14 +74,13 @@ export function PlanCard({
   /**
    * Copy for the new-customer offer. Optional: a caller with nothing sensible
    * to say about a first purchase — the client is already paying for this very
-   * plan, say — leaves it out and the note is dropped rather than shown in
-   * English.
+   * plan, say — leaves it out and the offer is priced as an ordinary sale
+   * rather than named in English.
    *
-   * Two shapes because there are two things to say. With a figure from the API
-   * the note reads like a sale — `prefix`, the usual price struck through, the
-   * discounted one — and `fallback` covers the case where the API has sent a
-   * percentage but no figure, where naming a number would mean working it out
-   * ourselves.
+   * `prefix` is what the discount badge adds to the percentage, and is the
+   * whole visible difference between this and a sale: it names the period the
+   * discount covers. `fallback` is the sentence for the case where the API
+   * advertises a percentage but sends no figure to put beside it.
    */
   firstPurchase?: { prefix: string; fallback: (percent: number) => string };
   periodLabel: string;
@@ -121,7 +120,31 @@ export function PlanCard({
   // price does. Null until it sends one, which is what the fallback copy is
   // for: deriving it from `priceMinor` here would be our arithmetic against
   // their invoice.
-  const firstPurchasePrice = formatFirstPurchasePrice(plan, locale);
+  const firstPurchasePrice = negotiable
+    ? null
+    : formatFirstPurchasePrice(plan, locale);
+
+  // The offer takes over the price block and renders as a sale, because to a
+  // new client that is exactly what it is. Same three parts in the same places:
+  // the price struck through, the percentage beside it, the discounted figure
+  // as the headline. Only the badge differs, and only by naming the period the
+  // discount covers — an ordinary sale applies to every month and says nothing,
+  // this one applies to the first and has to say so.
+  //
+  // Which is why this needs `firstPurchase` and not just the two figures: with
+  // no prefix to add, the badge would read a bare "−50%" over a first-month
+  // price and be indistinguishable from a sale that runs every month. A caller
+  // that has not given us the words gets the ordinary sale rendering instead,
+  // which is true as far as it goes rather than false about the duration.
+  //
+  // The struck figure stays whatever a sale would have struck: the offer is
+  // taken off the list price, so on a plan that is also on sale the two
+  // percentages are both read against the same number.
+  const asFirstPurchase =
+    firstPurchasePrice !== null && firstPurchaseOff !== null && !!firstPurchase;
+  const headline = asFirstPurchase ? firstPurchasePrice : price;
+  const struck = asFirstPurchase ? (was ?? price) : was;
+  const offPercent = asFirstPurchase ? firstPurchaseOff : plan.discountPercent;
 
   return (
     <div
@@ -158,17 +181,18 @@ export function PlanCard({
           Inline, four items of unpredictable width wrapped into a three-line
           jumble in the narrow columns a four-tier grid produces. */}
       <div className="mt-6">
-        {was && (
+        {struck && (
           <p className="mb-1 flex flex-wrap items-center gap-2">
             <span className="text-base font-semibold text-ink-400 line-through" dir="ltr">
-              {was}
+              {struck}
             </span>
-            {plan.discountPercent !== undefined && (
+            {offPercent !== undefined && (
               <span
                 className="rounded-full bg-bloom-600 px-2 py-0.5 text-xs font-bold text-white"
                 dir="ltr"
               >
-                −{plan.discountPercent}%
+                −{offPercent}%
+                {asFirstPurchase ? ` ${firstPurchase.prefix}` : ""}
               </span>
             )}
           </p>
@@ -180,36 +204,19 @@ export function PlanCard({
             }`}
             dir={negotiable ? undefined : "ltr"}
           >
-            {price}
+            {headline}
           </span>
           {period && (
             <span className="text-sm font-semibold text-ink-400">{period}</span>
           )}
         </p>
-        {/* Under the price rather than in a corner badge: both corners are
-            already spoken for by "most popular" and "coming soon", and this is
-            a sentence with a condition in it — "your first month" — which a
-            badge has no room to carry and would turn into a half-price promise
-            we do not mean.
-
-            Struck price beside the discounted one, the same way a sale reads
-            higher up the card, so the offer is a figure rather than a sum the
-            reader has to do. The headline price above stays what it is on
-            purpose: this is one period off a first purchase, and renewals are
-            full price. */}
-        {firstPurchaseOff !== null && firstPurchase && (
-          <p className="mt-2 inline-flex flex-wrap items-baseline gap-x-1.5 rounded-full bg-tint px-3 py-1 text-xs font-bold text-tint-fg">
-            {firstPurchasePrice ? (
-              <>
-                <span>{firstPurchase.prefix}</span>
-                <span className="font-semibold opacity-60 line-through" dir="ltr">
-                  {price}
-                </span>
-                <span dir="ltr">{firstPurchasePrice}</span>
-              </>
-            ) : (
-              <span>{firstPurchase.fallback(firstPurchaseOff)}</span>
-            )}
+        {/* Only reachable if the API ever advertises the offer without pricing
+            it, which it does not do today: the percentage and the figure are
+            sent together or not at all. Kept because the alternative to a
+            sentence is silence about an offer that is running. */}
+        {!asFirstPurchase && firstPurchaseOff !== null && firstPurchase && (
+          <p className="mt-2 inline-flex rounded-full bg-tint px-3 py-1 text-xs font-bold text-tint-fg">
+            {firstPurchase.fallback(firstPurchaseOff)}
           </p>
         )}
       </div>
