@@ -286,6 +286,14 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Site mode="host" />} />
         <Route path="/p/:productSlug" element={<Site mode="host" />} />
+        {/*
+          Where the bank returns a paying customer. Two paths for one screen:
+          the bare one is all the bank can be given (the order token does not
+          exist yet when the redirect is arranged), the keyed one is what a
+          customer can keep and come back to later.
+        */}
+        <Route path="/order" element={<Site mode="host" />} />
+        <Route path="/order/:orderToken" element={<Site mode="host" />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     );
@@ -323,6 +331,11 @@ export default function App() {
     <Routes>
       <Route path="/site/:slug" element={<Site mode="ref" />} />
       <Route path="/site/:slug/p/:productSlug" element={<Site mode="ref" />} />
+      <Route path="/site/:slug/order" element={<Site mode="ref" />} />
+      <Route
+        path="/site/:slug/order/:orderToken"
+        element={<Site mode="ref" />}
+      />
       {/*
         The client dashboard used to be mounted here, under `/dashboard`, as a
         prefix owning everything beneath it. It is a page on this site now: `/`

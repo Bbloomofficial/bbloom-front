@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useSite } from "../context";
 import { useLockScroll } from "../hooks/useLockScroll";
 import { WhatsappButton } from "./ContactPanel";
+import { BuyNow } from "./BuyNow";
 import { Icon } from "./Icon";
 import { DietaryTags, Price } from "./ProductCard";
 import { ProductEnquiryForm } from "./ProductEnquiryForm";
@@ -128,6 +129,14 @@ export function ProductModal({ slug }: { slug: string }) {
             ) : null}
 
             <div className="mt-2 flex flex-wrap items-center gap-3">
+              {/*
+                First of the actions, and on its own row above them in spirit:
+                where a shop can actually take money, buying is the thing the
+                visitor came for and asking a question is the fallback. It
+                renders nothing at all where the site cannot sell, which is
+                everywhere until a bank account is connected.
+              */}
+              <BuyNow product={product} />
               {meta.contact?.phone ? (
                 <a
                   href={`tel:${meta.contact.phone.replace(/\s+/g, "")}`}

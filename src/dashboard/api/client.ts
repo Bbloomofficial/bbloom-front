@@ -4,6 +4,9 @@ import type {
   Enquiry,
   EnquiryStats,
   MediaItem,
+  Order,
+  OrderStats,
+  OrderingStatus,
   Page,
   SectionDto,
   SiteDetail,
@@ -140,6 +143,101 @@ export function updateEnquiry(
     token,
     `/manage/sites/${siteId}/enquiries/${enquiryId}`,
     { method: "PATCH", body: JSON.stringify(changes) },
+  );
+}
+
+/**
+ * Online orders. Everything here is scoped to one website, and none of it
+ * touches money: the shop moves fulfilment and writes notes, the bank moves
+ * payment, and there is no endpoint that lets the first do the second.
+ */
+
+export type OrderQuery = {
+  status?: string;
+  fulfilment?: string;
+  page?: number;
+  size?: number;
+};
+
+export function fetchOrders(
+  token: string,
+  siteId: string,
+  query: OrderQuery = {},
+): Promise<Page<Order>> {
+  const params = new URLSearchParams();
+  if (query.status) params.set("status", query.status);
+  if (query.fulfilment) params.set("fulfilment", query.fulfilment);
+  params.set("page", String(query.page ?? 0));
+  params.set("size", String(query.size ?? 20));
+  return authed<Page<Order>>(token, `/manage/sites/${siteId}/orders?${params}`);
+}
+
+export function fetchOrderStats(
+  token: string,
+  siteId: string,
+): Promise<OrderStats> {
+  return authed<OrderStats>(token, `/manage/sites/${siteId}/orders/stats`);
+}
+
+/**
+ * Whether this website can sell yet, and what is missing if not.
+ *
+ * Asked once per site by the shell, because it decides whether the orders tab
+ * is worth showing at all. A client whose site cannot sell has no use for a
+ * list that will always be empty — but the page itself stays reachable by URL
+ * and explains the reason, so hiding the tab never hides the explanation.
+ */
+export function fetchOrderingStatus(
+  token: string,
+  siteId: string,
+): Promise<OrderingStatus> {
+  return authed<OrderingStatus>(token, `/manage/sites/${siteId}/orders/status`);
+}
+
+export function fetchOrder(
+  token: string,
+  siteId: string,
+  orderId: string,
+): Promise<Order> {
+  return authed<Order>(token, `/manage/sites/${siteId}/orders/${orderId}`);
+}
+
+/**
+ * The only two things a shop may change.
+ *
+ * There is deliberately no payment status here, and adding one would not work:
+ * the API has no field for it. Moving an unpaid order into preparation is
+ * refused with a 409 `ORDER_NOT_PAID`, which callers must surface rather than
+ * swallow — the whole point of the refusal is that somebody was about to cook
+ * for a customer who has not paid.
+ */
+export function updateOrder(
+  token: string,
+  siteId: string,
+  orderId: string,
+  changes: { fulfilment?: string; internalNote?: string },
+): Promise<Order> {
+  return authed<Order>(token, `/manage/sites/${siteId}/orders/${orderId}`, {
+    method: "PATCH",
+    body: JSON.stringify(changes),
+  });
+}
+
+/**
+ * Records a refund that a human has already made at the bank. Staff only, and
+ * it moves no money — the money is in the client's own account and only the
+ * client's own bank interface can send it back.
+ */
+export function recordRefund(
+  token: string,
+  siteId: string,
+  orderId: string,
+  note?: string,
+): Promise<Order> {
+  return authed<Order>(
+    token,
+    `/manage/sites/${siteId}/orders/${orderId}/refund`,
+    { method: "POST", body: JSON.stringify({ note }) },
   );
 }
 

@@ -31,6 +31,8 @@ export type DashboardStrings = {
   nav: {
     overview: string;
     inbox: string;
+    /** The shop's order list. Only offered when the website can actually sell. */
+    orders: string;
     page: string;
     billing: string;
     team: string;
@@ -222,6 +224,20 @@ export type DashboardStrings = {
      */
     quoteFirstPurchase: (percent: number) => string;
     cancelFailed: string;
+    /**
+     * Card payment answered, and answered that it cannot take money yet.
+     *
+     * Deliberately not worded as a failure: the checkout succeeded, the plan is
+     * still available, and the client has somewhere to go. It is also kept
+     * apart from the bank-transfer block below, which is shown *underneath*
+     * this when the API sent instructions — "you cannot pay online yet" and
+     * "here is where to transfer" are both true at once and neither replaces
+     * the other.
+     */
+    comingSoonTitle: string;
+    comingSoonBody: string;
+    /** How to reach us to buy anyway, since there is no button that will do it. */
+    comingSoonContact: string;
     bankTitle: string;
     bankHint: string;
     redirecting: string;
@@ -388,6 +404,93 @@ export type DashboardStrings = {
   };
   types: Record<string, string>;
   statuses: Record<string, string>;
+  /**
+   * Online orders.
+   *
+   * Two vocabularies, kept apart because the two columns they name are moved by
+   * different people. `orderStatuses` is the bank's word; `fulfilments` is the
+   * shop's. Sharing one dictionary would invite a screen that shows one badge
+   * and hides the disagreement that matters most — paid but cancelled.
+   */
+  orderStatuses: Record<string, string>;
+  fulfilments: Record<string, string>;
+  orders: {
+    title: string;
+    subtitle: string;
+    refresh: string;
+    status: string;
+    fulfilment: string;
+    all: string;
+    empty: string;
+    emptyFiltered: string;
+    results: (total: number) => string;
+    prev: string;
+    next: string;
+    page: (page: number, total: number) => string;
+    select: string;
+    number: (order: number) => string;
+    statsTitle: string;
+    statTotal: string;
+    statAwaiting: string;
+    statPaid: string;
+    statNew: string;
+    statLast7: string;
+    statLast30: string;
+    statTakings: string;
+    /** What the takings figure does and does not mean. */
+    takingsHint: string;
+    blockedTitle: string;
+    /**
+     * One sentence per reason, each ending somewhere different. The third one
+     * has to say "talk to us": connecting a bank account is staff work, and a
+     * client sent looking for that screen will not find it.
+     */
+    blocked: Record<
+      "TEMPLATE_TIER" | "FEATURE_OFF" | "NO_PAYMENT_ACCOUNT",
+      string
+    >;
+    /** A reason this build has no sentence for. Better than a blank panel. */
+    blockedUnknown: string;
+    seePlans: string;
+    detail: {
+      placed: string;
+      paid: string;
+      notPaid: string;
+      customer: string;
+      noCustomer: string;
+      customerNote: string;
+      items: string;
+      quantity: string;
+      total: string;
+      provider: string;
+      language: string;
+      internalNote: string;
+      notePlaceholder: string;
+      save: string;
+      saving: string;
+      saved: string;
+      saveFailed: string;
+      /** The 409 for moving an unpaid order into preparation. */
+      notPaidYet: string;
+      /**
+       * The refund control. Every word of this exists because the button does
+       * not do what its name suggests: it writes down a refund somebody has
+       * already made at the client's bank, and pressing it sends the customer
+       * nothing.
+       */
+      refund: string;
+      refundHint: string;
+      refundConfirm: string;
+      refundNotePlaceholder: string;
+      refunding: string;
+      refundFailed: string;
+      /** Only a paid order can be recorded as refunded. */
+      refundNotPaid: string;
+      close: string;
+      reply: string;
+      call: string;
+    };
+  };
   preview: {
     failed: string;
   };
@@ -403,6 +506,7 @@ const en: DashboardStrings = {
   nav: {
     overview: "Overview",
     inbox: "Inbox",
+    orders: "Orders",
     page: "Page",
     billing: "Billing",
     team: "Team",
@@ -594,6 +698,10 @@ const en: DashboardStrings = {
     quoteFirstPurchase: (percent) =>
       `New customer offer: ${percent}% off your first period. The rest are at the usual price.`,
     cancelFailed: "We couldn't cancel the renewal. Please try again.",
+    comingSoonTitle: "Card payment is being set up",
+    comingSoonBody:
+      "We can't take card payments online just yet — the bank side is still being arranged. Your plan is still available; get in touch and we'll set it up for you.",
+    comingSoonContact: "Write to us",
     bankTitle: "Bank transfer",
     bankHint: "Your plan starts as soon as the payment reaches us.",
     redirecting: "Taking you to the payment page…",
@@ -840,6 +948,91 @@ const en: DashboardStrings = {
     SPAM: "Spam",
     ARCHIVED: "Archived",
   },
+  orderStatuses: {
+    AWAITING_PAYMENT: "Awaiting payment",
+    PAID: "Paid",
+    FAILED: "Payment failed",
+    EXPIRED: "Expired",
+    CANCELLED: "Cancelled",
+    REFUNDED: "Refunded",
+  },
+  fulfilments: {
+    NEW: "New",
+    IN_PROGRESS: "Being prepared",
+    COMPLETED: "Completed",
+    CANCELLED: "Cancelled",
+  },
+  orders: {
+    title: "Orders",
+    subtitle: "What people have bought from your website.",
+    refresh: "Refresh",
+    status: "Payment",
+    fulfilment: "Progress",
+    all: "All",
+    empty: "No orders yet.",
+    emptyFiltered: "No orders match this filter.",
+    results: (total) => `${total} order${total === 1 ? "" : "s"}`,
+    prev: "Previous",
+    next: "Next",
+    page: (page, total) => `Page ${page} of ${total}`,
+    select: "Choose an order to see what was bought.",
+    number: (order) => `Order #${order}`,
+    statsTitle: "This shop so far",
+    statTotal: "Orders",
+    statAwaiting: "Awaiting payment",
+    statPaid: "Paid",
+    statNew: "Not looked at yet",
+    statLast7: "Last 7 days",
+    statLast30: "Last 30 days",
+    statTakings: "Paid in total",
+    takingsHint:
+      "The total of orders your bank has confirmed. It goes to your own account — bbloom never holds it.",
+    blockedTitle: "This website is not selling yet",
+    blocked: {
+      TEMPLATE_TIER:
+        "Online ordering needs a Modern design. Your website is on a simpler one, so there is nowhere for a customer to buy.",
+      FEATURE_OFF:
+        "Online ordering is part of a paid plan and is switched off for this website at the moment.",
+      NO_PAYMENT_ACCOUNT:
+        "Your bank account is not connected yet. We set that up for you — write to us and we will arrange it with your bank.",
+    },
+    blockedUnknown:
+      "This website cannot take online orders at the moment. Write to us and we will look into it.",
+    seePlans: "See plans",
+    detail: {
+      placed: "Placed",
+      paid: "Paid",
+      notPaid: "Not paid yet",
+      customer: "Customer",
+      noCustomer: "The customer left no contact details.",
+      customerNote: "Note from the customer",
+      items: "What was bought",
+      quantity: "Qty",
+      total: "Total",
+      provider: "Bank",
+      language: "Language",
+      internalNote: "Your note",
+      notePlaceholder: "Only you and your team can see this.",
+      save: "Save",
+      saving: "Saving…",
+      saved: "Saved",
+      saveFailed: "We couldn't save that. Please try again.",
+      notPaidYet:
+        "This order has not been paid for. You can cancel it, but it cannot be marked as being prepared until the bank confirms the payment.",
+      refund: "Record a refund",
+      refundHint:
+        "This does not send any money back. Make the refund in your bank first, then record it here so the order stops counting as a sale.",
+      refundConfirm:
+        "Only record this if you have already refunded the customer at your bank. Continue?",
+      refundNotePlaceholder: "Why it was refunded (optional)",
+      refunding: "Recording…",
+      refundFailed: "We couldn't record the refund. Please try again.",
+      refundNotPaid: "Only a paid order can be recorded as refunded.",
+      close: "Close",
+      reply: "Reply by email",
+      call: "Call",
+    },
+  },
   preview: {
     failed: "We couldn't load the preview. Try again.",
   },
@@ -851,6 +1044,7 @@ const ka: DashboardStrings = {
   nav: {
     overview: "მიმოხილვა",
     inbox: "შემოსული",
+    orders: "შეკვეთები",
     page: "გვერდი",
     billing: "გადახდები",
     team: "გუნდი",
@@ -1041,6 +1235,10 @@ const ka: DashboardStrings = {
     quoteFirstPurchase: (percent) =>
       `შეთავაზება ახალი მომხმარებლისთვის: −${percent}% პირველ პერიოდზე. დანარჩენი ჩვეულებრივ ფასად.`,
     cancelFailed: "განახლების გაუქმება ვერ მოხერხდა. სცადეთ თავიდან.",
+    comingSoonTitle: "ბარათით გადახდა მზადდება",
+    comingSoonBody:
+      "ონლაინ ბარათით გადახდა ჯერ არ გვაქვს — საბანკო მხარე ჯერ ეწყობა. პაკეტი მაინც ხელმისაწვდომია: დაგვიკავშირდით და ჩვენ გაგიფორმებთ.",
+    comingSoonContact: "მოგვწერეთ",
     bankTitle: "საბანკო გადარიცხვა",
     bankHint: "პაკეტი ამოქმედდება, როგორც კი თანხა ჩამოგვივა.",
     redirecting: "გადაგიყვანთ გადახდის გვერდზე…",
@@ -1286,6 +1484,91 @@ const ka: DashboardStrings = {
     HANDLED: "დამუშავებული",
     SPAM: "სპამი",
     ARCHIVED: "დაარქივებული",
+  },
+  orderStatuses: {
+    AWAITING_PAYMENT: "ელოდება გადახდას",
+    PAID: "გადახდილი",
+    FAILED: "გადახდა ვერ შედგა",
+    EXPIRED: "ვადა გავიდა",
+    CANCELLED: "გაუქმებული",
+    REFUNDED: "თანხა დაბრუნდა",
+  },
+  fulfilments: {
+    NEW: "ახალი",
+    IN_PROGRESS: "მზადდება",
+    COMPLETED: "დასრულებული",
+    CANCELLED: "გაუქმებული",
+  },
+  orders: {
+    title: "შეკვეთები",
+    subtitle: "რა იყიდეს თქვენი ვებგვერდიდან.",
+    refresh: "განახლება",
+    status: "გადახდა",
+    fulfilment: "მიმდინარეობა",
+    all: "ყველა",
+    empty: "შეკვეთები ჯერ არ არის.",
+    emptyFiltered: "ამ ფილტრს შეკვეთა არ შეესაბამება.",
+    results: (total) => `${total} შეკვეთა`,
+    prev: "წინა",
+    next: "შემდეგი",
+    page: (page, total) => `გვერდი ${page} / ${total}`,
+    select: "აირჩიეთ შეკვეთა, რომ ნახოთ რა იყიდეს.",
+    number: (order) => `შეკვეთა #${order}`,
+    statsTitle: "მაღაზია ციფრებში",
+    statTotal: "შეკვეთები",
+    statAwaiting: "ელოდება გადახდას",
+    statPaid: "გადახდილი",
+    statNew: "ჯერ არ გინახავთ",
+    statLast7: "ბოლო 7 დღე",
+    statLast30: "ბოლო 30 დღე",
+    statTakings: "სულ გადახდილი",
+    takingsHint:
+      "ბანკის მიერ დადასტურებული შეკვეთების ჯამი. თანხა თქვენს საკუთარ ანგარიშზე ჩადის — bbloom მას არ ინახავს.",
+    blockedTitle: "ეს ვებგვერდი ჯერ არ ყიდის",
+    blocked: {
+      TEMPLATE_TIER:
+        "ონლაინ შეკვეთებს „თანამედროვე“ დიზაინი სჭირდება. თქვენი ვებგვერდი უფრო მარტივზეა, ამიტომ მყიდველს ყიდვის ადგილი არ აქვს.",
+      FEATURE_OFF:
+        "ონლაინ შეკვეთები ფასიანი პაკეტის ნაწილია და ამ ვებგვერდზე ამჟამად გამორთულია.",
+      NO_PAYMENT_ACCOUNT:
+        "თქვენი საბანკო ანგარიში ჯერ მიერთებული არ არის. ამას ჩვენ ვაწყობთ — მოგვწერეთ და ბანკთან ერთად მოვაგვარებთ.",
+    },
+    blockedUnknown:
+      "ამჟამად ვებგვერდი ონლაინ შეკვეთებს ვერ იღებს. მოგვწერეთ და გავარკვევთ.",
+    seePlans: "პაკეტების ნახვა",
+    detail: {
+      placed: "შემოვიდა",
+      paid: "გადახდილია",
+      notPaid: "ჯერ არ არის გადახდილი",
+      customer: "მყიდველი",
+      noCustomer: "მყიდველმა საკონტაქტო არ დატოვა.",
+      customerNote: "მყიდველის შენიშვნა",
+      items: "რა იყიდეს",
+      quantity: "რაოდ.",
+      total: "სულ",
+      provider: "ბანკი",
+      language: "ენა",
+      internalNote: "თქვენი ჩანაწერი",
+      notePlaceholder: "ამას მხოლოდ თქვენ და თქვენი გუნდი ხედავთ.",
+      save: "შენახვა",
+      saving: "ინახება…",
+      saved: "შენახულია",
+      saveFailed: "შენახვა ვერ მოხერხდა. სცადეთ თავიდან.",
+      notPaidYet:
+        "ეს შეკვეთა გადახდილი არ არის. გაუქმება შეგიძლიათ, მაგრამ „მზადდება“-ზე გადაყვანა მხოლოდ მას შემდეგ იქნება შესაძლებელი, რაც ბანკი გადახდას დაადასტურებს.",
+      refund: "თანხის დაბრუნების აღრიცხვა",
+      refundHint:
+        "ეს თანხას უკან არ აბრუნებს. ჯერ დააბრუნეთ თანხა თქვენს ბანკში, შემდეგ აქ აღრიცხეთ, რომ შეკვეთა გაყიდვად აღარ ითვლებოდეს.",
+      refundConfirm:
+        "აღრიცხეთ მხოლოდ მაშინ, თუ თანხა მყიდველს უკვე დაუბრუნეთ ბანკში. გავაგრძელოთ?",
+      refundNotePlaceholder: "რატომ დაბრუნდა თანხა (არასავალდებულო)",
+      refunding: "ინახება…",
+      refundFailed: "დაბრუნების აღრიცხვა ვერ მოხერხდა. სცადეთ თავიდან.",
+      refundNotPaid: "დაბრუნება მხოლოდ გადახდილ შეკვეთაზე აღირიცხება.",
+      close: "დახურვა",
+      reply: "პასუხი ელფოსტით",
+      call: "დარეკვა",
+    },
   },
   preview: {
     failed: "გადახედვა ვერ ჩაიტვირთა. სცადეთ თავიდან.",

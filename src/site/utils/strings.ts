@@ -90,6 +90,50 @@ export type SiteStrings = {
     seePricing: string;
     dismiss: string;
   };
+  /**
+   * Buying one item.
+   *
+   * Every sentence here is read by the *client's customer*, not by the client,
+   * so nothing in it mentions plans, banks or subscriptions. A visitor cannot
+   * act on someone else's billing and is not owed the detail.
+   */
+  buy: {
+    /** The button on the product itself. */
+    now: string;
+    quantity: string;
+    total: string;
+    pay: string;
+    paying: string;
+    /** Says out loud that the next screen is the bank's, not the shop's. */
+    redirectNote: string;
+    notePlaceholder: string;
+    /** Shown in the editor preview, where nothing may actually be bought. */
+    previewOnly: string;
+    unavailable: string;
+    /** 409 ORDERING_UNAVAILABLE and friends. */
+    productUnavailable: string;
+    productNotPriced: string;
+    emptyOrder: string;
+    tooLarge: string;
+    rateLimited: string;
+    /** The thank-you / status screen, keyed on the order token. */
+    orderTitle: (orderNumber: number) => string;
+    confirming: string;
+    confirmingBody: string;
+    /** Settlement has not landed within the time we are prepared to wait. */
+    stillConfirming: string;
+    paid: string;
+    paidBody: string;
+    failed: string;
+    failedBody: string;
+    cancelled: string;
+    cancelledBody: string;
+    refunded: string;
+    refundedBody: string;
+    notFound: string;
+    backToSite: string;
+    placedAt: string;
+  };
 };
 
 const en: SiteStrings = {
@@ -172,6 +216,42 @@ const en: SiteStrings = {
     seePricing: "See pricing",
     dismiss: "Dismiss",
   },
+  buy: {
+    now: "Buy now",
+    quantity: "Quantity",
+    total: "Total",
+    pay: "Continue to payment",
+    paying: "Taking you to the bank…",
+    redirectNote:
+      "Payment is taken on your bank's secure page. You will come back here once it is done.",
+    notePlaceholder: "Anything the shop should know?",
+    previewOnly: "This is a preview — orders cannot be placed here.",
+    unavailable:
+      "Ordering is not available on this website right now. Please use the contact details above.",
+    productUnavailable: "This item is not available at the moment.",
+    productNotPriced: "This item does not have a price yet.",
+    emptyOrder: "Please choose something to order.",
+    tooLarge: "That is more than can be bought in one order.",
+    rateLimited: "Too many attempts from this device. Please try again shortly.",
+    orderTitle: (orderNumber: number) => `Order #${orderNumber}`,
+    confirming: "Confirming your payment…",
+    confirmingBody:
+      "Your bank is settling the payment. This usually takes a few seconds.",
+    stillConfirming:
+      "This is taking longer than usual. Your payment may still go through — keep this page's address, and the shop will be in touch.",
+    paid: "Payment received",
+    paidBody: "Thank you. The shop has your order and will be in touch.",
+    failed: "Payment did not go through",
+    failedBody:
+      "Nothing has been charged. You can try again, or contact the shop.",
+    cancelled: "Order cancelled",
+    cancelledBody: "Nothing has been charged.",
+    refunded: "Refunded",
+    refundedBody: "This order has been refunded by the shop.",
+    notFound: "We could not find this order.",
+    backToSite: "Back to the website",
+    placedAt: "Placed",
+  },
 };
 
 const ka: SiteStrings = {
@@ -253,6 +333,42 @@ const ka: SiteStrings = {
     createOwn: "შექმენი საკუთარი",
     seePricing: "ფასების ნახვა",
     dismiss: "დახურვა",
+  },
+  buy: {
+    now: "ყიდვა",
+    quantity: "რაოდენობა",
+    total: "ჯამი",
+    pay: "გადახდაზე გადასვლა",
+    paying: "გადავყავართ ბანკში…",
+    redirectNote:
+      "გადახდა ხდება თქვენი ბანკის დაცულ გვერდზე. დასრულების შემდეგ დაბრუნდებით აქ.",
+    notePlaceholder: "დამატებითი ინფორმაცია მაღაზიისთვის?",
+    previewOnly: "ეს არის წინასწარი ხედი — შეკვეთის განთავსება აქ ვერ მოხერხდება.",
+    unavailable:
+      "ამ ვებგვერდზე შეკვეთა ამჟამად მიუწვდომელია. გთხოვთ, დაგვიკავშირდეთ ზემოთ მითითებული კონტაქტით.",
+    productUnavailable: "ეს პოზიცია ამჟამად ხელმისაწვდომი არ არის.",
+    productNotPriced: "ამ პოზიციას ფასი ჯერ არ აქვს.",
+    emptyOrder: "გთხოვთ, აირჩიოთ პროდუქტი.",
+    tooLarge: "ეს ერთ შეკვეთაში დასაშვებზე მეტია.",
+    rateLimited: "ამ მოწყობილობიდან ბევრი მცდელობა იყო. სცადეთ ცოტა ხანში.",
+    orderTitle: (orderNumber: number) => `შეკვეთა #${orderNumber}`,
+    confirming: "მიმდინარეობს გადახდის დადასტურება…",
+    confirmingBody:
+      "ბანკი ამუშავებს გადახდას. ეს ჩვეულებრივ რამდენიმე წამს გრძელდება.",
+    stillConfirming:
+      "დადასტურება ჩვეულებრივზე მეტ დროს იღებს. გადახდა შესაძლოა მაინც შესრულდეს — შეინახეთ ამ გვერდის მისამართი, მაღაზია დაგიკავშირდებათ.",
+    paid: "გადახდა მიღებულია",
+    paidBody: "გმადლობთ. მაღაზიამ მიიღო თქვენი შეკვეთა და დაგიკავშირდებათ.",
+    failed: "გადახდა ვერ შესრულდა",
+    failedBody:
+      "თანხა არ ჩამოგეჭრათ. შეგიძლიათ თავიდან სცადოთ ან დაუკავშირდეთ მაღაზიას.",
+    cancelled: "შეკვეთა გაუქმებულია",
+    cancelledBody: "თანხა არ ჩამოგეჭრათ.",
+    refunded: "თანხა დაბრუნებულია",
+    refundedBody: "მაღაზიამ ამ შეკვეთაზე თანხა დააბრუნა.",
+    notFound: "ასეთი შეკვეთა ვერ მოიძებნა.",
+    backToSite: "ვებგვერდზე დაბრუნება",
+    placedAt: "განთავსდა",
   },
 };
 

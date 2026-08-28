@@ -25,3 +25,22 @@ export function formatMoney(
 
   return symbol ? `${value} ${symbol}` : `${value} ${code}`;
 }
+
+/**
+ * The same formatting for amounts that arrive as whole minor units.
+ *
+ * Orders are quoted in minor units end to end — 2500 is 25.00 GEL — because a
+ * decimal that survives a JSON round trip and a currency conversion is a
+ * rounding bug waiting for a large enough basket. The division by 100 here is
+ * the *only* place that number becomes a decimal, and it happens on its way to
+ * being printed, never on its way into another sum.
+ */
+export function formatMinorMoney(
+  minor: number | null | undefined,
+  currency: string | null | undefined,
+  locale: SiteLanguage,
+): string | undefined {
+  if (minor === null || minor === undefined || !Number.isFinite(minor))
+    return undefined;
+  return formatMoney(minor / 100, currency, locale);
+}

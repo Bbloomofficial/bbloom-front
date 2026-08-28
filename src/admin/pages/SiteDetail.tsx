@@ -10,6 +10,7 @@ import { formatDate, localised } from "../format";
 import { StatusBadge, MutedBadge, TierBadge } from "../components/Badges";
 import SettingsPanel from "../components/SettingsPanel";
 import DomainsPanel from "../components/DomainsPanel";
+import PaymentAccountPanel from "../components/PaymentAccountPanel";
 import ClientAccountsPanel from "../components/ClientAccountsPanel";
 import DangerZone from "../components/DangerZone";
 import { adminStrings } from "../strings";
@@ -247,6 +248,7 @@ export default function SiteDetailPage() {
 
       <ClientAccountsPanel site={site} />
       <SettingsPanel site={site} onSaved={set} />
+      <PaymentAccountPanel site={site} />
       <DomainsPanel site={site} onChanged={reload} />
       <DangerZone site={site} />
     </div>

@@ -100,6 +100,7 @@ export default function PreviewPage() {
         onLanguageChange={() => {}}
         onOpenProduct={() => {}}
         onCloseProduct={() => {}}
+        preview
       />
     </div>
   );

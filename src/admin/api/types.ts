@@ -560,3 +560,61 @@ export type NewCustomerOfferUpdateRequest = {
   percentOff: number;
   active: boolean;
 };
+
+/**
+ * A client's bank merchant account, as staff see it.
+ *
+ * Note what is missing: the credential. The API never reads one back out, by
+ * design, so nothing here can pre-fill a secret field and no screen may pretend
+ * to. Editing is therefore write-only — the form says a secret is *set*, and
+ * changing the provider means retyping both halves.
+ */
+export type ConnectedPaymentAccount = {
+  provider: string;
+  /** `PENDING` is stored-but-not-live; `DISABLED` is a retired predecessor. */
+  status: "PENDING" | "ACTIVE" | "DISABLED" | string;
+  merchantRef?: string;
+  currency?: string;
+  returnUrl?: string;
+  connectedAt?: string;
+};
+
+/**
+ * `availableProviders` is the set of banks this server actually has a gateway
+ * for. It is read rather than hard-coded here so that a third bank shipped on
+ * the backend appears in the picker without a frontend deploy.
+ */
+export type PaymentAccountView = {
+  account: ConnectedPaymentAccount | null;
+  availableProviders: string[];
+};
+
+/**
+ * Connecting an account. `extra` is whatever one bank needs and another does
+ * not — TBC wants a base url, BOG wants a base url, a token url and the public
+ * key its callbacks are signed with.
+ */
+export type ConnectPaymentAccountRequest = {
+  provider: string;
+  clientId: string;
+  clientSecret: string;
+  merchantRef?: string;
+  currency?: string;
+  returnUrl?: string;
+  extra?: Record<string, string>;
+};
+
+/**
+ * Whether a website can sell, and what is missing if not. The same shape the
+ * client dashboard reads; staff see it here as confirmation that connecting an
+ * account actually switched ordering on, which is the part of this that is
+ * easiest to get wrong and hardest to notice.
+ */
+export type OrderingStatus = {
+  enabled: boolean;
+  blockedReason?: string;
+  provider?: string;
+  merchantRef?: string;
+  currency?: string;
+  connectedAt?: string;
+};

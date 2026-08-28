@@ -848,6 +848,7 @@ export default function TryEditor() {
               onLanguageChange={() => undefined}
               onOpenProduct={() => undefined}
               onCloseProduct={() => undefined}
+              preview
             />
           </div>
         </div>

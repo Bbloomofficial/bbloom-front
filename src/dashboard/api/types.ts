@@ -252,6 +252,18 @@ export type CheckoutResponse = {
   provider: string;
   redirectUrl?: string;
   instructions?: string;
+  /**
+   * Whether this provider can actually take money today.
+   *
+   * Card checkout is written and switched off — bbloom has no merchant contract
+   * of its own yet — so the API answers the request rather than refusing it, and
+   * says so here. It is a field of its own precisely because the alternative,
+   * inferring it from a missing `redirectUrl`, cannot tell "you cannot pay
+   * online yet" apart from bank transfer, which also has no redirect and is a
+   * perfectly good way to pay. Conflating them would either hide working
+   * transfer instructions or promise a card form that does not exist.
+   */
+  available: boolean;
   /** The final breakdown, so the result needs no second call to explain itself. */
   quote?: CheckoutQuote;
 };
@@ -500,4 +512,108 @@ export type Page<T> = {
   totalItems: number;
   totalPages: number;
   hasNext: boolean;
+};
+
+/**
+ * Online orders.
+ *
+ * Two status columns, deliberately, and they must never be merged in the UI.
+ * `status` is where the money is and only the bank moves it; `fulfilment` is
+ * how far the shop has got and only the shop moves it. A single combined badge
+ * would have to invent pairings — "paid and cancelled" is a real and important
+ * state, and it is a refund waiting to happen.
+ */
+export const ORDER_STATUSES = [
+  "AWAITING_PAYMENT",
+  "PAID",
+  "FAILED",
+  "EXPIRED",
+  "CANCELLED",
+  "REFUNDED",
+] as const;
+
+export type OrderStatus = (typeof ORDER_STATUSES)[number];
+
+export const FULFILMENT_STATUSES = [
+  "NEW",
+  "IN_PROGRESS",
+  "COMPLETED",
+  "CANCELLED",
+] as const;
+
+export type FulfilmentStatus = (typeof FULFILMENT_STATUSES)[number];
+
+/**
+ * One line of an order, priced by the server when the order was placed.
+ *
+ * `lineTotalMinor` is the server's own multiplication and is rendered as sent.
+ * Recomputing it from `unitPriceMinor * quantity` would look identical today
+ * and diverge the first time a line carries anything the client cannot see —
+ * and it would diverge silently, on a receipt.
+ */
+export type OrderItem = {
+  productId: string;
+  name: string;
+  sku?: string;
+  unitPriceMinor: number;
+  quantity: number;
+  lineTotalMinor: number;
+};
+
+/** Every amount is in minor units, as stored. Format for display, never divide. */
+export type Order = {
+  id: string;
+  /** Sequential per shop, which is why the public page is keyed on a token. */
+  orderNumber: number;
+  status: OrderStatus | string;
+  fulfilment: FulfilmentStatus | string;
+  amountMinor: number;
+  currency: string;
+  provider?: string;
+  customerName?: string;
+  customerEmail?: string;
+  customerPhone?: string;
+  customerNote?: string;
+  internalNote?: string;
+  language?: SiteLanguage;
+  paidAt?: string;
+  createdAt: string;
+  items: OrderItem[];
+};
+
+export type OrderStats = {
+  total: number;
+  awaitingPayment: number;
+  paid: number;
+  /** Orders nobody at the shop has opened yet — `fulfilment === "NEW"`. */
+  newOrders: number;
+  last7Days: number;
+  last30Days: number;
+  paidTotalMinor: number;
+  currency: string;
+};
+
+/**
+ * Why a shop cannot sell. A code rather than a sentence, because the panel is
+ * read in Georgian and matching on the backend's English prose would break the
+ * first time anybody reworded it.
+ *
+ * The three are not interchangeable and each has a different next step: the
+ * first needs a different template, the second needs paying for, and the third
+ * the client cannot fix at all — connecting a bank account is staff work, so
+ * telling them to go and do it would send them looking for a screen that does
+ * not exist for them.
+ */
+export type OrderingBlockedReason =
+  | "TEMPLATE_TIER"
+  | "FEATURE_OFF"
+  | "NO_PAYMENT_ACCOUNT";
+
+export type OrderingStatus = {
+  enabled: boolean;
+  blockedReason?: OrderingBlockedReason | string;
+  provider?: string;
+  merchantRef?: string;
+  currency?: string;
+  connectedAt?: string;
 };

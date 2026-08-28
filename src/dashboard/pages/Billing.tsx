@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { formatMinor, isComingSoon } from "../../api/plans";
+import { contact } from "../../data/contact";
 import { describeProblem } from "../../api/problem";
 import { ApiError } from "../../api/http";
 import { PlanCard, usePlans } from "../../components/PlanCard";
@@ -43,26 +44,54 @@ function CheckoutResult({ result }: { result: CheckoutResponse }) {
   const { locale } = useI18n();
   const t = dashboardStrings(locale);
 
+  // `available` is asked first and on its own. It is not the same question as
+  // "did a redirect arrive": bank transfer has no redirect either, and reading
+  // the absence of one as "you cannot pay yet" would replace working transfer
+  // instructions with an apology. When card payment is off, the instructions
+  // below are still the way to buy, so they stay.
+  const unavailable = result.available === false;
+
   // A card provider answers with somewhere to go; manual transfer answers with
   // something to read. Branching on the field rather than the provider name is
   // what lets TBC and BoG arrive without touching this screen.
   useEffect(() => {
-    if (result.redirectUrl) window.location.assign(result.redirectUrl);
-  }, [result.redirectUrl]);
+    if (!unavailable && result.redirectUrl)
+      window.location.assign(result.redirectUrl);
+  }, [unavailable, result.redirectUrl]);
 
-  if (result.redirectUrl) {
+  if (!unavailable && result.redirectUrl) {
     return <p className="text-sm text-ink-600">{t.billing.redirecting}</p>;
   }
 
   return (
-    <div className="rounded-2xl border border-ink-100 bg-sunken p-4">
-      <p className="text-sm font-bold text-ink-900">{t.billing.bankTitle}</p>
-      {result.instructions && (
-        <p className="mt-2 whitespace-pre-line text-sm text-ink-600">
-          {result.instructions}
-        </p>
+    <div className="space-y-3">
+      {unavailable && (
+        <div className="rounded-2xl border border-ink-100 bg-sunken p-4">
+          <p className="text-sm font-bold text-ink-900">
+            {t.billing.comingSoonTitle}
+          </p>
+          <p className="mt-2 text-sm text-ink-600">
+            {t.billing.comingSoonBody}
+          </p>
+          <a
+            className="mt-3 inline-block text-sm font-semibold text-bloom-600 hover:underline"
+            href={`mailto:${contact.email}`}
+          >
+            {t.billing.comingSoonContact} · {contact.email}
+          </a>
+        </div>
       )}
-      <p className="mt-3 text-xs text-ink-400">{t.billing.bankHint}</p>
+      {(!unavailable || result.instructions) && (
+        <div className="rounded-2xl border border-ink-100 bg-sunken p-4">
+          <p className="text-sm font-bold text-ink-900">{t.billing.bankTitle}</p>
+          {result.instructions && (
+            <p className="mt-2 whitespace-pre-line text-sm text-ink-600">
+              {result.instructions}
+            </p>
+          )}
+          <p className="mt-3 text-xs text-ink-400">{t.billing.bankHint}</p>
+        </div>
+      )}
     </div>
   );
 }

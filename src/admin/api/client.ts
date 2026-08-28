@@ -6,7 +6,10 @@ import type {
   AdminPlanDto,
   AdminPromoCodeDto,
   AdminNewCustomerOfferDto,
+  ConnectPaymentAccountRequest,
   NewCustomerOfferUpdateRequest,
+  OrderingStatus,
+  PaymentAccountView,
   PromoCodeUpsertRequest,
   PlanUpsertRequest,
   SiteDetail,
@@ -184,6 +187,53 @@ export function fetchSiteUsers(
   siteId: string,
 ): Promise<SiteUser[]> {
   return authed<SiteUser[]>(token, `/manage/sites/${siteId}/users`);
+}
+
+/**
+ * The client's bank merchant account. Under `/admin` rather than `/manage`
+ * because there is no client-facing equivalent and there is not meant to be:
+ * these are credentials from the client's own merchant contract, transcribed
+ * once by somebody at bbloom, and a form inviting a shop owner to paste a bank
+ * secret into a browser is a worse outcome than the support ticket it saves.
+ */
+export function fetchPaymentAccount(
+  token: string,
+  siteId: string,
+): Promise<PaymentAccountView> {
+  return authed<PaymentAccountView>(
+    token,
+    `/admin/sites/${siteId}/payment-account`,
+  );
+}
+
+/**
+ * A `PUT`, because a site has one live account and connecting it twice with the
+ * same values must not produce two. The answer is the ordering status rather
+ * than the account, which is the more useful thing to show: it says whether the
+ * site can now actually sell.
+ */
+export function connectPaymentAccount(
+  token: string,
+  siteId: string,
+  body: ConnectPaymentAccountRequest,
+): Promise<OrderingStatus> {
+  return authed<OrderingStatus>(
+    token,
+    `/admin/sites/${siteId}/payment-account`,
+    { method: "PUT", body: JSON.stringify(body) },
+  );
+}
+
+/** Disables rather than deletes: orders in flight still need these credentials. */
+export function disablePaymentAccount(
+  token: string,
+  siteId: string,
+): Promise<PaymentAccountView> {
+  return authed<PaymentAccountView>(
+    token,
+    `/admin/sites/${siteId}/payment-account`,
+    { method: "DELETE" },
+  );
 }
 
 export function createSiteUser(

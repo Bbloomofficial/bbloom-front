@@ -7,6 +7,7 @@ import { useI18n } from "../../i18n";
 import type { AccountSite } from "../api/types";
 import { sitesOf, useSession } from "../auth";
 import { dashboardStrings } from "../strings";
+import { canSell, useOrdering } from "../ordering";
 import { SiteStatusBadge } from "./Badges";
 import VerifyBanner from "./VerifyBanner";
 import { dashPath, marketingHome } from "../../routes";
@@ -15,6 +16,7 @@ type NavKey =
   | "overview"
   | "page"
   | "inbox"
+  | "orders"
   | "billing"
   | "team"
   | "sites"
@@ -26,6 +28,10 @@ const NAV_ICONS: Record<NavKey, string> = {
   page: "M5 2h6l4 4v12a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1Zm6 1.5V7h3.5L11 3.5Z",
   inbox:
     "M2.5 6.2A2.2 2.2 0 0 1 4.7 4h10.6a2.2 2.2 0 0 1 2.2 2.2v7.6a2.2 2.2 0 0 1-2.2 2.2H4.7a2.2 2.2 0 0 1-2.2-2.2V6.2Zm2.1-.2 5.4 4 5.4-4H4.6Z",
+  // A shopping bag: an order is something bought and carried away, which is a
+  // different idea from the inbox beside it, where nobody has paid for anything.
+  orders:
+    "M6 6V5a4 4 0 0 1 8 0v1h2.2l.8 10.2a1.6 1.6 0 0 1-1.6 1.8H4.6A1.6 1.6 0 0 1 3 16.2L3.8 6H6Zm1.8 0h4.4V5a2.2 2.2 0 0 0-4.4 0v1Z",
   billing:
     "M2 6.5A2.5 2.5 0 0 1 4.5 4h11A2.5 2.5 0 0 1 18 6.5V7H2v-.5ZM2 9h16v4.5a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 2 13.5V9Zm3 3.5h4V14H5v-1.5Z",
   team: "M7 9a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm7 0a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5ZM1.5 16c0-2.5 2.5-4.5 5.5-4.5s5.5 2 5.5 4.5v1h-11v-1Zm12.2-3.6c2.3.4 4.3 2 4.3 3.9V17h-4v-1c0-1.4-.5-2.7-1.4-3.7l1.1.1Z",
@@ -176,6 +182,7 @@ function tabClass({ isActive }: { isActive: boolean }) {
 function SiteTabs({ site }: { site: AccountSite }) {
   const { locale } = useI18n();
   const t = dashboardStrings(locale);
+  const sells = canSell(useOrdering().status);
 
   const tabs: {
     to: string;
@@ -206,6 +213,20 @@ function SiteTabs({ site }: { site: AccountSite }) {
       end: false,
       icon: "inbox",
     },
+    // Only where the website can actually sell. Everywhere else the list would
+    // be permanently empty, and a tab that always leads to "you cannot do this"
+    // teaches people to ignore the nav. The page itself stays addressable and
+    // explains why, so hiding the tab hides no information.
+    ...(sells
+      ? [
+          {
+            to: dashPath(`/s/${site.id}/orders`),
+            label: t.nav.orders,
+            end: false,
+            icon: "orders" as NavKey,
+          },
+        ]
+      : []),
     {
       to: dashPath(`/s/${site.id}/billing`),
       label: t.nav.billing,

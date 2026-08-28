@@ -2,6 +2,9 @@ import { API_BASE, ApiError, assetUrl, request } from "../../api/http";
 import type {
   EnquiryRequest,
   MediaRef,
+  OrderCreatedResponse,
+  OrderRequest,
+  PublicOrder,
   SiteLanguage,
   SitePayload,
 } from "./types";
@@ -78,4 +81,30 @@ export function submitEnquiry(
     method: "POST",
     body: JSON.stringify(payload),
   });
+}
+
+/**
+ * Places an order and gets back the bank's payment page.
+ *
+ * Every refusal to sell comes back as a single 409 `ORDERING_UNAVAILABLE` with
+ * one deliberately unhelpful sentence. That vagueness is a feature: a stranger
+ * walking the slug space must not be able to read off which shops are unpaid or
+ * unbanked. So callers show the message and do not attempt to explain it.
+ */
+export function placeOrder(
+  ref: string,
+  payload: OrderRequest,
+): Promise<OrderCreatedResponse> {
+  return request(`/public/sites/${encodeURIComponent(ref)}/orders`, {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+}
+
+/**
+ * Reads one order back by its opaque token — no login, and no site ref, because
+ * the token already identifies both.
+ */
+export function fetchPublicOrder(token: string): Promise<PublicOrder> {
+  return request(`/public/orders/${encodeURIComponent(token)}`);
 }
