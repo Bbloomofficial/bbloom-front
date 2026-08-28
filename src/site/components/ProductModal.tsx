@@ -4,6 +4,7 @@ import { useLockScroll } from "../hooks/useLockScroll";
 import { WhatsappButton } from "./ContactPanel";
 import { Icon } from "./Icon";
 import { DietaryTags, Price } from "./ProductCard";
+import { ProductEnquiryForm } from "./ProductEnquiryForm";
 import { RichText } from "./RichText";
 import { SiteImage } from "./SiteImage";
 
@@ -12,14 +13,16 @@ import { SiteImage } from "./SiteImage";
  * item. Opened from a card and addressable at `/site/:slug/p/:productSlug`.
  */
 export function ProductModal({ slug }: { slug: string }) {
-  const { productBySlug, closeProduct, t, effects, meta } = useSite();
+  const { productBySlug, closeProduct, t, effects, meta, features } = useSite();
   const product = productBySlug(slug);
   const [active, setActive] = useState(0);
+  const [asking, setAsking] = useState(false);
 
   useLockScroll(Boolean(product));
 
   useEffect(() => {
     setActive(0);
+    setAsking(false);
   }, [slug]);
 
   useEffect(() => {
@@ -148,7 +151,21 @@ export function ProductModal({ slug }: { slug: string }) {
                 </a>
               ) : null}
               <WhatsappButton />
+              {features.enquiryForm === true && !asking ? (
+                <button
+                  type="button"
+                  onClick={() => setAsking(true)}
+                  className="inline-flex items-center gap-2 rounded-site-pill border border-site-border px-4 py-2 text-sm font-semibold whitespace-nowrap text-site-text transition hover:border-site-primary hover:text-site-primary"
+                >
+                  <Icon name="mail" size={16} />
+                  {t.enquire}
+                </button>
+              ) : null}
             </div>
+
+            {features.enquiryForm === true && asking ? (
+              <ProductEnquiryForm product={product} />
+            ) : null}
           </div>
         </div>
       </div>

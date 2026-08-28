@@ -56,6 +56,12 @@ export type SiteStrings = {
   messagePlaceholder: string;
   subscribe: string;
   subscribed: string;
+  subscribedBody: string;
+  book: string;
+  booked: string;
+  bookedBody: string;
+  reservationNotePlaceholder: string;
+  optional: string;
   openMenu: string;
   closeMenu: string;
   callUs: string;
@@ -133,6 +139,12 @@ const en: SiteStrings = {
   messagePlaceholder: "How can we help?",
   subscribe: "Subscribe",
   subscribed: "You are on the list.",
+  subscribedBody: "We will let you know when there is something worth knowing.",
+  book: "Request a table",
+  booked: "Table requested",
+  bookedBody: "We have your request and will confirm it shortly.",
+  reservationNotePlaceholder: "Anything we should know?",
+  optional: "optional",
   openMenu: "Open menu",
   closeMenu: "Close menu",
   callUs: "Call",
@@ -209,6 +221,12 @@ const ka: SiteStrings = {
   messagePlaceholder: "როგორ დაგეხმაროთ?",
   subscribe: "გამოწერა",
   subscribed: "თქვენ უკვე სიაში ხართ.",
+  subscribedBody: "მნიშვნელოვან სიახლეებს გაცნობებთ.",
+  book: "მაგიდის დაჯავშნა",
+  booked: "მოთხოვნა გაიგზავნა",
+  bookedBody: "თქვენი მოთხოვნა მივიღეთ და მალე დაგიდასტურებთ.",
+  reservationNotePlaceholder: "დამატებითი ინფორმაცია?",
+  optional: "სურვილისამებრ",
   openMenu: "მენიუს გახსნა",
   closeMenu: "მენიუს დახურვა",
   callUs: "დარეკვა",

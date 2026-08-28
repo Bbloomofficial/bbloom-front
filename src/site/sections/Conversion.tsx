@@ -4,18 +4,27 @@ import { Cta } from "../components/SiteButton";
 import { ContactPanel, SocialLinks } from "../components/ContactPanel";
 import { Icon } from "../components/Icon";
 import { MapEmbed } from "../components/MapEmbed";
+import { NewsletterForm } from "../components/NewsletterForm";
+import { ReservationForm } from "../components/ReservationForm";
 import { SiteImage } from "../components/SiteImage";
 import { useSite } from "../context";
 import { image, itemStr, list, str } from "../utils/content";
 
 /**
- * Was a newsletter sign-up. Collecting addresses needs a list to put them in,
- * so the band now points visitors at the channels the client already runs.
+ * Keep in touch — by address when the client collects them, by phone and social
+ * always.
+ *
+ * The sign-up form was absent for a while because collecting addresses needs a
+ * list to put them in. There is one now: a sign-up is an enquiry like any other
+ * and lands in the client's dashboard inbox filed as `NEWSLETTER`. The channels
+ * stay next to the form rather than being replaced by it, since they are what a
+ * visitor who will not hand over an address is left with.
  */
 export function NewsletterBand({ section }: { section: PublicSection }) {
-  const { meta, t } = useSite();
+  const { meta, features, t } = useSite();
   const phone = meta.contact?.phone;
   const hasSocial = Object.values(meta.social ?? {}).some(Boolean);
+  const showForm = features.newsletter === true;
 
   return (
     <Band id={section.key} tone="surface">
@@ -28,6 +37,11 @@ export function NewsletterBand({ section }: { section: PublicSection }) {
             <p className="mt-3 text-site-muted">
               {str(section.content, "text")}
             </p>
+          ) : null}
+          {showForm ? (
+            <div className="mt-6">
+              <NewsletterForm />
+            </div>
           ) : null}
         </div>
         <div className="flex flex-col gap-4 lg:items-end">
@@ -60,9 +74,10 @@ export function NewsletterGradientPanel({
 }: {
   section: PublicSection;
 }) {
-  const { meta, t } = useSite();
+  const { meta, features, t } = useSite();
   const phone = meta.contact?.phone;
   const hasSocial = Object.values(meta.social ?? {}).some(Boolean);
+  const showForm = features.newsletter === true;
 
   return (
     <Band id={section.key}>
@@ -74,6 +89,11 @@ export function NewsletterGradientPanel({
             </h2>
             {str(section.content, "text") ? (
               <p className="text-white/80">{str(section.content, "text")}</p>
+            ) : null}
+            {showForm ? (
+              <div className="mt-2 flex w-full justify-center">
+                <NewsletterForm tone="dark" />
+              </div>
             ) : null}
             {phone ? (
               <a
@@ -140,12 +160,20 @@ export function CtaSplitImageGradient({ section }: { section: PublicSection }) {
   );
 }
 
-/** Table booking — by phone, since there is no reservation inbox to post into. */
+/**
+ * Table booking.
+ *
+ * The form posts a `RESERVATION` enquiry into the client's inbox when
+ * `features.reservations` is on; the phone number stays regardless, because a
+ * table for tonight is a phone call and always was. Where the feature is off,
+ * this panel is what it has always been: the number, and the ways to reach it.
+ */
 export function ReservationFormPanel({ section }: { section: PublicSection }) {
-  const { meta } = useSite();
+  const { meta, features } = useSite();
   const glass = section.variant === "glass-form";
   const phoneNote = str(section.content, "phoneNote");
   const media = image(section.content, "image");
+  const showForm = features.reservations === true;
 
   return (
     <Band
@@ -195,7 +223,11 @@ export function ReservationFormPanel({ section }: { section: PublicSection }) {
             </div>
           ) : null}
         </div>
-        <ContactPanel glass={glass} />
+        {showForm ? (
+          <ReservationForm glass={glass} />
+        ) : (
+          <ContactPanel glass={glass} />
+        )}
       </div>
     </Band>
   );

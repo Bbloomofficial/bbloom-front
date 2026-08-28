@@ -8,6 +8,24 @@ import type { PublishRefusal } from "./gate";
  * but the dashboard shell is ours, so it ships its own dictionaries — same
  * shape as the renderer's, keyed off the marketing site's locale.
  */
+/**
+ * One switch on the forms panel. Three of these ship today — message form,
+ * table booking, newsletter — and they are spelled out separately rather than
+ * generated from a noun, because each one is a different promise to a visitor
+ * and translating "the {thing} form" produces Georgian nobody would write.
+ */
+export type FormToggleStrings = {
+  title: string;
+  subtitle: string;
+  toggle: string;
+  /** Chosen on, but the plan is not letting it run. */
+  pausedTitle: string;
+  pausedBody: string;
+  inboxHint: string;
+  needsPlan: string;
+  lapsed: string;
+};
+
 export type DashboardStrings = {
   brand: string;
   nav: {
@@ -320,20 +338,16 @@ export type DashboardStrings = {
     saved: string;
     error: string;
   };
-  enquiryForm: {
+  forms: {
     title: string;
     subtitle: string;
-    toggle: string;
     on: string;
     off: string;
-    /** Chosen on, but the plan is not letting it run. */
-    pausedTitle: string;
-    pausedBody: string;
-    inboxHint: string;
-    needsPlan: string;
-    lapsed: string;
     seePlans: string;
     error: string;
+    enquiryForm: FormToggleStrings;
+    reservationForm: FormToggleStrings;
+    newsletterForm: FormToggleStrings;
   };
   inbox: {
     title: string;
@@ -728,22 +742,53 @@ const en: DashboardStrings = {
     saved: "Saved",
     error: "Could not save. Please try again.",
   },
-  enquiryForm: {
-    title: "Message form",
+  forms: {
+    title: "Website forms",
     subtitle:
-      "Lets visitors write to you from your website. Messages arrive in your inbox here — nothing is sent on by email.",
-    toggle: "Show a message form on my website",
+      "What visitors can send you from your website. Everything arrives in your inbox here — nothing is sent on by email.",
     on: "On",
     off: "Off",
-    pausedTitle: "Your form is switched on, but not running",
-    pausedBody:
-      "Your plan does not currently include the message form, so visitors cannot write to you from the website. Your setting is kept — the form comes back as soon as the plan is active. Your contact details are still shown.",
-    inboxHint: "Read messages in Messages.",
-    needsPlan: "The message form needs a paid plan.",
-    lapsed:
-      "Your plan has stopped, so the message form cannot be switched on right now.",
     seePlans: "See plans",
     error: "Could not save. Please try again.",
+    enquiryForm: {
+      title: "Message form",
+      subtitle:
+        "Lets visitors write to you from your website, and ask about a single item from its page.",
+      toggle: "Show a message form on my website",
+      pausedTitle: "Your form is switched on, but not running",
+      pausedBody:
+        "Your plan does not currently include the message form, so visitors cannot write to you from the website. Your setting is kept — the form comes back as soon as the plan is active. Your contact details are still shown.",
+      inboxHint: "Read messages in Messages.",
+      needsPlan: "The message form needs a paid plan.",
+      lapsed:
+        "Your plan has stopped, so the message form cannot be switched on right now.",
+    },
+    reservationForm: {
+      title: "Table booking",
+      subtitle:
+        "Lets visitors request a table — date, time and how many. A request, not a confirmation: you reply to agree it. Your phone number stays on the page either way.",
+      toggle: "Take table requests from my website",
+      pausedTitle: "Booking is switched on, but not running",
+      pausedBody:
+        "Your plan does not currently include table requests, so the booking section shows your phone number instead. Your setting is kept and comes back as soon as the plan is active.",
+      inboxHint: "Requests arrive in Messages, filed as Reservation.",
+      needsPlan: "Table booking needs a paid plan.",
+      lapsed:
+        "Your plan has stopped, so table booking cannot be switched on right now.",
+    },
+    newsletterForm: {
+      title: "Newsletter sign-up",
+      subtitle:
+        "Lets visitors leave an email address to hear from you. The addresses are kept in your inbox here — we do not send anything on your behalf.",
+      toggle: "Collect email addresses on my website",
+      pausedTitle: "Sign-up is switched on, but not running",
+      pausedBody:
+        "Your plan does not currently include the sign-up form, so the section shows your phone number and social links instead. Your setting is kept and comes back as soon as the plan is active.",
+      inboxHint: "Addresses arrive in Messages, filed as Newsletter.",
+      needsPlan: "The sign-up form needs a paid plan.",
+      lapsed:
+        "Your plan has stopped, so the sign-up form cannot be switched on right now.",
+    },
   },
   inbox: {
     title: "Inbox",
@@ -1144,22 +1189,53 @@ const ka: DashboardStrings = {
     saved: "შენახულია",
     error: "ვერ შეინახა. სცადეთ თავიდან.",
   },
-  enquiryForm: {
-    title: "შეტყობინების ფორმა",
+  forms: {
+    title: "ვებგვერდის ფორმები",
     subtitle:
-      "ვიზიტორები პირდაპირ ვებგვერდიდან მოგწერენ. შეტყობინებები აქვე, თქვენს ფოსტაში მოვა — ელფოსტაზე არ იგზავნება.",
-    toggle: "ვებგვერდზე შეტყობინების ფორმა გამოჩნდეს",
+      "რისი გამოგზავნაც შეუძლიათ ვიზიტორებს თქვენი ვებგვერდიდან. ყველაფერი აქვე, თქვენს ფოსტაში მოვა — ელფოსტაზე არ იგზავნება.",
     on: "ჩართული",
     off: "გამორთული",
-    pausedTitle: "ფორმა ჩართულია, მაგრამ არ მუშაობს",
-    pausedBody:
-      "თქვენს პაკეტში შეტყობინების ფორმა ამჟამად არ შედის, ამიტომ ვიზიტორები ვებგვერდიდან ვერ მოგწერენ. თქვენი არჩევანი შენახულია — პაკეტის გააქტიურებისთანავე ფორმა დაბრუნდება. საკონტაქტო ინფორმაცია კვლავ ჩანს.",
-    inboxHint: "შეტყობინებები იხილეთ განყოფილებაში „შეტყობინებები“.",
-    needsPlan: "შეტყობინების ფორმა ფასიან პაკეტს საჭიროებს.",
-    lapsed:
-      "თქვენი პაკეტი შეწყვეტილია, ამიტომ შეტყობინების ფორმის ჩართვა ამჟამად ვერ ხერხდება.",
     seePlans: "პაკეტების ნახვა",
     error: "ვერ შეინახა. სცადეთ თავიდან.",
+    enquiryForm: {
+      title: "შეტყობინების ფორმა",
+      subtitle:
+        "ვიზიტორები პირდაპირ ვებგვერდიდან მოგწერენ და კონკრეტულ პოზიციაზეც დაგისვამენ კითხვას.",
+      toggle: "ვებგვერდზე შეტყობინების ფორმა გამოჩნდეს",
+      pausedTitle: "ფორმა ჩართულია, მაგრამ არ მუშაობს",
+      pausedBody:
+        "თქვენს პაკეტში შეტყობინების ფორმა ამჟამად არ შედის, ამიტომ ვიზიტორები ვებგვერდიდან ვერ მოგწერენ. თქვენი არჩევანი შენახულია — პაკეტის გააქტიურებისთანავე ფორმა დაბრუნდება. საკონტაქტო ინფორმაცია კვლავ ჩანს.",
+      inboxHint: "შეტყობინებები იხილეთ განყოფილებაში „შეტყობინებები“.",
+      needsPlan: "შეტყობინების ფორმა ფასიან პაკეტს საჭიროებს.",
+      lapsed:
+        "თქვენი პაკეტი შეწყვეტილია, ამიტომ შეტყობინების ფორმის ჩართვა ამჟამად ვერ ხერხდება.",
+    },
+    reservationForm: {
+      title: "მაგიდის დაჯავშნა",
+      subtitle:
+        "ვიზიტორები მიუთითებენ თარიღს, დროსა და სტუმრების რაოდენობას. ეს მოთხოვნაა და არა დადასტურება — დაჯავშნას თქვენ ადასტურებთ პასუხით. ტელეფონის ნომერი ყოველთვის ჩანს.",
+      toggle: "ვებგვერდიდან მაგიდის მოთხოვნები მივიღო",
+      pausedTitle: "დაჯავშნა ჩართულია, მაგრამ არ მუშაობს",
+      pausedBody:
+        "თქვენს პაკეტში მაგიდის მოთხოვნები ამჟამად არ შედის, ამიტომ ამ ბლოკში ტელეფონის ნომერი ჩანს. თქვენი არჩევანი შენახულია და პაკეტის გააქტიურებისთანავე დაბრუნდება.",
+      inboxHint: "მოთხოვნები მოვა „შეტყობინებებში“, ტიპით „ჯავშანი“.",
+      needsPlan: "მაგიდის დაჯავშნა ფასიან პაკეტს საჭიროებს.",
+      lapsed:
+        "თქვენი პაკეტი შეწყვეტილია, ამიტომ დაჯავშნის ჩართვა ამჟამად ვერ ხერხდება.",
+    },
+    newsletterForm: {
+      title: "სიახლეების გამოწერა",
+      subtitle:
+        "ვიზიტორები დატოვებენ ელფოსტას, რომ სიახლეები მიიღონ. მისამართები აქვე, თქვენს ფოსტაში ინახება — თქვენი სახელით არაფერს ვაგზავნით.",
+      toggle: "ვებგვერდზე ელფოსტების შეგროვება",
+      pausedTitle: "გამოწერა ჩართულია, მაგრამ არ მუშაობს",
+      pausedBody:
+        "თქვენს პაკეტში გამოწერის ფორმა ამჟამად არ შედის, ამიტომ ამ ბლოკში ტელეფონი და სოციალური ბმულები ჩანს. თქვენი არჩევანი შენახულია და პაკეტის გააქტიურებისთანავე დაბრუნდება.",
+      inboxHint: "მისამართები მოვა „შეტყობინებებში“, ტიპით „გამოწერა“.",
+      needsPlan: "გამოწერის ფორმა ფასიან პაკეტს საჭიროებს.",
+      lapsed:
+        "თქვენი პაკეტი შეწყვეტილია, ამიტომ გამოწერის ფორმის ჩართვა ამჟამად ვერ ხერხდება.",
+    },
   },
   inbox: {
     title: "შემოსული",
