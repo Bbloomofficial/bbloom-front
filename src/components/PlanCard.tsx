@@ -62,7 +62,7 @@ export function PlanCard({
   plan,
   featuredLabel,
   comingSoonLabel,
-  firstPurchaseLabel,
+  firstPurchase,
   periodLabel,
   action,
   current,
@@ -72,13 +72,18 @@ export function PlanCard({
   featuredLabel: string;
   comingSoonLabel?: string;
   /**
-   * Copy for the new-customer offer, given the advertised percentage and the
-   * discounted price when the API has sent one. Optional: a caller that has
-   * nothing sensible to say about a first purchase — the client is already
-   * paying for this very plan, say — leaves it out and the note is dropped
-   * rather than shown in English.
+   * Copy for the new-customer offer. Optional: a caller with nothing sensible
+   * to say about a first purchase — the client is already paying for this very
+   * plan, say — leaves it out and the note is dropped rather than shown in
+   * English.
+   *
+   * Two shapes because there are two things to say. With a figure from the API
+   * the note reads like a sale — `prefix`, the usual price struck through, the
+   * discounted one — and `fallback` covers the case where the API has sent a
+   * percentage but no figure, where naming a number would mean working it out
+   * ourselves.
    */
-  firstPurchaseLabel?: (percent: number, price: string | null) => string;
+  firstPurchase?: { prefix: string; fallback: (percent: number) => string };
   periodLabel: string;
   action: React.ReactNode;
   current?: boolean;
@@ -111,15 +116,12 @@ export function PlanCard({
   // Advertised, not promised. The backend already withholds this from tiers that
   // cannot take it; the negotiable guard is here because a "50% off" line under
   // a price that is a conversation would be discounting nothing.
-  const firstPurchase = negotiable ? null : firstPurchasePercent(plan);
-  // Null until the API sends the figure, in which case the copy falls back to
-  // naming only the percentage. Deriving it from `priceMinor` here is the one
-  // thing not on offer: it would be our arithmetic against their invoice.
+  const firstPurchaseOff = negotiable ? null : firstPurchasePercent(plan);
+  // The discounted figure comes from the API for the same reason the struck
+  // price does. Null until it sends one, which is what the fallback copy is
+  // for: deriving it from `priceMinor` here would be our arithmetic against
+  // their invoice.
   const firstPurchasePrice = formatFirstPurchasePrice(plan, locale);
-  const firstPurchaseNote =
-    firstPurchase !== null && firstPurchaseLabel
-      ? firstPurchaseLabel(firstPurchase, firstPurchasePrice)
-      : null;
 
   return (
     <div
@@ -188,10 +190,26 @@ export function PlanCard({
             already spoken for by "most popular" and "coming soon", and this is
             a sentence with a condition in it — "your first month" — which a
             badge has no room to carry and would turn into a half-price promise
-            we do not mean. */}
-        {firstPurchaseNote && (
-          <p className="mt-2 inline-flex rounded-full bg-tint px-3 py-1 text-xs font-bold text-tint-fg">
-            {firstPurchaseNote}
+            we do not mean.
+
+            Struck price beside the discounted one, the same way a sale reads
+            higher up the card, so the offer is a figure rather than a sum the
+            reader has to do. The headline price above stays what it is on
+            purpose: this is one period off a first purchase, and renewals are
+            full price. */}
+        {firstPurchaseOff !== null && firstPurchase && (
+          <p className="mt-2 inline-flex flex-wrap items-baseline gap-x-1.5 rounded-full bg-tint px-3 py-1 text-xs font-bold text-tint-fg">
+            {firstPurchasePrice ? (
+              <>
+                <span>{firstPurchase.prefix}</span>
+                <span className="font-semibold opacity-60 line-through" dir="ltr">
+                  {price}
+                </span>
+                <span dir="ltr">{firstPurchasePrice}</span>
+              </>
+            ) : (
+              <span>{firstPurchase.fallback(firstPurchaseOff)}</span>
+            )}
           </p>
         )}
       </div>

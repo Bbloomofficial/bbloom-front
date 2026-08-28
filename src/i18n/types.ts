@@ -109,12 +109,15 @@ export type Dict = {
      * covers one period and "your first month" on a yearly plan would be
      * eleven months short of the truth.
      *
-     * `price` is what that first period actually costs, already formatted, and
-     * is null until the API sends a figure — never derived from the percentage
-     * here, which would be our arithmetic against their invoice.
+     * The prefix labels a figure the API sent — "First month" ~~198 ₾~~ 99 ₾.
+     * The functions are the fallback for when it sent a percentage and no
+     * figure, where naming a number would mean calculating one here and
+     * disagreeing with the invoice.
      */
-    firstPurchaseMonth: (percent: number, price: string | null) => string
-    firstPurchaseYear: (percent: number, price: string | null) => string
+    firstPurchaseMonthPrefix: string
+    firstPurchaseYearPrefix: string
+    firstPurchaseMonth: (percent: number) => string
+    firstPurchaseYear: (percent: number) => string
     perMonth: string
     perYear: string
     signUp: string

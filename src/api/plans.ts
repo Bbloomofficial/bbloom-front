@@ -74,11 +74,10 @@ export type WebsitePlan = {
   /**
    * What one billing period costs with the new-customer offer applied.
    *
-   * Sent by the API rather than worked out here from `firstPurchasePercent`,
-   * for the same reason `originalPriceMinor` is: the discount is rounded
-   * server-side, and a page doing its own arithmetic disagrees with the invoice
-   * by a cent on some percentages. Present exactly when `firstPurchasePercent`
-   * is, so the two are read together or not at all.
+   * Preferred over anything worked out here when the API sends it, for the
+   * same reason `originalPriceMinor` is sent rather than derived: the discount
+   * is rounded server-side. Absent for now — `formatFirstPurchasePrice` mirrors
+   * the rounding in the one case where the offer has no rival to lose to.
    */
   firstPurchasePriceMinor?: number;
   currency: string;
@@ -175,19 +174,46 @@ export function firstPurchasePercent(plan: WebsitePlan): number | null {
 }
 
 /**
- * What the first period costs under the offer, formatted, or `null` when the
- * API has not sent a figure.
+ * The API's own rounding, reproduced: take the discount half-up, then subtract
+ * it. The same mirror `PlanEditor` uses to preview an unsaved percentage.
  *
- * Never derived from the percentage — see `firstPurchasePriceMinor`. A caller
- * that gets `null` here still has the percentage and should say only that,
- * rather than quoting a number it worked out itself.
+ * Only ever used for the *advertised* first-period figure below, and only in
+ * the one case where it cannot disagree with anything. Nothing charged is
+ * calculated here: what a client actually pays comes back on the quote.
+ */
+function offHalfUp(minor: number, percent: number): number {
+  return minor - Math.floor((minor * percent + 50) / 100);
+}
+
+/**
+ * What the first period costs under the new-customer offer, formatted, or
+ * `null` when we cannot say truthfully.
+ *
+ * Three cases, and the last two are the interesting ones:
+ *
+ * - The API sent `firstPurchasePriceMinor` — use it, always, over anything
+ *   worked out here.
+ * - It did not, and no sale is running — mirror the rounding. The offer is the
+ *   only discount in play, so the figure is the percentage off the listed
+ *   price and there is nothing for it to contradict.
+ * - It did not, and a sale *is* running — `null`, because the answer is not
+ *   ours to give. Discounts do not stack: the offer and the sale are rival
+ *   candidates and checkout charges whichever totals less, so a figure named
+ *   here would be a guess at which one wins. The caller falls back to naming
+ *   the percentage, which stays true either way.
  */
 export function formatFirstPurchasePrice(
   plan: WebsitePlan,
   locale: string,
 ): string | null {
-  if (plan.firstPurchasePriceMinor === undefined) return null;
-  return formatMinor(plan.firstPurchasePriceMinor, plan.currency, locale);
+  if (plan.firstPurchasePriceMinor !== undefined) {
+    return formatMinor(plan.firstPurchasePriceMinor, plan.currency, locale);
+  }
+  const percent = plan.firstPurchasePercent;
+  if (percent === undefined || isDiscounted(plan) || plan.priceMinor <= 0) {
+    return null;
+  }
+  return formatMinor(offHalfUp(plan.priceMinor, percent), plan.currency, locale);
 }
 
 /**

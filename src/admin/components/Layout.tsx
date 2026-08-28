@@ -51,30 +51,30 @@ export default function Layout({ children }: { children: ReactNode }) {
   return (
     <div className="flex min-h-screen flex-col bg-canvas">
       <header className="sticky top-0 z-30 border-b border-ink-100 bg-surface/95 backdrop-blur">
-        <div className="container-page flex h-16 items-center gap-3">
+        {/* Deliberately not `container-page`. Everything else on the screen is
+            capped at `max-w-6xl` and should be — a form is unreadable ruler-wide
+            — but that cap was making the header fight for 1088px on a 1920px
+            monitor, which is why seven links plus the account controls had
+            nowhere to go. The bar spans the window and keeps the same padding
+            either side, so the first link and the last control sit the same
+            distance from their edges. */}
+        <div className="flex h-16 items-center gap-3 px-5 sm:px-8">
           <Link to={adminPath()} aria-label={t.brand} className="shrink-0">
             <Logo />
           </Link>
           {/* `shrink-0` and `whitespace-nowrap` for the same reason the links
-              have them: this was the only shrinkable item in the row, so it
-              was the one the browser crushed, and "bbloom გუნდი" wrapped onto
-              two lines inside a 16-unit-tall header and rode up over the logo.
-
-              Dropped entirely once the inline nav appears. The row is capped at
-              `max-w-6xl` however wide the screen is, so past that point the
-              space is not there to be won and this is the least useful thing
-              competing for it — the logo beside it already says bbloom, and the
-              admin subdomain in the address bar says which side of it we are
-              on. */}
-          <span className="hidden shrink-0 whitespace-nowrap rounded-full bg-tint px-2.5 py-1 text-xs font-semibold text-tint-fg sm:inline xl:hidden">
+              have them: this was the only shrinkable item in the row, so it was
+              the one the browser crushed, and "bbloom გუნდი" wrapped onto two
+              lines inside a 16-unit-tall header and rode up over the logo. */}
+          <span className="hidden shrink-0 whitespace-nowrap rounded-full bg-tint px-2.5 py-1 text-xs font-semibold text-tint-fg sm:inline">
             {t.brand}
           </span>
 
-          {/* `min-w-0` with a scroll fallback so the failure mode is bounded: if
-              a longer translation ever outgrows the row again, the links scroll
-              inside their own box instead of shoving the sign-out button out of
-              the container. */}
-          <nav className="ms-4 hidden min-w-0 items-center gap-1 overflow-x-auto xl:flex">
+          {/* Not `xl`: measured, the seven Georgian labels plus the brand and
+              the account controls need about 1316px, so the stock 1280px
+              breakpoint puts the row back into overflow by a few dozen pixels.
+              This switches where it actually fits. */}
+          <nav className="ms-4 hidden items-center gap-1 [@media(min-width:1340px)]:flex">
             {links.map((link) => (
               <NavLink
                 key={link.to}
@@ -100,13 +100,11 @@ export default function Layout({ children }: { children: ReactNode }) {
           </div>
         </div>
 
-        {/* The scrolling nav carries on up to `xl` now. Six links stopped
-            fitting beside the brand and the sign-out button somewhere around a
-            tablet; the seventh — the new-customer offer — stopped fitting at
-            `lg` outright in Georgian, where the labels are half again as long
-            as the English. A nav that quietly overflows is worse than one that
-            scrolls on purpose. */}
-        <nav className="container-page flex items-center gap-1 overflow-x-auto border-t border-ink-100 py-2 xl:hidden">
+        {/* Below the width where the links fit beside the brand they move to
+            their own row and scroll on purpose — a row that scrolls when you
+            expect it to is better than one that quietly clips. Same padding as
+            the bar above, so the first link lines up under the logo. */}
+        <nav className="flex items-center gap-1 overflow-x-auto border-t border-ink-100 px-5 py-2 sm:px-8 [@media(min-width:1340px)]:hidden">
           {links.map((link) => (
             <NavLink
               key={link.to}
