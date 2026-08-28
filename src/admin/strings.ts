@@ -180,6 +180,64 @@ export type AdminStrings = {
     deleteConfirm: (slug: string) => string;
     deleting: string;
   };
+  /**
+   * Connecting a client's bank merchant account.
+   *
+   * Worded throughout to keep one fact in front of whoever is typing: these
+   * credentials belong to the client's own contract with their bank, and every
+   * lari a customer spends lands in the client's account without passing
+   * through bbloom. Staff transcribe them; staff do not own them.
+   */
+  payments: {
+    title: string;
+    hint: string;
+    /** Said loudly, because it is the thing a hurried person will assume wrongly. */
+    ownership: string;
+    /** That filling this in is what switches selling on for the site. */
+    consequence: string;
+    connected: string;
+    notConnected: string;
+    provider: string;
+    providerHint: string;
+    status: string;
+    statuses: Record<string, string>;
+    merchantRef: string;
+    merchantRefHint: string;
+    currency: string;
+    returnUrl: string;
+    returnUrlHint: string;
+    connectedAt: string;
+    clientId: string;
+    clientSecret: string;
+    /**
+     * Shown where a secret would be if it could be read back. It cannot: the
+     * API never returns one, so the form is write-only and replacing an account
+     * means retyping both halves rather than editing one.
+     */
+    secretWriteOnly: string;
+    extraTitle: string;
+    extraHint: string;
+    baseUrl: string;
+    baseUrlHint: string;
+    tokenUrl: string;
+    tokenUrlHint: string;
+    callbackPublicKey: string;
+    callbackPublicKeyHint: string;
+    connect: string;
+    replace: string;
+    saving: string;
+    saved: string;
+    disable: string;
+    disableConfirm: string;
+    disableHint: string;
+    disabling: string;
+    noProviders: string;
+    required: string;
+    /** The server has no credential key, so nothing can be stored at all yet. */
+    notConfigured: string;
+    unknownProvider: string;
+    failed: string;
+  };
   system: {
     title: string;
     subtitle: string;
@@ -618,6 +676,60 @@ const en: AdminStrings = {
     deleteSite: "Delete this site",
     deleteConfirm: (slug) => `Type ${slug} to confirm`,
     deleting: "Deleting…",
+  },
+  payments: {
+    title: "Bank account for online orders",
+    hint: "The merchant credentials from the client's own contract with their bank.",
+    ownership:
+      "This is the client's bank account. Customers pay the client directly — the money never passes through bbloom, and we cannot refund it from here.",
+    consequence:
+      "Connecting an account is what lets this website take online orders. Removing it stops new ones.",
+    connected: "Connected",
+    notConnected: "No bank account connected — this website cannot sell.",
+    provider: "Bank",
+    providerHint: "Which gateway these credentials belong to.",
+    status: "Status",
+    statuses: {
+      PENDING: "Stored, not live yet",
+      ACTIVE: "Live",
+      DISABLED: "Switched off",
+    },
+    merchantRef: "Merchant ID",
+    merchantRefHint: "The shop identifier the bank gave the client.",
+    currency: "Currency",
+    returnUrl: "Return address",
+    returnUrlHint:
+      "Where the customer lands after paying. Leave empty to use the website's own thank-you page.",
+    connectedAt: "Connected on",
+    clientId: "Client ID",
+    clientSecret: "Client secret",
+    secretWriteOnly:
+      "A secret is stored. It cannot be read back, so replacing this account means typing both the ID and the secret again.",
+    extraTitle: "Bank-specific settings",
+    extraHint: "Leave these empty unless the bank gave the client different ones.",
+    baseUrl: "API address",
+    baseUrlHint: "Only if the client is on a test or non-standard endpoint.",
+    tokenUrl: "Token address",
+    tokenUrlHint: "Where BOG issues access tokens.",
+    callbackPublicKey: "Callback public key",
+    callbackPublicKeyHint:
+      "BOG signs its payment callbacks with this. Without it we cannot tell a real confirmation from a forged one.",
+    connect: "Connect account",
+    replace: "Replace account",
+    saving: "Saving…",
+    saved: "Connected. This website can now take online orders.",
+    disable: "Disconnect",
+    disableConfirm:
+      "This website stops taking new orders. Orders already at the bank are left alone. Continue?",
+    disableHint:
+      "The account is switched off rather than deleted, so old orders can still say which bank took the money.",
+    disabling: "Disconnecting…",
+    noProviders: "This server has no payment gateways configured.",
+    required: "Both the client ID and the secret are needed.",
+    notConfigured:
+      "This server has no credential key configured, so bank credentials cannot be stored yet. Set bbloom.payments.credential-key first.",
+    unknownProvider: "This server does not have a gateway for that bank.",
+    failed: "We could not save the account. Please try again.",
   },
   system: {
     title: "System",
@@ -1123,6 +1235,60 @@ const ka: AdminStrings = {
     deleteSite: "საიტის წაშლა",
     deleteConfirm: (slug) => `დასადასტურებლად აკრიფეთ ${slug}`,
     deleting: "იშლება…",
+  },
+  payments: {
+    title: "საბანკო ანგარიში ონლაინ შეკვეთებისთვის",
+    hint: "კლიენტის საკუთარი საბანკო ხელშეკრულების მერჩანტის მონაცემები.",
+    ownership:
+      "ეს კლიენტის საბანკო ანგარიშია. მყიდველი პირდაპირ კლიენტს უხდის — თანხა bbloom-ს არ გადმოსდის და აქედან მისი დაბრუნება შეუძლებელია.",
+    consequence:
+      "ანგარიშის მიერთება სწორედ ის ნაბიჯია, რომელიც ამ ვებგვერდს ონლაინ შეკვეთების მიღების საშუალებას აძლევს. მოხსნა ახალ შეკვეთებს აჩერებს.",
+    connected: "მიერთებულია",
+    notConnected: "საბანკო ანგარიში მიერთებული არ არის — ვებგვერდი ვერ გაყიდის.",
+    provider: "ბანკი",
+    providerHint: "რომელ გეითვეის ეკუთვნის ეს მონაცემები.",
+    status: "სტატუსი",
+    statuses: {
+      PENDING: "შენახულია, ჯერ არ მუშაობს",
+      ACTIVE: "აქტიურია",
+      DISABLED: "გამორთულია",
+    },
+    merchantRef: "მერჩანტის ID",
+    merchantRefHint: "მაღაზიის იდენტიფიკატორი, რომელიც ბანკმა კლიენტს მისცა.",
+    currency: "ვალუტა",
+    returnUrl: "დაბრუნების მისამართი",
+    returnUrlHint:
+      "სად აღმოჩნდება მყიდველი გადახდის შემდეგ. ცარიელი დატოვეთ, რომ ვებგვერდის საკუთარი გვერდი გამოიყენოს.",
+    connectedAt: "მიერთების თარიღი",
+    clientId: "Client ID",
+    clientSecret: "Client secret",
+    secretWriteOnly:
+      "საიდუმლო შენახულია. მისი უკან წაკითხვა შეუძლებელია, ამიტომ ანგარიშის შეცვლისას ID-ც და საიდუმლოც თავიდან უნდა აკრიფოთ.",
+    extraTitle: "ბანკის სპეციფიკური პარამეტრები",
+    extraHint: "დატოვეთ ცარიელი, თუ ბანკმა კლიენტს სხვა მისამართები არ მისცა.",
+    baseUrl: "API-ის მისამართი",
+    baseUrlHint: "მხოლოდ მაშინ, თუ კლიენტი სატესტო ან არასტანდარტულ მისამართზეა.",
+    tokenUrl: "ტოკენის მისამართი",
+    tokenUrlHint: "სად გასცემს BOG წვდომის ტოკენს.",
+    callbackPublicKey: "Callback-ის საჯარო გასაღები",
+    callbackPublicKeyHint:
+      "BOG ამ გასაღებით ხელს აწერს გადახდის დადასტურებებს. მის გარეშე ნამდვილ დადასტურებას გაყალბებულისგან ვერ გავარჩევთ.",
+    connect: "ანგარიშის მიერთება",
+    replace: "ანგარიშის ჩანაცვლება",
+    saving: "ინახება…",
+    saved: "მიერთდა. ვებგვერდს ახლა ონლაინ შეკვეთების მიღება შეუძლია.",
+    disable: "მოხსნა",
+    disableConfirm:
+      "ვებგვერდი ახალ შეკვეთებს აღარ მიიღებს. ბანკში უკვე დაწყებულ შეკვეთებს ეს არ შეეხება. გავაგრძელოთ?",
+    disableHint:
+      "ანგარიში იშლება არა, არამედ ითიშება — რომ ძველმა შეკვეთებმა შეძლონ თქვან, რომელმა ბანკმა მიიღო თანხა.",
+    disabling: "იხსნება…",
+    noProviders: "ამ სერვერზე გადახდის გეითვეი კონფიგურირებული არ არის.",
+    required: "საჭიროა ორივე — client ID და საიდუმლო.",
+    notConfigured:
+      "სერვერზე კრედენშალების გასაღები არ არის მითითებული, ამიტომ საბანკო მონაცემების შენახვა ჯერ შეუძლებელია. ჯერ დააყენეთ bbloom.payments.credential-key.",
+    unknownProvider: "ამ სერვერს ამ ბანკის გეითვეი არ აქვს.",
+    failed: "ანგარიშის შენახვა ვერ მოხერხდა. სცადეთ თავიდან.",
   },
   system: {
     title: "სისტემა",

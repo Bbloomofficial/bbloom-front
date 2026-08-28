@@ -101,6 +101,18 @@ export type SiteFeatures = {
   events?: boolean;
   whatsapp?: boolean;
   analyticsReady?: boolean;
+  /**
+   * Whether this website may sell.
+   *
+   * Resolved rather than declared: the backend only leaves it `true` on a
+   * published render when the plan, the template tier *and* a connected bank
+   * account all agree, so a storefront that trusts this flag can never draw a
+   * buy button that every attempt would be refused by. The one exception is the
+   * editor's draft render, which reports the client's own intent so they can lay
+   * a shop out before we have connected their bank — which is exactly why the
+   * buying UI must refuse to submit in preview.
+   */
+  onlineOrders?: boolean;
 };
 
 export type SiteMeta = {
@@ -226,4 +238,79 @@ export type EnquiryRequest = {
   locale?: SiteLanguage;
   /** Honeypot — rendered hidden, must stay empty for a real visitor. */
   website?: string;
+};
+
+/**
+ * Buying one thing.
+ *
+ * Note what is missing: a price, and a total. The server prices every line from
+ * the catalogue, and sending a number from here would be a shop selling at
+ * whatever figure the customer edited into the page — indistinguishable, in
+ * every log and every dashboard, from an honest sale. Do not add one.
+ */
+export type OrderLineRequest = {
+  productId: string;
+  /** 1..999, enforced server-side too. */
+  quantity: number;
+};
+
+export type OrderRequest = {
+  /** At most 100 distinct lines. Our storefront only ever sends one. */
+  items: OrderLineRequest[];
+  name?: string;
+  email?: string;
+  phone?: string;
+  note?: string;
+  locale?: SiteLanguage;
+  /**
+   * Where the bank should return the customer. Checked against the site on the
+   * server and silently dropped if it points somewhere else, so this is a
+   * convenience rather than something the flow may depend on.
+   */
+  returnUrl?: string;
+  /** Honeypot — rendered hidden, must stay empty for a real visitor. */
+  website?: string;
+};
+
+export type OrderCreatedResponse = {
+  id: string;
+  orderNumber: number;
+  /**
+   * The only handle the thank-you page may use. Order numbers are sequential,
+   * so a status page keyed on one would hand every customer's order to anybody
+   * willing to count.
+   */
+  token: string;
+  amountMinor: number;
+  currency: string;
+  provider: string;
+  redirectUrl: string;
+};
+
+export type OrderStatus =
+  | "AWAITING_PAYMENT"
+  | "PAID"
+  | "FAILED"
+  | "EXPIRED"
+  | "CANCELLED"
+  | "REFUNDED";
+
+export type PublicOrderItem = {
+  productId: string;
+  name: string;
+  sku: string | null;
+  unitPriceMinor: number;
+  quantity: number;
+  lineTotalMinor: number;
+};
+
+/** What a customer may read back about their own order, without signing in. */
+export type PublicOrder = {
+  orderNumber: number;
+  status: OrderStatus;
+  amountMinor: number;
+  currency: string;
+  createdAt: string;
+  paidAt: string | null;
+  items: PublicOrderItem[];
 };

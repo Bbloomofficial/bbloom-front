@@ -29,18 +29,16 @@ export function useEnquiry() {
   async function send(payload: EnquiryRequest): Promise<boolean> {
     if (state === "sending") return false;
 
-    // A field no human can see came back filled, so this is a script. It is
-    // shown the same thank-you a person gets: telling a bot it was caught only
-    // teaches whoever wrote it which field to leave alone next time.
-    if (trap.trim()) {
-      setState("sent");
-      return true;
-    }
-
     setError(null);
     setState("sending");
     try {
-      await submitEnquiry(ref, { locale, ...payload });
+      // The trap is sent raw, every time, including empty. Deciding here would
+      // be deciding about the one visitor who cannot be the problem: a script
+      // posting straight at the endpoint runs none of this. The server sees a
+      // filled trap and answers with the ordinary thank-you, so whoever wrote
+      // the script learns nothing about which field gave them away — and that
+      // only works if the field actually arrives.
+      await submitEnquiry(ref, { locale, ...payload, website: trap });
       setState("sent");
       return true;
     } catch (caught) {

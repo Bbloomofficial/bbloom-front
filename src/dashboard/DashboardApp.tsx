@@ -17,11 +17,13 @@ import Billing from "./pages/Billing";
 import Inbox from "./pages/Inbox";
 import Login from "./pages/Login";
 import NewSite from "./pages/NewSite";
+import Orders from "./pages/Orders";
 import Overview from "./pages/Overview";
 import Register from "./pages/Register";
 import Sites from "./pages/Sites";
 import Team from "./pages/Team";
 import { SiteScope } from "./site";
+import { OrderingScope } from "./ordering";
 import { dashboardStrings } from "./strings";
 import { dashPath, resolveAppHost } from "../routes";
 
@@ -118,31 +120,45 @@ function SiteRoutes() {
 
   return (
     <SiteScope site={site}>
-      <Layout site={site}>
-        <Routes>
-          <Route index element={<Overview />} />
-          {/*
-            The editor now has a window of its own at `/s/:siteId/editor`,
-            outside this shell. `page` stays as a redirect rather than being
-            deleted: it is what the legacy `/dashboard/page` lands on and what
-            any bookmark from the last two days points at, and arriving in the
-            editor is what those links were always asking for.
-          */}
-          <Route
-            path="page"
-            element={
-              <Navigate to={dashPath(`/s/${site.id}/editor`)} replace />
-            }
-          />
-          <Route path="inbox" element={<Inbox />} />
-          <Route path="billing" element={<Billing />} />
-          <Route path="team" element={<Team />} />
-          <Route
-            path="*"
-            element={<Navigate to={dashPath(`/s/${site.id}`)} replace />}
-          />
-        </Routes>
-      </Layout>
+      {/*
+        Above `Layout` because the nav bar inside it needs the same answer as
+        the orders page does: asking twice would let the tab and the screen
+        disagree while the second request was still in flight.
+      */}
+      <OrderingScope siteId={site.id}>
+        <Layout site={site}>
+          <Routes>
+            <Route index element={<Overview />} />
+            {/*
+              The editor now has a window of its own at `/s/:siteId/editor`,
+              outside this shell. `page` stays as a redirect rather than being
+              deleted: it is what the legacy `/dashboard/page` lands on and what
+              any bookmark from the last two days points at, and arriving in the
+              editor is what those links were always asking for.
+            */}
+            <Route
+              path="page"
+              element={
+                <Navigate to={dashPath(`/s/${site.id}/editor`)} replace />
+              }
+            />
+            <Route path="inbox" element={<Inbox />} />
+            {/*
+              Routed even where the website cannot sell, which is everywhere
+              today. The tab is hidden in that case but the screen still answers
+              with the reason, so a link kept from when ordering was on explains
+              itself instead of bouncing to the overview.
+            */}
+            <Route path="orders" element={<Orders />} />
+            <Route path="billing" element={<Billing />} />
+            <Route path="team" element={<Team />} />
+            <Route
+              path="*"
+              element={<Navigate to={dashPath(`/s/${site.id}`)} replace />}
+            />
+          </Routes>
+        </Layout>
+      </OrderingScope>
     </SiteScope>
   );
 }

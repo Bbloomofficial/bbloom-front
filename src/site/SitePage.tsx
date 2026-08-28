@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useMemo } from "react";
-import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams, useLocation } from "react-router-dom";
 import type { SiteLanguage, SitePayload } from "./api/types";
 import { ApiError } from "./api/client";
 import { ProductModal } from "./components/ProductModal";
+import { OrderStatus } from "./components/OrderStatus";
 import { UpgradePrompt } from "./components/UpgradePrompt";
 import { SiteProvider } from "./context";
 import { useSitePayload } from "./hooks/useSitePayload";
@@ -78,6 +79,10 @@ export function SiteBody({
   onOpenProduct,
   onCloseProduct,
   showUpgradePrompt = false,
+  preview = false,
+  showOrder = false,
+  orderToken,
+  onCloseOrder,
 }: {
   payload: SitePayload;
   siteRef: string;
@@ -87,6 +92,16 @@ export function SiteBody({
   onCloseProduct: () => void;
   /** Override for showing the upgrade prompt (for testing or backend flag). */
   showUpgradePrompt?: boolean;
+  /**
+   * Rendered inside the editor, where the payload is a draft and reports what
+   * the client wants rather than what the server would accept. Buying must
+   * still be visible — it is being designed — but must not be possible.
+   */
+  preview?: boolean;
+  /** The customer is back from the bank and wants their order's status. */
+  showOrder?: boolean;
+  orderToken?: string;
+  onCloseOrder?: () => void;
 }) {
   const theme = payload.site.theme;
   const style = useMemo(() => themeToCssVars(theme), [theme]);
@@ -102,6 +117,7 @@ export function SiteBody({
       onLanguageChange={onLanguageChange}
       onOpenProduct={onOpenProduct}
       onCloseProduct={onCloseProduct}
+      preview={preview}
     >
       <SiteHead payload={payload} />
       <div
@@ -114,6 +130,9 @@ export function SiteBody({
           <SectionRenderer key={section.key} section={section} />
         ))}
         {productSlug ? <ProductModal slug={productSlug} /> : null}
+        {showOrder ? (
+          <OrderStatus token={orderToken} onClose={onCloseOrder ?? (() => {})} />
+        ) : null}
         <UpgradePrompt show={showUpgradePrompt} />
       </div>
     </SiteProvider>
@@ -122,7 +141,12 @@ export function SiteBody({
 
 /** Resolves the site (by slug or by host), then renders it. */
 export function SitePage({ mode }: { mode: "ref" | "host" }) {
-  const params = useParams<{ slug?: string; productSlug?: string }>();
+  const params = useParams<{
+    slug?: string;
+    productSlug?: string;
+    orderToken?: string;
+  }>();
+  const location = useLocation();
   const [search, setSearch] = useSearchParams();
   const navigate = useNavigate();
 
@@ -160,6 +184,21 @@ export function SitePage({ mode }: { mode: "ref" | "host" }) {
 
   const onCloseProduct = useCallback(() => {
     navigate({ pathname: basePath || "/", search: search.toString() });
+  }, [navigate, basePath, search]);
+
+  // The bank returns to a bare `/order` — the token cannot be in the url
+  // because it does not exist when the bank is told where to send the customer
+  // back to. `/order/:token` is still honoured so a customer who kept the link
+  // can look the order up from anywhere.
+  const showOrder = /\/order(\/|$)/.test(location.pathname);
+
+  const onCloseOrder = useCallback(() => {
+    // `order` is dropped on the way out: it is the bank's return token, and
+    // leaving it on the url would put it in every link the visitor then shares
+    // from the address bar while browsing the rest of the shop.
+    const next = new URLSearchParams(search);
+    next.delete("order");
+    navigate({ pathname: basePath || "/", search: next.toString() });
   }, [navigate, basePath, search]);
 
   const t = stringsFor(data?.site.locale ?? lang);
@@ -215,6 +254,9 @@ export function SitePage({ mode }: { mode: "ref" | "host" }) {
       onOpenProduct={onOpenProduct}
       onCloseProduct={onCloseProduct}
       showUpgradePrompt={showUpgradePrompt}
+      showOrder={showOrder}
+      orderToken={params.orderToken}
+      onCloseOrder={onCloseOrder}
     />
   );
 }
