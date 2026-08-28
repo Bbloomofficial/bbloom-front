@@ -932,7 +932,7 @@ const en: AdminStrings = {
 
 const ka: AdminStrings = {
   brand: "bbloom გუნდი",
-  nav: { sites: "საიტები", newSite: "ახალი საიტი", system: "სისტემა", accounts: "ანგარიშები", plans: "პაკეტები", promoCodes: "ფასდაკლებები", newCustomerOffer: "ახალი მომხმარებლები" },
+  nav: { sites: "საიტები", newSite: "ახალი საიტი", system: "სისტემა", accounts: "ანგარიშები", plans: "პაკეტები", promoCodes: "ფასდაკლებები", newCustomerOffer: "ახალი კლიენტები" },
   signedInAs: "შესული ხართ როგორც",
   signOut: "გამოსვლა",
   backToBbloom: "დაბრუნება bbloom.ge-ზე",

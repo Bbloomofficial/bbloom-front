@@ -144,8 +144,14 @@ export const en: Dict = {
     mostPopular: 'Most popular',
     comingSoon: 'Coming soon',
     comingSoonCta: 'Coming soon',
-    firstPurchaseMonth: (percent) => `${percent}% off your first month`,
-    firstPurchaseYear: (percent) => `${percent}% off your first year`,
+    firstPurchaseMonth: (percent, price) =>
+      price
+        ? `First month ${price} — ${percent}% off`
+        : `${percent}% off your first month`,
+    firstPurchaseYear: (percent, price) =>
+      price
+        ? `First year ${price} — ${percent}% off`
+        : `${percent}% off your first year`,
     perMonth: 'per month',
     perYear: 'per year',
     signUp: 'Get started',

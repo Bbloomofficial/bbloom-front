@@ -108,9 +108,13 @@ export type Dict = {
      * The new-customer offer, worded per billing period because the offer
      * covers one period and "your first month" on a yearly plan would be
      * eleven months short of the truth.
+     *
+     * `price` is what that first period actually costs, already formatted, and
+     * is null until the API sends a figure — never derived from the percentage
+     * here, which would be our arithmetic against their invoice.
      */
-    firstPurchaseMonth: (percent: number) => string
-    firstPurchaseYear: (percent: number) => string
+    firstPurchaseMonth: (percent: number, price: string | null) => string
+    firstPurchaseYear: (percent: number, price: string | null) => string
     perMonth: string
     perYear: string
     signUp: string

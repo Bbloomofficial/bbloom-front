@@ -148,8 +148,14 @@ export const ka: Dict = {
     mostPopular: 'ყველაზე სრული',
     comingSoon: 'მალე',
     comingSoonCta: 'მალე დაემატება',
-    firstPurchaseMonth: (percent) => `−${percent}% პირველ თვეზე`,
-    firstPurchaseYear: (percent) => `−${percent}% პირველ წელზე`,
+    firstPurchaseMonth: (percent, price) =>
+      price
+        ? `პირველი თვე ${price} (−${percent}%)`
+        : `−${percent}% პირველ თვეზე`,
+    firstPurchaseYear: (percent, price) =>
+      price
+        ? `პირველი წელი ${price} (−${percent}%)`
+        : `−${percent}% პირველ წელზე`,
     perMonth: 'თვეში',
     perYear: 'წელიწადში',
     signUp: 'დაწყება',

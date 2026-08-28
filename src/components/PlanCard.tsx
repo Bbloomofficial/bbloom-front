@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import {
   fetchWebsitePlans,
   firstPurchasePercent,
+  formatFirstPurchasePrice,
   formatPlanPrice,
   formatPlanWasPrice,
   isComingSoon,
@@ -71,12 +72,13 @@ export function PlanCard({
   featuredLabel: string;
   comingSoonLabel?: string;
   /**
-   * Copy for the new-customer offer, given the advertised percentage. Optional:
-   * a caller that has nothing sensible to say about a first purchase — the
-   * client is already paying for this very plan, say — leaves it out and the
-   * note is dropped rather than shown in English.
+   * Copy for the new-customer offer, given the advertised percentage and the
+   * discounted price when the API has sent one. Optional: a caller that has
+   * nothing sensible to say about a first purchase — the client is already
+   * paying for this very plan, say — leaves it out and the note is dropped
+   * rather than shown in English.
    */
-  firstPurchaseLabel?: (percent: number) => string;
+  firstPurchaseLabel?: (percent: number, price: string | null) => string;
   periodLabel: string;
   action: React.ReactNode;
   current?: boolean;
@@ -110,9 +112,13 @@ export function PlanCard({
   // cannot take it; the negotiable guard is here because a "50% off" line under
   // a price that is a conversation would be discounting nothing.
   const firstPurchase = negotiable ? null : firstPurchasePercent(plan);
+  // Null until the API sends the figure, in which case the copy falls back to
+  // naming only the percentage. Deriving it from `priceMinor` here is the one
+  // thing not on offer: it would be our arithmetic against their invoice.
+  const firstPurchasePrice = formatFirstPurchasePrice(plan, locale);
   const firstPurchaseNote =
     firstPurchase !== null && firstPurchaseLabel
-      ? firstPurchaseLabel(firstPurchase)
+      ? firstPurchaseLabel(firstPurchase, firstPurchasePrice)
       : null;
 
   return (

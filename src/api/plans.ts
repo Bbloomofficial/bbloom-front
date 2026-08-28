@@ -71,6 +71,16 @@ export type WebsitePlan = {
    * `discountSource: "FIRST_PURCHASE"`.
    */
   firstPurchasePercent?: number;
+  /**
+   * What one billing period costs with the new-customer offer applied.
+   *
+   * Sent by the API rather than worked out here from `firstPurchasePercent`,
+   * for the same reason `originalPriceMinor` is: the discount is rounded
+   * server-side, and a page doing its own arithmetic disagrees with the invoice
+   * by a cent on some percentages. Present exactly when `firstPurchasePercent`
+   * is, so the two are read together or not at all.
+   */
+  firstPurchasePriceMinor?: number;
   currency: string;
   billingPeriod?: string;
   featured?: boolean;
@@ -162,6 +172,22 @@ export function isDiscounted(plan: WebsitePlan): boolean {
  */
 export function firstPurchasePercent(plan: WebsitePlan): number | null {
   return plan.firstPurchasePercent ?? null;
+}
+
+/**
+ * What the first period costs under the offer, formatted, or `null` when the
+ * API has not sent a figure.
+ *
+ * Never derived from the percentage — see `firstPurchasePriceMinor`. A caller
+ * that gets `null` here still has the percentage and should say only that,
+ * rather than quoting a number it worked out itself.
+ */
+export function formatFirstPurchasePrice(
+  plan: WebsitePlan,
+  locale: string,
+): string | null {
+  if (plan.firstPurchasePriceMinor === undefined) return null;
+  return formatMinor(plan.firstPurchasePriceMinor, plan.currency, locale);
 }
 
 /**
