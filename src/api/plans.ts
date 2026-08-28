@@ -74,10 +74,15 @@ export type WebsitePlan = {
   /**
    * What one billing period costs with the new-customer offer applied.
    *
-   * Preferred over anything worked out here when the API sends it, for the
-   * same reason `originalPriceMinor` is sent rather than derived: the discount
-   * is rounded server-side. Absent for now — `formatFirstPurchasePrice` mirrors
-   * the rounding in the one case where the offer has no rival to lose to.
+   * Sent rather than derived, for the same reason `originalPriceMinor` is. It
+   * is computed off the **list** price, so it is not a percentage off
+   * `priceMinor` on a plan that is also on sale — the two discounts are rivals,
+   * not layers.
+   *
+   * Present exactly when `firstPurchasePercent` is, and both are withheld when
+   * a live sale matches or beats the offer over a single period. So its
+   * presence means the offer wins and this is the settlement figure for a
+   * one-period first purchase.
    */
   firstPurchasePriceMinor?: number;
   currency: string;
@@ -174,46 +179,25 @@ export function firstPurchasePercent(plan: WebsitePlan): number | null {
 }
 
 /**
- * The API's own rounding, reproduced: take the discount half-up, then subtract
- * it. The same mirror `PlanEditor` uses to preview an unsaved percentage.
- *
- * Only ever used for the *advertised* first-period figure below, and only in
- * the one case where it cannot disagree with anything. Nothing charged is
- * calculated here: what a client actually pays comes back on the quote.
- */
-function offHalfUp(minor: number, percent: number): number {
-  return minor - Math.floor((minor * percent + 50) / 100);
-}
-
-/**
  * What the first period costs under the new-customer offer, formatted, or
- * `null` when we cannot say truthfully.
+ * `null` when the API has not sent a figure.
  *
- * Three cases, and the last two are the interesting ones:
+ * Read, never derived. The API suppresses this — and the percentage with it —
+ * whenever a live sale matches or beats the offer over a single period, so its
+ * presence already means the offer wins and the figure is what a one-period
+ * first purchase settles at. Absence means there is no first-month story on
+ * this card and the sale stands alone.
  *
- * - The API sent `firstPurchasePriceMinor` — use it, always, over anything
- *   worked out here.
- * - It did not, and no sale is running — mirror the rounding. The offer is the
- *   only discount in play, so the figure is the percentage off the listed
- *   price and there is nothing for it to contradict.
- * - It did not, and a sale *is* running — `null`, because the answer is not
- *   ours to give. Discounts do not stack: the offer and the sale are rival
- *   candidates and checkout charges whichever totals less, so a figure named
- *   here would be a guess at which one wins. The caller falls back to naming
- *   the percentage, which stays true either way.
+ * Working it out here instead would get the *base* wrong, not just the
+ * rounding: the offer comes off the list price, so half of `priceMinor` on a
+ * plan that is already on sale is a number nobody is ever charged.
  */
 export function formatFirstPurchasePrice(
   plan: WebsitePlan,
   locale: string,
 ): string | null {
-  if (plan.firstPurchasePriceMinor !== undefined) {
-    return formatMinor(plan.firstPurchasePriceMinor, plan.currency, locale);
-  }
-  const percent = plan.firstPurchasePercent;
-  if (percent === undefined || isDiscounted(plan) || plan.priceMinor <= 0) {
-    return null;
-  }
-  return formatMinor(offHalfUp(plan.priceMinor, percent), plan.currency, locale);
+  if (plan.firstPurchasePriceMinor === undefined) return null;
+  return formatMinor(plan.firstPurchasePriceMinor, plan.currency, locale);
 }
 
 /**
