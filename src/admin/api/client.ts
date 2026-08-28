@@ -5,6 +5,8 @@ import type {
   AdminAccountDto,
   AdminPlanDto,
   AdminPromoCodeDto,
+  AdminNewCustomerOfferDto,
+  NewCustomerOfferUpdateRequest,
   PromoCodeUpsertRequest,
   PlanUpsertRequest,
   SiteDetail,
@@ -363,6 +365,27 @@ export function deletePromoCode(
 ): Promise<void> {
   return authed<void>(token, `/admin/promo-codes/${promoId}`, {
     method: "DELETE",
+  });
+}
+
+/**
+ * The new-customer offer. A singleton, so there is no list and no id — reading
+ * it always answers with a record, switched off rather than missing when the
+ * offer is not running.
+ */
+export function fetchNewCustomerOffer(
+  token: string,
+): Promise<AdminNewCustomerOfferDto> {
+  return authed<AdminNewCustomerOfferDto>(token, "/admin/new-customer-offer");
+}
+
+export function updateNewCustomerOffer(
+  token: string,
+  body: NewCustomerOfferUpdateRequest,
+): Promise<AdminNewCustomerOfferDto> {
+  return authed<AdminNewCustomerOfferDto>(token, "/admin/new-customer-offer", {
+    method: "PUT",
+    body: JSON.stringify(body),
   });
 }
 

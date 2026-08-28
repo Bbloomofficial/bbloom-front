@@ -228,7 +228,17 @@ export type CheckoutQuote = {
   /** What will actually be charged. */
   amountMinor: number;
   discountPercent?: number;
-  discountSource?: "PLAN_SALE" | "PROMO_CODE";
+  discountSource?: "PLAN_SALE" | "PROMO_CODE" | "FIRST_PURCHASE";
+  /**
+   * How many of the `periods` above the discount actually covers — `1` for
+   * `FIRST_PURCHASE`, all of them for the other two, and absent when nothing is
+   * discounted.
+   *
+   * It exists so the breakdown can explain itself: a quote reading 50% off
+   * beside a `discountMinor` worth a sixth of the struck-through figure looks
+   * like a bug to anyone who cannot see that only one period was discounted.
+   */
+  discountPeriods?: number;
   /**
    * The code that was sent, echoed back **even when it lost** to a better sale
    * price. Read with `promoCodeApplied` — a code that lost is not refused and

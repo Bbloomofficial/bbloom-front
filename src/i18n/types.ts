@@ -104,6 +104,13 @@ export type Dict = {
     mostPopular: string
     comingSoon: string
     comingSoonCta: string
+    /**
+     * The new-customer offer, worded per billing period because the offer
+     * covers one period and "your first month" on a yearly plan would be
+     * eleven months short of the truth.
+     */
+    firstPurchaseMonth: (percent: number) => string
+    firstPurchaseYear: (percent: number) => string
     perMonth: string
     perYear: string
     signUp: string

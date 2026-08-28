@@ -197,6 +197,12 @@ export type DashboardStrings = {
     promoBeaten: string;
     quoteTotal: string;
     quoteSaving: (amount: string) => string;
+    /**
+     * The new-customer offer, on a purchase of more than one period. Says which
+     * part of the total it covered, because the saving above it is a fraction
+     * of a percentage the client can see and would otherwise read as a mistake.
+     */
+    quoteFirstPurchase: (percent: number) => string;
     cancelFailed: string;
     bankTitle: string;
     bankHint: string;
@@ -571,6 +577,8 @@ const en: DashboardStrings = {
       "Your code is valid, but the sale price is better, so we've used that. Your code hasn't been used up.",
     quoteTotal: "Total",
     quoteSaving: (amount) => `You save ${amount}`,
+    quoteFirstPurchase: (percent) =>
+      `New customer offer: ${percent}% off your first period. The rest are at the usual price.`,
     cancelFailed: "We couldn't cancel the renewal. Please try again.",
     bankTitle: "Bank transfer",
     bankHint: "Your plan starts as soon as the payment reaches us.",
@@ -985,6 +993,8 @@ const ka: DashboardStrings = {
       "თქვენი კოდი მოქმედია, მაგრამ ფასდაკლებული ფასი უფრო ხელსაყრელია და ის გამოვიყენეთ. კოდი დაუხარჯავი დაგრჩათ.",
     quoteTotal: "სულ",
     quoteSaving: (amount) => `დაზოგავთ ${amount}`,
+    quoteFirstPurchase: (percent) =>
+      `შეთავაზება ახალი მომხმარებლისთვის: −${percent}% პირველ პერიოდზე. დანარჩენი ჩვეულებრივ ფასად.`,
     cancelFailed: "განახლების გაუქმება ვერ მოხერხდა. სცადეთ თავიდან.",
     bankTitle: "საბანკო გადარიცხვა",
     bankHint: "პაკეტი ამოქმედდება, როგორც კი თანხა ჩამოგვივა.",

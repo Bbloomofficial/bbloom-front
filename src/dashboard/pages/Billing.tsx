@@ -79,14 +79,24 @@ function QuoteLine({
   locale,
   totalLabel,
   savingLabel,
+  firstPurchaseLabel,
 }: {
   quote?: CheckoutQuote;
   locale: string;
   totalLabel: string;
   savingLabel: (amount: string) => string;
+  firstPurchaseLabel: (percent: number) => string;
 }) {
   if (!quote) return null;
   const discounted = quote.discountMinor > 0;
+  // Explained only when it covers less than the client is buying. On a single
+  // period the offer and an ordinary sale are indistinguishable in the figures,
+  // and "the rest are at the usual price" would be pointing at nothing.
+  const partial =
+    discounted &&
+    quote.discountSource === "FIRST_PURCHASE" &&
+    quote.discountPercent !== undefined &&
+    (quote.discountPeriods ?? quote.periods) < quote.periods;
   return (
     <div className="rounded-2xl bg-sunken px-4 py-3">
       <div className="flex flex-wrap items-baseline justify-between gap-2">
@@ -107,6 +117,11 @@ function QuoteLine({
           {savingLabel(
             formatMinor(quote.discountMinor, quote.currency, locale),
           )}
+        </p>
+      )}
+      {partial && (
+        <p className="mt-1 text-xs text-ink-400">
+          {firstPurchaseLabel(quote.discountPercent as number)}
         </p>
       )}
     </div>
@@ -546,6 +561,7 @@ export default function Billing() {
                           locale={locale}
                           totalLabel={t.billing.quoteTotal}
                           savingLabel={t.billing.quoteSaving}
+                          firstPurchaseLabel={t.billing.quoteFirstPurchase}
                         />
                         <button
                           type="button"

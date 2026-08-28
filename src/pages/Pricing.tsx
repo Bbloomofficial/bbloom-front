@@ -67,6 +67,11 @@ export default function Pricing() {
                 plan={plan}
                 featuredLabel={t.pricingPage.mostPopular}
                 comingSoonLabel={t.pricingPage.comingSoon}
+                firstPurchaseLabel={
+                  plan.billingPeriod === 'YEARLY'
+                    ? t.pricingPage.firstPurchaseYear
+                    : t.pricingPage.firstPurchaseMonth
+                }
                 periodLabel={
                   plan.billingPeriod === 'YEARLY'
                     ? t.pricingPage.perYear

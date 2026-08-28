@@ -531,3 +531,32 @@ export type PromoCodeUpsertRequest = {
   maxRedemptions?: number;
   planCodes: string[];
 };
+
+/**
+ * The new-customer offer: a percentage off a client's first billing period,
+ * once per account ever.
+ *
+ * A single setting rather than a list — there is one offer, it is either on or
+ * off, and it cannot be created or deleted. That is why this has no `id`: there
+ * is nothing to address, and the endpoints are a bare `GET` and `PUT`.
+ *
+ * Switching it off leaves every discount already granted alone; the offer is
+ * recorded on the payment that took it, so the takings still explain
+ * themselves and no client is re-charged.
+ */
+export type AdminNewCustomerOfferDto = {
+  percentOff: number;
+  active: boolean;
+  /** When staff last changed it. Absent until somebody has. */
+  updatedAt?: string;
+};
+
+/**
+ * The body of the update. A full replacement, matching the `PUT` convention of
+ * the promo code endpoints — both fields are always sent, so switching the
+ * offer off cannot silently carry a half-edited percentage with it.
+ */
+export type NewCustomerOfferUpdateRequest = {
+  percentOff: number;
+  active: boolean;
+};

@@ -53,6 +53,24 @@ export type WebsitePlan = {
   originalPriceMinor?: number;
   discountPercent?: number;
   discountEndsAt?: string;
+  /**
+   * The new-customer offer: a percentage off the client's **first billing
+   * period** of their **first** purchase, once per account ever.
+   *
+   * It advertises the offer and says nothing about who is eligible — this is a
+   * public payload with no account behind it, so it is the same for a returning
+   * client who cannot have it as for a visitor who can. Present only while the
+   * offer is switched on and the plan can actually take it, so its presence is
+   * the signal to badge the card, in the same style as `originalPriceMinor`.
+   *
+   * It is deliberately **not** folded into `priceMinor`. That figure is what
+   * this plan costs, and eligibility is not knowable here; a card that quotes
+   * half price to everyone and then charges some of them full price at checkout
+   * is the one mistake a pricing page must not make. Whether a signed-in client
+   * actually gets it is answered by the checkout quote, which comes back with
+   * `discountSource: "FIRST_PURCHASE"`.
+   */
+  firstPurchasePercent?: number;
   currency: string;
   billingPeriod?: string;
   featured?: boolean;
@@ -133,6 +151,17 @@ export function isComingSoon(plan: WebsitePlan): boolean {
 /** Whether a sale is running on this plan right now. */
 export function isDiscounted(plan: WebsitePlan): boolean {
   return plan.originalPriceMinor !== undefined;
+}
+
+/**
+ * The new-customer offer advertised on this plan, or `null` when there is none.
+ *
+ * An *advertisement*, not an entitlement: the caller is telling visitors the
+ * offer exists, not promising this particular client will get it. Only the
+ * checkout quote knows that.
+ */
+export function firstPurchasePercent(plan: WebsitePlan): number | null {
+  return plan.firstPurchasePercent ?? null;
 }
 
 /**

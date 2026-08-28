@@ -37,6 +37,11 @@ export default function Layout({ children }: { children: ReactNode }) {
     { to: adminPath("/accounts"), label: t.nav.accounts, end: false },
     { to: adminPath("/plans"), label: t.nav.plans, end: false },
     { to: adminPath("/promo-codes"), label: t.nav.promoCodes, end: false },
+    {
+      to: adminPath("/new-customer-offer"),
+      label: t.nav.newCustomerOffer,
+      end: false,
+    },
     { to: adminPath("/sites/new"), label: t.nav.newSite, end: false },
     ...(forbidden
       ? []

@@ -7,7 +7,7 @@ import type { Locale } from "../i18n";
  */
 export type AdminStrings = {
   brand: string;
-  nav: { sites: string; newSite: string; system: string; accounts: string; plans: string; promoCodes: string };
+  nav: { sites: string; newSite: string; system: string; accounts: string; plans: string; promoCodes: string; newCustomerOffer: string };
   signedInAs: string;
   signOut: string;
   backToBbloom: string;
@@ -409,11 +409,28 @@ export type AdminStrings = {
     maxInvalid: string;
     saveFailed: string;
   };
+  newCustomerOffer: {
+    title: string;
+    subtitle: string;
+    percentOff: string;
+    percentHint: string;
+    active: string;
+    activeHint: string;
+    status: string;
+    running: string;
+    notRunning: string;
+    updated: string;
+    neverUpdated: string;
+    rules: string;
+    percentInvalid: string;
+    loadFailed: string;
+    saveFailed: string;
+  };
 };
 
 const en: AdminStrings = {
   brand: "bbloom staff",
-  nav: { sites: "Sites", newSite: "New site", system: "System", accounts: "Accounts", plans: "Plans", promoCodes: "Discounts" },
+  nav: { sites: "Sites", newSite: "New site", system: "System", accounts: "Accounts", plans: "Plans", promoCodes: "Discounts", newCustomerOffer: "New customers" },
   signedInAs: "Signed in as",
   signOut: "Sign out",
   backToBbloom: "Back to bbloom.ge",
@@ -891,11 +908,31 @@ const en: AdminStrings = {
     maxInvalid: "The use limit must be a whole number, or blank for no limit.",
     saveFailed: "The code could not be saved.",
   },
+  newCustomerOffer: {
+    title: "New customer offer",
+    subtitle:
+      "A discount on a client's very first paid plan. It applies once per account, ever, and only to the first billing period — every renewal after that is the usual price.",
+    percentOff: "Percent off",
+    percentHint: "A whole number from 1 to 99.",
+    active: "Offer is switched on",
+    activeHint:
+      "Off means new clients stop being offered it. Discounts already given are untouched, and nobody is re-charged.",
+    status: "Status",
+    running: "Running",
+    notRunning: "Not running",
+    updated: "Last changed",
+    neverUpdated: "Never changed",
+    rules:
+      "Only a client who has never paid for a plan qualifies, and buying a second plan later is full price. It never adds up with a sale price or a discount code — whichever is best for the client is the one that applies.",
+    percentInvalid: "Enter the discount as a whole number from 1 to 99.",
+    loadFailed: "The offer could not be loaded.",
+    saveFailed: "The offer could not be saved.",
+  },
 };
 
 const ka: AdminStrings = {
   brand: "bbloom გუნდი",
-  nav: { sites: "საიტები", newSite: "ახალი საიტი", system: "სისტემა", accounts: "ანგარიშები", plans: "პაკეტები", promoCodes: "ფასდაკლებები" },
+  nav: { sites: "საიტები", newSite: "ახალი საიტი", system: "სისტემა", accounts: "ანგარიშები", plans: "პაკეტები", promoCodes: "ფასდაკლებები", newCustomerOffer: "ახალი მომხმარებლები" },
   signedInAs: "შესული ხართ როგორც",
   signOut: "გამოსვლა",
   backToBbloom: "დაბრუნება bbloom.ge-ზე",
@@ -1373,6 +1410,26 @@ const ka: AdminStrings = {
     maxInvalid:
       "გამოყენების ლიმიტი მთელი რიცხვი უნდა იყოს, ან ცარიელი — ლიმიტის გარეშე.",
     saveFailed: "კოდი ვერ შეინახა.",
+  },
+  newCustomerOffer: {
+    title: "შეთავაზება ახალი მომხმარებლისთვის",
+    subtitle:
+      "ფასდაკლება კლიენტის პირველივე ფასიან პაკეტზე. მოქმედებს ერთხელ ერთ ანგარიშზე და მხოლოდ პირველ საანგარიშო პერიოდზე — შემდეგი განახლებები ჩვეულებრივ ფასადაა.",
+    percentOff: "პროცენტი",
+    percentHint: "მთელი რიცხვი 1-დან 99-მდე.",
+    active: "შეთავაზება ჩართულია",
+    activeHint:
+      "გამორთვის შემდეგ ახალ კლიენტებს აღარ შესთავაზება. უკვე გაცემული ფასდაკლებები რჩება და თანხა არავის ერიცხება თავიდან.",
+    status: "სტატუსი",
+    running: "მოქმედებს",
+    notRunning: "არ მოქმედებს",
+    updated: "ბოლო ცვლილება",
+    neverUpdated: "არ შეცვლილა",
+    rules:
+      "მოქმედებს მხოლოდ იმ კლიენტზე, ვისაც პაკეტში ჯერ არასდროს გადაუხდია; მეორე პაკეტი უკვე სრულ ფასადაა. არ ჯამდება ფასდაკლებულ ფასთან ან კოდთან — მოქმედებს ის, რომელიც კლიენტისთვის უფრო ხელსაყრელია.",
+    percentInvalid: "ფასდაკლება შეიყვანეთ მთელ რიცხვად 1-დან 99-მდე.",
+    loadFailed: "შეთავაზება ვერ ჩაიტვირთა.",
+    saveFailed: "შეთავაზება ვერ შეინახა.",
   },
 };
 

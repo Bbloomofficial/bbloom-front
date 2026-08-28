@@ -14,6 +14,7 @@ import Plans from "./pages/Plans";
 import PlanEditor from "./pages/PlanEditor";
 import PromoCodes from "./pages/PromoCodes";
 import PromoCodeEditor from "./pages/PromoCodeEditor";
+import NewCustomerOffer from "./pages/NewCustomerOffer";
 
 function Routed() {
   const { token, restoring } = useAuth();
@@ -39,6 +40,7 @@ function Routed() {
           <Route path="plans/:planId" element={<PlanEditor />} />
           <Route path="promo-codes" element={<PromoCodes />} />
           <Route path="promo-codes/:promoId" element={<PromoCodeEditor />} />
+          <Route path="new-customer-offer" element={<NewCustomerOffer />} />
           <Route path="system" element={<SystemStatus />} />
           <Route path="*" element={<Navigate to={adminPath()} replace />} />
         </Routes>

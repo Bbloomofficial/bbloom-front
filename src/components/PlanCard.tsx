@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import {
   fetchWebsitePlans,
+  firstPurchasePercent,
   formatPlanPrice,
   formatPlanWasPrice,
   isComingSoon,
@@ -60,6 +61,7 @@ export function PlanCard({
   plan,
   featuredLabel,
   comingSoonLabel,
+  firstPurchaseLabel,
   periodLabel,
   action,
   current,
@@ -68,6 +70,13 @@ export function PlanCard({
   plan: WebsitePlan;
   featuredLabel: string;
   comingSoonLabel?: string;
+  /**
+   * Copy for the new-customer offer, given the advertised percentage. Optional:
+   * a caller that has nothing sensible to say about a first purchase — the
+   * client is already paying for this very plan, say — leaves it out and the
+   * note is dropped rather than shown in English.
+   */
+  firstPurchaseLabel?: (percent: number) => string;
   periodLabel: string;
   action: React.ReactNode;
   current?: boolean;
@@ -96,6 +105,15 @@ export function PlanCard({
   // the eye should not be steered towards the one card that refuses the click.
   const soon = isComingSoon(plan);
   const featured = plan.featured && !soon;
+
+  // Advertised, not promised. The backend already withholds this from tiers that
+  // cannot take it; the negotiable guard is here because a "50% off" line under
+  // a price that is a conversation would be discounting nothing.
+  const firstPurchase = negotiable ? null : firstPurchasePercent(plan);
+  const firstPurchaseNote =
+    firstPurchase !== null && firstPurchaseLabel
+      ? firstPurchaseLabel(firstPurchase)
+      : null;
 
   return (
     <div
@@ -160,6 +178,16 @@ export function PlanCard({
             <span className="text-sm font-semibold text-ink-400">{period}</span>
           )}
         </p>
+        {/* Under the price rather than in a corner badge: both corners are
+            already spoken for by "most popular" and "coming soon", and this is
+            a sentence with a condition in it — "your first month" — which a
+            badge has no room to carry and would turn into a half-price promise
+            we do not mean. */}
+        {firstPurchaseNote && (
+          <p className="mt-2 inline-flex rounded-full bg-tint px-3 py-1 text-xs font-bold text-tint-fg">
+            {firstPurchaseNote}
+          </p>
+        )}
       </div>
 
       {plan.features && plan.features.length > 0 && (
