@@ -23,6 +23,7 @@ import { FieldList } from "./fields";
 import type { FieldContext } from "./fields";
 import { PreviewFrame } from "./PreviewFrame";
 import type { PreviewDevice } from "./PreviewFrame";
+import { LocationPanel } from "./LocationPanel";
 import { editorStrings } from "./strings";
 import { ImagePicker } from "../../site/editing/ImagePicker";
 import { sectionTargets, splitTargetId } from "./targets";
@@ -613,6 +614,24 @@ export default function Editor() {
                     }}
                     ctx={ctx}
                   />
+
+                  {/* Site-wide, so it sits under the section's own fields
+                      rather than among them — but it lives here because this
+                      is the screen where a client edits their page, and the
+                      map every template draws has nothing to read without it.
+                      Saving it reloads the site and the preview, so the map
+                      appears next to the section they were already editing. */}
+                  {site.data ? (
+                    <LocationPanel
+                      site={site.data}
+                      lang={activeLang}
+                      t={t}
+                      onSaved={() => {
+                        site.reload();
+                        refreshPreview();
+                      }}
+                    />
+                  ) : null}
                 </div>
 
                 {/* Sticky to the bottom of the screen while you are inside the
