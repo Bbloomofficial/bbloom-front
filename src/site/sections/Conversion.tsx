@@ -276,8 +276,18 @@ export function DeliveryLogoRow({ section }: { section: PublicSection }) {
 export function HoursSimple({ section }: { section: PublicSection }) {
   const rows = list(section.content, "rows");
   const { meta, t } = useSite();
+  /*
+    An address is enough to draw a map.
+
+    This used to require `mapUrl`, but `MapEmbed` falls back to a keyless
+    `?q=<address>&output=embed` search when there is no embed link — the same
+    condition `Contact.tsx` uses. On restaurant-classic this is the only map
+    slot the template has, so gating on the link alone meant a client who typed
+    their address and nothing else got no map anywhere on their site.
+  */
   const withMap =
-    section.variant === "with-map" && Boolean(meta.contact?.mapUrl);
+    section.variant === "with-map" &&
+    Boolean(meta.contact?.mapUrl || meta.contact?.address);
 
   const table = (
     <div className="site-card p-6 sm:p-8">

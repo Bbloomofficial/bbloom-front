@@ -66,6 +66,16 @@ export type EditorStrings = {
   imageLinkUse: string;
   imageLinkFailed: string;
   imagePending: string;
+  /**
+   * The business address and map link. Site-level rather than section-level, so
+   * these have their own panel and their own save.
+   */
+  locationTitle: string;
+  locationHint: string;
+  locationAddress: string;
+  locationMapUrl: string;
+  locationMapHint: string;
+  locationSaveFailed: string;
   /** What the client is told when a save is refused. */
   errors: ProblemStrings;
 };
@@ -133,6 +143,14 @@ const en: EditorStrings = {
   imageLinkFailed:
     "That link could not be fetched. Download the image and upload the file instead.",
   imagePending: "Not uploaded yet — it is saved when you press Save.",
+  locationTitle: "Where you are",
+  locationHint:
+    "Shown on your website with a map, so visitors can find you. This is saved for the whole site and goes live straight away — it does not wait for Publish.",
+  locationAddress: "Address",
+  locationMapUrl: "Map link",
+  locationMapHint:
+    "Optional. Paste a Google Maps link to your location — without one we find you by the address above.",
+  locationSaveFailed: "We could not save your address.",
   errors: problemStrings("en"),
 };
 
@@ -198,6 +216,14 @@ const ka: EditorStrings = {
   imageLinkFailed:
     "ბმულის ჩამოტვირთვა ვერ მოხერხდა. ჩამოტვირთეთ სურათი და ატვირთეთ ფაილად.",
   imagePending: "ჯერ არ არის ატვირთული — შეინახება „შენახვაზე“ დაჭერისას.",
+  locationTitle: "სად ხართ",
+  locationHint:
+    "ჩანს თქვენს ვებგვერდზე რუკასთან ერთად, რომ ვიზიტორებმა გიპოვონ. ინახება მთელი საიტისთვის და მაშინვე ქვეყნდება — „გამოქვეყნებას“ არ ელოდება.",
+  locationAddress: "მისამართი",
+  locationMapUrl: "რუკის ბმული",
+  locationMapHint:
+    "სურვილისამებრ. ჩასვით Google Maps-ის ბმული თქვენს მდებარეობაზე — მის გარეშე ზემოთ მითითებული მისამართით გიპოვით.",
+  locationSaveFailed: "მისამართის შენახვა ვერ მოხერხდა.",
   errors: problemStrings("ka"),
 };
 
