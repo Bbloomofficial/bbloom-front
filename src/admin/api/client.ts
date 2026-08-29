@@ -1,4 +1,5 @@
 import { request } from "../../api/http";
+import type { AdAllowance, AdInsights } from "../../api/ads";
 import type {
   CreateSiteRequest,
   Page,
@@ -7,6 +8,12 @@ import type {
   AdminPromoCodeDto,
   AdminNewCustomerOfferDto,
   ConnectPaymentAccountRequest,
+  AdCampaignDto,
+  AdCampaignCreateRequest,
+  AdCampaignQuery,
+  AdStatus,
+  AdTestRequest,
+  AdTestResult,
   NewCustomerOfferUpdateRequest,
   OrderingStatus,
   PaymentAccountView,
@@ -449,4 +456,171 @@ export function updateFreeAllowance(
     `/admin/accounts/${accountId}/free-allowance`,
     { method: "PUT", body: JSON.stringify({ allowance }) },
   );
+}
+
+/**
+ * Whether Facebook and Instagram advertising works. Never fails, so the status
+ * card can poll it without a failure path of its own.
+ */
+export function fetchAdStatus(token: string): Promise<AdStatus> {
+  return authed<AdStatus>(token, "/admin/ads/status");
+}
+
+/**
+ * Launches a real campaign, on real money, immediately.
+ *
+ * The mail test sends one message that costs nothing and can be ignored; this
+ * one starts spending and keeps spending until somebody deletes it. That is not
+ * a wording problem to solve at the call site — it is why `stillSpending` and
+ * the delete endpoint exist, and why the button that calls this must confirm
+ * first and must say what it does.
+ *
+ * There is deliberately no budget parameter. The amount is server config, so
+ * the worst a mistyped form can do here is choose the wrong channel.
+ *
+ * A refusal from Meta comes back as **200** with `outcome: "FAILED"`, exactly
+ * like `sendMailTest`. Rate limited to five an hour per admin, which arrives as
+ * a 429.
+ */
+export function runAdTest(
+  token: string,
+  body: AdTestRequest,
+): Promise<AdTestResult> {
+  return authed<AdTestResult>(token, "/admin/ads/test-campaign", {
+    method: "POST",
+    body: JSON.stringify(body),
+  });
+}
+
+/**
+ * Every campaign the test tool has ever launched, newest first and unpaged.
+ * Deliberately not filtered to the live ones: a deleted test is the evidence
+ * that somebody dealt with it.
+ */
+export function fetchAdTestCampaigns(
+  token: string,
+): Promise<AdCampaignDto[]> {
+  return authed<AdCampaignDto[]>(token, "/admin/ads/test-campaigns");
+}
+
+/** Stops a test campaign at Meta. Answers with the updated row. */
+export function deleteAdTestCampaign(
+  token: string,
+  campaignId: string,
+): Promise<AdCampaignDto> {
+  return authed<AdCampaignDto>(
+    token,
+    `/admin/ads/test-campaigns/${campaignId}`,
+    { method: "DELETE" },
+  );
+}
+
+/**
+ * Client campaigns. Test campaigns are excluded unless asked for: they are ours
+ * and they are not advertising anybody bought.
+ */
+export function fetchAdCampaigns(
+  token: string,
+  query: AdCampaignQuery = {},
+): Promise<Page<AdCampaignDto>> {
+  const params = new URLSearchParams();
+  if (query.siteId) params.set("siteId", query.siteId);
+  if (query.status) params.set("status", query.status);
+  params.set("test", String(query.test ?? false));
+  params.set("page", String(query.page ?? 0));
+  params.set("size", String(query.size ?? 20));
+  return authed<Page<AdCampaignDto>>(token, `/admin/ads/campaigns?${params}`);
+}
+
+export function fetchAdCampaign(
+  token: string,
+  campaignId: string,
+): Promise<AdCampaignDto> {
+  return authed<AdCampaignDto>(token, `/admin/ads/campaigns/${campaignId}`);
+}
+
+/**
+ * Creates a campaign — and launches it.
+ *
+ * There is no draft and no paused-first step at Meta, so this is not "save"
+ * followed by "go live" later. When this resolves, the client's money is being
+ * spent. Anything calling it must confirm first and must say so in the copy.
+ */
+export function createAdCampaign(
+  token: string,
+  body: AdCampaignCreateRequest,
+): Promise<AdCampaignDto> {
+  return authed<AdCampaignDto>(token, "/admin/ads/campaigns", {
+    method: "POST",
+    body: JSON.stringify(body),
+  });
+}
+
+export function pauseAdCampaign(
+  token: string,
+  campaignId: string,
+): Promise<AdCampaignDto> {
+  return authed<AdCampaignDto>(
+    token,
+    `/admin/ads/campaigns/${campaignId}/pause`,
+    { method: "POST" },
+  );
+}
+
+/** Starts the spending again. As immediate as the original launch. */
+export function resumeAdCampaign(
+  token: string,
+  campaignId: string,
+): Promise<AdCampaignDto> {
+  return authed<AdCampaignDto>(
+    token,
+    `/admin/ads/campaigns/${campaignId}/resume`,
+    { method: "POST" },
+  );
+}
+
+/**
+ * Deletes at Meta. Answers with the campaign rather than 204, deliberately: the
+ * useful thing to show afterwards is the row in its new state, including a
+ * `failureReason` when Meta refused the delete — which is the case where the
+ * money keeps going and a 204 would have looked like success.
+ */
+export function deleteAdCampaign(
+  token: string,
+  campaignId: string,
+): Promise<AdCampaignDto> {
+  return authed<AdCampaignDto>(token, `/admin/ads/campaigns/${campaignId}`, {
+    method: "DELETE",
+  });
+}
+
+/**
+ * Meta's figures for one campaign, read live — and written through, so opening
+ * a campaign also refreshes what the list shows for it.
+ *
+ * Carries `reach`, `ctr` and `cpc`, which the list DTO does not. 200 with nulls
+ * when Meta has nothing yet; that is a twenty-minute-old campaign, not a fault.
+ */
+export function fetchAdInsights(
+  token: string,
+  campaignId: string,
+): Promise<AdInsights> {
+  return authed<AdInsights>(
+    token,
+    `/admin/ads/campaigns/${campaignId}/insights`,
+  );
+}
+
+/**
+ * What a site may advertise, read from its website plan.
+ *
+ * There is no grant here and no retainer to end: advertising comes with the
+ * subscription, so changing what a client may run is the subscription screen's
+ * job. This endpoint only reports.
+ */
+export function fetchAdAllowance(
+  token: string,
+  siteId: string,
+): Promise<AdAllowance> {
+  return authed<AdAllowance>(token, `/admin/ads/sites/${siteId}/allowance`);
 }

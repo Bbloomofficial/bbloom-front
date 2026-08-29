@@ -618,3 +618,234 @@ export type OrderingStatus = {
   currency?: string;
   connectedAt?: string;
 };
+
+/*
+  Facebook and Instagram advertising.
+
+  Every campaign in here runs out of one bbloom-owned agency ad account, on
+  behalf of a client, launched by staff. Two consequences shape these types.
+
+  The first is that a campaign goes live the moment it is created — there is no
+  draft and no paused-first step — so anything that creates or resumes one is
+  spending real money on the press of a button, and the screens say so.
+
+  The second is that budgets are minor units of the *ad account's* currency,
+  which is Meta's to decide and not ours. Every amount here therefore travels
+  with a currency code and is rendered through `formatMinor`, which takes one.
+  Nothing may assume GEL.
+*/
+
+/** Where an ad is shown. The plan a site is on decides which of these it sells. */
+export type { AdChannel, AdCampaignStatus } from "../../api/ads";
+export { AD_CHANNELS } from "../../api/ads";
+import type {
+  AdChannel,
+  AdCampaignStatus,
+  AdInsightsFigures,
+  AdUpstreamFailure,
+} from "../../api/ads";
+
+export type AdCampaignDto = {
+  id: string;
+  siteId: string;
+  siteName?: string;
+  name: string;
+  objective: "TRAFFIC";
+  status: AdCampaignStatus;
+  channels: AdChannel[];
+  dailyBudgetMinor: number;
+  /** The ad account's currency, not the client's. Never assume GEL. */
+  currency: string;
+  destinationUrl?: string;
+  headline?: string;
+  primaryText?: string;
+  imageUrl?: string;
+  country?: string;
+  cityKey?: string;
+  ageMin?: number;
+  ageMax?: number;
+  /**
+   * Meta's own identifiers. Staff-only, and deliberately absent from the
+   * client's copy of this DTO: one ad account is shared across every client,
+   * so an id handed to one of them is a handle on everybody's spending.
+   */
+  metaCampaignId?: string;
+  metaAdSetId?: string;
+  metaCreativeId?: string;
+  metaAdId?: string;
+  /** A campaign launched by the admin test tool rather than for a client. */
+  test: boolean;
+  createdByEmail?: string;
+  /** Absent unless `status` is `FAILED`. Show it verbatim. */
+  failureReason?: string;
+  launchedAt?: string;
+  pausedAt?: string;
+  deletedAt?: string;
+  createdAt: string;
+} & AdInsightsFigures & {
+    /**
+     * When Meta's figures above were last read. **Null until Meta has actually
+     * reported** — the server deliberately does not stamp an empty report, so a
+     * campaign nobody has heard back about cannot render a confident zero.
+     *
+     * Non-null means the numbers are cached rather than live, so they are shown
+     * as "as of <time>". Meta's own reporting lags hours and gets restated
+     * afterwards, so the staleness is stated rather than implied.
+     */
+    insightsReadAt?: string | null;
+  };
+
+export type AdTestOutcome = "LAUNCHED" | "FAILED" | "NOT_CONFIGURED";
+
+/**
+ * What the test button did.
+ *
+ * Always arrives as **200**, including when Meta refuses — the same envelope as
+ * `MailTestResult`, and for the same reason: the request succeeded, we asked
+ * what happened and were told. `outcome` carries the answer, so a `FAILED` must
+ * not be rendered as a request error.
+ *
+ * There is no budget field on the request that produces this. The budget is
+ * server configuration, so a mistyped one cannot spend a client's month in an
+ * afternoon.
+ */
+export type AdTestResult = {
+  outcome: AdTestOutcome;
+  campaignId?: string;
+  metaCampaignId?: string;
+  name?: string;
+  channels?: AdChannel[];
+  dailyBudgetMinor?: number;
+  currency?: string;
+  destinationUrl?: string;
+  attemptedAt?: string;
+  /** Absent — not null — unless `outcome` is `FAILED`. */
+  failureReason?: string;
+  /**
+   * Meta's verdict as a code, when Meta gave one.
+   *
+   * The same two values the 502 carries, deliberately, so one dictionary serves
+   * both. **Null does not mean Meta was happy**: it also covers a break on our
+   * side of the call before Meta had a verdict, and `NOT_CONFIGURED`, where
+   * nothing was asked of Meta at all. So this is only ever read as "Meta said
+   * this", never as "Meta said nothing is wrong".
+   */
+  failureCode?: AdUpstreamFailure | null;
+  /**
+   * Something is live at Meta and costing money. True on a failure that got far
+   * enough to create the campaign, which is exactly the case where the row
+   * looks like nothing happened. When this is set the delete button is the
+   * point of the screen.
+   */
+  stillSpending?: boolean;
+};
+
+/**
+ * Meta's own reading of the ad account, taken live. Null on the status payload
+ * when we are not configured — there is nobody to ask.
+ */
+export type AdMetaAccount = {
+  /** Whether Meta answered at all, as opposed to whether our settings look right. */
+  reachable: boolean;
+  adAccountName?: string;
+  /** Meta's numeric account state. `1` is the only healthy value. */
+  accountStatus?: number;
+  /**
+   * Meta's own words for `accountStatus` ("Unsettled — a payment has failed").
+   * English, and the backend's prose rather than ours, so it is a fallback for
+   * a status this build has no sentence for — not the primary rendering. The
+   * numeric `accountStatus` is the contract.
+   */
+  accountStatusLabel?: string;
+  currency?: string;
+  timezone?: string;
+  pageName?: string;
+  instagramUsername?: string;
+  tokenOwner?: string;
+  failureReason?: string;
+};
+
+/**
+ * Whether advertising works, answered twice on purpose.
+ *
+ * `configured` is "our settings look complete" and `meta.reachable` is "Meta
+ * actually answered". They fail independently and they send someone to two
+ * different places, so the card shows both rather than reducing them to one
+ * light — the same split as the mail card's configured/sending.
+ *
+ * Safe to poll: it never fails.
+ */
+export type AdStatus = {
+  checkedAt?: string;
+  configured: boolean;
+  enabled: boolean;
+  instagramConfigured: boolean;
+  adAccountId?: string;
+  apiVersion?: string;
+  /**
+   * The server-side ceiling on a daily budget, in minor units. Exceeding it is
+   * a 400 with a `Max` constraint on `dailyBudgetMinor`.
+   */
+  maxDailyBudgetMinor?: number;
+  /**
+   * The currency those minor units are in. Read from here first and from
+   * `meta.currency` second: `meta` is null exactly when we are unconfigured or
+   * Meta is unreachable, which is when a budget figure with no unit is most
+   * misleading.
+   */
+  currency?: string;
+  /** How many campaigns are spending money right now. */
+  liveCampaigns: number;
+  /**
+   * Live campaigns from the test tool. Any number above zero is a fault: it
+   * means somebody left a test running and it is billing us, not a client.
+   */
+  liveTestCampaigns: number;
+  meta?: AdMetaAccount | null;
+};
+
+export type AdTestRequest = {
+  channels: AdChannel[];
+  destinationUrl?: string;
+};
+
+/**
+ * A new campaign.
+ *
+ * Worth remembering while reading the form that builds this: there is no draft
+ * state on the far side. The server creates the campaign, ad set, creative and
+ * ad at Meta and it is live when the response arrives, so this request is the
+ * last point at which anything can be checked.
+ *
+ * `destinationUrl` blank means the client's own site, resolved server-side. It
+ * is left out of the body entirely rather than sent empty, so the default is
+ * the server's to choose.
+ */
+export type AdCampaignCreateRequest = {
+  siteId: string;
+  name: string;
+  channels: AdChannel[];
+  dailyBudgetMinor: number;
+  destinationUrl?: string;
+  headline?: string;
+  primaryText?: string;
+  imageUrl?: string;
+  /** Two letters. The server defaults to `GE` when this is absent. */
+  country?: string;
+  cityKey?: string;
+  ageMin?: number;
+  ageMax?: number;
+};
+
+export type AdCampaignQuery = {
+  siteId?: string;
+  status?: AdCampaignStatus;
+  /**
+   * Whether to include the admin test tool's own campaigns. Defaults to
+   * excluding them: they are ours, they are not a client's advertising, and
+   * leaving them in the main list is how one gets mistaken for work.
+   */
+  test?: boolean;
+  page?: number;
+  size?: number;
+};

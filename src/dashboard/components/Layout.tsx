@@ -17,6 +17,7 @@ type NavKey =
   | "page"
   | "inbox"
   | "orders"
+  | "ads"
   | "billing"
   | "team"
   | "sites"
@@ -32,6 +33,9 @@ const NAV_ICONS: Record<NavKey, string> = {
   // different idea from the inbox beside it, where nobody has paid for anything.
   orders:
     "M6 6V5a4 4 0 0 1 8 0v1h2.2l.8 10.2a1.6 1.6 0 0 1-1.6 1.8H4.6A1.6 1.6 0 0 1 3 16.2L3.8 6H6Zm1.8 0h4.4V5a2.2 2.2 0 0 0-4.4 0v1Z",
+  // A megaphone: the one shape that reads as "we are saying this out loud on
+  // your behalf" rather than as another inbox or another bill.
+  ads: "M3 8.5v3a1.5 1.5 0 0 0 1.5 1.5H6l4.5 3.5a.75.75 0 0 0 1.2-.6V4.1a.75.75 0 0 0-1.2-.6L6 7H4.5A1.5 1.5 0 0 0 3 8.5Zm11.2-1.1a.9.9 0 0 1 1.3 0 4.4 4.4 0 0 1 0 5.2.9.9 0 1 1-1.4-1.1 2.6 2.6 0 0 0 0-3 .9.9 0 0 1 .1-1.1Z",
   billing:
     "M2 6.5A2.5 2.5 0 0 1 4.5 4h11A2.5 2.5 0 0 1 18 6.5V7H2v-.5ZM2 9h16v4.5a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 2 13.5V9Zm3 3.5h4V14H5v-1.5Z",
   team: "M7 9a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm7 0a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5ZM1.5 16c0-2.5 2.5-4.5 5.5-4.5s5.5 2 5.5 4.5v1h-11v-1Zm12.2-3.6c2.3.4 4.3 2 4.3 3.9V17h-4v-1c0-1.4-.5-2.7-1.4-3.7l1.1.1Z",
@@ -227,6 +231,17 @@ function SiteTabs({ site }: { site: AccountSite }) {
           },
         ]
       : []),
+    // Shown to every client, including the many who have never bought
+    // advertising: for them it is the offer, and hiding it would mean the only
+    // people who learn we do this are the ones who already knew. Deliberately
+    // unlike `orders` above, which is hidden precisely because it would lead
+    // nowhere -- this one always has something to say.
+    {
+      to: dashPath(`/s/${site.id}/ads`),
+      label: t.nav.ads,
+      end: false,
+      icon: "ads",
+    },
     {
       to: dashPath(`/s/${site.id}/billing`),
       label: t.nav.billing,

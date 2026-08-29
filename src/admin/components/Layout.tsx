@@ -42,6 +42,7 @@ export default function Layout({ children }: { children: ReactNode }) {
       label: t.nav.newCustomerOffer,
       end: false,
     },
+    { to: adminPath("/ads"), label: t.nav.ads, end: false },
     { to: adminPath("/sites/new"), label: t.nav.newSite, end: false },
     ...(forbidden
       ? []
@@ -70,11 +71,15 @@ export default function Layout({ children }: { children: ReactNode }) {
             {t.brand}
           </span>
 
-          {/* Not `xl`: measured, the seven Georgian labels plus the brand and
-              the account controls need about 1316px, so the stock 1280px
-              breakpoint puts the row back into overflow by a few dozen pixels.
-              This switches where it actually fits. */}
-          <nav className="ms-4 hidden items-center gap-1 [@media(min-width:1340px)]:flex">
+          {/* Not `xl`, and no longer 1340px either. The seven Georgian labels
+              plus the brand and the account controls measured at about 1316px,
+              which is why this was never the stock 1280px breakpoint. "რეკლამა"
+              makes eight and adds roughly another hundred, so the row needs
+              about 1416px to fit and switches at 1440. If a ninth link is ever
+              added, re-measure rather than nudging this — past about 1500px
+              there is no monitor left to widen into and the links should be
+              grouped instead. */}
+          <nav className="ms-4 hidden items-center gap-1 [@media(min-width:1440px)]:flex">
             {links.map((link) => (
               <NavLink
                 key={link.to}
@@ -104,7 +109,7 @@ export default function Layout({ children }: { children: ReactNode }) {
             their own row and scroll on purpose — a row that scrolls when you
             expect it to is better than one that quietly clips. Same padding as
             the bar above, so the first link lines up under the logo. */}
-        <nav className="flex items-center gap-1 overflow-x-auto border-t border-ink-100 px-5 py-2 sm:px-8 [@media(min-width:1340px)]:hidden">
+        <nav className="flex items-center gap-1 overflow-x-auto border-t border-ink-100 px-5 py-2 sm:px-8 [@media(min-width:1440px)]:hidden">
           {links.map((link) => (
             <NavLink
               key={link.to}

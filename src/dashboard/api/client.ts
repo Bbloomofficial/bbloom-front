@@ -1,5 +1,7 @@
 import { request } from "../../api/http";
+import type { AdAllowance } from "../../api/ads";
 import type {
+  ClientAdCampaign,
   DraftState,
   Enquiry,
   EnquiryStats,
@@ -352,4 +354,40 @@ export function uploadMedia(
     `/manage/sites/${siteId}/media${query ? `?${query}` : ""}`,
     { method: "POST", body },
   );
+}
+/*
+  The client's read-only view of their own advertising.
+
+  Both of these live under `/manage/sites/{siteId}/ads`, and there are only two
+  of them on purpose: a client cannot create, pause or delete a campaign.
+  Advertising is a service staff run out of one shared agency ad account, so
+  this half of the API reports and never acts.
+*/
+
+export function fetchMyAdCampaigns(
+  token: string,
+  siteId: string,
+  query: { page?: number; size?: number } = {},
+): Promise<Page<ClientAdCampaign>> {
+  const params = new URLSearchParams();
+  params.set("page", String(query.page ?? 0));
+  params.set("size", String(query.size ?? 20));
+  return authed<Page<ClientAdCampaign>>(
+    token,
+    `/manage/sites/${siteId}/ads/campaigns?${params}`,
+  );
+}
+
+/**
+ * What this site is allowed to advertise this period.
+ *
+ * Answers on a site whose plan has no advertising too, with `allowed: false`
+ * and a `reason` — which is the case the screen is really for. A client who has
+ * not bought advertising should meet an offer, not an error.
+ */
+export function fetchMyAdAllowance(
+  token: string,
+  siteId: string,
+): Promise<AdAllowance> {
+  return authed<AdAllowance>(token, `/manage/sites/${siteId}/ads/allowance`);
 }

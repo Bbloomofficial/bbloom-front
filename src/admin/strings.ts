@@ -7,7 +7,7 @@ import type { Locale } from "../i18n";
  */
 export type AdminStrings = {
   brand: string;
-  nav: { sites: string; newSite: string; system: string; accounts: string; plans: string; promoCodes: string; newCustomerOffer: string };
+  nav: { sites: string; newSite: string; system: string; accounts: string; plans: string; promoCodes: string; newCustomerOffer: string; ads: string };
   signedInAs: string;
   signOut: string;
   backToBbloom: string;
@@ -301,6 +301,218 @@ export type AdminStrings = {
       clearedBody: string;
     };
   };
+  /**
+   * Facebook and Instagram advertising. Its own section rather than a corner of
+   * `system` because the test tool here spends money, which nothing else on the
+   * staff side does.
+   */
+  ads: {
+    title: string;
+    subtitle: string;
+    loadFailed: string;
+    retry: string;
+    channels: Record<string, string>;
+    statuses: Record<string, string>;
+    status: {
+      title: string;
+      checkedAt: string;
+      refresh: string;
+      configured: string;
+      notConfigured: string;
+      configuredNote: string;
+      notConfiguredNote: string;
+      disabledNote: string;
+      reachable: string;
+      unreachable: string;
+      unreachableNote: string;
+      unaskedNote: string;
+      instagramOn: string;
+      instagramOff: string;
+      accountStatus: string;
+      /** Keyed by Meta's numeric account status, as a string. */
+      accountStatuses: Record<string, string>;
+      accountStatusUnknown: string;
+      accountStatusNote: string;
+      adAccount: string;
+      apiVersion: string;
+      page: string;
+      instagram: string;
+      tokenOwner: string;
+      timezone: string;
+      budgetCeiling: string;
+      budgetCeilingNoCurrency: string;
+      liveCampaigns: (count: number) => string;
+      noneLive: string;
+      liveTestTitle: (count: number) => string;
+      liveTestBody: string;
+    };
+    test: {
+      title: string;
+      body: string;
+      warning: string;
+      channelLabel: string;
+      pickChannel: string;
+      instagramUnavailable: string;
+      destinationLabel: string;
+      destinationHint: string;
+      badUrl: string;
+      launch: string;
+      launching: string;
+      launchingNote: string;
+      confirm: string;
+      launchedTitle: string;
+      launchedBody: string;
+      failedTitle: string;
+      failedBody: string;
+      notConfiguredTitle: string;
+      notConfiguredBody: string;
+      stillSpendingTitle: string;
+      tokenDeadNoSpend: string;
+      stillSpendingBody: string;
+      attemptedAt: string;
+      budget: string;
+      rateLimited: string;
+      rateLimitedUntil: (when: string) => string;
+      notPermitted: string;
+      requestFailed: string;
+    };
+    testList: {
+      title: string;
+      body: string;
+      empty: string;
+      colWhen: string;
+      colName: string;
+      colChannels: string;
+      colBudget: string;
+      colStatus: string;
+      colAction: string;
+      spending: string;
+      delete: string;
+      deleting: string;
+      deleteConfirm: string;
+      deleteFailed: string;
+    };
+    /** Staff wording for the server's 409 codes. Keyed by the code itself. */
+    refusals: Record<string, string>;
+    tools: string;
+    backToCampaigns: string;
+    campaigns: {
+      title: string;
+      subtitle: string;
+      none: string;
+      create: string;
+      filterStatus: string;
+      filterAll: string;
+      colWhen: string;
+      colSite: string;
+      colName: string;
+      colChannels: string;
+      colBudget: string;
+      colSpend: string;
+      colStatus: string;
+      notYet: string;
+      asOf: (when: string) => string;
+      spending: string;
+      pageOf: (page: number, total: number) => string;
+      prev: string;
+      next: string;
+    };
+    form: {
+      title: string;
+      subtitle: string;
+      warning: string;
+      confirm: string;
+      siteLabel: string;
+      siteHint: string;
+      sitePlaceholder: string;
+      nameLabel: string;
+      nameHint: string;
+      channelLabel: string;
+      pickChannel: string;
+      budgetLabel: string;
+      budgetHint: string;
+      budgetCeiling: (amount: string) => string;
+      budgetOverCeiling: string;
+      budgetTooSmall: string;
+      destinationLabel: string;
+      destinationHint: string;
+      badUrl: string;
+      headlineLabel: string;
+      primaryTextLabel: string;
+      imageLabel: string;
+      countryLabel: string;
+      cityLabel: string;
+      cityHint: string;
+      ageLabel: string;
+      ageTo: string;
+      required: string;
+      create: string;
+      creating: string;
+      creatingNote: string;
+      cancel: string;
+      createFailed: string;
+      allowanceTitle: string;
+      allowanceNone: string;
+      allowanceImpressions: (used: string, limit: string) => string;
+      allowanceImpressionsUnmetered: (used: string) => string;
+      allowanceChannels: (channels: string) => string;
+      allowanceSpent: string;
+      allowanceOver: (used: string, limit: string) => string;
+      allowanceStale: string;
+      channelNotInPlan: string;
+    };
+    detail: {
+      pause: string;
+      pausing: string;
+      pauseConfirm: string;
+      resume: string;
+      resuming: string;
+      resumeConfirm: string;
+      delete: string;
+      deleting: string;
+      deleteConfirm: string;
+      actionFailed: string;
+      spendingTitle: string;
+      spendingBody: string;
+      notLaunched: string;
+      site: string;
+      createdBy: string;
+      destination: string;
+      headline: string;
+      primaryText: string;
+      audience: string;
+      ages: (from: number, to: number) => string;
+      launched: string;
+      paused: string;
+      deletedAt: string;
+      created: string;
+      budget: string;
+      metaTitle: string;
+      metaCampaign: string;
+      metaAdSet: string;
+      metaCreative: string;
+      metaAd: string;
+      notFound: string;
+    };
+    insights: {
+      title: string;
+      refresh: string;
+      notYet: string;
+      notYetBody: string;
+      emptyReport: string;
+      asOf: (when: string) => string;
+      cached: string;
+      impressions: string;
+      reach: string;
+      clicks: string;
+      ctr: string;
+      cpc: string;
+      spend: string;
+      loadFailed: string;
+      loadFailedNeverRead: string;
+      notLaunched: string;
+    };
+  };
   statuses: Record<string, string>;
   categories: Record<string, string>;
   tiers: Record<string, string>;
@@ -488,7 +700,7 @@ export type AdminStrings = {
 
 const en: AdminStrings = {
   brand: "bbloom staff",
-  nav: { sites: "Sites", newSite: "New site", system: "System", accounts: "Accounts", plans: "Plans", promoCodes: "Discounts", newCustomerOffer: "New customers" },
+  nav: { sites: "Sites", newSite: "New site", system: "System", accounts: "Accounts", plans: "Plans", promoCodes: "Discounts", newCustomerOffer: "New customers", ads: "Ads" },
   signedInAs: "Signed in as",
   signOut: "Sign out",
   backToBbloom: "Back to bbloom.ge",
@@ -834,6 +1046,295 @@ const en: AdminStrings = {
         "A successful send empties the failure list, so these rows have just left the failure panel on this page. The people are still owed a message — they stay on the list of everyone still owed until they personally receive something.",
     },
   },
+  ads: {
+    title: "Ads",
+    subtitle:
+      "Facebook and Instagram campaigns, run for clients out of the bbloom ad account.",
+    loadFailed: "We could not read the advertising status.",
+    retry: "Try again",
+    channels: { FACEBOOK: "Facebook", INSTAGRAM: "Instagram" },
+    statuses: {
+      ACTIVE: "Running",
+      PAUSED: "Paused",
+      FAILED: "Failed",
+      DELETED: "Deleted",
+    },
+    status: {
+      title: "Advertising",
+      checkedAt: "Checked",
+      refresh: "Refresh",
+      configured: "Set up",
+      notConfigured: "Not set up",
+      configuredNote: "Our Meta credentials are complete.",
+      notConfiguredNote:
+        "No Meta credentials, so nothing here can launch anything. This is a setting on our side, not a fault at Meta — there is nothing to go and check in the ad account.",
+      disabledNote:
+        "Advertising is switched off in the server config. The credentials are there; nothing will use them.",
+      reachable: "Meta answered",
+      unreachable: "Meta did not answer",
+      unreachableNote:
+        "Our settings look complete but the ad account could not be read just now. Campaigns already running are unaffected — this stops us launching and stops us reporting, not the ads themselves.",
+      unaskedNote: "Meta was not asked, because we are not set up to ask.",
+      instagramOn: "Instagram connected",
+      instagramOff: "Facebook only",
+      accountStatus: "Account status",
+      accountStatuses: {
+        "1": "Active",
+        "2": "Disabled",
+        "3": "Unsettled — a payment has failed",
+        "7": "Pending risk review",
+        "8": "Pending settlement",
+        "9": "In grace period",
+        "100": "Pending closure",
+        "101": "Closed",
+      },
+      accountStatusUnknown: "Meta reports a status we do not have a name for.",
+      accountStatusNote:
+        "Anything other than Active will stop campaigns without warning, usually by rejecting the next charge.",
+      adAccount: "Ad account",
+      apiVersion: "API version",
+      page: "Facebook page",
+      instagram: "Instagram account",
+      tokenOwner: "Token belongs to",
+      timezone: "Ad account timezone",
+      budgetCeiling: "Daily budget ceiling",
+      budgetCeilingNoCurrency:
+        "The ceiling is in the ad account's currency, which we could not read.",
+      liveCampaigns: (count) =>
+        count === 1
+          ? "1 campaign is spending money right now"
+          : `${count} campaigns are spending money right now`,
+      noneLive: "Nothing is running.",
+      liveTestTitle: (count) =>
+        count === 1
+          ? "1 test campaign is live and billing us"
+          : `${count} test campaigns are live and billing us`,
+      liveTestBody:
+        "Test campaigns are ours, not a client's, so this spend comes out of bbloom. Somebody launched a test and did not delete it. Delete it below.",
+    },
+    test: {
+      title: "Launch a test campaign",
+      body: "Runs the whole path we use for a client — campaign, ad set, creative, ad — against the real ad account, and reports what Meta did with it.",
+      warning:
+        "This is not a dry run. It creates a live campaign at the smallest budget the account allows and it starts spending immediately. Delete it when you have your answer.",
+      channelLabel: "Where to run it",
+      pickChannel: "Choose at least one.",
+      instagramUnavailable:
+        "No Instagram account is connected, so only Facebook can be tested.",
+      destinationLabel: "Where the ad points",
+      destinationHint:
+        "Optional. Leave it blank and the server picks a destination — you do not need to send real traffic anywhere to learn whether this works.",
+      badUrl: "That needs to be a full address starting http:// or https://.",
+      launch: "Launch a real test campaign",
+      launching: "Launching…",
+      launchingNote:
+        "This waits for Meta to build four objects in turn, which takes a few seconds.",
+      confirm:
+        "This launches a REAL campaign that starts spending money immediately. You will need to delete it afterwards. Continue?",
+      launchedTitle: "Launched — and spending",
+      launchedBody:
+        "Meta accepted the whole chain, which is the answer this button exists to give. It is now live. Delete it below.",
+      failedTitle: "Meta refused it",
+      failedBody:
+        "This is the same failure a client's campaign would hit right now.",
+      notConfiguredTitle: "Nothing was launched",
+      notConfiguredBody:
+        "No Meta credentials are configured, so nothing was attempted and nothing is spending. There is no fault to go and find.",
+      stillSpendingTitle: "Something is live at Meta",
+      tokenDeadNoSpend:
+        "Nothing was created, so there is nothing here to delete. Reconnect the account and run this again.",
+      stillSpendingBody:
+        "It failed part-way through, after the campaign already existed. It is running and costing money despite the failure. Delete it now.",
+      attemptedAt: "Attempted",
+      budget: "Daily budget",
+      rateLimited:
+        "That is as many test campaigns as one admin may launch in an hour. The limit is there because each one spends money.",
+      rateLimitedUntil: (when) => `You can launch another test at ${when}.`,
+      notPermitted: "This account may not launch test campaigns.",
+      requestFailed: "The test could not be run. Try again.",
+    },
+    testList: {
+      title: "Test campaigns",
+      body: "Every test ever launched, newest first. A deleted row is the evidence somebody dealt with it, which is why they stay here.",
+      empty: "No test campaigns have been launched.",
+      colWhen: "Launched",
+      colName: "Name",
+      colChannels: "Where",
+      colBudget: "Daily budget",
+      colStatus: "Status",
+      colAction: "",
+      spending: "Spending",
+      delete: "Delete at Meta",
+      deleting: "Deleting…",
+      deleteConfirm:
+        "Delete this campaign at Meta? It stops spending as soon as this goes through.",
+      deleteFailed: "We could not delete that campaign.",
+    },
+    refusals: {
+      ADS_PLAN_REQUIRED:
+        "This site's plan does not include advertising. Move it to a plan that does before launching anything.",
+      ADS_PLAN_INACTIVE:
+        "This site's subscription has lapsed, so advertising is off. Settle it before launching anything.",
+      PLAN_WITHOUT_ADS:
+        "That plan does not include advertising. Choose one that does.",
+      ADS_NOT_IN_PLAN:
+        "That plan does not include advertising. Choose one that does.",
+      ADS_CHANNEL_NOT_IN_PLAN:
+        "This site's plan does not sell that channel. Simple is Facebook only — Instagram needs Classic or above.",
+      ADS_IMPRESSION_LIMIT:
+        "This site has used the impressions its plan includes. Move it up a plan, or wait for the next period.",
+      ADS_NOT_CONFIGURED:
+        "Meta credentials are not set up, so nothing can be launched. This is ours to fix, not the client's.",
+      INSTAGRAM_NOT_CONFIGURED:
+        "No Instagram account is connected. Launch this on Facebook only, or connect one first.",
+      CAMPAIGN_NOT_LIVE: "That campaign is not running, so this does nothing.",
+      CAMPAIGN_NOT_LAUNCHED:
+        "This campaign never reached Meta, so there is nothing there to read or change.",
+      META_TOKEN_INVALID:
+        "Meta says our access token is no longer valid, so nothing can reach the ad account. Reconnect the Facebook account — this is ours to fix and takes minutes.",
+      META_UNAVAILABLE:
+        "Meta refused the request. Nothing here is wrong with the client's plan, so retry, or change the campaign if Meta names something in it:",
+      RATE_LIMITED: "Too many requests. Wait a moment and try again.",
+    },
+    tools: "Test tools",
+    backToCampaigns: "Back to campaigns",
+    campaigns: {
+      title: "Campaigns",
+      subtitle:
+        "Client advertising. Test campaigns are kept out of this list — they are ours, and one sitting here gets mistaken for work somebody paid for.",
+      none: "No campaigns yet.",
+      create: "New campaign",
+      filterStatus: "Status",
+      filterAll: "All",
+      colWhen: "Launched",
+      colSite: "Site",
+      colName: "Name",
+      colChannels: "Where",
+      colBudget: "Daily",
+      colSpend: "Spent",
+      colStatus: "Status",
+      notYet: "Not yet",
+      asOf: (when) => `as of ${when}`,
+      spending: "Spending",
+      pageOf: (page, total) => `Page ${page} of ${total}`,
+      prev: "Previous",
+      next: "Next",
+    },
+    form: {
+      title: "New campaign",
+      subtitle:
+        "Builds the campaign, ad set, creative and ad at Meta in one go, for one client.",
+      warning:
+        "There is no draft and no paused-first step. The moment this goes through, the client's money is being spent. Check the budget before you press it.",
+      confirm:
+        "This launches the campaign immediately and starts spending the client's money today. Continue?",
+      siteLabel: "Client site",
+      siteHint:
+        "The advertising counts against this site's plan, and a blank destination points at this site.",
+      sitePlaceholder: "Choose a site",
+      nameLabel: "Campaign name",
+      nameHint: "Ours, for finding it later. Visitors never see it.",
+      channelLabel: "Where to run it",
+      pickChannel: "Choose at least one.",
+      budgetLabel: "Daily budget",
+      budgetHint:
+        "What Meta may spend each day, in the ad account's currency. Enter it in full units — 50 means fifty.",
+      budgetCeiling: (amount) => `The ceiling is ${amount} a day.`,
+      budgetOverCeiling: "That is above the daily ceiling.",
+      budgetTooSmall: "The daily budget has to be more than nothing.",
+      destinationLabel: "Where the ad points",
+      destinationHint:
+        "Optional. Leave it blank to send people to the client's own site.",
+      badUrl: "That needs to be a full address starting http:// or https://.",
+      headlineLabel: "Headline",
+      primaryTextLabel: "Ad text",
+      imageLabel: "Image link",
+      countryLabel: "Country",
+      cityLabel: "City",
+      cityHint: "Optional. Leave blank to cover the whole country.",
+      ageLabel: "Ages",
+      ageTo: "to",
+      required: "Fill this in.",
+      create: "Launch this campaign",
+      creating: "Launching…",
+      creatingNote: "Meta builds four objects in turn; this takes a few seconds.",
+      cancel: "Cancel",
+      createFailed: "The campaign could not be launched.",
+      allowanceTitle: "What this site may run",
+      allowanceNone: "This site's plan does not include advertising.",
+      allowanceImpressions: (used, limit) =>
+        `${used} of ${limit} impressions used`,
+      allowanceImpressionsUnmetered: (used) =>
+        `${used} impressions delivered, on an unmetered plan`,
+      allowanceChannels: (channels) => `Channels: ${channels}`,
+      allowanceSpent:
+        "This site has used the impressions its plan includes. Launching will be refused until the next period.",
+      allowanceOver: (used, limit) =>
+        `Over the plan: ${used} delivered against ${limit} included. Campaigns are checked at launch and never reserved, so the last one of a period can run past the ceiling — worth a word with the client before the next launch.`,
+      allowanceStale:
+        "Counts only what Meta has reported back to us. Reported campaigns refresh hourly, but one whose figures have never arrived contributes nothing at all rather than a partial number — so this is a floor, not an audit.",
+      channelNotInPlan: "Not included in this site's plan.",
+    },
+    detail: {
+      pause: "Pause",
+      pausing: "Pausing…",
+      pauseConfirm: "Pause this campaign? It stops spending straight away.",
+      resume: "Resume",
+      resuming: "Resuming…",
+      resumeConfirm:
+        "Resume this campaign? It starts spending again immediately.",
+      delete: "Delete at Meta",
+      deleting: "Deleting…",
+      deleteConfirm:
+        "Delete this campaign at Meta? This cannot be undone and the client will need a new one.",
+      actionFailed: "That did not go through.",
+      spendingTitle: "This is spending money right now",
+      spendingBody:
+        "It failed part-way through, after the campaign already existed at Meta — so it is running despite the failure. Pause or delete it.",
+      notLaunched:
+        "This campaign never reached Meta, so there is nothing running and nothing to read.",
+      site: "Site",
+      createdBy: "Launched by",
+      destination: "Points at",
+      headline: "Headline",
+      primaryText: "Ad text",
+      audience: "Audience",
+      ages: (from, to) => `ages ${from}–${to}`,
+      launched: "Launched",
+      paused: "Paused",
+      deletedAt: "Deleted",
+      created: "Created",
+      budget: "Daily budget",
+      metaTitle: "Meta identifiers",
+      metaCampaign: "Campaign",
+      metaAdSet: "Ad set",
+      metaCreative: "Creative",
+      metaAd: "Ad",
+      notFound: "We could not find that campaign.",
+    },
+    insights: {
+      title: "Results",
+      refresh: "Read again",
+      notYet: "Nothing reported yet",
+      notYetBody:
+        "Meta has not sent figures for this campaign. That is normal for the first hours — it does not mean nothing is happening, and it is not the same as a zero.",
+      emptyReport:
+        "Meta answered but every figure was empty. A campaign that has plainly been running for hours should not read like this — it points at us asking Meta for the wrong fields, not at a quiet campaign. Worth someone looking.",
+      asOf: (when) => `Read ${when}`,
+      cached:
+        "Meta's own reporting lags by hours and gets restated afterwards, so treat these as an indication rather than a bill.",
+      impressions: "Impressions",
+      reach: "People reached",
+      clicks: "Clicks",
+      ctr: "Click rate",
+      cpc: "Cost per click",
+      spend: "Spent",
+      loadFailed: "We could not read the results.",
+      loadFailedNeverRead:
+        "This campaign has never been read successfully either, so the same failure has most likely been happening since it launched. Nothing else shows this: the hourly refresh logs a failure and moves on, the list still reads \"not yet\", and the site's impression count leaves this campaign out entirely. Worth checking the logs rather than waiting.",
+      notLaunched: "This campaign never reached Meta, so there is nothing to read.",
+    },
+  },
   statuses: { DRAFT: "Draft", PUBLISHED: "Published" },
   categories: { SHOP: "Online shop", RESTAURANT: "Restaurant" },
   tiers: { SIMPLE: "Simple", CLASSIC: "Classic", MODERN: "Modern" },
@@ -1044,7 +1545,7 @@ const en: AdminStrings = {
 
 const ka: AdminStrings = {
   brand: "bbloom გუნდი",
-  nav: { sites: "საიტები", newSite: "ახალი საიტი", system: "სისტემა", accounts: "ანგარიშები", plans: "პაკეტები", promoCodes: "ფასდაკლებები", newCustomerOffer: "ახალი კლიენტები" },
+  nav: { sites: "საიტები", newSite: "ახალი საიტი", system: "სისტემა", accounts: "ანგარიშები", plans: "პაკეტები", promoCodes: "ფასდაკლებები", newCustomerOffer: "ახალი კლიენტები", ads: "რეკლამა" },
   signedInAs: "შესული ხართ როგორც",
   signOut: "გამოსვლა",
   backToBbloom: "დაბრუნება bbloom.ge-ზე",
@@ -1385,6 +1886,287 @@ const ka: AdminStrings = {
           : `ამ ტესტმა ${count} წარუმატებელი გაგზავნა ჩამოშალა`,
       clearedBody:
         "წარმატებული გაგზავნა ასუფთავებს შეცდომების სიას, ამიტომ ეს ჩანაწერები ახლახან გაქრა ამ გვერდის შეცდომების პანელიდან. ადამიანებს წერილი კვლავ ერგებათ — ისინი რჩებიან დავალიანების სიაში, სანამ რეალურად არ მიიღებენ რაიმეს.",
+    },
+  },
+  ads: {
+    title: "რეკლამა",
+    subtitle:
+      "Facebook-ისა და Instagram-ის კამპანიები, რომლებსაც კლიენტებისთვის bbloom-ის სარეკლამო ანგარიშიდან ვუშვებთ.",
+    loadFailed: "რეკლამის სტატუსის წაკითხვა ვერ მოხერხდა.",
+    retry: "კიდევ სცადეთ",
+    channels: { FACEBOOK: "Facebook", INSTAGRAM: "Instagram" },
+    statuses: {
+      ACTIVE: "მიმდინარე",
+      PAUSED: "შეჩერებული",
+      FAILED: "ჩავარდა",
+      DELETED: "წაშლილი",
+    },
+    status: {
+      title: "რეკლამა",
+      checkedAt: "შემოწმდა",
+      refresh: "განახლება",
+      configured: "მორგებულია",
+      notConfigured: "არ არის მორგებული",
+      configuredNote: "Meta-ს მონაცემები სრულადაა შევსებული.",
+      notConfiguredNote:
+        "Meta-ს მონაცემები არ არის, ამიტომ აქედან ვერაფერი გაეშვება. ეს ჩვენი მხარის პარამეტრია და არა შეცდომა Meta-ში — სარეკლამო ანგარიშში შესამოწმებელი არაფერია.",
+      disabledNote:
+        "რეკლამა სერვერის კონფიგურაციაში გამორთულია. მონაცემები ადგილზეა, უბრალოდ არავინ იყენებს.",
+      reachable: "Meta გვიპასუხა",
+      unreachable: "Meta არ გვიპასუხა",
+      unreachableNote:
+        "ჩვენი პარამეტრები სრულია, მაგრამ სარეკლამო ანგარიში ამ წუთში ვერ წაიკითხა. უკვე მიმდინარე კამპანიებზე ეს არ მოქმედებს — ჩერდება გაშვება და ანგარიშგება, თავად რეკლამები არა.",
+      unaskedNote: "Meta-ს არ ვკითხეთ, რადგან კითხვისთვის მორგებული არ ვართ.",
+      instagramOn: "Instagram მიერთებულია",
+      instagramOff: "მხოლოდ Facebook",
+      accountStatus: "ანგარიშის სტატუსი",
+      accountStatuses: {
+        "1": "აქტიური",
+        "2": "გათიშული",
+        "3": "დავალიანება — გადახდა ჩავარდა",
+        "7": "რისკის შემოწმების მოლოდინში",
+        "8": "ანგარიშსწორების მოლოდინში",
+        "9": "საშეღავათო პერიოდში",
+        "100": "დახურვის მოლოდინში",
+        "101": "დახურული",
+      },
+      accountStatusUnknown: "Meta აბრუნებს სტატუსს, რომლის სახელიც ჩვენთან არ არის.",
+      accountStatusNote:
+        "„აქტიურის“ გარდა ნებისმიერი მდგომარეობა კამპანიებს გაფრთხილების გარეშე გააჩერებს — ჩვეულებრივ შემდეგი გადახდის უარყოფით.",
+      adAccount: "სარეკლამო ანგარიში",
+      apiVersion: "API-ის ვერსია",
+      page: "Facebook გვერდი",
+      instagram: "Instagram ანგარიში",
+      tokenOwner: "ტოკენის მფლობელი",
+      timezone: "სარეკლამო ანგარიშის დროის სარტყელი",
+      budgetCeiling: "დღიური ბიუჯეტის ჭერი",
+      budgetCeilingNoCurrency:
+        "ჭერი სარეკლამო ანგარიშის ვალუტაშია, რომელიც ვერ წავიკითხეთ.",
+      liveCampaigns: (count) => `${count} კამპანია ახლა ხარჯავს ფულს`,
+      noneLive: "არაფერი მიმდინარეობს.",
+      liveTestTitle: (count) => `${count} სატესტო კამპანია გაშვებულია და ფულს გვხარჯავს`,
+      liveTestBody:
+        "სატესტო კამპანიები ჩვენია და არა კლიენტის, ამიტომ ამ ხარჯს bbloom იხდის. ვიღაცამ ტესტი გაუშვა და არ წაშალა. წაშალეთ ქვემოთ.",
+    },
+    test: {
+      title: "სატესტო კამპანიის გაშვება",
+      body: "გადის მთელ იმ გზას, რომელსაც კლიენტისთვის ვიყენებთ — კამპანია, სარეკლამო ჯგუფი, კრეატივი, რეკლამა — რეალურ სარეკლამო ანგარიშზე და გვეუბნება, რა უყო მას Meta-მ.",
+      warning:
+        "ეს არ არის სიმულაცია. იქმნება ცოცხალი კამპანია ანგარიშისთვის დაშვებული ყველაზე მცირე ბიუჯეტით და მაშინვე იწყებს ხარჯვას. პასუხის მიღების შემდეგ წაშალეთ.",
+      channelLabel: "სად გავუშვათ",
+      pickChannel: "აირჩიეთ მინიმუმ ერთი.",
+      instagramUnavailable:
+        "Instagram ანგარიში მიერთებული არ არის, ამიტომ მხოლოდ Facebook-ის ტესტირებაა შესაძლებელი.",
+      destinationLabel: "სად მიჰყავს რეკლამას",
+      destinationHint:
+        "სურვილისამებრ. თუ ცარიელს დატოვებთ, მისამართს სერვერი აირჩევს — იმის გასაგებად, მუშაობს თუ არა ეს, რეალური ტრაფიკის გაგზავნა საჭირო არაა.",
+      badUrl: "საჭიროა სრული მისამართი, რომელიც http:// ან https://-ით იწყება.",
+      launch: "რეალური სატესტო კამპანიის გაშვება",
+      launching: "იშვება…",
+      launchingNote:
+        "ელოდება, სანამ Meta თანმიმდევრობით ოთხ ობიექტს შექმნის — რამდენიმე წამი სჭირდება.",
+      confirm:
+        "ეს უშვებს რეალურ კამპანიას, რომელიც მაშინვე იწყებს ფულის ხარჯვას. შემდეგ თქვენ მოგიწევთ მისი წაშლა. გავაგრძელოთ?",
+      launchedTitle: "გაშვებულია — და ხარჯავს",
+      launchedBody:
+        "Meta-მ მთელი ჯაჭვი მიიღო — სწორედ ეს პასუხი გვინდოდა ამ ღილაკისგან. ახლა ის ცოცხალია. წაშალეთ ქვემოთ.",
+      failedTitle: "Meta-მ უარი თქვა",
+      failedBody: "ზუსტად ამ შეცდომას წააწყდებოდა ახლა კლიენტის კამპანიაც.",
+      notConfiguredTitle: "არაფერი გაშვებულა",
+      notConfiguredBody:
+        "Meta-ს მონაცემები არ არის მითითებული, ამიტომ ცდა არ ყოფილა და არაფერი იხარჯება. საძებნელი შეცდომა არ არსებობს.",
+      stillSpendingTitle: "Meta-ში რაღაც ცოცხალია",
+      tokenDeadNoSpend:
+        "არაფერი შექმნილა, ამიტომ წასაშლელიც არაფერია. თავიდან მიაერთეთ ანგარიში და ისევ სცადეთ.",
+      stillSpendingBody:
+        "შუა გზაზე ჩავარდა, მას შემდეგ რაც კამპანია უკვე შეიქმნა. ჩავარდნის მიუხედავად ის მუშაობს და ფულს ხარჯავს. წაშალეთ ახლავე.",
+      attemptedAt: "ცდა",
+      budget: "დღიური ბიუჯეტი",
+      rateLimited:
+        "ერთ საათში ერთ ადმინს ამაზე მეტი სატესტო კამპანიის გაშვება არ შეუძლია. ლიმიტი იმიტომაა, რომ თითოეული ფულს ხარჯავს.",
+      rateLimitedUntil: (when) => `შემდეგი ტესტის გაშვება შეგეძლებათ ${when}.`,
+      notPermitted: "ამ ანგარიშს სატესტო კამპანიის გაშვება არ შეუძლია.",
+      requestFailed: "ტესტი ვერ შესრულდა. სცადეთ თავიდან.",
+    },
+    testList: {
+      title: "სატესტო კამპანიები",
+      body: "ყველა ოდესმე გაშვებული ტესტი, ახლიდან ძველისკენ. წაშლილი ჩანაწერი იმის დასტურია, რომ ვიღაცამ მოაგვარა — ამიტომ რჩება აქ.",
+      empty: "სატესტო კამპანია არ გაშვებულა.",
+      colWhen: "გაშვებული",
+      colName: "დასახელება",
+      colChannels: "სად",
+      colBudget: "დღიური ბიუჯეტი",
+      colStatus: "სტატუსი",
+      colAction: "",
+      spending: "ხარჯავს",
+      delete: "წაშლა Meta-ში",
+      deleting: "იშლება…",
+      deleteConfirm:
+        "წავშალოთ ეს კამპანია Meta-ში? შესრულებისთანავე ხარჯვას შეწყვეტს.",
+      deleteFailed: "კამპანიის წაშლა ვერ მოხერხდა.",
+    },
+    refusals: {
+      ADS_PLAN_REQUIRED:
+        "ამ საიტის პაკეტი რეკლამას არ მოიცავს. გაშვებამდე გადაიყვანეთ ისეთ პაკეტზე, რომელიც მოიცავს.",
+      ADS_PLAN_INACTIVE:
+        "ამ საიტის გამოწერა შეწყვეტილია, ამიტომ რეკლამა გამორთულია. გაშვებამდე მოაწესრიგეთ.",
+      PLAN_WITHOUT_ADS:
+        "ეს პაკეტი რეკლამას არ მოიცავს. აირჩიეთ ისეთი, რომელიც მოიცავს.",
+      ADS_NOT_IN_PLAN:
+        "ეს პაკეტი რეკლამას არ მოიცავს. აირჩიეთ ისეთი, რომელიც მოიცავს.",
+      ADS_CHANNEL_NOT_IN_PLAN:
+        "ამ საიტის პაკეტი ამ არხს არ მოიცავს. Simple მხოლოდ Facebook-ია — Instagram-ისთვის საჭიროა Classic ან ზემოთ.",
+      ADS_IMPRESSION_LIMIT:
+        "ამ საიტმა პაკეტში შემავალი ჩვენებები ამოწურა. აწიეთ პაკეტი ან დაელოდეთ შემდეგ პერიოდს.",
+      ADS_NOT_CONFIGURED:
+        "Meta-ს მონაცემები არ არის მითითებული, ამიტომ ვერაფერი გაეშვება. ეს ჩვენი გამოსასწორებელია და არა კლიენტის.",
+      INSTAGRAM_NOT_CONFIGURED:
+        "Instagram ანგარიში მიერთებული არ არის. გაუშვით მხოლოდ Facebook-ზე ან ჯერ მიაერთეთ ანგარიში.",
+      CAMPAIGN_NOT_LIVE: "ეს კამპანია არ მიმდინარეობს, ამიტომ ეს ვერაფერს შეცვლის.",
+      CAMPAIGN_NOT_LAUNCHED:
+        "ეს კამპანია Meta-მდე არ მისულა, ამიტომ იქ წასაკითხი ან შესაცვლელი არაფერია.",
+      META_TOKEN_INVALID:
+        "Meta ამბობს, რომ ჩვენი წვდომის ტოკენი აღარ მოქმედებს, ამიტომ სარეკლამო ანგარიშამდე ვერაფერი აღწევს. თავიდან მიაერთეთ Facebook-ის ანგარიში — ეს ჩვენი გამოსასწორებელია და რამდენიმე წუთს იღებს.",
+      META_UNAVAILABLE:
+        "Meta-მ მოთხოვნა უარყო. კლიენტის პაკეტს ამასთან კავშირი არ აქვს — სცადეთ თავიდან, ან შეცვალეთ კამპანია, თუ Meta მასში კონკრეტულ რამეს ასახელებს:",
+      RATE_LIMITED: "ძალიან ბევრი მოთხოვნა. დაიცადეთ და სცადეთ თავიდან.",
+    },
+    tools: "სატესტო ხელსაწყოები",
+    backToCampaigns: "კამპანიებზე დაბრუნება",
+    campaigns: {
+      title: "კამპანიები",
+      subtitle:
+        "კლიენტების რეკლამა. სატესტო კამპანიები ამ სიაში არ ხვდება — ისინი ჩვენია და აქ მოხვედრილს ადვილად ჩათვლიან ანაზღაურებულ სამუშაოდ.",
+      none: "კამპანია ჯერ არ არის.",
+      create: "ახალი კამპანია",
+      filterStatus: "სტატუსი",
+      filterAll: "ყველა",
+      colWhen: "გაშვებული",
+      colSite: "საიტი",
+      colName: "დასახელება",
+      colChannels: "სად",
+      colBudget: "დღიური",
+      colSpend: "დახარჯული",
+      colStatus: "სტატუსი",
+      notYet: "ჯერ არა",
+      asOf: (when) => `მდგომარეობით ${when}`,
+      spending: "ხარჯავს",
+      pageOf: (page, total) => `გვერდი ${page} / ${total}`,
+      prev: "წინა",
+      next: "შემდეგი",
+    },
+    form: {
+      title: "ახალი კამპანია",
+      subtitle:
+        "ერთ ჯერზე ქმნის კამპანიას, სარეკლამო ჯგუფს, კრეატივსა და რეკლამას Meta-ში, ერთი კლიენტისთვის.",
+      warning:
+        "მონახაზი და „ჯერ შეჩერებული“ ეტაპი არ არსებობს. შესრულებისთანავე იხარჯება კლიენტის ფული. დაჭერამდე გადაამოწმეთ ბიუჯეტი.",
+      confirm:
+        "ეს მაშინვე უშვებს კამპანიას და დღესვე იწყებს კლიენტის ფულის ხარჯვას. გავაგრძელოთ?",
+      siteLabel: "კლიენტის საიტი",
+      siteHint:
+        "რეკლამა ამ საიტის პაკეტში ითვლება, ცარიელი მისამართი კი სწორედ ამ საიტზე მიუთითებს.",
+      sitePlaceholder: "აირჩიეთ საიტი",
+      nameLabel: "კამპანიის დასახელება",
+      nameHint: "ჩვენთვის, მოგვიანებით მოსაძებნად. ვიზიტორები ამას ვერ ხედავენ.",
+      channelLabel: "სად გავუშვათ",
+      pickChannel: "აირჩიეთ მინიმუმ ერთი.",
+      budgetLabel: "დღიური ბიუჯეტი",
+      budgetHint:
+        "რამდენის დახარჯვა შეუძლია Meta-ს დღეში, სარეკლამო ანგარიშის ვალუტაში. მიუთითეთ მთელ ერთეულებში — 50 ნიშნავს ორმოცდაათს.",
+      budgetCeiling: (amount) => `ჭერია ${amount} დღეში.`,
+      budgetOverCeiling: "ეს დღიურ ჭერს აღემატება.",
+      budgetTooSmall: "დღიური ბიუჯეტი ნულზე მეტი უნდა იყოს.",
+      destinationLabel: "სად მიჰყავს რეკლამას",
+      destinationHint:
+        "სურვილისამებრ. ცარიელი დატოვეთ და ხალხი კლიენტის საკუთარ საიტზე მივა.",
+      badUrl: "საჭიროა სრული მისამართი, რომელიც http:// ან https://-ით იწყება.",
+      headlineLabel: "სათაური",
+      primaryTextLabel: "რეკლამის ტექსტი",
+      imageLabel: "სურათის ბმული",
+      countryLabel: "ქვეყანა",
+      cityLabel: "ქალაქი",
+      cityHint: "სურვილისამებრ. ცარიელი დატოვეთ მთელი ქვეყნისთვის.",
+      ageLabel: "ასაკი",
+      ageTo: "—",
+      required: "შეავსეთ ეს ველი.",
+      create: "კამპანიის გაშვება",
+      creating: "იშვება…",
+      creatingNote: "Meta თანმიმდევრობით ოთხ ობიექტს ქმნის — რამდენიმე წამი სჭირდება.",
+      cancel: "გაუქმება",
+      createFailed: "კამპანიის გაშვება ვერ მოხერხდა.",
+      allowanceTitle: "რისი გაშვება შეუძლია ამ საიტს",
+      allowanceNone: "ამ საიტის პაკეტი რეკლამას არ მოიცავს.",
+      allowanceImpressions: (used, limit) =>
+        `${limit}-დან ${used} ჩვენება გამოყენებულია`,
+      allowanceImpressionsUnmetered: (used) =>
+        `${used} ჩვენება, ულიმიტო პაკეტზე`,
+      allowanceChannels: (channels) => `არხები: ${channels}`,
+      allowanceSpent:
+        "ამ საიტმა პაკეტში შემავალი ჩვენებები ამოწურა. გაშვება შემდეგ პერიოდამდე უარყოფილი იქნება.",
+      allowanceOver: (used, limit) =>
+        `პაკეტს გადააჭარბა: ${limit}-ის ნაცვლად ${used} ჩვენება. კამპანიები გაშვებისას მოწმდება და წინასწარ არ ჯავშნება, ამიტომ პერიოდის ბოლო კამპანიას ლიმიტის გადაჭარბება შეუძლია — ღირს კლიენტთან შეთანხმება შემდეგ გაშვებამდე.`,
+      allowanceStale:
+        "ითვლება მხოლოდ ის, რაც Meta-მ დაგვიბრუნა. დაფიქსირებული კამპანიები საათში ერთხელ ახლდება, მაგრამ კამპანია, რომლის ციფრებიც არასდროს მოსულა, ნაწილობრივ კი არა, საერთოდ არ ითვლება — ამიტომ ეს ქვედა ზღვარია და არა ზუსტი აღრიცხვა.",
+      channelNotInPlan: "ამ საიტის პაკეტში არ შედის.",
+    },
+    detail: {
+      pause: "შეჩერება",
+      pausing: "ჩერდება…",
+      pauseConfirm: "შევაჩეროთ ეს კამპანია? ხარჯვა მაშინვე შეწყდება.",
+      resume: "გაგრძელება",
+      resuming: "გრძელდება…",
+      resumeConfirm: "გავაგრძელოთ ეს კამპანია? ხარჯვა მაშინვე განახლდება.",
+      delete: "წაშლა Meta-ში",
+      deleting: "იშლება…",
+      deleteConfirm:
+        "წავშალოთ ეს კამპანია Meta-ში? ამის დაბრუნება შეუძლებელია და კლიენტს ახალი დასჭირდება.",
+      actionFailed: "ვერ შესრულდა.",
+      spendingTitle: "ეს ახლა ფულს ხარჯავს",
+      spendingBody:
+        "შუა გზაზე ჩავარდა, მას შემდეგ რაც კამპანია Meta-ში უკვე შეიქმნა — ანუ ჩავარდნის მიუხედავად მუშაობს. შეაჩერეთ ან წაშალეთ.",
+      notLaunched:
+        "ეს კამპანია Meta-მდე არ მისულა, ამიტომ არაფერი მიმდინარეობს და წასაკითხიც არაფერია.",
+      site: "საიტი",
+      createdBy: "გაუშვა",
+      destination: "მიუთითებს",
+      headline: "სათაური",
+      primaryText: "რეკლამის ტექსტი",
+      audience: "აუდიტორია",
+      ages: (from, to) => `ასაკი ${from}–${to}`,
+      launched: "გაშვებული",
+      paused: "შეჩერებული",
+      deletedAt: "წაშლილი",
+      created: "შექმნილი",
+      budget: "დღიური ბიუჯეტი",
+      metaTitle: "Meta-ს იდენტიფიკატორები",
+      metaCampaign: "კამპანია",
+      metaAdSet: "სარეკლამო ჯგუფი",
+      metaCreative: "კრეატივი",
+      metaAd: "რეკლამა",
+      notFound: "ასეთი კამპანია ვერ ვიპოვეთ.",
+    },
+    insights: {
+      title: "შედეგები",
+      refresh: "თავიდან წაკითხვა",
+      notYet: "ჯერ არაფერია დაფიქსირებული",
+      notYetBody:
+        "Meta-ს ამ კამპანიაზე ციფრები არ გამოუგზავნია. პირველ საათებში ეს ნორმალურია — არ ნიშნავს, რომ არაფერი ხდება, და ნულის ტოლიც არ არის.",
+      emptyReport:
+        "Meta-მ პასუხი გასცა, მაგრამ ყველა ციფრი ცარიელი იყო. კამპანია, რომელიც აშკარად საათებია მუშაობს, ასე არ უნდა გამოიყურებოდეს — ეს იმაზე მიუთითებს, რომ Meta-ს არასწორ ველებს ვთხოვთ, და არა იმაზე, რომ კამპანია ჩუმადაა. ღირს გადამოწმება.",
+      asOf: (when) => `წაკითხულია ${when}`,
+      cached:
+        "Meta-ს ანგარიშგება საათებით იგვიანებს და შემდეგ ზუსტდება, ამიტომ ეს ორიენტირია და არა ანგარიშ-ფაქტურა.",
+      impressions: "ჩვენებები",
+      reach: "მოცული ადამიანები",
+      clicks: "დაჭერები",
+      ctr: "დაჭერის მაჩვენებელი",
+      cpc: "ერთი დაჭერის ფასი",
+      spend: "დახარჯული",
+      loadFailed: "შედეგების წაკითხვა ვერ მოხერხდა.",
+      loadFailedNeverRead:
+        "ეს კამპანია წარმატებით არასდროს წაგვიკითხავს, ამიტომ იგივე შეცდომა სავარაუდოდ გაშვებიდან მეორდება. სხვაგან ეს არსად ჩანს: საათობრივი განახლება შეცდომას ჩაიწერს ჟურნალში და გააგრძელებს, სიაში კვლავ „ჯერ არაფერია“ წერია, საიტის ჩვენებების ჯამში კი ეს კამპანია საერთოდ არ ითვლება. ჯობია ჟურნალი შეამოწმოთ, ვიდრე დაელოდოთ.",
+      notLaunched: "ეს კამპანია Meta-მდე არ მისულა, ამიტომ წასაკითხი არაფერია.",
     },
   },
   statuses: { DRAFT: "მუშავდება", PUBLISHED: "გამოქვეყნებული" },

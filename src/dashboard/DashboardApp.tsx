@@ -13,6 +13,7 @@ import { AuthProvider, sitesOf, useAuth, useSession } from "./auth";
 import Layout from "./components/Layout";
 import EditorWindow from "./editor/EditorWindow";
 import Account from "./pages/Account";
+import Ads from "./pages/Ads";
 import Billing from "./pages/Billing";
 import Inbox from "./pages/Inbox";
 import Login from "./pages/Login";
@@ -143,6 +144,12 @@ function SiteRoutes() {
               }
             />
             <Route path="inbox" element={<Inbox />} />
+            {/*
+              Routed for every site, unlike orders: a site whose plan sells no
+              advertising still gets the screen, because for those clients it is
+              the offer rather than a feature they are missing.
+            */}
+            <Route path="ads" element={<Ads />} />
             {/*
               Routed even where the website cannot sell, which is everywhere
               today. The tab is hidden in that case but the screen still answers

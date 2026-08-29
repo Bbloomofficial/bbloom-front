@@ -4,6 +4,12 @@
  * is optional here.
  */
 
+import type {
+  AdChannel,
+  AdCampaignStatus,
+  AdInsightsFigures,
+} from "../../api/ads";
+
 export type SiteLanguage = "ka" | "en";
 
 /** Membership roles. An editor may rewrite a site but not commit it to a bill. */
@@ -617,3 +623,33 @@ export type OrderingStatus = {
   currency?: string;
   connectedAt?: string;
 };
+
+/**
+ * A client's view of one of their Facebook/Instagram campaigns.
+ *
+ * Read-only, and deliberately smaller than the staff DTO. It carries no Meta
+ * identifiers, because every client's advertising runs out of one shared bbloom
+ * ad account — an id handed to one client is a handle on everybody else's
+ * spending. There is no field to ask for and none to add.
+ *
+ * The client cannot create, pause or delete either. Advertising is a service
+ * staff run for them, so this screen reports and does not act.
+ */
+export type ClientAdCampaign = {
+  id: string;
+  name: string;
+  status: AdCampaignStatus;
+  channels: AdChannel[];
+  dailyBudgetMinor: number;
+  /** The ad account's currency, not necessarily the client's. Never assume GEL. */
+  currency: string;
+  destinationUrl?: string;
+  headline?: string;
+  primaryText?: string;
+  imageUrl?: string;
+  launchedAt?: string;
+  createdAt: string;
+} & AdInsightsFigures & {
+    /** Null until Meta has reported. See `AdInsightsFigures`. */
+    insightsReadAt?: string | null;
+  };

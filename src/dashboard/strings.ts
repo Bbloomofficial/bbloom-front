@@ -34,6 +34,7 @@ export type DashboardStrings = {
     /** The shop's order list. Only offered when the website can actually sell. */
     orders: string;
     page: string;
+    ads: string;
     billing: string;
     team: string;
     sites: string;
@@ -491,6 +492,43 @@ export type DashboardStrings = {
       call: string;
     };
   };
+  /**
+   * The client's read-only view of advertising we run for them. There is no
+   * create, pause or delete here on purpose: campaigns come out of one shared
+   * agency ad account and staff launch them, so this screen reports and never
+   * acts. When the client has not bought advertising it becomes an offer.
+   */
+  ads: {
+    title: string;
+    subtitle: string;
+    empty: string;
+    emptyBody: string;
+    upsellTitle: string;
+    upsellBody: string;
+    upsellCta: string;
+    allowanceTitle: string;
+    allowanceImpressions: (used: string, limit: string) => string;
+    allowanceImpressionsUnmetered: (used: string) => string;
+    allowanceChannels: (channels: string) => string;
+    allowanceSpent: string;
+    allowanceStale: string;
+    managed: string;
+    colName: string;
+    colStatus: string;
+    colChannels: string;
+    colBudget: string;
+    colSpend: string;
+    colWhen: string;
+    notYet: string;
+    asOf: (when: string) => string;
+    cached: string;
+    channels: Record<string, string>;
+    statuses: Record<string, string>;
+    prev: string;
+    next: string;
+    page: (page: number, total: number) => string;
+    loadFailed: string;
+  };
   preview: {
     failed: string;
   };
@@ -508,6 +546,7 @@ const en: DashboardStrings = {
     inbox: "Inbox",
     orders: "Orders",
     page: "Page",
+    ads: "Advertising",
     billing: "Billing",
     team: "Team",
     sites: "Websites",
@@ -1033,6 +1072,51 @@ const en: DashboardStrings = {
       call: "Call",
     },
   },
+  ads: {
+    title: "Advertising",
+    subtitle:
+      "The Facebook and Instagram campaigns bbloom runs for you, and what they have done so far.",
+    empty: "No campaigns yet",
+    emptyBody:
+      "Nothing has been launched for you yet. Tell us what you want to promote and we will build it.",
+    upsellTitle: "Advertising isn't part of your plan yet",
+    upsellBody:
+      "We can run Facebook and Instagram campaigns for your business — written, built and watched by us, out of our own ad account. It comes with the website plans rather than being a separate bill: Simple includes Facebook, and Classic and Modern add Instagram and more people reached.",
+    upsellCta: "Talk to us about advertising",
+    allowanceTitle: "Your allowance",
+    allowanceImpressions: (used, limit) =>
+      `${used} of ${limit} impressions used`,
+    allowanceImpressionsUnmetered: (used) =>
+      `${used} impressions so far, with no limit on your plan`,
+    allowanceChannels: (channels) => `Running on ${channels}`,
+    allowanceSpent:
+      "You've used the impressions your plan includes. Moving up a plan is the quickest way to keep going.",
+    allowanceStale:
+      "Counted from Facebook's own figures, which we refresh through the day, so this trails what has actually been shown.",
+    managed:
+      "We launch and adjust these for you, so there is nothing to change here. Email us and we'll do it.",
+    colName: "Campaign",
+    colStatus: "Status",
+    colChannels: "Where",
+    colBudget: "Daily budget",
+    colSpend: "Spent",
+    colWhen: "Started",
+    notYet: "Not yet",
+    asOf: (when) => `as of ${when}`,
+    cached:
+      "Facebook reports its figures a few hours behind and corrects them afterwards, so treat these as a guide.",
+    channels: { FACEBOOK: "Facebook", INSTAGRAM: "Instagram" },
+    statuses: {
+      ACTIVE: "Running",
+      PAUSED: "Paused",
+      FAILED: "Stopped",
+      DELETED: "Finished",
+    },
+    prev: "Previous",
+    next: "Next",
+    page: (page, total) => `Page ${page} of ${total}`,
+    loadFailed: "We couldn't load your campaigns. Try again.",
+  },
   preview: {
     failed: "We couldn't load the preview. Try again.",
   },
@@ -1046,6 +1130,7 @@ const ka: DashboardStrings = {
     inbox: "შემოსული",
     orders: "შეკვეთები",
     page: "გვერდი",
+    ads: "რეკლამა",
     billing: "გადახდები",
     team: "გუნდი",
     sites: "ვებგვერდები",
@@ -1569,6 +1654,51 @@ const ka: DashboardStrings = {
       reply: "პასუხი ელფოსტით",
       call: "დარეკვა",
     },
+  },
+  ads: {
+    title: "რეკლამა",
+    subtitle:
+      "Facebook-ისა და Instagram-ის კამპანიები, რომლებსაც bbloom თქვენთვის უშვებს, და მათი შედეგები.",
+    empty: "კამპანია ჯერ არ არის",
+    emptyBody:
+      "თქვენთვის ჯერ არაფერი გაშვებულა. გვითხარით, რის რეკლამა გსურთ, და ჩვენ ავაწყობთ.",
+    upsellTitle: "რეკლამა ჯერ თქვენს პაკეტში არ შედის",
+    upsellBody:
+      "შეგვიძლია თქვენი ბიზნესისთვის Facebook-ისა და Instagram-ის კამპანიები ვაწარმოოთ — ტექსტს ჩვენ ვწერთ, ჩვენვე ვაწყობთ და ვადევნებთ თვალს, ჩვენივე სარეკლამო ანგარიშიდან. ეს საიტის პაკეტში შედის და ცალკე ანგარიში არ არის: Simple მოიცავს Facebook-ს, Classic და Modern კი Instagram-საც ამატებს და მეტ ადამიანამდე აღწევს.",
+    upsellCta: "დაგვიკავშირდით რეკლამის შესახებ",
+    allowanceTitle: "თქვენი ლიმიტი",
+    allowanceImpressions: (used, limit) =>
+      `${limit}-დან ${used} ჩვენება გამოყენებულია`,
+    allowanceImpressionsUnmetered: (used) =>
+      `${used} ჩვენება, თქვენს პაკეტზე ლიმიტის გარეშე`,
+    allowanceChannels: (channels) => `მუშაობს: ${channels}`,
+    allowanceSpent:
+      "პაკეტში შემავალი ჩვენებები ამოწურეთ. გასაგრძელებლად ყველაზე სწრაფი გზა პაკეტის აწევაა.",
+    allowanceStale:
+      "დათვლილია Facebook-ის მონაცემებით, რომელსაც დღის განმავლობაში ვაახლებთ, ამიტომ რეალურ ჩვენებებს ჩამორჩება.",
+    managed:
+      "ამათ ჩვენ ვუშვებთ და ვასწორებთ, ამიტომ აქ შესაცვლელი არაფერია. მოგვწერეთ და გავაკეთებთ.",
+    colName: "კამპანია",
+    colStatus: "სტატუსი",
+    colChannels: "სად",
+    colBudget: "დღიური ბიუჯეტი",
+    colSpend: "დახარჯული",
+    colWhen: "დაიწყო",
+    notYet: "ჯერ არა",
+    asOf: (when) => `მდგომარეობით ${when}`,
+    cached:
+      "Facebook ციფრებს რამდენიმე საათის დაგვიანებით აჩვენებს და შემდეგ აზუსტებს, ამიტომ ეს ორიენტირად მიიჩნიეთ.",
+    channels: { FACEBOOK: "Facebook", INSTAGRAM: "Instagram" },
+    statuses: {
+      ACTIVE: "მიმდინარე",
+      PAUSED: "შეჩერებული",
+      FAILED: "შეწყვეტილი",
+      DELETED: "დასრულებული",
+    },
+    prev: "წინა",
+    next: "შემდეგი",
+    page: (page, total) => `გვერდი ${page} / ${total}`,
+    loadFailed: "კამპანიები ვერ ჩაიტვირთა. სცადეთ თავიდან.",
   },
   preview: {
     failed: "გადახედვა ვერ ჩაიტვირთა. სცადეთ თავიდან.",
