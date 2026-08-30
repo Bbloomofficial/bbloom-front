@@ -98,26 +98,6 @@ export default function Home() {
                 {t.hero.primaryCta}
               </Link>
             </div>
-
-            <ul className="mt-8 flex flex-wrap gap-x-5 gap-y-2">
-              {t.hero.badges.map((badge) => (
-                <li key={badge} className="flex items-center gap-2 text-sm text-ink-600">
-                  <svg
-                    viewBox="0 0 24 24"
-                    className="h-4 w-4 shrink-0 text-emerald-500"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="3"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    aria-hidden="true"
-                  >
-                    <path d="m5 13 4 4L19 7" />
-                  </svg>
-                  {badge}
-                </li>
-              ))}
-            </ul>
           </div>
 
           <HeroShowcase />
@@ -125,11 +105,7 @@ export default function Home() {
       </section>
 
       <section className="container-page py-16 sm:py-20">
-        <SectionHeading
-          eyebrow={t.problem.eyebrow}
-          title={t.problem.title}
-          description={t.problem.description}
-        />
+        <SectionHeading title={t.problem.title} description={t.problem.description} />
         <div className="mt-12 grid gap-6 md:grid-cols-3">
           {t.problem.items.map((item) => (
             <div key={item.title} className="card p-6">
@@ -142,11 +118,7 @@ export default function Home() {
 
       <section className="bg-ink-50/50 py-16 sm:py-20">
         <div className="container-page">
-          <SectionHeading
-            eyebrow={t.servicesSection.eyebrow}
-            title={t.servicesSection.title}
-            description={t.servicesSection.description}
-          />
+          <SectionHeading eyebrow={t.servicesSection.eyebrow} title={t.servicesSection.title} />
           <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {t.services.slice(0, 3).map((service) => (
               <ServiceCard key={service.slug} service={service} />
@@ -173,37 +145,6 @@ export default function Home() {
             </li>
           ))}
         </ol>
-      </section>
-
-      <section className="bg-contrast py-16 sm:py-20">
-        <div className="container-page">
-          <div className="mx-auto max-w-2xl text-center">
-            <span className="inline-flex items-center rounded-full bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-bloom-300">
-              {t.whyUs.eyebrow}
-            </span>
-            <h2 className="mt-5 text-2xl font-extrabold tracking-tight text-white sm:text-4xl">
-              {t.whyUs.title}
-            </h2>
-            <p className="mt-4 text-sm leading-relaxed text-white/70 sm:text-base">
-              {t.whyUs.description}
-            </p>
-          </div>
-
-          <div className="mt-12 grid gap-6 sm:grid-cols-2">
-            {t.whyUs.items.map((item) => (
-              <div key={item.title} className="rounded-2xl border border-white/10 bg-white/5 p-6">
-                <h3 className="text-base font-bold text-white">{item.title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-white/70">{item.body}</p>
-              </div>
-            ))}
-          </div>
-
-          <div className="mt-10 text-center">
-            <Link to="/contact" className="btn-primary w-full sm:w-auto">
-              {t.whyUs.cta}
-            </Link>
-          </div>
-        </div>
       </section>
 
       <section className="container-page py-16 sm:py-20">

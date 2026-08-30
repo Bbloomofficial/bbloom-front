@@ -3,7 +3,6 @@ export type Service = {
   title: string
   tagline: string
   description: string
-  deliverables: string[]
 }
 
 export type Step = { number: string; title: string; description: string }
@@ -57,7 +56,6 @@ export type Dict = {
     subtitle: string
     primaryCta: string
     secondaryCta: string
-    badges: string[]
     showcase: {
       adLabel: string
       handle: string
@@ -66,20 +64,12 @@ export type Dict = {
     }
   }
   problem: {
-    eyebrow: string
     title: string
     description: string
     items: { title: string; body: string }[]
   }
-  servicesSection: { eyebrow: string; title: string; description: string; seeAll: string }
+  servicesSection: { eyebrow: string; title: string; seeAll: string }
   process: { eyebrow: string; title: string; pageTitle: string }
-  whyUs: {
-    eyebrow: string
-    title: string
-    description: string
-    items: { title: string; body: string }[]
-    cta: string
-  }
   faqSection: {
     eyebrow: string
     title: string
