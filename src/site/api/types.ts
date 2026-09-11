@@ -19,11 +19,26 @@ export type TemplateCode =
   | "shop-modern"
   | "restaurant-simple"
   | "restaurant-classic"
-  | "restaurant-modern";
+  | "restaurant-modern"
+  | "teacher-simple"
+  | "teacher-classic"
+  | "teacher-modern"
+  | "lawyer-simple"
+  | "lawyer-classic"
+  | "lawyer-modern"
+  | "creative-simple"
+  | "creative-classic"
+  | "creative-modern";
 
 export type TemplateRef = {
   code: TemplateCode;
-  category: "SHOP" | "RESTAURANT";
+  /**
+   * `TEACHER`, `LAWYER` and `CREATIVE` are the personal categories: one person
+   * advertising themselves rather than a business selling stock. `LAWYER`
+   * covers professional services generally — consultants, accountants,
+   * therapists — and `CREATIVE` the portfolio-led trades.
+   */
+  category: "SHOP" | "RESTAURANT" | "TEACHER" | "LAWYER" | "CREATIVE";
   tier: "SIMPLE" | "CLASSIC" | "MODERN";
   name: string;
 };
@@ -93,6 +108,21 @@ export type SiteFeatures = {
   gallery?: boolean;
   testimonials?: boolean;
   faq?: boolean;
+  /**
+   * The personal templates' two content sections: a qualifications timeline and
+   * a rate card.
+   *
+   * Flags in the same sense `gallery` and `testimonials` are — the backend acts
+   * on them by leaving the section out of `sections`, and nothing in this
+   * renderer reads them. They are declared so the shape matches the payload,
+   * not because anything here branches on them.
+   *
+   * Neither is a paid feature. `rates` in particular names a price the client
+   * typed and nothing more: it does not sell, and it must never be folded in
+   * with `onlineOrders` or any other entitlement.
+   */
+  credentials?: boolean;
+  rates?: boolean;
   newsletter?: boolean;
   enquiryForm?: boolean;
   reservations?: boolean;
@@ -171,6 +201,80 @@ export type SiteMeta = {
 
 /** Section content is free-form JSON authored by the client, so it stays loose. */
 export type SectionContent = Record<string, unknown>;
+
+/**
+ * One line of a `credentials` section: a qualification, a post held, a degree.
+ *
+ * Every field is optional because all of it is client-authored — an entry with
+ * nothing but a `title` is a perfectly ordinary thing for someone to leave
+ * behind, and it has to render.
+ *
+ * `icon` names an entry in the site icon set (`components/Icon`), and falls
+ * back rather than rendering nothing when it names one that does not exist.
+ */
+export type CredentialItem = {
+  /** Free text, not a date: "2018 — 2022", "since 2015". Never parsed. */
+  period?: string;
+  title?: string;
+  /** University, chambers, studio — wherever the credential comes from. */
+  organisation?: string;
+  detail?: string;
+  icon?: string;
+};
+
+/**
+ * One package in a `rates` section.
+ *
+ * **`price` and `unit` are display strings the client has already written out —
+ * "45 GEL", "per hour" — and they are printed exactly as given.** They are not
+ * numbers, not minor units and not a currency pair, so they must never reach
+ * `utils/money`, `SiteMeta.currency`, or any formatter: doing so would turn a
+ * price someone typed into a different number, in their own shop window.
+ *
+ * Nothing here is purchasable. A rate card is an advertisement, and `ctaHref`
+ * is an ordinary link — normally `#contact` — not a checkout. Wiring this to
+ * `BuyNow`, `OrderRequest` or the ordering gate would be a category error: the
+ * personal templates have no catalogue and their category cannot sell.
+ */
+export type RateItem = {
+  name?: string;
+  price?: string;
+  unit?: string;
+  description?: string;
+  /**
+   * What the package includes, one row per line.
+   *
+   * Objects rather than bare strings, and not for the renderer's benefit: every
+   * repeatable list in a blueprint is a list of objects described by an
+   * `itemFields` schema, and that schema is what makes the rows addable and
+   * editable in the dashboard. A list of plain strings would carry no schema
+   * and would be uneditable.
+   *
+   * `text` is optional like every other client-authored field, so a row with
+   * nothing in it is expected and is skipped rather than drawn empty.
+   */
+  bullets?: ({ text?: string } | string)[];
+  /** Draws this one as the recommended package. At most one usually is. */
+  featured?: boolean;
+  ctaLabel?: string;
+  ctaHref?: string;
+};
+
+/** Content of a `credentials` section, as the personal blueprints emit it. */
+export type CredentialsContent = SectionContent & {
+  eyebrow?: string;
+  title?: string;
+  subtitle?: string;
+  items?: CredentialItem[];
+};
+
+/** Content of a `rates` section, as the personal blueprints emit it. */
+export type RatesContent = SectionContent & {
+  eyebrow?: string;
+  title?: string;
+  subtitle?: string;
+  items?: RateItem[];
+};
 
 export type PublicSection = {
   key: string;

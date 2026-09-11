@@ -64,6 +64,12 @@ const LABELS: Record<string, { ka: string; en: string }> = {
   answer: { ka: "პასუხი", en: "Answer" },
   day: { ka: "დღე", en: "Day" },
   value: { ka: "მნიშვნელობა", en: "Value" },
+  // The personal templates' two sections: a qualifications list and a rate card.
+  period: { ka: "პერიოდი", en: "Period" },
+  organisation: { ka: "ორგანიზაცია", en: "Organisation" },
+  detail: { ka: "დეტალები", en: "Details" },
+  unit: { ka: "ერთეული", en: "Unit" },
+  bullets: { ka: "პუნქტი", en: "List item" },
   tagline: { ka: "სლოგანი", en: "Tagline" },
   mapUrl: { ka: "რუკის ბმული", en: "Map link" },
   contact: { ka: "კონტაქტი", en: "Contact" },
@@ -95,6 +101,8 @@ const LABELS: Record<string, { ka: string; en: string }> = {
   socials: { ka: "სოციალური ბმული", en: "Social link" },
   stats: { ka: "მაჩვენებელი", en: "Stat" },
   team: { ka: "თანამშრომელი", en: "Team member" },
+  credentials: { ka: "კვალიფიკაცია", en: "Qualification" },
+  rates: { ka: "პაკეტი", en: "Package" },
 };
 
 /**
@@ -128,6 +136,8 @@ const SECTION_LABELS: Record<string, { ka: string; en: string }> = {
   conversion: { ka: "მოწოდება", en: "Call to action" },
   categories: { ka: "კატეგორიები", en: "Categories" },
   events: { ka: "ღონისძიებები", en: "Events" },
+  credentials: { ka: "კვალიფიკაცია და გამოცდილება", en: "Qualifications" },
+  rates: { ka: "ფასები", en: "Rates" },
 };
 
 function humanise(key: string): string {

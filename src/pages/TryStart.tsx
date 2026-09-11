@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useI18n } from "../i18n";
-import { fetchTemplates, templateThumbnail } from "../api/templates";
+import TemplateThumb from "../components/TemplateThumb";
+import { fetchTemplates, groupByCategory } from "../api/templates";
 import type { SiteTemplate } from "../api/templates";
 import { clearDraft, hasEdits, readDraft } from "../try/draft";
 import { tryStrings } from "../try/strings";
@@ -41,6 +42,10 @@ export default function TryStart() {
     () => (templates ?? []).filter((template) => template.demoSlug),
     [templates],
   );
+
+  // Fifteen designs in one flat grid is a wall. Grouped by who they are for, a
+  // visitor can skip four fifths of it on the heading alone.
+  const groups = useMemo(() => groupByCategory(usable), [usable]);
 
   const resumable = hasEdits(draft) ? draft : null;
 
@@ -100,39 +105,45 @@ export default function TryStart() {
         <p className="mt-12 text-center text-sm text-ink-500">{t.loading}</p>
       ) : null}
 
-      <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {usable.map((template) => (
-          <article key={template.code} className="card overflow-hidden">
-            <img
-              src={templateThumbnail(template)}
-              alt={template.name}
-              className="aspect-[4/3] w-full bg-ink-50 object-cover"
-              loading="lazy"
-            />
-            <div className="p-5">
-              <h2 className="text-base font-bold text-ink-900">
-                {template.name}
-              </h2>
-              <p className="mt-1 text-sm text-ink-600">{template.tagline}</p>
-              <div className="mt-4 flex flex-wrap items-center gap-2">
-                <button
-                  type="button"
-                  className="btn-primary"
-                  onClick={() => navigate(`/try/${template.code}`)}
-                >
-                  {t.choose}
-                </button>
-                <Link
-                  to={`/site/${template.demoSlug}`}
-                  className="rounded-full px-3 py-2 text-sm font-semibold text-ink-500 hover:text-ink-900"
-                >
-                  {t.preview}
-                </Link>
-              </div>
-            </div>
-          </article>
-        ))}
-      </div>
+      {groups.map(({ category, templates: group }) => (
+        <section key={category} className="mt-12">
+          {groups.length > 1 ? (
+            <h2 className="text-sm font-bold uppercase tracking-wide text-ink-400">
+              {t.categories[category] ?? category}
+            </h2>
+          ) : null}
+          <div className="mt-4 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {group.map((template) => (
+              <article key={template.code} className="card overflow-hidden">
+                <div className="aspect-[4/3] w-full overflow-hidden bg-ink-50">
+                  <TemplateThumb template={template} alt={template.name} />
+                </div>
+                <div className="p-5">
+                  <h3 className="text-base font-bold text-ink-900">
+                    {template.name}
+                  </h3>
+                  <p className="mt-1 text-sm text-ink-600">{template.tagline}</p>
+                  <div className="mt-4 flex flex-wrap items-center gap-2">
+                    <button
+                      type="button"
+                      className="btn-primary"
+                      onClick={() => navigate(`/try/${template.code}`)}
+                    >
+                      {t.choose}
+                    </button>
+                    <Link
+                      to={`/site/${template.demoSlug}`}
+                      className="rounded-full px-3 py-2 text-sm font-semibold text-ink-500 hover:text-ink-900"
+                    >
+                      {t.preview}
+                    </Link>
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+      ))}
     </div>
   );
 }

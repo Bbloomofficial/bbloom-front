@@ -604,14 +604,22 @@ export type OrderStats = {
  * read in Georgian and matching on the backend's English prose would break the
  * first time anybody reworded it.
  *
- * The three are not interchangeable and each has a different next step: the
- * first needs a different template, the second needs paying for, and the third
- * the client cannot fix at all — connecting a bank account is staff work, so
- * telling them to go and do it would send them looking for a screen that does
- * not exist for them.
+ * None are interchangeable and each ends somewhere different: the first needs a
+ * different template, the second needs paying for, and the third the client
+ * cannot fix at all — connecting a bank account is staff work, so telling them
+ * to go and do it would send them looking for a screen that does not exist for
+ * them.
+ *
+ * `TEMPLATE_CATEGORY` is the odd one out, and the only one that is not a
+ * problem. It says the website is not the kind of thing that sells — a teacher,
+ * a lawyer, a photographer — so there is nothing to fix, nothing to buy and
+ * nowhere to send anyone. It exists because the gate used to turn on tier
+ * alone, which would have handed a card reader to every personal design on the
+ * Modern tier.
  */
 export type OrderingBlockedReason =
   | "TEMPLATE_TIER"
+  | "TEMPLATE_CATEGORY"
   | "FEATURE_OFF"
   | "NO_PAYMENT_ACCOUNT";
 
