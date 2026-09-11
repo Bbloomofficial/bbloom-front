@@ -129,9 +129,9 @@ export const en: Dict = {
 
   templatesPage: {
     eyebrow: 'Templates',
-    title: 'Six websites. Pick the one that fits.',
+    title: 'Fifteen websites. Pick the one that fits.',
     description:
-      'Every template below is a real, working website — not a mockup. Open any demo, scroll it, filter the catalogue, try it on your phone. Yours is built on the same foundation with your products, photos and words.',
+      'Every template below is a real, working website — not a mockup. Open any demo, scroll it, filter the catalogue, try it on your phone. For businesses and for people advertising themselves alike, yours is built on the same foundation with your photos and your words.',
     filterAll: 'All templates',
     flagship: 'Our best work',
     viewDemo: 'Open live demo',
@@ -145,6 +145,9 @@ export const en: Dict = {
     categories: {
       SHOP: 'Shops',
       RESTAURANT: 'Restaurants & cafés',
+      TEACHER: 'Teachers & tutors',
+      LAWYER: 'Professional services',
+      CREATIVE: 'Creatives & portfolios',
     },
     tiers: {
       SIMPLE: 'Simple',
@@ -323,6 +326,60 @@ export const en: Dict = {
       tagline: 'A restaurant that looks the part',
       description:
         "Chef's picks, a menu with sticky section tabs and dietary tags, an events calendar, reviews and reservations — the full experience, on a dark, cinematic canvas.",
+    },
+    'teacher-simple': {
+      name: 'Simple teacher',
+      tagline: 'What you teach, and how to book you',
+      description:
+        'Your subjects, your experience and your rates on one clear page, ending in a contact form. Everything a parent checks before writing to you.',
+    },
+    'teacher-classic': {
+      name: 'Classic teacher',
+      tagline: 'Experience that speaks for itself',
+      description:
+        'A qualifications timeline, your teaching approach, lesson packages with prices and reviews from students. Built for tutors and coaches whose record is the reason people choose them.',
+    },
+    'teacher-modern': {
+      name: 'Modern teacher',
+      tagline: 'For tutors who fill their timetable online',
+      description:
+        'Qualification cards, a rate card with a recommended package, a gallery, student reviews and an FAQ — a confident, modern page designed to turn an ad click into a first lesson.',
+    },
+    'lawyer-simple': {
+      name: 'Simple professional',
+      tagline: 'Calm, clear and credible',
+      description:
+        'Your practice areas, your credentials and your fees, stated plainly. For lawyers, accountants, consultants and therapists who want to be found and trusted quickly.',
+    },
+    'lawyer-classic': {
+      name: 'Classic professional',
+      tagline: 'Authority without the noise',
+      description:
+        'Qualifications and experience in a full timeline, services explained at length, a fee schedule and client testimonials. Measured and traditional, the way professional advice should read.',
+    },
+    'lawyer-modern': {
+      name: 'Modern professional',
+      tagline: 'Our most polished professional page',
+      description:
+        'Credential cards, service packages with clear fees, testimonials, an FAQ and a consultation form — a refined dark-mode practice page for consultants who compete on reputation.',
+    },
+    'creative-simple': {
+      name: 'Simple portfolio',
+      tagline: 'Your work, nothing in the way',
+      description:
+        'A gallery, a short introduction and your rates. The quickest way to put a body of work online where a client can actually see it.',
+    },
+    'creative-classic': {
+      name: 'Classic portfolio',
+      tagline: 'For work worth lingering over',
+      description:
+        'A large gallery, the story behind your practice, your background and shoot packages with prices. Made for photographers and designers who sell on craft.',
+    },
+    'creative-modern': {
+      name: 'Modern portfolio',
+      tagline: 'A portfolio that feels commissioned',
+      description:
+        'A cinematic masonry gallery, package pricing with a highlighted option, client reviews and an enquiry form — dark, spacious and deliberately striking.',
     },
   },
 }

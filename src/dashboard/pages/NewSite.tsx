@@ -1,9 +1,9 @@
 import { useMemo, useState } from "react";
 import type { FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
-import { templateThumbnail } from "../../api/templates";
+import TemplateThumb from "../../components/TemplateThumb";
 import type { SiteTemplate } from "../../api/templates";
-import { fetchTemplates } from "../../api/templates";
+import { fetchTemplates, groupByCategory } from "../../api/templates";
 import { describeProblem } from "../../api/problem";
 import { useI18n } from "../../i18n";
 import type { SiteLanguage } from "../api/types";
@@ -45,6 +45,9 @@ export default function NewSite() {
     () => templatesState.data ?? [],
     [templatesState.data],
   );
+  // Grouped by who each design is for. A client picking their first website is
+  // choosing between three designs for their own trade, not fifteen in general.
+  const groups = useMemo(() => groupByCategory(templates), [templates]);
 
   const [businessName, setBusinessName] = useState("");
   const [language, setLanguage] = useState<SiteLanguage>(locale);
@@ -142,75 +145,83 @@ export default function NewSite() {
           </button>
         )}
 
-        <div className="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-          {templates.map((template: SiteTemplate) => {
-            const selected = template.code === templateCode;
-            return (
-              /*
-                The card is a container, not the control. It used to be a single
-                <button>, and an <a> cannot legally live inside one — so the
-                demo link is a sibling of the selection button rather than a
-                child of it. That also means clicking the link cannot select the
-                design: there is no ancestor handler for it to reach, which is a
-                stronger guarantee than stopping propagation and cannot be
-                undone by someone later adding a handler to the wrapper.
-              */
-              <div
-                key={template.code}
-                className={`flex flex-col overflow-hidden rounded-2xl border transition ${
-                  selected
-                    ? "border-bloom-500 ring-2 ring-bloom-500/30"
-                    : "border-ink-100 hover:border-bloom-300"
-                }`}
-              >
-                <button
-                  type="button"
-                  onClick={() => setTemplateCode(template.code)}
-                  aria-pressed={selected}
-                  className="block w-full flex-1 text-start"
-                >
-                  <img
-                    src={templateThumbnail(template)}
-                    alt=""
-                    loading="lazy"
-                    className="aspect-[4/3] w-full bg-ink-50 object-cover"
-                  />
-                  <span className="block px-3 pt-3">
-                    <span className="block text-sm font-bold text-ink-900">
-                      {template.name}
-                    </span>
-                    <span className="block text-xs text-ink-400">
-                      {template.tagline}
-                    </span>
-                  </span>
-                </button>
-
-                {/* A new tab on purpose: someone half-way through naming their
-                    business should not lose the form to a navigation. Absent
-                    when the design has no published demo, so the button is
-                    never offered for a site that will not load. */}
-                {template.demoSlug && (
-                  <a
-                    href={demoUrl(template.demoSlug)}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="mx-3 mb-3 mt-2 inline-flex items-center justify-center gap-1.5 rounded-xl border border-ink-100 px-3 py-2 text-xs font-semibold text-ink-600 transition hover:border-bloom-300 hover:text-bloom-600"
-                  >
-                    {t.newSite.viewDemo}
-                    <svg
-                      viewBox="0 0 20 20"
-                      className="h-3.5 w-3.5 shrink-0"
-                      fill="currentColor"
-                      aria-hidden="true"
+        <div className="mt-4 space-y-6">
+          {groups.map(({ category, templates: group }) => (
+            <div key={category}>
+              {groups.length > 1 && (
+                <h3 className="text-xs font-bold uppercase tracking-wide text-ink-400">
+                  {t.newSite.categories[category] ?? category}
+                </h3>
+              )}
+              <div className="mt-3 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+                {group.map((template: SiteTemplate) => {
+                  const selected = template.code === templateCode;
+                  return (
+                    /*
+                      The card is a container, not the control. It used to be a single
+                      <button>, and an <a> cannot legally live inside one — so the
+                      demo link is a sibling of the selection button rather than a
+                      child of it. That also means clicking the link cannot select the
+                      design: there is no ancestor handler for it to reach, which is a
+                      stronger guarantee than stopping propagation and cannot be
+                      undone by someone later adding a handler to the wrapper.
+                    */
+                    <div
+                      key={template.code}
+                      className={`flex flex-col overflow-hidden rounded-2xl border transition ${
+                        selected
+                          ? "border-bloom-500 ring-2 ring-bloom-500/30"
+                          : "border-ink-100 hover:border-bloom-300"
+                      }`}
                     >
-                      <path d="M11 3a1 1 0 1 0 0 2h2.59l-6.3 6.29a1 1 0 0 0 1.42 1.42L15 6.41V9a1 1 0 1 0 2 0V4a1 1 0 0 0-1-1h-5Z" />
-                      <path d="M5 5a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-3a1 1 0 1 0-2 0v3H5V7h3a1 1 0 0 0 0-2H5Z" />
-                    </svg>
-                  </a>
-                )}
+                      <button
+                        type="button"
+                        onClick={() => setTemplateCode(template.code)}
+                        aria-pressed={selected}
+                        className="block w-full flex-1 text-start"
+                      >
+                        <span className="block aspect-[4/3] w-full overflow-hidden bg-ink-50">
+                          <TemplateThumb template={template} alt="" />
+                        </span>
+                        <span className="block px-3 pt-3">
+                          <span className="block text-sm font-bold text-ink-900">
+                            {template.name}
+                          </span>
+                          <span className="block text-xs text-ink-400">
+                            {template.tagline}
+                          </span>
+                        </span>
+                      </button>
+
+                      {/* A new tab on purpose: someone half-way through naming their
+                          business should not lose the form to a navigation. Absent
+                          when the design has no published demo, so the button is
+                          never offered for a site that will not load. */}
+                      {template.demoSlug && (
+                        <a
+                          href={demoUrl(template.demoSlug)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="mx-3 mb-3 mt-2 inline-flex items-center justify-center gap-1.5 rounded-xl border border-ink-100 px-3 py-2 text-xs font-semibold text-ink-600 transition hover:border-bloom-300 hover:text-bloom-600"
+                        >
+                          {t.newSite.viewDemo}
+                          <svg
+                            viewBox="0 0 20 20"
+                            className="h-3.5 w-3.5 shrink-0"
+                            fill="currentColor"
+                            aria-hidden="true"
+                          >
+                            <path d="M11 3a1 1 0 1 0 0 2h2.59l-6.3 6.29a1 1 0 0 0 1.42 1.42L15 6.41V9a1 1 0 1 0 2 0V4a1 1 0 0 0-1-1h-5Z" />
+                            <path d="M5 5a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-3a1 1 0 1 0-2 0v3H5V7h3a1 1 0 0 0 0-2H5Z" />
+                          </svg>
+                        </a>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
-            );
-          })}
+            </div>
+          ))}
         </div>
       </div>
 

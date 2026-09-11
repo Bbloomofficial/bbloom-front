@@ -2,6 +2,7 @@ import type { Locale } from "../i18n";
 import type { ProblemStrings } from "../api/problem";
 import { problemStrings } from "../api/problemStrings";
 import type { PublishRefusal } from "./gate";
+import type { OrderingBlockedReason } from "./api/types";
 
 /**
  * Chrome for the client dashboard. Site *content* is localised by the backend,
@@ -112,6 +113,8 @@ export type DashboardStrings = {
     language: string;
     template: string;
     templateHint: string;
+    /** Heading above each group of designs, keyed by the backend's category. */
+    categories: Record<string, string>;
     /** On each design card, opening that design's live demo in a new tab. */
     viewDemo: string;
     submit: string;
@@ -442,14 +445,13 @@ export type DashboardStrings = {
     takingsHint: string;
     blockedTitle: string;
     /**
-     * One sentence per reason, each ending somewhere different. The third one
-     * has to say "talk to us": connecting a bank account is staff work, and a
-     * client sent looking for that screen will not find it.
+     * One sentence per reason, each ending somewhere different. The bank one
+     * has to say "talk to us": connecting an account is staff work, and a
+     * client sent looking for that screen will not find it. The category one
+     * has to end nowhere at all — it is not a fault and there is nothing to
+     * buy, so it says what the website is for instead of what it lacks.
      */
-    blocked: Record<
-      "TEMPLATE_TIER" | "FEATURE_OFF" | "NO_PAYMENT_ACCOUNT",
-      string
-    >;
+    blocked: Record<OrderingBlockedReason, string>;
     /** A reason this build has no sentence for. Better than a blank panel. */
     blockedUnknown: string;
     seePlans: string;
@@ -625,6 +627,13 @@ const en: DashboardStrings = {
     language: "Main language",
     template: "Design",
     templateHint: "Every design is fully editable — text, photos and colours.",
+    categories: {
+      SHOP: "Shops",
+      RESTAURANT: "Restaurants & cafés",
+      TEACHER: "Teachers & tutors",
+      LAWYER: "Professional services",
+      CREATIVE: "Creatives & portfolios",
+    },
     viewDemo: "See an example",
     submit: "Create website",
     submitting: "Creating…",
@@ -1030,6 +1039,8 @@ const en: DashboardStrings = {
     blocked: {
       TEMPLATE_TIER:
         "Online ordering needs a Modern design. Your website is on a simpler one, so there is nowhere for a customer to buy.",
+      TEMPLATE_CATEGORY:
+        "This website is not a shop, and it is not meant to be. Designs for teachers, professionals and creatives are built to win enquiries and bookings rather than to take payments — your contact form is where new clients reach you.",
       FEATURE_OFF:
         "Online ordering is part of a paid plan and is switched off for this website at the moment.",
       NO_PAYMENT_ACCOUNT:
@@ -1209,6 +1220,13 @@ const ka: DashboardStrings = {
     language: "მთავარი ენა",
     template: "დიზაინი",
     templateHint: "ყველა დიზაინი სრულად რედაქტირებადია — ტექსტი, ფოტოები და ფერები.",
+    categories: {
+      SHOP: "მაღაზიები",
+      RESTAURANT: "რესტორნები და კაფეები",
+      TEACHER: "მასწავლებლები და რეპეტიტორები",
+      LAWYER: "პროფესიული მომსახურება",
+      CREATIVE: "შემოქმედებითი პორტფოლიო",
+    },
     viewDemo: "მაგალითის ნახვა",
     submit: "ვებგვერდის შექმნა",
     submitting: "იქმნება…",
@@ -1613,6 +1631,8 @@ const ka: DashboardStrings = {
     blocked: {
       TEMPLATE_TIER:
         "ონლაინ შეკვეთებს „თანამედროვე“ დიზაინი სჭირდება. თქვენი ვებგვერდი უფრო მარტივზეა, ამიტომ მყიდველს ყიდვის ადგილი არ აქვს.",
+      TEMPLATE_CATEGORY:
+        "ეს ვებგვერდი მაღაზია არ არის და არც უნდა იყოს. მასწავლებლების, პროფესიონალებისა და შემოქმედებითი საქმიანობის დიზაინები იმისთვისაა, რომ მოგიყვანოთ მომართვები და ჩაწერები და არა იმისთვის, რომ თანხა მიიღოთ — ახალი კლიენტები თქვენს საკონტაქტო ფორმას მოგწერენ.",
       FEATURE_OFF:
         "ონლაინ შეკვეთები ფასიანი პაკეტის ნაწილია და ამ ვებგვერდზე ამჟამად გამორთულია.",
       NO_PAYMENT_ACCOUNT:

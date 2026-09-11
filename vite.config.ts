@@ -1,3 +1,4 @@
+/// <reference types="vitest/config" />
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
@@ -25,5 +26,12 @@ export default defineConfig({
         },
       },
     },
+  },
+  // Section renderers are plain React components, so a jsdom environment is
+  // enough — nothing here needs a browser or a running backend.
+  test: {
+    environment: "jsdom",
+    setupFiles: ["./src/test/setup.ts"],
+    include: ["src/**/*.test.{ts,tsx}"],
   },
 });

@@ -11,6 +11,8 @@ export type TryStrings = {
   galleryTitle: string;
   gallerySubtitle: string;
   galleryHint: string;
+  /** Heading above each group of designs, keyed by the backend's category. */
+  categories: Record<string, string>;
   choose: string;
   resume: string;
   resumeCta: string;
@@ -91,6 +93,13 @@ const en: TryStrings = {
   gallerySubtitle:
     "Change every word and every picture right away. No account needed until you want to keep it.",
   galleryHint: "Your website is free on a bbloom.ge address. Pay only for your own domain and features that need a server.",
+  categories: {
+    SHOP: "Shops",
+    RESTAURANT: "Restaurants & cafés",
+    TEACHER: "Teachers & tutors",
+    LAWYER: "Professional services",
+    CREATIVE: "Creatives & portfolios",
+  },
   choose: "Use this design",
   resume: "Continue where you left off",
   resumeCta: "Continue",
@@ -178,6 +187,13 @@ const ka: TryStrings = {
     "შეცვალეთ ყველა ტექსტი და სურათი მაშინვე. ანგარიში მხოლოდ მაშინ დაგჭირდებათ, როცა შენახვას მოისურვებთ.",
   galleryHint:
     "ვებგვერდი უფასოა bbloom.ge მისამართზე. გადახდა მხოლოდ საკუთარ დომენსა და სერვერზე დამოკიდებულ ფუნქციებზეა საჭირო.",
+  categories: {
+    SHOP: "მაღაზიები",
+    RESTAURANT: "რესტორნები და კაფეები",
+    TEACHER: "მასწავლებლები და რეპეტიტორები",
+    LAWYER: "პროფესიული მომსახურება",
+    CREATIVE: "შემოქმედებითი პორტფოლიო",
+  },
   choose: "ამ დიზაინით დაწყება",
   resume: "გააგრძელეთ იქიდან, სადაც შეჩერდით",
   resumeCta: "გაგრძელება",

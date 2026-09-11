@@ -6,6 +6,8 @@
  * arrive as `*Ka`/`*En` pairs, and it is the screen's job to pick one.
  */
 
+import { TEMPLATE_CATEGORY_ORDER } from "../../api/templates";
+
 export type SiteLanguage = "ka" | "en";
 
 export const SITE_LANGUAGES: SiteLanguage[] = ["ka", "en"];
@@ -35,8 +37,14 @@ export type Page<T> = {
   hasNext: boolean;
 };
 
-/** The backend's category enum is `SHOP`, not `ONLINE_SHOP`. */
-export const TEMPLATE_CATEGORIES = ["SHOP", "RESTAURANT"] as const;
+/**
+ * The backend's category enum is `SHOP`, not `ONLINE_SHOP`.
+ *
+ * Re-exported from the shared list rather than written out again: the picker
+ * groups by this and the public catalogue orders by that, and two hand-kept
+ * copies of the same enum would drift the first time a category is added.
+ */
+export const TEMPLATE_CATEGORIES = TEMPLATE_CATEGORY_ORDER;
 export type TemplateCategory = (typeof TEMPLATE_CATEGORIES)[number];
 
 /** Ordered from plainest to richest, which is also how we lay them out. */
