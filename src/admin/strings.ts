@@ -1180,7 +1180,7 @@ const en: AdminStrings = {
       ADS_NOT_IN_PLAN:
         "That plan does not include advertising. Choose one that does.",
       ADS_CHANNEL_NOT_IN_PLAN:
-        "This site's plan does not sell that channel. Simple is Facebook only — Instagram needs Classic or above.",
+        "This site's plan does not sell that channel. The entry plan is Facebook only — Instagram needs one above it.",
       ADS_IMPRESSION_LIMIT:
         "This site has used the impressions its plan includes. Move it up a plan, or wait for the next period.",
       ADS_NOT_CONFIGURED:
@@ -2021,7 +2021,7 @@ const ka: AdminStrings = {
       ADS_NOT_IN_PLAN:
         "ეს პაკეტი რეკლამას არ მოიცავს. აირჩიეთ ისეთი, რომელიც მოიცავს.",
       ADS_CHANNEL_NOT_IN_PLAN:
-        "ამ საიტის პაკეტი ამ არხს არ მოიცავს. Simple მხოლოდ Facebook-ია — Instagram-ისთვის საჭიროა Classic ან ზემოთ.",
+        "ამ საიტის პაკეტი ამ არხს არ მოიცავს. საწყისი პაკეტი მხოლოდ Facebook-ია — Instagram-ისთვის საჭიროა მის ზემოთ მყოფი პაკეტი.",
       ADS_IMPRESSION_LIMIT:
         "ამ საიტმა პაკეტში შემავალი ჩვენებები ამოწურა. აწიეთ პაკეტი ან დაელოდეთ შემდეგ პერიოდს.",
       ADS_NOT_CONFIGURED:

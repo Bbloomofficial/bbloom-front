@@ -216,7 +216,7 @@ export default function Overview() {
               }
             />
             <Row
-              label={t.overview.plan}
+              label={t.overview.design}
               value={detail.tier ? titleCase(detail.tier) : undefined}
             />
             <Row label={t.overview.products} value={detail.productCount} />

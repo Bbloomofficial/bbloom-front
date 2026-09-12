@@ -321,7 +321,8 @@ export type DashboardStrings = {
     subtitle: string;
     siteTitle: string;
     template: string;
-    plan: string;
+    /** The template's tier, not the subscription — those are unrelated names. */
+    design: string;
     products: string;
     languages: string;
     currency: string;
@@ -860,7 +861,7 @@ const en: DashboardStrings = {
     subtitle: "Here is how your website is doing.",
     siteTitle: "Your website",
     template: "Template",
-    plan: "Plan",
+    design: "Design",
     products: "Products",
     languages: "Languages",
     currency: "Currency",
@@ -1092,7 +1093,7 @@ const en: DashboardStrings = {
       "Nothing has been launched for you yet. Tell us what you want to promote and we will build it.",
     upsellTitle: "Advertising isn't part of your plan yet",
     upsellBody:
-      "We can run Facebook and Instagram campaigns for your business — written, built and watched by us, out of our own ad account. It comes with the website plans rather than being a separate bill: Simple includes Facebook, and Classic and Modern add Instagram and more people reached.",
+      "We can run Facebook and Instagram campaigns for your business — written, built and watched by us, out of our own ad account. It comes with the website plans rather than being a separate bill: the entry plan includes Facebook, and the plans above it add Instagram and more people reached.",
     upsellCta: "Talk to us about advertising",
     allowanceTitle: "Your allowance",
     allowanceImpressions: (used, limit) =>
@@ -1452,7 +1453,7 @@ const ka: DashboardStrings = {
     subtitle: "აი, როგორ მიდის თქვენი ვებგვერდის საქმეები.",
     siteTitle: "თქვენი ვებგვერდი",
     template: "შაბლონი",
-    plan: "პაკეტი",
+    design: "დიზაინი",
     products: "პროდუქტი",
     languages: "ენები",
     currency: "ვალუტა",
@@ -1684,7 +1685,7 @@ const ka: DashboardStrings = {
       "თქვენთვის ჯერ არაფერი გაშვებულა. გვითხარით, რის რეკლამა გსურთ, და ჩვენ ავაწყობთ.",
     upsellTitle: "რეკლამა ჯერ თქვენს პაკეტში არ შედის",
     upsellBody:
-      "შეგვიძლია თქვენი ბიზნესისთვის Facebook-ისა და Instagram-ის კამპანიები ვაწარმოოთ — ტექსტს ჩვენ ვწერთ, ჩვენვე ვაწყობთ და ვადევნებთ თვალს, ჩვენივე სარეკლამო ანგარიშიდან. ეს საიტის პაკეტში შედის და ცალკე ანგარიში არ არის: Simple მოიცავს Facebook-ს, Classic და Modern კი Instagram-საც ამატებს და მეტ ადამიანამდე აღწევს.",
+      "შეგვიძლია თქვენი ბიზნესისთვის Facebook-ისა და Instagram-ის კამპანიები ვაწარმოოთ — ტექსტს ჩვენ ვწერთ, ჩვენვე ვაწყობთ და ვადევნებთ თვალს, ჩვენივე სარეკლამო ანგარიშიდან. ეს საიტის პაკეტში შედის და ცალკე ანგარიში არ არის: საწყისი პაკეტი მოიცავს Facebook-ს, მის ზემოთ მყოფი პაკეტები კი Instagram-საც ამატებს და მეტ ადამიანამდე აღწევს.",
     upsellCta: "დაგვიკავშირდით რეკლამის შესახებ",
     allowanceTitle: "თქვენი ლიმიტი",
     allowanceImpressions: (used, limit) =>
