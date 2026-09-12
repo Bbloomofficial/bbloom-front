@@ -1,9 +1,12 @@
-import { useMemo, useState } from "react";
+﻿import { useMemo, useState } from "react";
 import type { FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
-import TemplateThumb from "../../components/TemplateThumb";
 import type { SiteTemplate } from "../../api/templates";
-import { fetchTemplates, groupByCategory } from "../../api/templates";
+import {
+  fetchTemplates,
+  groupByCategory,
+  isTierUnlocked,
+} from "../../api/templates";
 import { describeProblem } from "../../api/problem";
 import { useI18n } from "../../i18n";
 import type { SiteLanguage } from "../api/types";
@@ -12,21 +15,8 @@ import { sitesOf, useSession } from "../auth";
 import { useResource } from "../hooks";
 import { dashboardStrings } from "../strings";
 import { dashPath } from "../../routes";
-
-/**
- * Where a design's live demo is published.
- *
- * Takes the slug the templates endpoint already reports rather than rebuilding
- * it from the template code. The backend derives it as `"demo-" + code`
- * (`SiteDemoSeeder.slugFor`), so the two agree today — but `demoSlug` is the
- * server stating the answer, and it is null when that design has no published
- * demo. Re-deriving would turn "no demo exists" into a confident link to a
- * site that isn't there, which is the failure worth avoiding: a button that
- * looks identical whether it works or not.
- */
-function demoUrl(demoSlug: string) {
-  return `https://${demoSlug}.bbloom.ge`;
-}
+import TemplateCard from "../components/TemplateCard";
+import { useTemplateCeiling } from "../api/templateAccess";
 
 /**
  * Creating a website used to be staff work. A client does it themselves now, so
@@ -55,11 +45,25 @@ export default function NewSite() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // The highest design tier this account may build on. `undefined` when the
+  // backend does not report it, which unlocks everything â€” see `isTierUnlocked`.
+  const ceiling = useTemplateCeiling();
+
   async function onSubmit(event: FormEvent) {
     event.preventDefault();
     if (submitting) return;
     if (!templateCode) {
       setError(t.newSite.noTemplate);
+      return;
+    }
+    // A locked design cannot be put into state by the picker, so reaching here
+    // with one means the ceiling moved under an open form â€” a plan lapsed in
+    // another tab, say. Checked again rather than trusted: the request would be
+    // refused anyway, and this states why without a round trip.
+    const chosen = templates.find((one) => one.code === templateCode);
+    if (chosen && !isTierUnlocked(chosen.tier, ceiling)) {
+      setError(t.errors.templateTierRequiresPlan);
+      setTemplateCode("");
       return;
     }
     setSubmitting(true);
@@ -121,7 +125,7 @@ export default function NewSite() {
                 setLanguage(event.target.value as SiteLanguage)
               }
             >
-              <option value="ka">ქართული</option>
+              <option value="ka">áƒ¥áƒáƒ áƒ—áƒ£áƒšáƒ˜</option>
               <option value="en">English</option>
             </select>
           </div>
@@ -154,71 +158,17 @@ export default function NewSite() {
                 </h3>
               )}
               <div className="mt-3 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-                {group.map((template: SiteTemplate) => {
-                  const selected = template.code === templateCode;
-                  return (
-                    /*
-                      The card is a container, not the control. It used to be a single
-                      <button>, and an <a> cannot legally live inside one — so the
-                      demo link is a sibling of the selection button rather than a
-                      child of it. That also means clicking the link cannot select the
-                      design: there is no ancestor handler for it to reach, which is a
-                      stronger guarantee than stopping propagation and cannot be
-                      undone by someone later adding a handler to the wrapper.
-                    */
-                    <div
-                      key={template.code}
-                      className={`flex flex-col overflow-hidden rounded-2xl border transition ${
-                        selected
-                          ? "border-bloom-500 ring-2 ring-bloom-500/30"
-                          : "border-ink-100 hover:border-bloom-300"
-                      }`}
-                    >
-                      <button
-                        type="button"
-                        onClick={() => setTemplateCode(template.code)}
-                        aria-pressed={selected}
-                        className="block w-full flex-1 text-start"
-                      >
-                        <span className="block aspect-[4/3] w-full overflow-hidden bg-ink-50">
-                          <TemplateThumb template={template} alt="" />
-                        </span>
-                        <span className="block px-3 pt-3">
-                          <span className="block text-sm font-bold text-ink-900">
-                            {template.name}
-                          </span>
-                          <span className="block text-xs text-ink-400">
-                            {template.tagline}
-                          </span>
-                        </span>
-                      </button>
-
-                      {/* A new tab on purpose: someone half-way through naming their
-                          business should not lose the form to a navigation. Absent
-                          when the design has no published demo, so the button is
-                          never offered for a site that will not load. */}
-                      {template.demoSlug && (
-                        <a
-                          href={demoUrl(template.demoSlug)}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="mx-3 mb-3 mt-2 inline-flex items-center justify-center gap-1.5 rounded-xl border border-ink-100 px-3 py-2 text-xs font-semibold text-ink-600 transition hover:border-bloom-300 hover:text-bloom-600"
-                        >
-                          {t.newSite.viewDemo}
-                          <svg
-                            viewBox="0 0 20 20"
-                            className="h-3.5 w-3.5 shrink-0"
-                            fill="currentColor"
-                            aria-hidden="true"
-                          >
-                            <path d="M11 3a1 1 0 1 0 0 2h2.59l-6.3 6.29a1 1 0 0 0 1.42 1.42L15 6.41V9a1 1 0 1 0 2 0V4a1 1 0 0 0-1-1h-5Z" />
-                            <path d="M5 5a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-3a1 1 0 1 0-2 0v3H5V7h3a1 1 0 0 0 0-2H5Z" />
-                          </svg>
-                        </a>
-                      )}
-                    </div>
-                  );
-                })}
+                {group.map((template: SiteTemplate) => (
+                  <TemplateCard
+                    key={template.code}
+                    template={template}
+                    t={t}
+                    selected={template.code === templateCode}
+                    locked={!isTierUnlocked(template.tier, ceiling)}
+                    onSelect={() => setTemplateCode(template.code)}
+                    plansHref="/pricing"
+                  />
+                ))}
               </div>
             </div>
           ))}

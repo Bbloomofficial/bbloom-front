@@ -44,6 +44,8 @@ const en: ProblemStrings = {
   planComingSoon: "That plan isn't available yet.",
   planNotPurchasable: "That plan is arranged with us directly. Get in touch and we'll set it up.",
   promoLimitReached: "This code isn't available any more.",
+  templateTierRequiresPlan:
+    "This design comes with a higher plan. Upgrade and you can use it right away.",
   throttled: "Too many attempts. Wait a moment and try again.",
   signInThrottled:
     "Signing in to this account is paused for a moment. Please try again shortly.",
@@ -94,6 +96,8 @@ const ka: ProblemStrings = {
   planNotPurchasable:
     "ეს პაკეტი პირდაპირ ჩვენთან თანხმდება. დაგვიკავშირდით და მოვაწყობთ.",
   promoLimitReached: "ეს კოდი აღარ არის ხელმისაწვდომი.",
+  templateTierRequiresPlan:
+    "ეს დიზაინი უფრო მაღალ პაკეტშია. პაკეტის განახლებისთანავე შეძლებთ მის გამოყენებას.",
   throttled: "ბევრი მცდელობა იყო. მოიცადეთ და სცადეთ თავიდან.",
   signInThrottled: "ამ ანგარიშზე შესვლა დროებით შეჩერებულია. სცადეთ ცოტა ხანში.",
   signInThrottledFor: (minutes) =>

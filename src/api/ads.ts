@@ -15,6 +15,36 @@ export const AD_CHANNELS = ["FACEBOOK", "INSTAGRAM"] as const;
 export type AdChannel = (typeof AD_CHANNELS)[number];
 
 /**
+ * A plan's advertising channels as the admin API carries them: one
+ * comma-separated string — `"FACEBOOK,INSTAGRAM"` — and `""` for a plan that
+ * sells no advertising at all.
+ *
+ * A string rather than an array on the wire, which is worth stating plainly
+ * because every other list in these payloads is a JSON array and the mistake
+ * fails validation rather than degrading. The empty string is a real value
+ * here, not a missing one: it is how "this plan sells no ads" is expressed,
+ * and the API refuses the field's absence outright so that an old-shaped body
+ * cannot quietly empty the entitlement.
+ *
+ * Unrecognised names are kept rather than dropped. A channel added to the
+ * backend before this build knows about it would otherwise be wiped by the
+ * first member of staff who opens the plan and saves it.
+ */
+export function parseAdChannels(raw: string | null | undefined): string[] {
+  if (!raw) return [];
+  return raw
+    .split(",")
+    .map((channel) => channel.trim().toUpperCase())
+    .filter(Boolean);
+}
+
+/** The inverse. An empty list is `""`, which is a value the API expects. */
+export function formatAdChannels(channels: readonly string[]): string {
+  return [...new Set(channels.map((channel) => channel.trim()).filter(Boolean))]
+    .join(",");
+}
+
+/**
  * `ACTIVE` and `PAUSED` are self-explanatory. The two that need care:
  *
  * `FAILED` does **not** mean nothing happened. A campaign can fail part-way

@@ -9,7 +9,10 @@ import {
   fetchPlan,
   updatePlan,
 } from "../api/client";
-import type { AdminPlanDto, PlanUpsertRequest } from "../api/types";
+import type { AdminPlanDto, PlanUpsertRequest, TemplateTier } from "../api/types";
+import { AD_CHANNELS, TEMPLATE_TIERS } from "../api/types";
+import { formatAdChannels, parseAdChannels } from "../../api/ads";
+import { includedTiers } from "../../api/templates";
 import { adminStrings } from "../strings";
 import {
   fromEndOfDay,
@@ -31,6 +34,13 @@ const CURRENCIES = ["USD", "GEL", "EUR"] as const;
  * A blank plan. `active` and `purchasable` start on because the common reason
  * to open this screen is to sell something; a "contact us" tier is the
  * exception and is switched off deliberately.
+ *
+ * The three entitlement fields are written out rather than left off. A create
+ * body is built from this object alone — there is no server response to inherit
+ * the shape from, the way an edit has — so a field missing here is a field
+ * missing from every plan this screen has ever created. `adChannels` is now
+ * refused outright when absent, which turns that omission from a silent empty
+ * list into a failed save, so the default has to be a real `[]`.
  */
 function emptyPlan(): PlanUpsertRequest {
   return {
@@ -43,6 +53,12 @@ function emptyPlan(): PlanUpsertRequest {
     billingPeriod: "MONTHLY",
     purchasable: true,
     comingSoon: false,
+    // Unrestricted and unmetered: a new plan grants everything until someone
+    // decides otherwise, which is the safe direction for a draft nobody has
+    // finished configuring — it cannot accidentally sell less than promised.
+    maxTemplateTier: null,
+    adImpressionLimit: null,
+    adChannels: "",
     translations: LANGUAGES.map((language) => ({
       language,
       name: "",
@@ -60,8 +76,11 @@ function emptyPlan(): PlanUpsertRequest {
  * per language. Sending them back empty is fine — the backend stores what it is
  * given, and a half-translated plan is better represented as blank fields than
  * as a missing tab staff cannot find.
+ *
+ * Exported for the test that pins the round-trip: a save is a whole-record
+ * write, so anything this drops is a setting the next save silently clears.
  */
-function toForm(plan: AdminPlanDto): PlanUpsertRequest {
+export function toForm(plan: AdminPlanDto): PlanUpsertRequest {
   const blank = emptyPlan();
   const {
     // Answers rather than settings, and dropped so a form that has been open a
@@ -78,6 +97,13 @@ function toForm(plan: AdminPlanDto): PlanUpsertRequest {
     // rather than a default — which is exactly what a plan loaded from a
     // backend that predates the field would otherwise send on the next save.
     comingSoon: plan.comingSoon === true,
+    // `??` rather than `||`, twice over, because `0` is a real impression
+    // allowance and must not collapse into "unmetered". A plan loaded from a
+    // backend that predates either field heals to an explicit value here
+    // instead of posting `undefined` into a required slot.
+    maxTemplateTier: plan.maxTemplateTier ?? null,
+    adImpressionLimit: plan.adImpressionLimit ?? null,
+    adChannels: plan.adChannels ?? "",
     translations: LANGUAGES.map(
       (language) =>
         plan.translations.find((item) => item.language === language) ?? {
@@ -140,6 +166,13 @@ export default function PlanEditor() {
   const [discountText, setDiscountText] = useState("");
   const [startsAtText, setStartsAtText] = useState("");
   const [endsAtText, setEndsAtText] = useState("");
+  /**
+   * The monthly impression allowance, as text, because blank is a value here
+   * and not an absence: an empty box means unmetered. Holding it as a number
+   * would need a second flag to tell "unlimited" from "none", and the two are
+   * opposite ends of the scale.
+   */
+  const [impressionsText, setImpressionsText] = useState("");
   const [language, setLanguage] = useState<string>(LANGUAGES[0]);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -163,6 +196,11 @@ export default function PlanEditor() {
     );
     setStartsAtText(toDateInput(data.discountStartsAt));
     setEndsAtText(toEndDateInput(data.discountEndsAt));
+    setImpressionsText(
+      data.adImpressionLimit === null || data.adImpressionLimit === undefined
+        ? ""
+        : String(data.adImpressionLimit),
+    );
   }, [data]);
 
   const translation = useMemo(
@@ -292,6 +330,18 @@ export default function PlanEditor() {
       return;
     }
 
+    // Blank is unmetered and sends null; anything else has to be a whole
+    // non-negative number, since a typo here quietly rations someone's ads.
+    const impressions =
+      impressionsText.trim() === "" ? null : Number(impressionsText);
+    if (
+      impressions !== null &&
+      (!Number.isInteger(impressions) || impressions < 0)
+    ) {
+      setProblem(t.plans.adImpressionsInvalid);
+      return;
+    }
+
     // Rounded rather than truncated: 199.999 typed by hand should not quietly
     // become 199.99 in the ledger.
     //
@@ -304,6 +354,10 @@ export default function PlanEditor() {
       ...form,
       code: form.code.trim(),
       priceMinor: Math.round(major * 100),
+      // Read from the box rather than from the model, so a figure typed a
+      // second ago is the one that is saved. `null` here is unmetered, and is
+      // sent rather than omitted for the same reason `adChannels` is.
+      adImpressionLimit: impressions,
       discountPercent: percent ?? undefined,
       discountStartsAt: percent === null ? undefined : startsAt,
       discountEndsAt: percent === null ? undefined : endsAt,
@@ -341,6 +395,12 @@ export default function PlanEditor() {
       );
       setStartsAtText(toDateInput(result.discountStartsAt));
       setEndsAtText(toEndDateInput(result.discountEndsAt));
+      setImpressionsText(
+        result.adImpressionLimit === null ||
+          result.adImpressionLimit === undefined
+          ? ""
+          : String(result.adImpressionLimit),
+      );
       setSaved(true);
     } catch (cause) {
       setProblem((cause as Error).message || t.plans.saveFailed);
@@ -516,6 +576,129 @@ export default function PlanEditor() {
               </p>
             )}
           </div>
+        </section>
+
+        <section className="rounded-3xl border border-ink-100 bg-surface p-6">
+          <h2 className="text-lg font-bold text-ink-900">
+            {t.plans.entitlements}
+          </h2>
+          <p className="mt-1 text-sm text-ink-600">{t.plans.entitlementsHint}</p>
+
+          <div className="mt-4 grid gap-5 sm:grid-cols-2">
+            <div>
+              <label className="label" htmlFor="plan-template-tier">
+                {t.plans.maxTemplateTier}
+              </label>
+              <select
+                id="plan-template-tier"
+                className="field"
+                value={form.maxTemplateTier ?? ""}
+                onChange={(e) =>
+                  patch({
+                    // The empty option is unrestricted, which is a setting and
+                    // not a blank: it grants every design, including ones added
+                    // after today. Stored as null rather than as a tier name so
+                    // it cannot silently become a ceiling when a richer tier is
+                    // introduced.
+                    maxTemplateTier:
+                      e.target.value === ""
+                        ? null
+                        : (e.target.value as TemplateTier),
+                  })
+                }
+              >
+                <option value="">{t.plans.maxTemplateTierNone}</option>
+                {TEMPLATE_TIERS.map((tier) => (
+                  <option key={tier} value={tier}>
+                    {t.tiers[tier] ?? tier}
+                  </option>
+                ))}
+              </select>
+              <p className="mt-1 text-xs text-ink-400">
+                {t.plans.maxTemplateTierHint}
+              </p>
+              {/* The one genuinely misreadable thing on this screen: staff
+                  choose "Modern" and picture a plan that offers one design.
+                  Listing what the choice actually grants answers that without
+                  anybody needing to know the tiers are a ladder. */}
+              <p className="mt-2 rounded-2xl bg-tint px-4 py-2.5 text-xs font-semibold text-tint-fg">
+                {form.maxTemplateTier
+                  ? t.plans.maxTemplateTierIncludes(
+                      t.tiers[form.maxTemplateTier] ?? form.maxTemplateTier,
+                      includedTiers(form.maxTemplateTier)
+                        .map((tier) => t.tiers[tier] ?? tier)
+                        .join(", "),
+                    )
+                  : t.plans.maxTemplateTierNoneIncludes}
+              </p>
+            </div>
+
+            <div>
+              <label className="label" htmlFor="plan-ad-impressions">
+                {t.plans.adImpressions}
+              </label>
+              <input
+                id="plan-ad-impressions"
+                className="field"
+                inputMode="numeric"
+                dir="ltr"
+                placeholder={t.plans.adImpressionsUnlimited}
+                value={impressionsText}
+                onChange={(e) => {
+                  setSaved(false);
+                  setImpressionsText(e.target.value);
+                }}
+              />
+              <p className="mt-1 text-xs text-ink-400">
+                {t.plans.adImpressionsHint}
+              </p>
+              {/* Blank and zero are opposite ends of this scale, and the field
+                  cannot show both at once, so whichever one is in force is
+                  named underneath it. */}
+              <p className="mt-2 text-xs font-semibold text-ink-600">
+                {impressionsText.trim() === ""
+                  ? t.plans.adImpressionsUnlimitedNote
+                  : impressionsText.trim() === "0"
+                    ? t.plans.adImpressionsNoneNote
+                    : ""}
+              </p>
+            </div>
+          </div>
+
+          <fieldset className="mt-5">
+            <legend className="label">{t.plans.adChannels}</legend>
+            <div className="mt-1.5 flex flex-wrap gap-4">
+              {AD_CHANNELS.map((channel) => {
+                const selected = parseAdChannels(form.adChannels);
+                const on = selected.includes(channel);
+                return (
+                  <label
+                    key={channel}
+                    className="flex items-center gap-2 text-sm text-ink-800"
+                  >
+                    <input
+                      type="checkbox"
+                      checked={on}
+                      onChange={() =>
+                        patch({
+                          // Rebuilt from the parsed list so a channel this build
+                          // has never heard of survives the round-trip instead
+                          // of being dropped by whoever opens the plan next.
+                          adChannels: formatAdChannels(
+                            on
+                              ? selected.filter((item) => item !== channel)
+                              : [...selected, channel],
+                          ),
+                        })
+                      }
+                    />
+                    <span>{t.ads.channels[channel] ?? channel}</span>
+                  </label>
+                );
+              })}
+            </div>
+            <p className="mt-2 text-xs text-ink-400">{t.plans.adChannelsHint}</p>
+          </fieldset>
         </section>
 
         <section className="rounded-3xl border border-ink-100 bg-surface p-6">

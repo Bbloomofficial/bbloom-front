@@ -15,6 +15,8 @@ import type {
   SiteFeatureFlags,
   SiteLoginResponse,
   SiteUserProfile,
+  TemplateSwitchPreview,
+  TemplateSwitchResult,
 } from "./types";
 
 /**
@@ -90,6 +92,45 @@ export function updateSiteSettings(
   return authed<SiteDetail>(token, `/manage/sites/${siteId}`, {
     method: "PATCH",
     body: JSON.stringify(patch),
+  });
+}
+
+/**
+ * The dry run behind the design switcher. Writes nothing, so it can be called
+ * the moment a design is highlighted — which is the point: the client has to be
+ * told what they would lose *before* anything is written, and this is the only
+ * source that knows. Inferring it here from the two blueprints would drift from
+ * the server's real reconciliation, and a confident wrong list is worse than
+ * none.
+ */
+export function previewTemplateSwitch(
+  token: string,
+  siteId: string,
+  templateCode: string,
+): Promise<TemplateSwitchPreview> {
+  return authed<TemplateSwitchPreview>(
+    token,
+    `/manage/sites/${siteId}/template-switch?templateCode=${encodeURIComponent(
+      templateCode,
+    )}`,
+  );
+}
+
+/**
+ * Changes the website's design. Immediate, irreversible and lossy.
+ *
+ * `confirm` is the server's tripwire against a caller that never ran the
+ * preview — a body without it is refused. It is not a substitute for asking the
+ * client, which is what the confirmation step is for.
+ */
+export function switchTemplate(
+  token: string,
+  siteId: string,
+  templateCode: string,
+): Promise<TemplateSwitchResult> {
+  return authed<TemplateSwitchResult>(token, `/manage/sites/${siteId}/template`, {
+    method: "POST",
+    body: JSON.stringify({ templateCode, confirm: true }),
   });
 }
 

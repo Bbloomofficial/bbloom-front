@@ -124,6 +124,62 @@ export type DashboardStrings = {
     preview: string;
     demo: string;
   };
+  /**
+   * Designs a client cannot have on their plan, and changing the design of a
+   * website they already have.
+   *
+   * One block shared by the new-website picker and the design switcher, because
+   * a locked card must read identically in both — it is an advertisement for a
+   * plan, and two wordings for it would become two offers.
+   */
+  design: {
+    /** On a locked card. Short: it sits on top of the thumbnail. */
+    lockedBadge: string;
+    lockedBody: string;
+    seePlans: string;
+    /** The design tiers, as a client reads them. */
+    tiers: Record<string, string>;
+    title: string;
+    subtitle: string;
+    back: string;
+    current: string;
+    currentNote: string;
+    choose: string;
+    checking: string;
+    checkFailed: string;
+    retry: string;
+    /** The confirmation, in the order it must be read. */
+    confirmTitle: (from: string, to: string) => string;
+    ordersHeadline: string;
+    ordersBody: string;
+    publishedWarning: string;
+    draftWarning: string;
+    irreversible: string;
+    keeps: string;
+    removes: string;
+    drops: string;
+    dropsField: (section: string, count: number) => string;
+    /** Sections we have no name for. Counted rather than printed raw. */
+    moreSections: (count: number) => string;
+    nothingLost: string;
+    featuresLost: string;
+    /** Only the client-facing feature keys ever arrive here. */
+    featureNames: Record<string, string>;
+    featuresLostGeneric: string;
+    acknowledge: string;
+    confirm: string;
+    switching: string;
+    cancel: string;
+    doneTitle: string;
+    doneKept: string;
+    doneRemoved: string;
+    doneDropped: string;
+    doneOrders: string;
+    doneNext: string;
+    failed: string;
+    /** Section types, for naming what is carried over or lost. */
+    sections: Record<string, string>;
+  };
   verify: {
     bannerTitle: string;
     bannerBody: string;
@@ -323,6 +379,8 @@ export type DashboardStrings = {
     template: string;
     /** The template's tier, not the subscription — those are unrelated names. */
     design: string;
+    /** Opens the design switcher. Short: it sits inline on the design row. */
+    changeDesign: string;
     products: string;
     languages: string;
     currency: string;
@@ -643,6 +701,85 @@ const en: DashboardStrings = {
     preview: "Preview",
     demo: "Live demo",
   },
+  design: {
+    lockedBadge: "On a higher plan",
+    lockedBody:
+      "This design comes with a higher plan. Your website can move to it whenever you upgrade.",
+    seePlans: "See plans",
+    tiers: { SIMPLE: "Simple", CLASSIC: "Classic", MODERN: "Modern" },
+    title: "Change your design",
+    subtitle:
+      "Your text, photos and products stay with you. The layout they sit in changes.",
+    back: "Back to the website",
+    current: "Your design now",
+    currentNote: "This is the design your website already uses.",
+    choose: "Use this design",
+    checking: "Checking what would change…",
+    checkFailed:
+      "We couldn't work out what this change would do to your website, so we haven't changed anything. Please try again.",
+    retry: "Try again",
+    confirmTitle: (from, to) => `Change from ${from} to ${to}?`,
+    ordersHeadline: "You will stop being able to take orders and payments",
+    ordersBody:
+      "Online ordering only works on the Modern design. If you continue, the order and payment buttons come off your website and customers will not be able to buy or pay through it. Orders you have already taken stay in your dashboard.",
+    publishedWarning:
+      "Your website is online. It changes for visitors the moment you confirm.",
+    draftWarning:
+      "Your website is not online yet, so only you will see the change.",
+    irreversible:
+      "This cannot be undone. Going back to your old design is another change like this one, and it will not bring back anything lost here.",
+    keeps: "Kept, with your content",
+    removes: "Removed, with everything in them",
+    drops: "Kept, but these parts do not fit the new design",
+    dropsField: (section, count) =>
+      count === 1 ? `${section} — 1 part` : `${section} — ${count} parts`,
+    moreSections: (count) =>
+      count === 1 ? "and 1 more section" : `and ${count} more sections`,
+    nothingLost: "Nothing is lost — every section moves across.",
+    featuresLost: "These will be switched off",
+    featureNames: {
+      enquiryForm: "The message form",
+      reservations: "Table reservations",
+      newsletter: "Newsletter sign-ups",
+    },
+    featuresLostGeneric:
+      "Some features you have switched on are not part of this design and will stop working.",
+    acknowledge: "I understand what will be lost",
+    confirm: "Change my design",
+    switching: "Changing…",
+    cancel: "Keep my design",
+    doneTitle: "Your design has changed",
+    doneKept: "Kept",
+    doneRemoved: "Removed",
+    doneDropped: "Parts that did not fit",
+    doneOrders:
+      "Online ordering is now off. Move back to the Modern design to take orders again.",
+    doneNext: "Open the editor",
+    failed: "The design could not be changed. Nothing was changed.",
+    sections: {
+      header: "Top bar",
+      announcement: "Announcement",
+      hero: "Main banner",
+      features: "Highlights",
+      categories: "Categories",
+      products: "Products",
+      menu: "Menu",
+      about: "About",
+      gallery: "Gallery",
+      events: "Events",
+      credentials: "Qualifications",
+      rates: "Prices",
+      testimonials: "Reviews",
+      reservation: "Reservations",
+      delivery: "Delivery",
+      hours: "Opening hours",
+      faq: "Questions",
+      newsletter: "Newsletter",
+      cta: "Call to action",
+      contact: "Contact",
+      footer: "Footer",
+    },
+  },
   verify: {
     bannerTitle: "Confirm your email address",
     bannerBody:
@@ -862,6 +999,7 @@ const en: DashboardStrings = {
     siteTitle: "Your website",
     template: "Template",
     design: "Design",
+    changeDesign: "Change",
     products: "Products",
     languages: "Languages",
     currency: "Currency",
@@ -1236,6 +1374,84 @@ const ka: DashboardStrings = {
     preview: "გადახედვა",
     demo: "ცოცხალი დემო",
   },
+  design: {
+    lockedBadge: "სხვა პაკეტში",
+    lockedBody:
+      "ეს დიზაინი უფრო მაღალ პაკეტშია. პაკეტის განახლებისთანავე შეძლებთ მასზე გადასვლას.",
+    seePlans: "პაკეტების ნახვა",
+    tiers: { SIMPLE: "მარტივი", CLASSIC: "კლასიკური", MODERN: "თანამედროვე" },
+    title: "დიზაინის შეცვლა",
+    subtitle:
+      "თქვენი ტექსტი, ფოტოები და პროდუქტები რჩება. იცვლება მხოლოდ გარეგნობა, რომელშიც ისინი ჩანს.",
+    back: "ვებგვერდზე დაბრუნება",
+    current: "თქვენი ახლანდელი დიზაინი",
+    currentNote: "ეს დიზაინი უკვე გიდგათ.",
+    choose: "ამ დიზაინის არჩევა",
+    checking: "ვამოწმებთ, რა შეიცვლება…",
+    checkFailed:
+      "ვერ დავადგინეთ, რას შეცვლიდა ეს თქვენს ვებგვერდზე, ამიტომ არაფერი შეგვიცვლია. სცადეთ თავიდან.",
+    retry: "თავიდან ცდა",
+    confirmTitle: (from, to) =>
+      `შეიცვალოს დიზაინი „${from}“-დან „${to}“-ზე?`,
+    ordersHeadline: "ვეღარ მიიღებთ შეკვეთებსა და გადახდებს",
+    ordersBody:
+      "ონლაინ შეკვეთა მხოლოდ თანამედროვე დიზაინზე მუშაობს. თუ გააგრძელებთ, შეკვეთისა და გადახდის ღილაკები ვებგვერდიდან ქრება და მომხმარებლები ვეღარ შეიძენენ და ვეღარ გადაიხდიან. უკვე მიღებული შეკვეთები პანელში რჩება.",
+    publishedWarning:
+      "თქვენი ვებგვერდი ონლაინაა. დადასტურებისთანავე ის ვიზიტორებისთვისაც შეიცვლება.",
+    draftWarning:
+      "თქვენი ვებგვერდი ჯერ არ არის ონლაინ, ამიტომ ცვლილებას მხოლოდ თქვენ ნახავთ.",
+    irreversible:
+      "ამის დაბრუნება ვეღარ მოხერხდება. ძველ დიზაინზე დაბრუნება იგივე ცვლილებაა და აქ დაკარგულს ვერ აღადგენს.",
+    keeps: "რჩება, თქვენი შიგთავსით",
+    removes: "იშლება, მთელი შიგთავსითურთ",
+    drops: "რჩება, მაგრამ ეს ნაწილები ახალ დიზაინს არ ერგება",
+    dropsField: (section, count) => `${section} — ${count} ნაწილი`,
+    moreSections: (count) => `და კიდევ ${count} სექცია`,
+    nothingLost: "არაფერი იკარგება — ყველა სექცია გადმოდის.",
+    featuresLost: "ეს ფუნქციები გამოირთვება",
+    featureNames: {
+      enquiryForm: "შეტყობინების ფორმა",
+      reservations: "მაგიდის დაჯავშნა",
+      newsletter: "სიახლეებზე გამოწერა",
+    },
+    featuresLostGeneric:
+      "ზოგიერთი ჩართული ფუნქცია ამ დიზაინში არ არის და მუშაობას შეწყვეტს.",
+    acknowledge: "ვიცი, რა დაიკარგება",
+    confirm: "დიზაინის შეცვლა",
+    switching: "იცვლება…",
+    cancel: "დავტოვოთ ძველი",
+    doneTitle: "დიზაინი შეიცვალა",
+    doneKept: "დარჩა",
+    doneRemoved: "წაიშალა",
+    doneDropped: "ნაწილები, რომლებიც ვერ ჩაჯდა",
+    doneOrders:
+      "ონლაინ შეკვეთა ახლა გამორთულია. შეკვეთების მისაღებად დაბრუნდით თანამედროვე დიზაინზე.",
+    doneNext: "რედაქტორის გახსნა",
+    failed: "დიზაინი ვერ შეიცვალა. არაფერი შეცვლილა.",
+    sections: {
+      header: "ზედა ზოლი",
+      announcement: "განცხადება",
+      hero: "მთავარი ბანერი",
+      features: "მთავარი უპირატესობები",
+      categories: "კატეგორიები",
+      products: "პროდუქტები",
+      menu: "მენიუ",
+      about: "ჩვენ შესახებ",
+      gallery: "გალერეა",
+      events: "ღონისძიებები",
+      credentials: "კვალიფიკაცია",
+      rates: "ფასები",
+      testimonials: "შეფასებები",
+      reservation: "დაჯავშნა",
+      delivery: "მიტანა",
+      hours: "სამუშაო საათები",
+      faq: "კითხვები",
+      newsletter: "სიახლეები",
+      cta: "მოწოდება",
+      contact: "კონტაქტი",
+      footer: "ქვედა ზოლი",
+    },
+  },
   verify: {
     bannerTitle: "დაადასტურეთ ელფოსტა",
     bannerBody:
@@ -1454,6 +1670,7 @@ const ka: DashboardStrings = {
     siteTitle: "თქვენი ვებგვერდი",
     template: "შაბლონი",
     design: "დიზაინი",
+    changeDesign: "შეცვლა",
     products: "პროდუქტი",
     languages: "ენები",
     currency: "ვალუტა",

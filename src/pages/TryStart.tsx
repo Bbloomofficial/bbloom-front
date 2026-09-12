@@ -59,6 +59,16 @@ export default function TryStart() {
           {t.gallerySubtitle}
         </p>
         <p className="mt-3 text-sm text-ink-500">{t.galleryHint}</p>
+        {/* Advisory, not a gate. There is no account here to measure a design
+            against, so every design stays usable and the badges below only say
+            which level each one is — the plan decision happens later, when
+            there is something worth keeping. */}
+        <p className="mt-2 text-sm text-ink-500">
+          {t.planHint}{" "}
+          <Link to="/pricing" className="font-semibold text-bloom-600 hover:underline">
+            {t.planHintLink}
+          </Link>
+        </p>
       </div>
 
       {resumable ? (
@@ -119,9 +129,16 @@ export default function TryStart() {
                   <TemplateThumb template={template} alt={template.name} />
                 </div>
                 <div className="p-5">
-                  <h3 className="text-base font-bold text-ink-900">
-                    {template.name}
-                  </h3>
+                  <div className="flex items-start justify-between gap-2">
+                    <h3 className="text-base font-bold text-ink-900">
+                      {template.name}
+                    </h3>
+                    {t.tiers[template.tier] && (
+                      <span className="shrink-0 rounded-full bg-ink-50 px-2.5 py-1 text-[11px] font-bold text-ink-600">
+                        {t.tiers[template.tier]}
+                      </span>
+                    )}
+                  </div>
                   <p className="mt-1 text-sm text-ink-600">{template.tagline}</p>
                   <div className="mt-4 flex flex-wrap items-center gap-2">
                     <button

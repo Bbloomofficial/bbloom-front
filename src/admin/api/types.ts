@@ -6,7 +6,7 @@
  * arrive as `*Ka`/`*En` pairs, and it is the screen's job to pick one.
  */
 
-import { TEMPLATE_CATEGORY_ORDER } from "../../api/templates";
+import { TEMPLATE_CATEGORY_ORDER, TEMPLATE_TIER_ORDER } from "../../api/templates";
 
 export type SiteLanguage = "ka" | "en";
 
@@ -47,8 +47,15 @@ export type Page<T> = {
 export const TEMPLATE_CATEGORIES = TEMPLATE_CATEGORY_ORDER;
 export type TemplateCategory = (typeof TEMPLATE_CATEGORIES)[number];
 
-/** Ordered from plainest to richest, which is also how we lay them out. */
-export const TEMPLATE_TIERS = ["SIMPLE", "CLASSIC", "MODERN"] as const;
+/**
+ * Ordered from plainest to richest, which is also how we lay them out.
+ *
+ * Re-exported from the shared ladder rather than written out again, for the
+ * same reason the categories are: a plan's `maxTemplateTier` is compared
+ * against this order to decide what a client has paid for, and two hand-kept
+ * copies would eventually disagree about somebody's entitlement.
+ */
+export const TEMPLATE_TIERS = TEMPLATE_TIER_ORDER;
 export type TemplateTier = (typeof TEMPLATE_TIERS)[number];
 
 export type TemplateSummary = {
@@ -455,6 +462,40 @@ export type AdminPlanDto = {
    * launch offer set up in advance is already running the day the plan opens.
    */
   comingSoon: boolean;
+  /**
+   * The highest design tier this plan unlocks, and everything below it with it.
+   *
+   * A ceiling, never a floor: `CLASSIC` means Simple *and* Classic, not Classic
+   * alone. `null` is unrestricted — every design, including any added later —
+   * and is a deliberate setting rather than an unset one, which is why it is
+   * offered explicitly in the editor instead of being the empty state of a
+   * field.
+   *
+   * Enforced at site creation and at a design switch. Sites already built are
+   * grandfathered: a client whose plan no longer reaches their design keeps it.
+   */
+  maxTemplateTier?: TemplateTier | null;
+  /**
+   * How many ad impressions a month this plan includes. `null` is **unmetered**,
+   * which is the opposite end of the scale from `0` — a plan that includes no
+   * impressions at all. Nothing may treat them as the same absence.
+   */
+  adImpressionLimit?: number | null;
+  /**
+   * Which ad channels this plan sells, as a comma-separated string —
+   * `"FACEBOOK,INSTAGRAM"`, or `""` for a plan that sells no advertising.
+   *
+   * A string, not an array, unlike every other list in these payloads. Read and
+   * written through `parseAdChannels` / `formatAdChannels` rather than by hand.
+   *
+   * Sent on every save rather than omitted: the API refuses a body without it
+   * on purpose, as a tripwire against an old-shaped request that would
+   * otherwise wipe the entitlement silently — which is exactly what used to
+   * happen. The refusal covers creation too, and deliberately so: a create that
+   * skipped it would mint a plan that is unmetered and unrestricted, which is
+   * the more expensive mistake of the two.
+   */
+  adChannels: string;
   translations: AdminPlanTranslationDto[];
   /**
    * A sale on this plan: how much off, and for how long.
@@ -487,6 +528,13 @@ export type AdminPlanDto = {
  * The two derived fields are dropped rather than sent back: they are answers,
  * not settings, and a stale `effectivePriceMinor` posted from a form that has
  * been open a while would be a price nobody typed.
+ *
+ * Everything else is sent on **every** save, including the fields this screen
+ * does not put front and centre. An update is a whole-record write, so a body
+ * that leaves a field out does not leave it alone — it clears it. That is how
+ * editing a plan used to wipe its advertising entitlement, and it is why
+ * `adChannels` is required rather than optional here: a body missing it is now
+ * refused outright instead of being applied and quietly emptying the list.
  */
 export type PlanUpsertRequest = Omit<
   AdminPlanDto,

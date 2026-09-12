@@ -132,6 +132,14 @@ export type ProblemStrings = {
    * ten minutes later. Nobody reading this did anything wrong.
    */
   promoLimitReached: string;
+  /**
+   * A design above the account's plan, refused at creation or at a switch.
+   *
+   * Written as an offer rather than an error: nothing is broken and nobody
+   * mistyped anything — the design is simply part of a bigger plan. The plan is
+   * not named here because plan names come from the API and are renamed there.
+   */
+  templateTierRequiresPlan: string;
   /** Too many requests, throttled. */
   throttled: string;
   /**
@@ -332,6 +340,15 @@ export function describeProblem(
   if (!(caught instanceof ApiError)) return fallback;
 
   if (caught.status >= 500) return strings.server;
+
+  // Matched before the status switch, deliberately. This one refusal can arrive
+  // as a 403 (creating a website on a design above the plan) or a 409 (switching
+  // an existing one), and the sentence a client needs is the same either way.
+  // Keying on the code rather than the status means a backend that moves it
+  // between the two does not silently fall back to "only the owner can do this".
+  if (caught.code === "TEMPLATE_TIER_REQUIRES_PLAN") {
+    return strings.templateTierRequiresPlan;
+  }
 
   switch (caught.status) {
     case 400: {

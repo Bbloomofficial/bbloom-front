@@ -21,6 +21,7 @@ import NewSite from "./pages/NewSite";
 import Orders from "./pages/Orders";
 import Overview from "./pages/Overview";
 import Register from "./pages/Register";
+import SiteDesign from "./pages/SiteDesign";
 import Sites from "./pages/Sites";
 import Team from "./pages/Team";
 import { SiteScope } from "./site";
@@ -158,6 +159,12 @@ function SiteRoutes() {
             */}
             <Route path="orders" element={<Orders />} />
             <Route path="billing" element={<Billing />} />
+            {/*
+              Routed for every role, not only owners: the overview only offers
+              the link to an owner, and a screen that refuses politely is better
+              than a URL that bounces with no explanation.
+            */}
+            <Route path="design" element={<SiteDesign />} />
             <Route path="team" element={<Team />} />
             <Route
               path="*"

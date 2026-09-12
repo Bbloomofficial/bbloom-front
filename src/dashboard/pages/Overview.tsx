@@ -217,7 +217,23 @@ export default function Overview() {
             />
             <Row
               label={t.overview.design}
-              value={detail.tier ? titleCase(detail.tier) : undefined}
+              value={
+                <span className="flex flex-wrap items-baseline gap-3">
+                  {detail.tier ? titleCase(detail.tier) : "—"}
+                  {/* Changing a design is a real change to a live website, not
+                      a setting, so it opens its own screen where what it costs
+                      can be spelled out before anything happens. Owners only:
+                      the switch re-materialises sections and can drop content. */}
+                  {isOwner && (
+                    <Link
+                      to={dashPath(`/s/${siteId}/design`)}
+                      className="text-xs font-bold text-bloom-600 hover:underline"
+                    >
+                      {t.overview.changeDesign}
+                    </Link>
+                  )}
+                </span>
+              }
             />
             <Row label={t.overview.products} value={detail.productCount} />
             <Row

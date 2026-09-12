@@ -640,6 +640,27 @@ export type AdminStrings = {
     discountNotPurchasable: string;
     discountWindowWithoutPercent: string;
     discountWindowBackwards: string;
+    /**
+     * What a plan grants rather than what it costs. Its own section because
+     * these are the settings that decide what a client can actually do, and
+     * two of them are whole-record writes that used to be lost on save.
+     */
+    entitlements: string;
+    entitlementsHint: string;
+    maxTemplateTier: string;
+    maxTemplateTierHint: string;
+    maxTemplateTierNone: string;
+    /** "Modern unlocks: Simple, Classic, Modern" — the ladder, spelled out. */
+    maxTemplateTierIncludes: (tier: string, included: string) => string;
+    maxTemplateTierNoneIncludes: string;
+    adImpressions: string;
+    adImpressionsHint: string;
+    adImpressionsUnlimited: string;
+    adImpressionsUnlimitedNote: string;
+    adImpressionsNoneNote: string;
+    adImpressionsInvalid: string;
+    adChannels: string;
+    adChannelsHint: string;
   };
   promoCodes: {
     title: string;
@@ -1481,6 +1502,27 @@ const en: AdminStrings = {
     discountWindowWithoutPercent:
       "Set a percentage, or clear the sale dates.",
     discountWindowBackwards: "The sale must end after it starts.",
+    entitlements: "What the plan includes",
+    entitlementsHint:
+      "What a client on this plan can actually do. All of these are saved together every time, so nothing here is lost by editing something else.",
+    maxTemplateTier: "Highest design included",
+    maxTemplateTierHint:
+      "The richest design a client on this plan may choose — every simpler one comes with it. This is a ceiling, not a single option. Checked when a website is created and when a client changes its design. Websites already built keep the design they have, even if the plan no longer reaches it.",
+    maxTemplateTierNone: "No limit — every design",
+    maxTemplateTierIncludes: (tier, included) =>
+      `${tier} includes: ${included}.`,
+    maxTemplateTierNoneIncludes: "Every design, including any added later.",
+    adImpressions: "Ad impressions a month",
+    adImpressionsHint:
+      "Leave blank for no limit. 0 is not the same thing — it means this plan includes no advertising at all.",
+    adImpressionsUnlimited: "No limit",
+    adImpressionsUnlimitedNote: "Blank — advertising is unmetered on this plan.",
+    adImpressionsNoneNote: "Zero — this plan includes no impressions at all.",
+    adImpressionsInvalid:
+      "Enter the impression allowance as a whole number, or leave it blank for no limit.",
+    adChannels: "Ad channels sold",
+    adChannelsHint:
+      "Where a client on this plan may advertise. Tick nothing for a plan that sells no advertising.",
   },
   promoCodes: {
     title: "Discounts",
@@ -2323,6 +2365,29 @@ const ka: AdminStrings = {
       "მიუთითეთ პროცენტი, ან წაშალეთ ფასდაკლების თარიღები.",
     discountWindowBackwards:
       "ფასდაკლება დაწყების შემდეგ უნდა სრულდებოდეს.",
+    entitlements: "რას მოიცავს პაკეტი",
+    entitlementsHint:
+      "რისი გაკეთება შეუძლია ამ პაკეტზე მყოფ კლიენტს. ეს პარამეტრები ყოველ შენახვაზე ერთად ინახება, ამიტომ ერთის შეცვლა დანარჩენებს არ შლის.",
+    maxTemplateTier: "მაქსიმალური დიზაინი",
+    maxTemplateTierHint:
+      "ყველაზე მდიდარი დიზაინი, რომლის არჩევაც ამ პაკეტზე შეუძლიათ — და მასთან ერთად ყველა უფრო მარტივიც. ეს ზედა ზღვარია და არა ერთადერთი ვარიანტი. მოწმდება ვებგვერდის შექმნისას და დიზაინის შეცვლისას. უკვე შექმნილ ვებგვერდებს თავიანთი დიზაინი რჩებათ, მაშინაც კი, თუ პაკეტი მას აღარ მოიცავს.",
+    maxTemplateTierNone: "შეზღუდვის გარეშე — ყველა დიზაინი",
+    maxTemplateTierIncludes: (tier, included) =>
+      `„${tier}“ მოიცავს: ${included}.`,
+    maxTemplateTierNoneIncludes:
+      "ყველა დიზაინი, მათ შორის ის, რაც მოგვიანებით დაემატება.",
+    adImpressions: "რეკლამის ჩვენებები თვეში",
+    adImpressionsHint:
+      "დატოვეთ ცარიელი შეზღუდვის გარეშე. 0 სხვა რამეს ნიშნავს — ამ პაკეტში რეკლამა საერთოდ არ შედის.",
+    adImpressionsUnlimited: "შეზღუდვის გარეშე",
+    adImpressionsUnlimitedNote:
+      "ცარიელია — ამ პაკეტზე რეკლამა შეუზღუდავია.",
+    adImpressionsNoneNote: "ნული — ამ პაკეტში ჩვენებები საერთოდ არ შედის.",
+    adImpressionsInvalid:
+      "ჩვენებების რაოდენობა მთელი რიცხვით მიუთითეთ ან ცარიელი დატოვეთ შეზღუდვის გარეშე.",
+    adChannels: "რეკლამის არხები",
+    adChannelsHint:
+      "სად შეუძლია რეკლამირება ამ პაკეტზე მყოფ კლიენტს. არცერთი არ მონიშნოთ, თუ პაკეტი რეკლამას არ მოიცავს.",
   },
   promoCodes: {
     title: "ფასდაკლებები",
