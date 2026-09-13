@@ -248,9 +248,9 @@ without the rule behind it cannot be acted on.
 
 ## Baseline — 2026-09-13
 
-**This is a baseline, not an answer.** It records the state on 13 September 2026
-so a future run has something to diff against. It is certainly out of date by the
-time you are reading it.
+**This is a baseline, not an answer.** It records the state at the end of 13
+September 2026 so a future run has something to diff against. It is certainly out
+of date by the time you are reading it.
 
 Plans at that date, monthly, with 50% off the first purchase:
 
@@ -270,7 +270,7 @@ Plans at that date, monthly, with 50% off the first purchase:
 | Subdomain `example.bbloom.ge` | **Enforced** | — |
 | Own domain `example.ge` | **Partial** | Gated paid-versus-free only, **not per plan**. A Standard client can attach a custom domain that is advertised as a Premium feature. **The biggest revenue leak at this date.** |
 | Order management (sold on Business) | **Partial** | Gated by the site's **design tier**, not by the plan. Indirectly correct now that design tier is itself plan-gated, but it is still the wrong rule and will break the moment the two diverge. |
-| Printable QR code (advertised on all three plans) | **Not implemented** | No code anywhere in either repository. |
+| Printable QR code (advertised on all three plans) | **Enforced** | Paid-versus-free, not per plan. `GET /manage/sites/{siteId}/qr?format=png\|pdf&lang=ka\|en` (`bbloom-back` `f049119`), dashboard page `/s/{siteId}/qr` (`3276e66`). Shipped late on the day of this baseline, so anything written earlier calls it missing. |
 | Business email on Gmail (advertised on Premium and Business) | **Not implemented** | No code anywhere in either repository. |
 | Card payments | **Not live** | Gateway credentials are empty. |
 
