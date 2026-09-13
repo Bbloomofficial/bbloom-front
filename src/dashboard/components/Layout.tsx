@@ -18,6 +18,7 @@ type NavKey =
   | "inbox"
   | "orders"
   | "ads"
+  | "qr"
   | "billing"
   | "team"
   | "sites"
@@ -40,6 +41,10 @@ const NAV_ICONS: Record<NavKey, string> = {
     "M2 6.5A2.5 2.5 0 0 1 4.5 4h11A2.5 2.5 0 0 1 18 6.5V7H2v-.5ZM2 9h16v4.5a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 2 13.5V9Zm3 3.5h4V14H5v-1.5Z",
   team: "M7 9a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm7 0a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5ZM1.5 16c0-2.5 2.5-4.5 5.5-4.5s5.5 2 5.5 4.5v1h-11v-1Zm12.2-3.6c2.3.4 4.3 2 4.3 3.9V17h-4v-1c0-1.4-.5-2.7-1.4-3.7l1.1.1Z",
   sites: "M3 3h6v6H3V3Zm8 0h6v6h-6V3ZM3 11h6v6H3v-6Zm8 0h6v6h-6v-6Z",
+  // A QR symbol rather than a generic download arrow: what a client comes here
+  // for is the thing itself, and three finder squares are the one shape
+  // everybody already reads as "scan this".
+  qr: "M3 3h5v5H3zM4.5 4.5v2h2v-2zM12 3h5v5h-5zM13.5 4.5v2h2v-2zM3 12h5v5H3zM4.5 13.5v2h2v-2zM10 3h1.6v1.6H10zM10 6.4h1.6V8H10zM11.4 11.4h2.2v2.2h-2.2zM14.8 11.4H17v2.2h-2.2zM11.4 14.8h2.2V17h-2.2zM14.8 14.8H17V17h-2.2zM3 9.4h5.6v1.5H3zM10 9.4h7v1.5h-7z",
   account:
     "M10 10a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Zm0 1.5c-3.6 0-6.5 2.2-6.5 4.4V17h13v-1.1c0-2.2-2.9-4.4-6.5-4.4Z",
   // An arrow leaving a doorway: going back out to the public site, which is a
@@ -241,6 +246,16 @@ function SiteTabs({ site }: { site: AccountSite }) {
       label: t.nav.ads,
       end: false,
       icon: "ads",
+    },
+    // Shown on every plan, like `ads` and unlike `orders`. The card is
+    // advertised on all three paid plans, so for a client who has not bought
+    // one this tab is the offer -- hiding it would mean the only people who
+    // ever learn the card exists are the ones who already pay for it.
+    {
+      to: dashPath(`/s/${site.id}/qr`),
+      label: t.nav.qr,
+      end: false,
+      icon: "qr",
     },
     {
       to: dashPath(`/s/${site.id}/billing`),

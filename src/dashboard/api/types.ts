@@ -13,6 +13,14 @@ import type { TemplateTier } from "../../api/templates";
 
 export type SiteLanguage = "ka" | "en";
 
+/**
+ * The same two, as a list to render.
+ *
+ * Georgian first, deliberately and permanently: it is the product's default
+ * language and the one the great majority of these websites are written in.
+ */
+export const SITE_LANGUAGES: readonly SiteLanguage[] = ["ka", "en"];
+
 /** Membership roles. An editor may rewrite a site but not commit it to a bill. */
 export type MemberRole = "SITE_OWNER" | "SITE_EDITOR";
 

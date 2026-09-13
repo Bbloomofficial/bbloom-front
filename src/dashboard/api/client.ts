@@ -1,4 +1,5 @@
-import { request } from "../../api/http";
+import { request, requestBlob } from "../../api/http";
+import type { BinaryResponse } from "../../api/http";
 import type { AdAllowance } from "../../api/ads";
 import type {
   ClientAdCampaign,
@@ -14,6 +15,7 @@ import type {
   SiteDetail,
   SiteFeatureFlags,
   SiteLoginResponse,
+  SiteLanguage,
   SiteUserProfile,
   TemplateSwitchPreview,
   TemplateSwitchResult,
@@ -144,6 +146,41 @@ export function setPublished(
     `/manage/sites/${siteId}/${published ? "publish" : "unpublish"}`,
     { method: "POST" },
   );
+}
+
+/** The two things the printable card can be handed to a client as. */
+export type QrFormat = "png" | "pdf";
+
+/**
+ * The site's printable QR card, rendered by the server so every client's card
+ * is identical and genuinely print-ready.
+ *
+ * Fetched rather than linked, and that is not a preference. Dashboard auth is
+ * an `Authorization` header, so neither `<img src>` nor `<a download href>`
+ * can reach this endpoint at all — no element carries a header. The bytes have
+ * to come back through `fetch` and be handed to the page as an object URL.
+ *
+ * `lang` is the language of the two words *printed on the card*, and it is
+ * deliberately not wired to the dashboard's locale. It defaults on the server
+ * to the site's own `defaultLanguage`, which is almost always what is wanted:
+ * a Georgian shop owner reading this panel in English still wants a Georgian
+ * card, because the card is for their customers and the panel is for them.
+ * Omitted unless the client has explicitly asked for something else.
+ */
+export function fetchSiteQr(
+  token: string,
+  siteId: string,
+  format: QrFormat,
+  lang?: SiteLanguage,
+): Promise<BinaryResponse> {
+  const params = new URLSearchParams({ format });
+  if (lang) params.set("lang", lang);
+  return requestBlob(`/manage/sites/${siteId}/qr?${params}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: format === "pdf" ? "application/pdf" : "image/png",
+    },
+  });
 }
 
 export type EnquiryQuery = {

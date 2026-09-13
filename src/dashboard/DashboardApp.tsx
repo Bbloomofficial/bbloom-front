@@ -23,6 +23,7 @@ import Overview from "./pages/Overview";
 import Register from "./pages/Register";
 import SiteDesign from "./pages/SiteDesign";
 import Sites from "./pages/Sites";
+import SiteQr from "./pages/SiteQr";
 import Team from "./pages/Team";
 import { SiteScope } from "./site";
 import { OrderingScope } from "./ordering";
@@ -159,6 +160,13 @@ function SiteRoutes() {
             */}
             <Route path="orders" element={<Orders />} />
             <Route path="billing" element={<Billing />} />
+            {/*
+              Routed on every plan, like `ads`: a client who has not paid meets
+              the offer on the screen itself. Routed for every role too — an
+              editor can print a card, they simply cannot buy the plan that
+              unlocks it, and that is a sentence the page can say.
+            */}
+            <Route path="qr" element={<SiteQr />} />
             {/*
               Routed for every role, not only owners: the overview only offers
               the link to an owner, and a screen that refuses politely is better

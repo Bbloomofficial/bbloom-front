@@ -2,7 +2,8 @@ import type { Locale } from "../i18n";
 import type { ProblemStrings } from "../api/problem";
 import { problemStrings } from "../api/problemStrings";
 import type { PublishRefusal } from "./gate";
-import type { OrderingBlockedReason } from "./api/types";
+import type { PaidBlock } from "./gate";
+import type { OrderingBlockedReason, SiteLanguage } from "./api/types";
 
 /**
  * Chrome for the client dashboard. Site *content* is localised by the backend,
@@ -36,6 +37,8 @@ export type DashboardStrings = {
     orders: string;
     page: string;
     ads: string;
+    /** The printable card. Short: it sits in a row of tabs. */
+    qr: string;
     billing: string;
     team: string;
     sites: string;
@@ -428,6 +431,37 @@ export type DashboardStrings = {
     reservationForm: FormToggleStrings;
     newsletterForm: FormToggleStrings;
   };
+  /**
+   * The printable QR card.
+   *
+   * `locked` is keyed by `PaidBlock` rather than written once, because the two
+   * states want opposite things from a client: one has never paid and is being
+   * sold to, the other has paid and needs to restart something. A single
+   * "upgrade" sentence shown to a lapsed client reads as us not knowing they
+   * were ever a customer.
+   */
+  qr: {
+    title: string;
+    subtitle: string;
+    previewAlt: (businessName: string) => string;
+    preparing: string;
+    downloadPdf: string;
+    downloadPdfHint: string;
+    downloadPng: string;
+    downloadPngHint: string;
+    printHint: string;
+    /** The language of the words printed on the card, not of this panel. */
+    cardLanguage: string;
+    cardLanguageHint: string;
+    languages: Record<SiteLanguage, string>;
+    /** A custom domain the client has asked for but not yet confirmed. */
+    pendingDomain: (hostname: string) => string;
+    error: string;
+    locked: Record<
+      PaidBlock,
+      { title: string; body: string; action: string }
+    >;
+  };
   inbox: {
     title: string;
     subtitle: string;
@@ -608,6 +642,7 @@ const en: DashboardStrings = {
     orders: "Orders",
     page: "Page",
     ads: "Advertising",
+    qr: "QR code",
     billing: "Billing",
     team: "Team",
     sites: "Websites",
@@ -1085,6 +1120,39 @@ const en: DashboardStrings = {
         "Your plan has stopped, so the sign-up form cannot be switched on right now.",
     },
   },
+  qr: {
+    title: "Printable QR code",
+    subtitle:
+      "A card to print and put in your window or on the table. Customers point their phone at it and your website opens — no typing, no searching.",
+    previewAlt: (businessName) => `QR card for ${businessName}`,
+    preparing: "Preparing…",
+    downloadPdf: "Download for printing (PDF)",
+    downloadPdfHint:
+      "This is the one to print or send to a print shop — it stays sharp at any size, from a table card to a shop window.",
+    downloadPng: "Download as an image (PNG)",
+    downloadPngHint: "A picture, for social media or to send in a message.",
+    printHint:
+      "Keep the white border around the code when you print — phones need it to read the code.",
+    cardLanguage: "Language on the card",
+    cardLanguageHint:
+      "Only the words printed on the card. Your website and this panel stay as they are.",
+    languages: { ka: "Georgian", en: "English" },
+    pendingDomain: (hostname) =>
+      `The card uses your bbloom.ge address for now, because ${hostname} is not confirmed yet. A printed card cannot be corrected later, so it is better to wait for the domain than to print an address that does not open.`,
+    error: "We could not prepare your card. Please try again.",
+    locked: {
+      FREE_PLAN: {
+        title: "The QR card comes with a paid plan",
+        body: "Your website is online and stays online for free. The printable card is part of the paid plans — choose one and the card is ready to download straight away.",
+        action: "See plans",
+      },
+      LAPSED: {
+        title: "Your plan has stopped",
+        body: "Your website is still online and still yours. Only the card is unavailable until the plan is active again — nothing needs to be set up a second time.",
+        action: "Restart your plan",
+      },
+    },
+  },
   inbox: {
     title: "Inbox",
     subtitle: "Everything sent through your website's forms.",
@@ -1281,6 +1349,7 @@ const ka: DashboardStrings = {
     orders: "შეკვეთები",
     page: "გვერდი",
     ads: "რეკლამა",
+    qr: "QR კოდი",
     billing: "გადახდები",
     team: "გუნდი",
     sites: "ვებგვერდები",
@@ -1754,6 +1823,43 @@ const ka: DashboardStrings = {
       needsPlan: "გამოწერის ფორმა ფასიან პაკეტს საჭიროებს.",
       lapsed:
         "თქვენი პაკეტი შეწყვეტილია, ამიტომ გამოწერის ფორმის ჩართვა ამჟამად ვერ ხერხდება.",
+    },
+  },
+  qr: {
+    title: "საბეჭდი QR კოდი",
+    subtitle:
+      // „ბარათი" და არა „ქარდი": ეს ხელში ასაღები, დასაბეჭდი ნივთია.
+      "ბარათი, რომელსაც დაბეჭდავთ და ვიტრინაზე ან მაგიდაზე დადგამთ. მომხმარებელი ტელეფონს მიაშვერს და თქვენი ვებგვერდი გაეხსნება — არაფრის აკრეფა და ძებნა არ სჭირდება.",
+    previewAlt: (businessName) => `${businessName} — QR ბარათი`,
+    preparing: "მზადდება…",
+    downloadPdf: "ჩამოტვირთვა დასაბეჭდად (PDF)",
+    downloadPdfHint:
+      "სწორედ ეს დასაბეჭდია — სტამბაშიც PDF გაგზავნეთ. ნებისმიერ ზომაზე მკვეთრი რჩება, პატარა საბარათე ზომიდან ვიტრინის პლაკატამდე.",
+    downloadPng: "სურათად ჩამოტვირთვა (PNG)",
+    downloadPngHint:
+      "ჩვეულებრივი სურათი — სოციალურ ქსელში ან მიმოწერაში გასაზიარებლად.",
+    printHint:
+      "დაბეჭდვისას კოდის გარშემო თეთრი არე დატოვეთ — ტელეფონს ის სჭირდება, რომ კოდი წაიკითხოს.",
+    cardLanguage: "ბარათის ენა",
+    cardLanguageHint:
+      "ეხება მხოლოდ ბარათზე დაბეჭდილ წარწერას. თქვენი ვებგვერდი და ეს პანელი უცვლელი რჩება.",
+    languages: { ka: "ქართული", en: "ინგლისური" },
+    pendingDomain: (hostname) =>
+      // Word-for-word „is not verified yet" ქართულად ხმელად ჟღერს; აქ იმას
+      // ვამბობთ, რაც კლიენტს აინტერესებს — რომელი მისამართი დაიბეჭდება და რატომ.
+      `ბარათზე ჯერ თქვენი bbloom.ge-ის მისამართია, რადგან ${hostname} ჯერ დადასტურებული არ არის. დაბეჭდილი ბარათი ვეღარ გასწორდება, ამიტომ ჯობია დომენს დაელოდოთ, ვიდრე ისეთი მისამართი დაბეჭდოთ, რომელიც არ იხსნება.`,
+    error: "ბარათი ვერ მომზადდა. სცადეთ თავიდან.",
+    locked: {
+      FREE_PLAN: {
+        title: "QR ბარათი ფასიან პაკეტში შედის",
+        body: "თქვენი ვებგვერდი ონლაინაა და უფასოდვე რჩება. საბეჭდი ბარათი ფასიან პაკეტებშია — აირჩევთ პაკეტს და ბარათს მაშინვე ჩამოტვირთავთ.",
+        action: "პაკეტების ნახვა",
+      },
+      LAPSED: {
+        title: "თქვენი პაკეტი შეწყვეტილია",
+        body: "ვებგვერდი კვლავ ონლაინაა და კვლავ თქვენია. მხოლოდ ბარათი არ არის ხელმისაწვდომი, სანამ პაკეტი ისევ არ გააქტიურდება — თავიდან არაფრის მორგება არ დაგჭირდებათ.",
+        action: "პაკეტის აღდგენა",
+      },
     },
   },
   inbox: {
