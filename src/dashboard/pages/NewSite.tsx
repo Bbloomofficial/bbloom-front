@@ -1,4 +1,4 @@
-﻿import { useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import type { FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import type { SiteTemplate } from "../../api/templates";
@@ -46,7 +46,7 @@ export default function NewSite() {
   const [error, setError] = useState<string | null>(null);
 
   // The highest design tier this account may build on. `undefined` when the
-  // backend does not report it, which unlocks everything â€” see `isTierUnlocked`.
+  // backend does not report it, which unlocks everything — see `isTierUnlocked`.
   const ceiling = useTemplateCeiling();
 
   async function onSubmit(event: FormEvent) {
@@ -57,7 +57,7 @@ export default function NewSite() {
       return;
     }
     // A locked design cannot be put into state by the picker, so reaching here
-    // with one means the ceiling moved under an open form â€” a plan lapsed in
+    // with one means the ceiling moved under an open form — a plan lapsed in
     // another tab, say. Checked again rather than trusted: the request would be
     // refused anyway, and this states why without a round trip.
     const chosen = templates.find((one) => one.code === templateCode);
@@ -125,7 +125,7 @@ export default function NewSite() {
                 setLanguage(event.target.value as SiteLanguage)
               }
             >
-              <option value="ka">áƒ¥áƒáƒ áƒ—áƒ£áƒšáƒ˜</option>
+              <option value="ka">ქართული</option>
               <option value="en">English</option>
             </select>
           </div>
