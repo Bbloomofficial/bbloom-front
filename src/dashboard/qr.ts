@@ -9,6 +9,22 @@ import type { SiteDomain } from "./api/types";
  */
 
 /**
+ * The card's pixel size as the server renders it — A6 at 300 DPI, which is
+ * where the "print-ready" claim comes from.
+ *
+ * Here rather than in the page because it is a fact about the backend's output
+ * and has to move in lockstep with it, and because the skeleton and the empty
+ * state both need it. The ratio is 0.709, not the 0.75 that `3/4` would
+ * suggest: a skeleton reserving three-quarters leaves about 5.7% too much
+ * height and the layout jumps the moment the preview lands, which is the one
+ * thing an aspect-ratio placeholder exists to prevent.
+ */
+export const QR_CARD_PX = { width: 1240, height: 1748 } as const;
+
+/** The same, as a CSS `aspect-ratio` value. */
+export const QR_CARD_ASPECT = `${QR_CARD_PX.width} / ${QR_CARD_PX.height}`;
+
+/**
  * What to save the card as.
  *
  * Derived here rather than read off `Content-Disposition`, because in

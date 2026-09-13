@@ -3,7 +3,7 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { ApiError } from "../../api/http";
 import type { AccountSite, SiteDetail } from "../api/types";
-import { pendingDomain, qrFilename, qrPaidBlock } from "../qr";
+import { pendingDomain, QR_CARD_ASPECT, QR_CARD_PX, qrFilename, qrPaidBlock } from "../qr";
 
 /**
  * The printable QR card.
@@ -226,6 +226,27 @@ describe("the QR card screen", () => {
     show();
 
     expect(await screen.findByTestId("qr-locked-FREE_PLAN")).toBeInTheDocument();
+  });
+
+  it("reserves exactly the space the card will occupy", async () => {
+    // The point of an aspect-ratio placeholder is that nothing moves when the
+    // image lands. `3/4` is 0.750 against the card's real 0.709, which left the
+    // skeleton 5.7% too tall and the layout visibly jumped.
+    let resolve: (value: { blob: Blob }) => void = () => {};
+    fetchSiteQr.mockReturnValue(
+      new Promise<{ blob: Blob }>((done) => {
+        resolve = done;
+      }),
+    );
+
+    show();
+
+    const skeleton = await screen.findByRole("status");
+    expect(skeleton).toHaveStyle({ aspectRatio: QR_CARD_ASPECT });
+    expect(QR_CARD_PX.width / QR_CARD_PX.height).toBeCloseTo(0.7094, 4);
+
+    resolve({ blob: new Blob(["png"]) });
+    await screen.findByRole("img");
   });
 
   it("warns that an unconfirmed domain will not be on the card", async () => {

@@ -12,7 +12,7 @@ import { useResource } from "../hooks";
 import { useActiveSite, useIsOwner } from "../site";
 import { paidBlock } from "../gate";
 import type { PaidBlock } from "../gate";
-import { pendingDomain, qrFilename, qrPaidBlock } from "../qr";
+import { pendingDomain, QR_CARD_ASPECT, qrFilename, qrPaidBlock } from "../qr";
 import { dashboardStrings } from "../strings";
 
 /**
@@ -181,7 +181,8 @@ export default function SiteQr() {
                 <div
                   role="status"
                   aria-label={t.preparing}
-                  className="aspect-[3/4] w-full animate-pulse rounded-2xl border border-ink-100 bg-sunken"
+                  style={{ aspectRatio: QR_CARD_ASPECT }}
+                  className="w-full animate-pulse rounded-2xl border border-ink-100 bg-sunken"
                 />
               ) : preview ? (
                 <img
@@ -190,7 +191,10 @@ export default function SiteQr() {
                   className="w-full rounded-2xl border border-ink-100 bg-white shadow-sm"
                 />
               ) : (
-                <div className="aspect-[3/4] w-full rounded-2xl border border-dashed border-ink-200 bg-sunken" />
+                <div
+                  style={{ aspectRatio: QR_CARD_ASPECT }}
+                  className="w-full rounded-2xl border border-dashed border-ink-200 bg-sunken"
+                />
               )}
             </div>
 
