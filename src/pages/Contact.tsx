@@ -1,5 +1,6 @@
 import SectionHeading from '../components/SectionHeading'
-import { contact } from '../data/contact'
+import { WhatsAppIcon } from '../components/icons'
+import { contact, whatsappHref } from '../data/contact'
 import { useI18n } from '../i18n'
 
 export default function Contact() {
@@ -35,13 +36,23 @@ export default function Contact() {
 
               <div className="flex flex-col gap-1 border-t border-ink-100 pt-5 sm:flex-row sm:items-baseline sm:gap-6">
                 <dt className="w-32 shrink-0 text-sm font-semibold text-ink-400">{c.phoneLabel}</dt>
-                <dd className="min-w-0">
+                <dd className="flex min-w-0 flex-wrap items-center gap-x-4 gap-y-1">
                   <a
                     href={`tel:${contact.phoneHref}`}
                     dir="ltr"
                     className="break-words text-base font-semibold text-ink-900 hover:text-tint-fg"
                   >
                     {contact.phone}
+                  </a>
+                  <a
+                    href={whatsappHref()}
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label={t.whatsapp.label}
+                    className="inline-flex min-h-6 items-center gap-1.5 rounded-lg text-sm font-semibold text-ink-600 hover:text-tint-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bloom-500"
+                  >
+                    <WhatsAppIcon className="h-4 w-4" />
+                    WhatsApp
                   </a>
                 </dd>
               </div>

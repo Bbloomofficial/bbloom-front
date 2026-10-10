@@ -30,6 +30,8 @@ export const en: Dict = {
 
   language: { label: 'Change language' },
 
+  whatsapp: { label: 'Message us on WhatsApp' },
+
   hero: {
     eyebrow: 'Ads + websites for small businesses',
     titleLine1: 'Grow your business,',

@@ -49,6 +49,12 @@ export type Dict = {
   theme: { toLight: string; toDark: string }
   password: { show: string; hide: string }
   language: { label: string }
+  /**
+   * Accessible name for the WhatsApp link that sits beside the phone number.
+   * It must say what the link does rather than repeat the number, which the
+   * adjacent `tel:` link already reads out.
+   */
+  whatsapp: { label: string }
   hero: {
     eyebrow: string
     titleLine1: string

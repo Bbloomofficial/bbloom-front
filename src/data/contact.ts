@@ -9,3 +9,12 @@ export const contact = {
   instagram: 'https://www.instagram.com/bbloom.ge/',
   facebook: 'https://www.facebook.com/profile.php?id=61593673766383',
 } as const
+
+/**
+ * wa.me wants bare digits: a `+` or a space in the path 404s silently rather
+ * than failing loudly, so the number is derived from `phoneHref` instead of
+ * being written out a second time.
+ */
+export function whatsappHref(phone: string = contact.phoneHref): string {
+  return `https://wa.me/${phone.replace(/\D/g, '')}`
+}
