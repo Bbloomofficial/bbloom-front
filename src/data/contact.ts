@@ -5,4 +5,7 @@ export const contact = {
   phone: '550 50 60 04',
   /** E.164 form for tel: links, so the number works when dialled from abroad. */
   phoneHref: '+995550506004',
+  /** Public social profile URLs, linked from the footer. */
+  instagram: 'https://www.instagram.com/bbloom.ge/',
+  facebook: 'https://www.facebook.com/profile.php?id=61593673766383',
 } as const
