@@ -186,11 +186,15 @@ status and write internal notes. They cannot change the payment status. The
 does not send anybody any money. A new support person could easily get this
 wrong.
 
-> **Current state:** as written, the ordering status endpoint answers "not
-> enabled" for every site, and no template turns online ordering on. The screens
-> are built and waiting. Confirm the live position in
+> **Current state — unverified from this repository.** A note in
+> `src/dashboard/ordering.tsx` records that the ordering status endpoint was
+> answering "not enabled" for every site, and that no template turned online
+> ordering on. That is a comment, not executable logic: the only code here asks
+> the API at runtime and believes the answer. This repository therefore cannot
+> establish what any site actually answers today, and the comment may be stale.
+> **Confirm the live position in
 > [business-rules.md](https://github.com/Bbloomofficial/bbloom-back/blob/main/docs/business-rules.md)
-> before telling a customer anything about it.
+> before telling a customer anything about it.**
 
 ### Ads
 
@@ -286,4 +290,6 @@ Editors see a short "owners only" message instead of the member list.
   setting. The only email features that exist are account confirmation, and the
   `mailto:` links that open the customer's own email program.
 - **Card payment**, as described under Billing.
-- **Online ordering**, as described under Orders.
+- **Online ordering** — the screens exist and the gate is live, but whether any
+  site is actually allowed to sell today cannot be established from this
+  repository. See the note under Orders.
