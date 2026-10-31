@@ -10,6 +10,17 @@ The code is in `src/site/` (the live website) and `src/dashboard/editor/` (the
 editing tools). Rules and limits live in
 [business-rules.md](https://github.com/Bbloomofficial/bbloom-back/blob/main/docs/business-rules.md).
 
+## Contents
+
+- [What a website is made of](#what-a-website-is-made-of) — templates, sections, content and theme
+- [The draft-then-publish model](#the-draft-then-publish-model) — **the part most often misunderstood**
+- [What a customer can change about the look](#what-a-customer-can-change-about-the-look) — colours, fonts, spacing
+- [Photos and media](#photos-and-media) — uploading, and where images are served from
+- [What visitors can do on the website](#what-visitors-can-do-on-the-website) — enquiries, reservations, buying
+- [Feature gating — what money actually buys](#feature-gating--what-money-actually-buys) — and what lapsing does *not* take away
+- [Addresses](#addresses) — subdomains and custom domains
+- [The try-before-you-buy editor](#the-try-before-you-buy-editor) — the sandbox, and how it differs from the real thing
+
 ---
 
 ## What a website is made of

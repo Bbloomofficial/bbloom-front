@@ -9,6 +9,26 @@ This describes the behaviour of the code in `src/dashboard/`. It deliberately
 does not state limits, prices or lifecycle rules; those are in
 [business-rules.md](https://github.com/Bbloomofficial/bbloom-back/blob/main/docs/business-rules.md).
 
+## Contents
+
+- [Vocabulary](#vocabulary) — the words we use, including the two that get confused
+- [How a customer gets in](#how-a-customer-gets-in) — signing up, signing in, confirming an email
+- [The shape of the dashboard](#the-shape-of-the-dashboard) — the navigation, and why some tabs come and go
+- [Screen by screen](#screen-by-screen):
+  - [My websites](#my-websites) — the list a customer lands on
+  - [Creating a website](#creating-a-website) — the guided setup
+  - [Overview](#overview) — the site's home screen, and the Publish button
+  - [Page — the content editor](#page--the-content-editor) — where the actual website gets written
+  - [Inbox](#inbox) — messages visitors send
+  - [Orders](#orders) — online sales
+  - [Ads](#ads) — advertising campaigns
+  - [QR code](#qr-code) — the printable code for a shop window
+  - [Billing](#billing) — plans, invoices, how customers actually pay
+  - [Account](#account) — name, password, language
+  - [Team](#team) — giving a colleague access
+- [What a new staff member should be careful about](#what-a-new-staff-member-should-be-careful-about)
+- [Features that are advertised but not built](#features-that-are-advertised-but-not-built)
+
 ## Vocabulary
 
 | Term | Meaning here |

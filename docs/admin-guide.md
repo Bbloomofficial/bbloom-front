@@ -8,6 +8,24 @@ actions you cannot take back.
 This describes the code in `src/admin/`. Rules, limits and lifecycles belong in
 [business-rules.md](https://github.com/Bbloomofficial/bbloom-back/blob/main/docs/business-rules.md).
 
+## Contents
+
+- [Read this before you touch anything](#read-this-before-you-touch-anything) — **start here on your first day**
+- [Signing in](#signing-in) — how staff access works, and what it does not check
+- [Areas](#areas):
+  - [Sites](#sites) — every customer website we host
+  - [Site detail](#site-detail) — one site's settings, accounts, domains, payment and danger zone
+  - [Creating a site](#creating-a-site) — setting one up on a customer's behalf
+  - [Accounts](#accounts) — customer logins and their free-site allowance
+  - [Plans](#plans) — **live pricing; the easiest place to do real damage**
+  - [Promo codes](#promo-codes) — discount codes and their restrictions
+  - [New customer offer](#new-customer-offer) — the first-purchase discount
+  - [Ads](#ads) — campaigns, which spend real money
+  - [Ad tools](#ad-tools) — direct Meta operations
+  - [System status](#system-status) — health of the backing services
+- [Quick reference: what cannot be undone](#quick-reference-what-cannot-be-undone)
+- [Things that are not what they look like](#things-that-are-not-what-they-look-like)
+
 ## Read this before you touch anything
 
 The admin console operates on **live customer businesses with real money in

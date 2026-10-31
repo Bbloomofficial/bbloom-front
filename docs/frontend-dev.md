@@ -9,6 +9,22 @@ Setup, scripts, theme tokens and deployment are in the repository
 [`README.md`](../README.md) and are not repeated here. Read
 [surfaces.md](surfaces.md) first if you have not.
 
+## Contents
+
+- [Stack](#stack)
+- [Project layout](#project-layout)
+- [Routing and host resolution](#routing-and-host-resolution) — how one bundle serves five surfaces
+- [The API layer](#the-api-layer) — absent-not-null, `code` not `detail`, `assetUrl`
+- [Internationalisation](#internationalisation) — typed dictionaries, Georgian default
+- [Theming](#theming) — our dark mode vs. a customer's site theme
+- [The section registry](#the-section-registry) — the fallback invariant
+- [Template tiers](#template-tiers) — why the helpers fail open
+- [Plans and prices](#plans-and-prices) — why nothing here is hardcoded
+- [Testing](#testing)
+- [Before opening a pull request](#before-opening-a-pull-request)
+- [Things that have bitten people before](#things-that-have-bitten-people-before)
+- [Deployment, briefly](#deployment-briefly)
+
 ## Stack
 
 Vite 6, React 19, TypeScript, Tailwind CSS 4, React Router 7, Vitest with

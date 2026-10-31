@@ -5,6 +5,20 @@
 codebase — what are they, who uses each, and how does an address decide which
 one a visitor gets?
 
+## Contents
+
+- [Why this is confusing](#why-this-is-confusing) — why one codebase and not five
+- [The five, at a glance](#the-five-at-a-glance) — the summary table, if you only read one thing
+- [1. Marketing site](#1-marketing-site--srcpages) — bbloom.ge, what the public sees
+- [2. Try editor](#2-try-editor--srctry) — the sandbox a prospect plays with before signing up
+- [3. Customer dashboard](#3-customer-dashboard--srcdashboard) — where a paying customer runs their site
+- [4. Staff admin](#4-staff-admin--srcadmin) — our own console
+- [5. Client site renderer](#5-client-site-renderer--srcsite) — the customer's actual website
+- [The blast radius of `src/site/`](#the-blast-radius-of-srcsite) — **read this before changing anything there**
+- [How an address picks a surface](#how-an-address-picks-a-surface) — what happens between the URL and the screen
+- [How the surfaces relate](#how-the-surfaces-relate) — the journey from visitor to paying customer
+- [Where to go next](#where-to-go-next)
+
 ## Why this is confusing
 
 Most companies would build five separate websites. bbloom builds one. There is
