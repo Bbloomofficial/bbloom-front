@@ -202,6 +202,77 @@ async function toError(response: Response): Promise<ApiError> {
   );
 }
 
+/**
+ * A binary answer, plus the name the server wanted it saved under where that
+ * name is actually legible to us.
+ *
+ * `filename` is frequently absent through no fault of the server. See
+ * `requestBlob` below.
+ */
+export type BinaryResponse = { blob: Blob; filename?: string };
+
+/**
+ * Reads a filename out of a `Content-Disposition` header.
+ *
+ * Both spellings are accepted. RFC 5987's `filename*=UTF-8''…` is percent-
+ * encoded and wins where both are present, because it is the one that can
+ * carry a name that is not ASCII — which, for a product whose clients write in
+ * Georgian, is the case that matters rather than the exotic one.
+ */
+function dispositionFilename(header: string | null): string | undefined {
+  if (!header) return undefined;
+  const extended = /filename\*\s*=\s*[^']*'[^']*'([^;]+)/i.exec(header);
+  if (extended) {
+    try {
+      return decodeURIComponent(extended[1].trim()) || undefined;
+    } catch {
+      /* a malformed escape is not worth failing a download over */
+    }
+  }
+  const plain = /filename\s*=\s*("([^"]*)"|[^;]+)/i.exec(header);
+  const name = (plain?.[2] ?? plain?.[1] ?? "").trim();
+  return name || undefined;
+}
+
+/**
+ * The same request as `request()`, for an endpoint that answers with bytes.
+ *
+ * Split out rather than folded in because the two differ on *success* only:
+ * a failure is still an RFC 9457 problem detail in JSON, so `toError` is reused
+ * and an `ApiError` arrives with its `code` intact. A caller branching on
+ * `code` therefore works identically either side of this line, which is the
+ * whole point — a binary endpoint refusing for want of a paid plan must be as
+ * readable as a JSON one doing the same.
+ *
+ * A word on `filename`. The browser will only hand us `Content-Disposition`
+ * on a cross-origin response if the server sends
+ * `Access-Control-Expose-Headers: Content-Disposition`, and this app *is*
+ * cross-origin in production: the bundle is served from `*.bbloom.ge` and
+ * `VITE_API_BASE_URL` points at `api.bbloom.ge`. So a missing name here means
+ * "not exposed" far more often than it means "not sent", and every caller must
+ * have a name of its own to fall back to rather than treating this as reliable.
+ */
+export async function requestBlob(
+  path: string,
+  init?: RequestInit,
+): Promise<BinaryResponse> {
+  const response = await fetch(`${API_BASE}${path}`, {
+    ...init,
+    headers: {
+      // Whatever the caller asks for, a problem detail must still be readable:
+      // the error path answers in JSON even when the success path does not.
+      Accept: "application/json",
+      ...init?.headers,
+    },
+  });
+
+  if (!response.ok) throw await toError(response);
+  return {
+    blob: await response.blob(),
+    filename: dispositionFilename(response.headers.get("Content-Disposition")),
+  };
+}
+
 export async function request<T>(path: string, init?: RequestInit): Promise<T> {
   // FormData sets its own multipart content type, boundary included.
   const isJsonBody = init?.body != null && !(init.body instanceof FormData);

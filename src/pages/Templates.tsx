@@ -2,7 +2,8 @@ import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import SectionHeading from '../components/SectionHeading'
 import CtaBand from '../components/CtaBand'
-import { fetchTemplates, templateThumbnail } from '../api/templates'
+import TemplateThumb from '../components/TemplateThumb'
+import { fetchTemplates, orderCategories } from '../api/templates'
 import type { SiteTemplate } from '../api/templates'
 import { useI18n } from '../i18n'
 
@@ -19,10 +20,9 @@ function TemplateCard({ template }: { template: SiteTemplate }) {
   return (
     <article className="group flex min-w-0 flex-col overflow-hidden rounded-[1.75rem] border border-ink-100 bg-surface transition hover:-translate-y-1 hover:shadow-2xl hover:shadow-bloom-600/10">
       <div className="relative aspect-16/10 overflow-hidden bg-ink-50">
-        <img
-          src={templateThumbnail(template)}
+        <TemplateThumb
+          template={template}
           alt={t.templatesPage.previewAlt.replace('{name}', name)}
-          loading="lazy"
           className="h-full w-full object-cover object-top transition duration-500 group-hover:scale-[1.03]"
         />
         {template.flagship && (
@@ -104,9 +104,11 @@ export default function Templates() {
     }
   }, [attempt])
 
-  // Categories come from the payload so a new one appears without a code change.
+  // Categories come from the payload so a new one appears without a code change,
+  // ordered editorially rather than in whatever order the API happened to list
+  // them — the personal designs belong after the business ones, not interleaved.
   const categories = useMemo(
-    () => [...new Set(templates.map((template) => template.category))],
+    () => orderCategories(templates.map((template) => template.category)),
     [templates],
   )
 

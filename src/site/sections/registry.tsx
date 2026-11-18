@@ -39,6 +39,12 @@ import {
   ProductsGridFilterable,
   ProductsHighlightRow,
 } from "./Products";
+import {
+  CredentialsCards,
+  CredentialsTimeline,
+  RatesCards,
+  RatesTable,
+} from "./Professional";
 import { TestimonialsGlassCards, TestimonialsQuotes } from "./Testimonials";
 
 export type SectionComponent = ComponentType<{ section: PublicSection }>;
@@ -121,6 +127,14 @@ const registry: Record<string, Entry> = {
     },
   },
   events: { fallback: EventsCards, variants: { cards: EventsCards } },
+  credentials: {
+    fallback: CredentialsTimeline,
+    variants: { timeline: CredentialsTimeline, cards: CredentialsCards },
+  },
+  rates: {
+    fallback: RatesCards,
+    variants: { cards: RatesCards, table: RatesTable },
+  },
   testimonials: {
     fallback: TestimonialsQuotes,
     variants: {

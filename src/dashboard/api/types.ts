@@ -9,8 +9,17 @@ import type {
   AdCampaignStatus,
   AdInsightsFigures,
 } from "../../api/ads";
+import type { TemplateTier } from "../../api/templates";
 
 export type SiteLanguage = "ka" | "en";
+
+/**
+ * The same two, as a list to render.
+ *
+ * Georgian first, deliberately and permanently: it is the product's default
+ * language and the one the great majority of these websites are written in.
+ */
+export const SITE_LANGUAGES: readonly SiteLanguage[] = ["ka", "en"];
 
 /** Membership roles. An editor may rewrite a site but not commit it to a bill. */
 export type MemberRole = "SITE_OWNER" | "SITE_EDITOR";
@@ -122,6 +131,18 @@ export type AccountProfile = {
   businessName?: string;
   defaultLanguage?: SiteLanguage;
   sites: AccountSite[];
+  /**
+   * The highest design tier this account may choose from, and everything below
+   * it. `null` is deliberately unrestricted; absent means an older backend that
+   * does not report it, which is read as unrestricted too — see
+   * `isTierUnlocked`, which fails open rather than locking a client out of a
+   * design they may well have paid for.
+   *
+   * Account-scoped, not site-scoped: one paid website lifts the ceiling for
+   * everything else the account owns. `SiteDetail` mirrors it so a site-scoped
+   * screen does not need a second request, but the two are the same fact.
+   */
+  maxTemplateTier?: TemplateTier | null;
 };
 
 /** The old name, kept so the shared HTTP callers read the same either way. */
@@ -403,7 +424,95 @@ export type SiteDetail = {
   publishedAt?: string;
   createdAt?: string;
   updatedAt?: string;
+  /**
+   * The account's design ceiling, mirrored here so a site-scoped screen can
+   * lock a picker without a second request. Same fact as on `AccountProfile`,
+   * and read through the same helper so the two can never be compared
+   * differently.
+   */
+  maxTemplateTier?: TemplateTier | null;
 };
+
+/**
+ * Changing a website's design.
+ *
+ * This is the one destructive action a client can take on their own content, so
+ * it is deliberately two calls: a preview that writes nothing and reports
+ * exactly what would be lost, then the switch itself.
+ *
+ * It cannot be staged in the draft layer and there is no undo. `template_id`
+ * alone resolves the theme, the navigation, every section's variant, the tier
+ * and the site's feature set, none of which has a draft copy — so a half-staged
+ * switch would render the client's *old* content through the *new* blueprint on
+ * their live site, which is worse than switching outright. Hence: warn fully,
+ * then do it all at once.
+ */
+export type TemplateSwitchImpact = {
+  /**
+   * Section types that survive the switch, are new in the target design, or
+   * disappear with the old one. `removed` is the one a client must read before
+   * confirming: those sections and their content do not come back.
+   */
+  carriedOver: string[];
+  added: string[];
+  removed: string[];
+  /**
+   * Per-section fields the new blueprint has no home for, keyed by section type
+   * — `{ hero: ["image"] }`. Sections that keep everything are absent rather
+   * than present with an empty list.
+   */
+  droppedFields: Record<string, string[]>;
+  /**
+   * Whether the website stops being able to take orders and payments.
+   *
+   * Online ordering needs a MODERN-tier design, so switching down from one
+   * turns checkout off on a shop that is selling today. It is computed from the
+   * ordering gate rather than from the feature diff — `onlineOrders` is a
+   * per-site override that no blueprint declares, so it could never have shown
+   * up there — which is also why it is never double-reported in `losesFeatures`.
+   *
+   * By far the most consequential thing in the payload, and the headline of the
+   * confirmation rather than an item in a list.
+   */
+  losesOnlineOrdering?: boolean;
+  /**
+   * Other switched-on features the new design does not offer. Feature keys, and
+   * the API filters them to the client-facing three (`enquiryForm`,
+   * `reservations`, `newsletter`) so an internal blueprint key cannot reach a
+   * client's screen. Rendered through the copy for those keys, never raw.
+   */
+  losesFeatures?: string[];
+};
+
+/**
+ * The dry run: `GET /manage/sites/{id}/template-switch?templateCode=…`. Writes
+ * nothing, so it is safe to call as soon as a design is highlighted.
+ */
+export type TemplateSwitchPreview = TemplateSwitchImpact & {
+  templateCode: string;
+  currentTemplateCode: string;
+  /** The site is live right now, so confirming changes the public page at once. */
+  published: boolean;
+  /**
+   * The server's own tier check. Authoritative, and preferred over the local
+   * comparison inside a site: it answers without provoking a refusal, so a
+   * locked design can be shown as an upgrade rather than as an error.
+   */
+  allowed: boolean;
+};
+
+/**
+ * The switch itself: `POST /manage/sites/{id}/template`.
+ *
+ * Note the shape differs from the preview — the impact is nested under `impact`
+ * here, because the response also has to carry the updated site. Read both
+ * through `switchImpact()` rather than reaching in directly.
+ */
+export type TemplateSwitchResult = {
+  site: SiteDetail;
+  impact?: TemplateSwitchImpact;
+  published?: boolean;
+} & Partial<TemplateSwitchImpact>;
 
 /** A localised value in the raw (unresolved) content the editor works with. */
 export type LocalizedText = Partial<Record<SiteLanguage, string>>;
@@ -604,14 +713,22 @@ export type OrderStats = {
  * read in Georgian and matching on the backend's English prose would break the
  * first time anybody reworded it.
  *
- * The three are not interchangeable and each has a different next step: the
- * first needs a different template, the second needs paying for, and the third
- * the client cannot fix at all — connecting a bank account is staff work, so
- * telling them to go and do it would send them looking for a screen that does
- * not exist for them.
+ * None are interchangeable and each ends somewhere different: the first needs a
+ * different template, the second needs paying for, and the third the client
+ * cannot fix at all — connecting a bank account is staff work, so telling them
+ * to go and do it would send them looking for a screen that does not exist for
+ * them.
+ *
+ * `TEMPLATE_CATEGORY` is the odd one out, and the only one that is not a
+ * problem. It says the website is not the kind of thing that sells — a teacher,
+ * a lawyer, a photographer — so there is nothing to fix, nothing to buy and
+ * nowhere to send anyone. It exists because the gate used to turn on tier
+ * alone, which would have handed a card reader to every personal design on the
+ * Modern tier.
  */
 export type OrderingBlockedReason =
   | "TEMPLATE_TIER"
+  | "TEMPLATE_CATEGORY"
   | "FEATURE_OFF"
   | "NO_PAYMENT_ACCOUNT";
 

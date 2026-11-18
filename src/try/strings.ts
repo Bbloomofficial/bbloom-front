@@ -11,6 +11,19 @@ export type TryStrings = {
   galleryTitle: string;
   gallerySubtitle: string;
   galleryHint: string;
+  /** Heading above each group of designs, keyed by the backend's category. */
+  categories: Record<string, string>;
+  /**
+   * The design tiers, and the one sentence that explains why they are labelled.
+   *
+   * Advisory only. Nobody is signed in here, so there is no account to compare
+   * a design against and nothing is locked — the badge tells a visitor that
+   * designs differ by plan and points them at the plans, rather than stopping
+   * them halfway through building something.
+   */
+  tiers: Record<string, string>;
+  planHint: string;
+  planHintLink: string;
   choose: string;
   resume: string;
   resumeCta: string;
@@ -91,6 +104,17 @@ const en: TryStrings = {
   gallerySubtitle:
     "Change every word and every picture right away. No account needed until you want to keep it.",
   galleryHint: "Your website is free on a bbloom.ge address. Pay only for your own domain and features that need a server.",
+  categories: {
+    SHOP: "Shops",
+    RESTAURANT: "Restaurants & cafés",
+    TEACHER: "Teachers & tutors",
+    LAWYER: "Professional services",
+    CREATIVE: "Creatives & portfolios",
+  },
+  tiers: { SIMPLE: "Simple", CLASSIC: "Classic", MODERN: "Modern" },
+  planHint:
+    "Designs come at different levels, and which ones you can keep depends on the plan you choose later. Build with any of them now.",
+  planHintLink: "See what each plan includes",
   choose: "Use this design",
   resume: "Continue where you left off",
   resumeCta: "Continue",
@@ -178,6 +202,17 @@ const ka: TryStrings = {
     "შეცვალეთ ყველა ტექსტი და სურათი მაშინვე. ანგარიში მხოლოდ მაშინ დაგჭირდებათ, როცა შენახვას მოისურვებთ.",
   galleryHint:
     "ვებგვერდი უფასოა bbloom.ge მისამართზე. გადახდა მხოლოდ საკუთარ დომენსა და სერვერზე დამოკიდებულ ფუნქციებზეა საჭირო.",
+  categories: {
+    SHOP: "მაღაზიები",
+    RESTAURANT: "რესტორნები და კაფეები",
+    TEACHER: "მასწავლებლები და რეპეტიტორები",
+    LAWYER: "პროფესიული მომსახურება",
+    CREATIVE: "შემოქმედებითი პორტფოლიო",
+  },
+  tiers: { SIMPLE: "მარტივი", CLASSIC: "კლასიკური", MODERN: "თანამედროვე" },
+  planHint:
+    "დიზაინები სხვადასხვა დონისაა და რომლის დატოვებასაც შეძლებთ, დამოკიდებულია მოგვიანებით არჩეულ პაკეტზე. ახლა ნებისმიერით შეგიძლიათ მუშაობა.",
+  planHintLink: "ნახეთ, რას მოიცავს თითოეული პაკეტი",
   choose: "ამ დიზაინით დაწყება",
   resume: "გააგრძელეთ იქიდან, სადაც შეჩერდით",
   resumeCta: "გაგრძელება",

@@ -23,14 +23,14 @@ import type { AdCampaignStatus, AdStatus } from "../api/types";
  * The screen is shaped by one fact: everything on it spends money the instant
  * it is pressed. There is no draft campaign and no paused-first step at Meta,
  * so the usual "create it, look at it, then turn it on" safety net does not
- * exist and cannot be added here. What replaces it is being explicit — the
+ * exist and cannot be added here. What replaces it is being explicit â€” the
  * launch button says what it does, confirms first, and every row that might
  * still be costing money says so in its own words.
  *
  * The second shaping fact is that money spent by the *test* tool is ours. A
  * client's campaign costing money is the product working; a test campaign
  * costing money is a mistake nobody has noticed yet, which is why
- * `liveTestCampaigns` gets an alarm and `liveCampaigns` does not — and why the
+ * `liveTestCampaigns` gets an alarm and `liveCampaigns` does not â€” and why the
  * tools live on their own route rather than beside real client work.
  */
 
@@ -234,7 +234,7 @@ const STATUS_FILTERS: AdCampaignStatus[] = [
  * Client campaigns, newest first.
  *
  * Spend, impressions and clicks come straight off the list rows rather than
- * from a request per campaign — they are cached figures the server refreshes
+ * from a request per campaign â€” they are cached figures the server refreshes
  * hourly. `insightsReadAt` is what makes that honest: when it is set the row
  * says when it was read, and when it is null the figures are shown as "not yet"
  * rather than as zeroes nobody has earned.

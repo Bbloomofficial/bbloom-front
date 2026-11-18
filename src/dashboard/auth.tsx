@@ -1,4 +1,4 @@
-﻿import {
+import {
   createContext,
   useCallback,
   useContext,
@@ -55,7 +55,7 @@ type StoredSession = {
  * How long a watched send is still worth reporting.
  *
  * Matched to the code's own fifteen-minute life. After that the client has to
- * resend anyway, which produces a fresh answer â€” so a stale `false` can never
+ * resend anyway, which produces a fresh answer — so a stale `false` can never
  * outlive the thing it describes and start accusing a healthy server.
  */
 const MAIL_FACT_TTL_MS = 15 * 60_000;
@@ -66,7 +66,7 @@ function readSession(): StoredSession | null {
   if (!raw) return null;
   try {
     const session = JSON.parse(raw) as StoredSession;
-    // An account with no website is a legitimate state â€” the only thing that
+    // An account with no website is a legitimate state — the only thing that
     // makes a stored session worthless is a missing or expired token.
     if (!session?.token || !session.user?.id) return null;
     if (session.expiresAt && Date.parse(session.expiresAt) < Date.now()) {
@@ -119,7 +119,7 @@ export function readStoredAccount(): {
  *
  * The build-before-you-sign-up flow lives on the marketing side of the app,
  * where `AuthProvider` is not mounted, but it registers a real account and must
- * leave the client signed in â€” otherwise finishing a signup would dump them on
+ * leave the client signed in — otherwise finishing a signup would dump them on
  * a login form asking for the password they typed a second ago.
  */
 export function storeSession(response: {
@@ -191,7 +191,7 @@ const AuthContext = createContext<AuthValue | null>(null);
 /**
  * How long the backend makes a client wait between confirmation emails.
  *
- * A mirror of a server rule, which is normally a thing to avoid â€” but it is
+ * A mirror of a server rule, which is normally a thing to avoid — but it is
  * only ever used to grey out a button early, and only when the server has not
  * told us its own deadline. `resendAvailableAt` on the register and login
  * responses is preferred wherever it exists, and the 429 overrides both the
@@ -226,7 +226,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
    * Preferred over the mirror below because it is the only thing that covers
    * signing in. Registration mails a code and then hands over a session, so a
    * client who closes the tab and signs in ten seconds later gets a form that
-   * knows about no send at all â€” measured against production, the button was
+   * knows about no send at all — measured against production, the button was
    * live and the server answered 429. The deadline is a property of the
    * account, not of a send this tab watched, which is why signing in reports it
    * even though signing in mails nothing.
@@ -288,7 +288,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         mailSent?: boolean | null;
         /**
          * The server's own deadline for the next confirmation email. Present on
-         * both register and login â€” verified against production â€” which is what
+         * both register and login — verified against production — which is what
          * makes the local mirror below a fallback rather than the source.
          */
         resendAvailableAt?: string | null;
@@ -329,7 +329,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // Registration no longer answers with a session: it answers 202 and mails a
   // code. So this hands the ticket back rather than signing anyone in, and the
   // caller is responsible for showing the confirmation screen. The cooldown and
-  // send result on that ticket are the reason it is returned whole â€” they are
+  // send result on that ticket are the reason it is returned whole — they are
   // the difference between a live resend button and one the server refuses.
   const signUp = useCallback(
     async (input: {
@@ -342,7 +342,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   );
 
   // Confirming is what issues the first token. `mailed: false` because this
-  // response is the end of an email's life, not the start of one â€” treating it
+  // response is the end of an email's life, not the start of one — treating it
   // as a send would leave a fresh cooldown on a screen with nothing to resend.
   const completeVerification = useCallback(
     (session: SiteLoginResponse) => start(session, false),
@@ -385,7 +385,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // absurd. Only an outright rejected token ends the session.
       //
       // Nor is every 401. A 401 carrying `INVALID_CREDENTIALS` means a password
-      // was offered and refused, which says nothing about the token â€” and
+      // was offered and refused, which says nothing about the token — and
       // ending the session over it would throw away whatever the client was in
       // the middle of. An unrecognised 401 still signs out, because for a
       // background read a dead token is by far the likelier explanation.

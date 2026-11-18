@@ -3,6 +3,17 @@
 Marketing site for **bbloom**, an agency that helps small businesses get more customers through
 Instagram/Facebook advertising and conversion-focused websites.
 
+## Documentation
+
+This README covers setup, scripts, theming and deployment. For everything else
+— what the five surfaces in this repository are, what customers and staff can
+actually do, and how a customer's own website is built and published — start at
+[`docs/README.md`](docs/README.md).
+
+The business rules behind those screens are documented in the backend
+repository, at
+[`bbloom-back/docs/business-rules.md`](https://github.com/Bbloomofficial/bbloom-back/blob/main/docs/business-rules.md).
+
 ## Stack
 
 - [Vite](https://vite.dev) 6

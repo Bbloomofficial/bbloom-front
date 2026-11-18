@@ -1,8 +1,8 @@
 import { Link } from 'react-router-dom'
 import Logo from './Logo'
 import AuthLink from './AuthLink'
-import { contact } from '../data/contact'
-import { FacebookIcon, InstagramIcon } from './icons'
+import { contact, whatsappHref } from '../data/contact'
+import { FacebookIcon, InstagramIcon, WhatsAppIcon } from './icons'
 import { useI18n } from '../i18n'
 
 export default function Footer() {
@@ -73,15 +73,24 @@ export default function Footer() {
                 {contact.email}
               </a>
             </li>
-            <li>
+            <li className="flex items-center gap-2">
               <a href={`tel:${contact.phoneHref}`} className="hover:text-tint-fg" dir="ltr">
                 {contact.phone}
+              </a>
+              <a
+                href={whatsappHref()}
+                target="_blank"
+                rel="noreferrer"
+                aria-label={t.whatsapp.label}
+                className="inline-flex h-6 w-6 items-center justify-center rounded-lg hover:text-tint-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bloom-500"
+              >
+                <WhatsAppIcon className="h-4 w-4" />
               </a>
             </li>
           </ul>
           <div className="mt-4 flex gap-2">
             <a
-              href="https://www.instagram.com/bbloom2620/"
+              href={contact.instagram}
               target="_blank"
               rel="noreferrer"
               aria-label="Instagram"
@@ -90,7 +99,7 @@ export default function Footer() {
               <InstagramIcon className="h-5 w-5" />
             </a>
             <a
-              href="https://www.facebook.com/profile.php?id=61593673766383"
+              href={contact.facebook}
               target="_blank"
               rel="noreferrer"
               aria-label="Facebook"
