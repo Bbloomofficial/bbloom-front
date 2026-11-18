@@ -2,9 +2,9 @@ import type { Dict } from './types'
 
 export const en: Dict = {
   meta: {
-    title: 'bbloom — Grow your small business online',
+    title: 'bbloom - Grow your business',
     description:
-      'bbloom helps small businesses get more customers with Instagram and Facebook advertising, plus fast, conversion-focused websites.',
+      'bbloom helps small businesses attract more customers. We offer business owners a website tailored to their business, along with social media advertising.',
   },
 
   nav: {
@@ -31,11 +31,11 @@ export const en: Dict = {
   language: { label: 'Change language' },
 
   hero: {
-    eyebrow: 'Ads + websites for small businesses',
+    eyebrow: 'Ads + websites for your businesses',
     titleLine1: 'Grow your business,',
-    titleLine2: 'win more customers.',
+    titleLine2: 'get more customers.',
     subtitle:
-      'bbloom runs your Instagram and Facebook ads and builds the website that turns interested people into real customers.',
+      'bbloom helps small businesses attract more customers. We offer business owners a website tailored to their business, along with social media advertising.',
     primaryCta: 'Get in touch',
     secondaryCta: 'See what we do',
     showcase: {
