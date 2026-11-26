@@ -53,6 +53,16 @@ export default function Footer() {
               </Link>
             </li>
             <li>
+              <Link to="/privacy" className="hover:text-tint-fg">
+                {t.footer.privacy}
+              </Link>
+            </li>
+            <li>
+              <Link to="/data-deletion" className="hover:text-tint-fg">
+                {t.footer.dataDeletion}
+              </Link>
+            </li>
+            <li>
               <AuthLink to="/login" className="hover:text-tint-fg">
                 {t.nav.signIn}
               </AuthLink>
