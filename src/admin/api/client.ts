@@ -11,6 +11,8 @@ import type {
   AdCampaignDto,
   AdCampaignCreateRequest,
   AdCampaignQuery,
+  AdSettings,
+  AdSettingsUpdate,
   AdStatus,
   AdTestRequest,
   AdTestResult,
@@ -464,6 +466,33 @@ export function updateFreeAllowance(
  */
 export function fetchAdStatus(token: string): Promise<AdStatus> {
   return authed<AdStatus>(token, "/admin/ads/status");
+}
+
+/** The Meta credentials, without the access token. */
+export function fetchAdSettings(token: string): Promise<AdSettings> {
+  return authed<AdSettings>(token, "/admin/ads/settings");
+}
+
+/**
+ * Saves the Meta credentials and answers with the settings now in force.
+ *
+ * A full replacement: send every field, because an omitted one is cleared back
+ * to its default rather than left alone. The token is the one exception (see
+ * `AdSettingsUpdate`). The first save also stops the server reading its
+ * `ADS_*` environment variables, permanently.
+ *
+ * Refused with a 409 as `ADS_ACCOUNT_IN_USE` when the ad account would change
+ * under live campaigns, and as `ADS_CREDENTIAL_KEY_MISSING` when a token is
+ * sent but the server has no key to store it under.
+ */
+export function updateAdSettings(
+  token: string,
+  body: AdSettingsUpdate,
+): Promise<AdSettings> {
+  return authed<AdSettings>(token, "/admin/ads/settings", {
+    method: "PUT",
+    body: JSON.stringify(body),
+  });
 }
 
 /**

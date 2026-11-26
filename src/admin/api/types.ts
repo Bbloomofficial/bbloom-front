@@ -860,6 +860,70 @@ export type AdStatus = {
   meta?: AdMetaAccount | null;
 };
 
+/**
+ * Where the Meta settings in force are read from. `ENVIRONMENT` until the
+ * settings form is saved once, then `PANEL` for good.
+ */
+export type AdSettingsSource = "ENVIRONMENT" | "PANEL";
+
+/**
+ * The Meta credentials as `GET /admin/ads/settings` returns them: everything
+ * except the access token, which never comes back.
+ *
+ * Optional fields are omitted by the server when unset, never sent as null.
+ * The budgets, API version, Graph URL, country and test destination are always
+ * present, because the server reports the value in force, built-in default
+ * included.
+ */
+export type AdSettings = {
+  enabled: boolean;
+  source: AdSettingsSource;
+  /** Whether the server has a key to encrypt a token under at all. */
+  credentialKeyConfigured: boolean;
+  /** A fault that stops advertising regardless of these fields. Prose. */
+  problem?: string;
+  tokenSet: boolean;
+  /** The last four characters of the token in force, when it is long enough. */
+  tokenHint?: string;
+  adAccountId?: string;
+  pageId?: string;
+  instagramAccountId?: string;
+  apiVersion: string;
+  graphBaseUrl: string;
+  maxDailyBudgetMinor: number;
+  testDailyBudgetMinor: number;
+  defaultCountry: string;
+  testDestinationUrl: string;
+  configured: boolean;
+  /** Campaigns that may still be spending in the current ad account. */
+  liveCampaigns: number;
+  updatedAt?: string;
+  updatedByEmail?: string;
+};
+
+/**
+ * A save of the settings form, for `PUT /admin/ads/settings`.
+ *
+ * A full replacement except for the token: a null or omitted field clears the
+ * stored value back to the built-in default, not to what was there before. An
+ * omitted or blank `accessToken` keeps the stored token, and only
+ * `removeAccessToken` clears it.
+ */
+export type AdSettingsUpdate = {
+  enabled: boolean;
+  accessToken?: string;
+  removeAccessToken: boolean;
+  adAccountId?: string | null;
+  pageId?: string | null;
+  instagramAccountId?: string | null;
+  apiVersion?: string | null;
+  graphBaseUrl?: string | null;
+  maxDailyBudgetMinor?: number | null;
+  testDailyBudgetMinor?: number | null;
+  defaultCountry?: string | null;
+  testDestinationUrl?: string | null;
+};
+
 export type AdTestRequest = {
   channels: AdChannel[];
   destinationUrl?: string;

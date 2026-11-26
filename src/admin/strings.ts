@@ -395,7 +395,66 @@ export type AdminStrings = {
     /** Staff wording for the server's 409 codes. Keyed by the code itself. */
     refusals: Record<string, string>;
     tools: string;
+    settingsLink: string;
     backToCampaigns: string;
+    settings: {
+      title: string;
+      subtitle: string;
+      loadFailed: string;
+      saveFailed: string;
+      badBudget: string;
+      badCountry: string;
+      problemTitle: string;
+      sourceEnvTitle: string;
+      sourceEnvBody: string;
+      sourcePanelTitle: string;
+      sourcePanelBody: string;
+      savedBy: (when: string, email: string) => string;
+      savedAt: (when: string) => string;
+      noKeyTitle: string;
+      noKeyBody: string;
+      enabledLabel: string;
+      enabledHint: string;
+      enabledOffHint: string;
+      credentialsTitle: string;
+      tokenLabel: string;
+      tokenStored: (hint: string) => string;
+      tokenStoredNoHint: string;
+      tokenNotStored: string;
+      tokenKeepHint: string;
+      tokenNewHint: string;
+      /** While the token in force is the server's and cannot be carried over. */
+      tokenEnvHint: string;
+      firstSaveNeedsToken: string;
+      firstSaveNeedsKey: string;
+      clearToken: string;
+      clearTokenHint: string;
+      clearTokenConfirm: string;
+      /** Clearing is also the first save while the source is the environment. */
+      clearTokenConfirmEnv: string;
+      adAccountLabel: string;
+      adAccountHint: string;
+      adAccountLockedHint: (count: number) => string;
+      pageLabel: string;
+      pageHint: string;
+      instagramLabel: string;
+      instagramHint: string;
+      tuningTitle: string;
+      tuningBody: string;
+      apiVersionLabel: string;
+      graphBaseUrlLabel: string;
+      maxBudgetLabel: string;
+      maxBudgetHint: string;
+      testBudgetLabel: string;
+      testBudgetHint: string;
+      countryLabel: string;
+      countryHint: string;
+      testDestinationLabel: string;
+      testDestinationHint: string;
+      save: string;
+      saving: string;
+      saved: string;
+    };
     campaigns: {
       title: string;
       subtitle: string;
@@ -1216,9 +1275,89 @@ const en: AdminStrings = {
       META_UNAVAILABLE:
         "Meta refused the request. Nothing here is wrong with the client's plan, so retry, or change the campaign if Meta names something in it:",
       RATE_LIMITED: "Too many requests. Wait a moment and try again.",
+      ADS_ACCOUNT_IN_USE:
+        "The ad account cannot change yet: campaigns in the current one may still be spending, and after a switch we could no longer pause or delete them from here. Stop them first.",
+      ADS_CREDENTIAL_KEY_MISSING:
+        "The token was not saved: the server has no key to encrypt it with. Set bbloom.payments.credential-key on the server, then save this form again.",
     },
     tools: "Test tools",
+    settingsLink: "Meta settings",
     backToCampaigns: "Back to campaigns",
+    settings: {
+      title: "Meta settings",
+      subtitle:
+        "The access token and accounts bbloom uses to run advertising on Facebook and Instagram.",
+      loadFailed: "We could not read the Meta settings.",
+      saveFailed: "The settings were not saved. Try again.",
+      badBudget:
+        "A budget has to be a whole number above zero. Leave the box empty to use the default.",
+      badCountry: "Use a two-letter country code, for example GE.",
+      problemTitle: "Advertising is not working right now",
+      sourceEnvTitle: "These settings still come from the server's environment",
+      sourceEnvBody:
+        "The form shows what is in force now: the server's ADS_* variables. From the first save onwards every field is read from here instead, and those variables are never read again. The token cannot be copied across, so the first save needs it pasted in again.",
+      sourcePanelTitle: "These settings come from this form",
+      sourcePanelBody:
+        "The server's ADS_* variables are no longer read. A change takes effect as soon as it is saved, with no restart.",
+      savedBy: (when, email) => `Last saved by ${email}, ${when}`,
+      savedAt: (when) => `Last saved ${when}`,
+      noKeyTitle: "The server has no key to store a token under",
+      noKeyBody:
+        "bbloom.payments.credential-key is not set on the server, so a new token cannot be saved. Set that key on the server first.",
+      enabledLabel: "Advertising is on",
+      enabledHint: "While it is off, nothing can be launched through Meta.",
+      enabledOffHint:
+        "Advertising is off. Once this is saved, nothing can be launched until it is switched back on.",
+      credentialsTitle: "Access and accounts",
+      tokenLabel: "Access token",
+      tokenStored: (hint) => `A token ending in ${hint} is in force.`,
+      tokenStoredNoHint: "A token is in force.",
+      tokenNotStored: "No token is set.",
+      tokenKeepHint:
+        "Leaving this empty keeps the stored token. Paste a new one only to replace it.",
+      tokenNewHint:
+        "Paste the token from Meta. Once saved, it is never shown here again.",
+      tokenEnvHint:
+        "The token in force is the server's, and it cannot be carried over into this form. Paste it again to save — without it, advertising would stop after the first save.",
+      firstSaveNeedsToken:
+        "This is the first save from this form, after which the server's token is no longer read. Paste the token again, or advertising stops working.",
+      firstSaveNeedsKey:
+        "This cannot be saved yet: the first save has to carry the token over, and the server has no key to store it under. Set bbloom.payments.credential-key first.",
+      clearToken: "Remove the token",
+      clearTokenHint: "Advertising stops working until a new one is pasted.",
+      clearTokenConfirm:
+        "Remove the stored token? Advertising stops until a new one is pasted, and getting one means going back to Meta.",
+      clearTokenConfirmEnv:
+        "Remove the token? This is also the first save from this page: the server's ADS_* variables stop being read for good, and advertising stops until a new token is pasted.",
+      adAccountLabel: "Ad account ID",
+      adAccountHint: "From Meta Ads Manager.",
+      adAccountLockedHint: (count) =>
+        count === 1
+          ? "Locked while 1 campaign in this account may still be spending. Stop or delete it first."
+          : `Locked while ${count} campaigns in this account may still be spending. Stop or delete them first.`,
+      pageLabel: "Facebook Page ID",
+      pageHint: "The Page the ads run under.",
+      instagramLabel: "Instagram account ID",
+      instagramHint: "Leave empty to advertise on Facebook only.",
+      tuningTitle: "Advanced",
+      tuningBody:
+        "An empty box uses the built-in default. These rarely need changing.",
+      apiVersionLabel: "Graph API version",
+      graphBaseUrlLabel: "Graph API address",
+      maxBudgetLabel: "Daily budget ceiling",
+      maxBudgetHint:
+        "In minor units of the ad account's currency: 1000 means 10.00. No campaign can be given a higher daily budget.",
+      testBudgetLabel: "Test campaign daily budget",
+      testBudgetHint:
+        "Also in minor units. What each test launch spends a day.",
+      countryLabel: "Default country",
+      countryHint: "Two-letter code, for example GE.",
+      testDestinationLabel: "Test campaign link",
+      testDestinationHint: "Where a click on a test ad goes.",
+      save: "Save",
+      saving: "Saving…",
+      saved: "Saved.",
+    },
     campaigns: {
       title: "Campaigns",
       subtitle:
@@ -2078,9 +2217,87 @@ const ka: AdminStrings = {
       META_UNAVAILABLE:
         "Meta-მ მოთხოვნა უარყო. კლიენტის პაკეტს ამასთან კავშირი არ აქვს — სცადეთ თავიდან, ან შეცვალეთ კამპანია, თუ Meta მასში კონკრეტულ რამეს ასახელებს:",
       RATE_LIMITED: "ძალიან ბევრი მოთხოვნა. დაიცადეთ და სცადეთ თავიდან.",
+      ADS_ACCOUNT_IN_USE:
+        "სარეკლამო ანგარიშს ჯერ ვერ შეცვლით: მიმდინარე ანგარიშში კამპანიები შეიძლება ისევ ხარჯავდეს, შეცვლის შემდეგ კი მათ აქედან ვეღარც შევაჩერებთ და ვეღარც წავშლით. ჯერ ისინი შეწყვიტეთ.",
+      ADS_CREDENTIAL_KEY_MISSING:
+        "ტოკენი არ შეინახა: სერვერზე მისი დაშიფვრის გასაღები არ არის. სერვერზე მიუთითეთ bbloom.payments.credential-key და ფორმა თავიდან შეინახეთ.",
     },
     tools: "სატესტო ხელსაწყოები",
+    settingsLink: "Meta-ს პარამეტრები",
     backToCampaigns: "კამპანიებზე დაბრუნება",
+    settings: {
+      title: "Meta-ს პარამეტრები",
+      subtitle:
+        "წვდომის ტოკენი და ანგარიშები, რომლებითაც bbloom Facebook-სა და Instagram-ზე რეკლამას უშვებს.",
+      loadFailed: "Meta-ს პარამეტრების წაკითხვა ვერ მოხერხდა.",
+      saveFailed: "პარამეტრები არ შეინახა. სცადეთ თავიდან.",
+      badBudget:
+        "ბიუჯეტი ნულზე მეტი მთელი რიცხვი უნდა იყოს. ნაგულისხმევი მნიშვნელობისთვის ველი ცარიელი დატოვეთ.",
+      badCountry: "მიუთითეთ ქვეყნის ორასოიანი კოდი, მაგალითად GE.",
+      problemTitle: "რეკლამა ახლა არ მუშაობს",
+      sourceEnvTitle: "პარამეტრები ჯერ ისევ სერვერის გარემოდან იკითხება",
+      sourceEnvBody:
+        "ფორმაში ჩანს ის, რაც ახლა მოქმედებს — სერვერის ADS_* ცვლადები. პირველი შენახვიდან ყველა ველი აქედან წაიკითხება, ეს ცვლადები კი აღარასდროს. ტოკენი ფორმაში ვერ გადმოვა, ამიტომ პირველ შენახვაზე ის ხელახლა უნდა ჩასვათ.",
+      sourcePanelTitle: "პარამეტრები ამ ფორმიდან იკითხება",
+      sourcePanelBody:
+        "სერვერის ADS_* ცვლადები აღარ გამოიყენება. ცვლილება შენახვისთანავე მოქმედებს, სერვერის გადატვირთვა საჭირო არ არის.",
+      savedBy: (when, email) => `ბოლოს შეინახა ${email}, ${when}`,
+      savedAt: (when) => `ბოლოს შეინახა: ${when}`,
+      noKeyTitle: "სერვერზე ტოკენის შესანახი გასაღები არ არის",
+      noKeyBody:
+        "სერვერზე მითითებული არ არის bbloom.payments.credential-key, ამიტომ ახალი ტოკენი ვერ შეინახება. ჯერ ეს გასაღები დააყენეთ სერვერზე.",
+      enabledLabel: "რეკლამა ჩართულია",
+      enabledHint: "სანამ გამორთულია, Meta-ში ვერაფერი გაეშვება.",
+      enabledOffHint:
+        "რეკლამა გამორთულია. შენახვის შემდეგ ვერაფერი გაეშვება, სანამ თავიდან არ ჩართავთ.",
+      credentialsTitle: "წვდომა და ანგარიშები",
+      tokenLabel: "წვდომის ტოკენი",
+      tokenStored: (hint) => `მოქმედებს ტოკენი, რომლის ბოლო სიმბოლოებია ${hint}.`,
+      tokenStoredNoHint: "ტოკენი მითითებულია.",
+      tokenNotStored: "ტოკენი მითითებული არ არის.",
+      tokenKeepHint:
+        "თუ ველს ცარიელს დატოვებთ, შენახული ტოკენი არ შეიცვლება. ახალი მხოლოდ მაშინ ჩასვით, როცა ძველს ცვლით.",
+      tokenNewHint:
+        "ჩასვით Meta-დან მიღებული ტოკენი. შენახვის შემდეგ ის აქ აღარასდროს გამოჩნდება.",
+      tokenEnvHint:
+        "ახლა სერვერის ტოკენი მოქმედებს და ამ ფორმაში ის ვერ გადმოვა. შესანახად ხელახლა ჩასვით — მის გარეშე პირველი შენახვის შემდეგ რეკლამა გაჩერდება.",
+      firstSaveNeedsToken:
+        "ეს ამ ფორმიდან პირველი შენახვაა, რის შემდეგაც სერვერის ტოკენი აღარ წაიკითხება. ტოკენი ხელახლა ჩასვით, თორემ რეკლამა შეწყვეტს მუშაობას.",
+      firstSaveNeedsKey:
+        "ჯერ ვერ შეინახება: პირველ შენახვაზე ტოკენი აქ უნდა გადმოვიდეს, სერვერზე კი მისი შესანახი გასაღები არ არის. ჯერ დააყენეთ bbloom.payments.credential-key.",
+      clearToken: "ტოკენის წაშლა",
+      clearTokenHint: "ახლის ჩასმამდე რეკლამა არ იმუშავებს.",
+      clearTokenConfirm:
+        "წავშალოთ შენახული ტოკენი? ახლის ჩასმამდე რეკლამა არ იმუშავებს, ახალი ტოკენისთვის კი Meta-ში მოგიწევთ შესვლა.",
+      clearTokenConfirmEnv:
+        "წავშალოთ ტოკენი? ეს ამ გვერდიდან პირველი შენახვაც იქნება: სერვერის ADS_* ცვლადები სამუდამოდ აღარ წაიკითხება, რეკლამა კი ახალი ტოკენის ჩასმამდე გაჩერდება.",
+      adAccountLabel: "სარეკლამო ანგარიშის ID",
+      adAccountHint: "Meta Ads Manager-იდან.",
+      adAccountLockedHint: (count) =>
+        `ვერ შეიცვლება, სანამ ამ ანგარიშში ${count} კამპანია შეიძლება ისევ ხარჯავდეს. ჯერ ისინი შეწყვიტეთ ან წაშალეთ.`,
+      pageLabel: "Facebook გვერდის ID",
+      pageHint: "გვერდი, რომლის სახელითაც რეკლამა გადის.",
+      instagramLabel: "Instagram ანგარიშის ID",
+      instagramHint: "ცარიელი დატოვეთ, თუ რეკლამა მხოლოდ Facebook-ზე უნდა გავიდეს.",
+      tuningTitle: "დამატებითი პარამეტრები",
+      tuningBody:
+        "ცარიელ ველში ნაგულისხმევი მნიშვნელობა მოქმედებს. ამათი შეცვლა იშვიათად არის საჭირო.",
+      apiVersionLabel: "Graph API-ის ვერსია",
+      graphBaseUrlLabel: "Graph API-ის მისამართი",
+      maxBudgetLabel: "დღიური ბიუჯეტის ჭერი",
+      maxBudgetHint:
+        "სარეკლამო ანგარიშის ვალუტის მცირე ერთეულებში: 1000 ნიშნავს 10.00-ს. ამაზე მეტ დღიურ ბიუჯეტს ვერცერთი კამპანია ვერ მიიღებს.",
+      testBudgetLabel: "სატესტო კამპანიის დღიური ბიუჯეტი",
+      testBudgetHint:
+        "ესეც მცირე ერთეულებშია — ამდენს ხარჯავს დღეში ყოველი სატესტო გაშვება.",
+      countryLabel: "ნაგულისხმევი ქვეყანა",
+      countryHint: "ორასოიანი კოდი, მაგალითად GE.",
+      testDestinationLabel: "სატესტო კამპანიის ბმული",
+      testDestinationHint: "სად გადადის ის, ვინც სატესტო რეკლამას დააჭერს.",
+      save: "შენახვა",
+      saving: "ინახება…",
+      saved: "შენახულია.",
+    },
     campaigns: {
       title: "კამპანიები",
       subtitle:
