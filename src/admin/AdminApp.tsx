@@ -17,6 +17,7 @@ import PromoCodeEditor from "./pages/PromoCodeEditor";
 import NewCustomerOffer from "./pages/NewCustomerOffer";
 import Ads from "./pages/Ads";
 import AdTools from "./pages/AdTools";
+import AdSettings from "./pages/AdSettings";
 import AdCampaignNew from "./pages/AdCampaignNew";
 import AdCampaignDetail from "./pages/AdCampaignDetail";
 
@@ -48,6 +49,7 @@ function Routed() {
           <Route path="ads" element={<Ads />} />
           <Route path="ads/new" element={<AdCampaignNew />} />
           <Route path="ads/tools" element={<AdTools />} />
+          <Route path="ads/settings" element={<AdSettings />} />
           <Route path="ads/:campaignId" element={<AdCampaignDetail />} />
           <Route path="system" element={<SystemStatus />} />
           <Route path="*" element={<Navigate to={adminPath()} replace />} />

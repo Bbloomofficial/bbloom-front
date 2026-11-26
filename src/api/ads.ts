@@ -170,6 +170,16 @@ export const AD_REFUSALS = [
   "CAMPAIGN_NOT_LIVE",
   /** Insights or controls on a campaign that never reached Meta. */
   "CAMPAIGN_NOT_LAUNCHED",
+  /**
+   * Settings only: the ad account would change while campaigns in the current
+   * one may still be spending. Staff-facing.
+   */
+  "ADS_ACCOUNT_IN_USE",
+  /**
+   * Settings only: a token was sent but the server has no key to encrypt it
+   * under. Fixed on the server, not on the form. Staff-facing.
+   */
+  "ADS_CREDENTIAL_KEY_MISSING",
 ] as const;
 
 export type AdRefusal = (typeof AD_REFUSALS)[number];

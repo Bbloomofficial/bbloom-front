@@ -412,9 +412,14 @@ export default function Ads() {
           </h1>
           <p className="mt-1 text-sm text-ink-600">{t.subtitle}</p>
         </div>
-        <Link to="/ads/tools" className="btn-secondary">
-          {t.tools}
-        </Link>
+        <div className="flex flex-wrap gap-3">
+          <Link to="/ads/settings" className="btn-secondary">
+            {t.settingsLink}
+          </Link>
+          <Link to="/ads/tools" className="btn-secondary">
+            {t.tools}
+          </Link>
+        </div>
       </div>
 
       {status.data ? (
