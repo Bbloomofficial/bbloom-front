@@ -532,11 +532,19 @@ export type AdminStrings = {
       prev: string;
       next: string;
     };
-    /** The campaign manager: every campaign, filtered, sorted and totalled. */
+    /** Campaign analytics: the figures for the campaigns the filters leave. */
+    analytics: {
+      title: string;
+      subtitle: string;
+      tab: string;
+      openManager: (count: number) => string;
+    };
+    /** The campaign manager: every campaign in one table, to find and act on. */
     manager: {
       title: string;
       subtitle: string;
       openLink: string;
+      openAnalytics: string;
       refresh: string;
       metaFilter: string;
       syncing: string;
@@ -1589,11 +1597,20 @@ const en: AdminStrings = {
       prev: "Previous",
       next: "Next",
     },
+    analytics: {
+      title: "Campaign analytics",
+      subtitle:
+        "What the campaigns have spent and delivered, in total and by status, channel and site. The filters choose which campaigns the figures cover.",
+      tab: "Analytics",
+      openManager: (count) =>
+        count === 1 ? "Open this campaign in the table" : `Open these ${count} in the table`,
+    },
     manager: {
       title: "Campaign manager",
       subtitle:
-        "Every client campaign in one place. Filter and sort them, and compare what each one has spent and delivered.",
+        "Every client campaign in one table. Find them, sort them, and pause, resume or delete them one at a time or several at once.",
       openLink: "Campaign manager",
+      openAnalytics: "Figures for these campaigns",
       refresh: "Refresh",
       metaFilter: "At Meta",
       syncing: "Reading from Meta…",
@@ -1604,7 +1621,7 @@ const en: AdminStrings = {
       syncFailed: "Couldn't read from Meta. Showing the last reading.",
       includeTests: "Include test campaigns",
       includeTestsHint:
-        "Adds the test tool's campaigns to the list and to every figure on this page.",
+        "Adds the test tool's campaigns to the list and to the figures.",
       testTag: "Test",
       search: "Search",
       searchPlaceholder: "Name, site or who launched it",
@@ -2705,11 +2722,20 @@ const ka: AdminStrings = {
       prev: "წინა",
       next: "შემდეგი",
     },
+    analytics: {
+      title: "კამპანიების ანალიტიკა",
+      subtitle:
+        "რამდენი დახარჯეს კამპანიებმა და რა შედეგი მოიტანეს — ჯამში და სტატუსის, არხისა და საიტის მიხედვით. ფილტრებით ირჩევთ, რომელ კამპანიებს ეხება მაჩვენებლები.",
+      tab: "ანალიტიკა",
+      openManager: (count) =>
+        count === 1 ? "ეს კამპანია ცხრილში" : `ეს ${count} კამპანია ცხრილში`,
+    },
     manager: {
       title: "კამპანიების მართვა",
       subtitle:
-        "კლიენტების ყველა კამპანია ერთ ადგილას. გაფილტრეთ, დაალაგეთ და შეადარეთ, რამდენი დახარჯა თითოეულმა და რა შედეგი მოიტანა.",
+        "კლიენტების ყველა კამპანია ერთ ცხრილში. მოძებნეთ, დაალაგეთ, შეაჩერეთ, გააგრძელეთ ან წაშალეთ — სათითაოდ ან რამდენიმე ერთად.",
       openLink: "კამპანიების მართვა",
+      openAnalytics: "ამ კამპანიების მაჩვენებლები",
       refresh: "განახლება",
       metaFilter: "Meta-ზე",
       syncing: "Meta-დან იკითხება…",
@@ -2720,7 +2746,7 @@ const ka: AdminStrings = {
       syncFailed: "Meta-დან წაკითხვა ვერ მოხერხდა. ჩანს ბოლო ცნობილი მონაცემები.",
       includeTests: "სატესტო კამპანიების ჩვენება",
       includeTestsHint:
-        "სატესტო ხელსაწყოთი გაშვებული კამპანიები დაემატება სიას და ამ გვერდის ყველა მაჩვენებელს.",
+        "სატესტო ხელსაწყოთი გაშვებული კამპანიები დაემატება სიას და მაჩვენებლებს.",
       testTag: "სატესტო",
       search: "ძებნა",
       searchPlaceholder: "დასახელება, საიტი ან ვინ გაუშვა",

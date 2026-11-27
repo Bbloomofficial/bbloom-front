@@ -1,80 +1,43 @@
 import { useMemo, useState } from "react";
-import { Link, useSearchParams } from "react-router-dom";
-import { AD_CHANNELS, adErrorMessage, formatCount, isSpending } from "../../api/ads";
+import { Link } from "react-router-dom";
+import { adErrorMessage, isSpending } from "../../api/ads";
 import { useI18n } from "../../i18n";
+import { adminPath } from "../../routes";
 import { useSession } from "../auth";
-import { useResource } from "../hooks";
-import {
-  deleteAdCampaign,
-  fetchAdCampaigns,
-  fetchAdTestCampaigns,
-  pauseAdCampaign,
-  resumeAdCampaign,
-  syncAdCampaigns,
-} from "../api/client";
+import { deleteAdCampaign, pauseAdCampaign, resumeAdCampaign } from "../api/client";
 import { adminStrings } from "../strings";
 import { formatDateTime } from "../format";
-import { Budget, Channels, DeliveryStatus, Insight, PostLinks, StatusPill } from "../components/AdBits";
+import { Budget, Channels, DeliveryStatus, Insight, PostLinks } from "../components/AdBits";
 import {
-  META_NOT_READ,
+  FilterPanel,
+  LoadState,
+  SyncNote,
+  percent,
+  readPrefs,
+  useCampaigns,
+  writePrefs,
+} from "../campaignList";
+import {
   afterOwnChange,
-  metaDelivery,
   SORT_KEYS,
   campaignsToCsv,
-  costPerClick,
-  decimalToNumber,
-  filterCampaigns,
-  formatDecimal,
   rowCtr,
   sortCampaigns,
-  totalCampaigns,
-  type Bucket,
-  type CampaignFilters,
-  type MoneyTotals,
   type SortDirection,
   type SortKey,
 } from "../campaignAnalytics";
-import type { AdCampaignDto, AdCampaignStatus, AdChannel } from "../api/types";
+import type { AdCampaignDto } from "../api/types";
 
 /**
- * The campaign manager: every campaign at once, filtered, sorted and totalled.
+ * The campaign manager: every campaign in one table, to find, sort and act on.
+ * The figures for the same campaigns are on the analytics page, one link away
+ * with the same filters.
  *
- * Everything is loaded and worked on here rather than asked of the server, for
- * two reasons. The list endpoint filters only by site, status and the test
- * flag; and Meta's figures are strings on the server too, so it cannot sort or
- * total by spend. At the number of campaigns one ad account carries, loading
- * them all is a few requests — and it means the totals always describe exactly
- * the rows on screen.
- *
- * Test campaigns are left out unless the toggle is on, and the toggle reaches
- * the figures as well as the list. A test is our money, not a client's, and a
- * total that quietly included them would overstate what clients bought.
- *
- * Filters live in the address, so a filtered view can be bookmarked or sent to
- * a colleague.
+ * The layout gives this page the full width of the window: the table has more
+ * columns than the usual page width holds.
  */
 
-const STATUSES: AdCampaignStatus[] = ["ACTIVE", "PAUSED", "FAILED", "DELETED"];
 const PAGE_SIZES = [25, 50, 100];
-/** The server's page size here; well under Spring's 2000 ceiling. */
-const FETCH_SIZE = 200;
-/** A safety stop, not a limit anyone should meet: 10,000 campaigns. */
-const MAX_FETCH_PAGES = 50;
-
-async function loadCampaigns(
-  token: string,
-  includeTests: boolean,
-): Promise<AdCampaignDto[]> {
-  const rows: AdCampaignDto[] = [];
-  for (let page = 0; page < MAX_FETCH_PAGES; page += 1) {
-    const result = await fetchAdCampaigns(token, { page, size: FETCH_SIZE });
-    rows.push(...result.items);
-    if (!result.hasNext) break;
-  }
-  if (includeTests) rows.push(...(await fetchAdTestCampaigns(token)));
-  const seen = new Set<string>();
-  return rows.filter((row) => (seen.has(row.id) ? false : (seen.add(row.id), true)));
-}
 
 /** Which rows an action applies to. The same rules as the campaign page's buttons. */
 const canPause = (row: AdCampaignDto) => row.status === "ACTIVE";
@@ -83,179 +46,6 @@ const canDelete = (row: AdCampaignDto) =>
   row.status !== "DELETED" && !row.deletedAt && Boolean(row.metaCampaignId);
 
 type Action = "pause" | "resume" | "delete";
-
-/**
- * The two switches staff set once and expect to stay set: whether tests are
- * included, and "only what may be spending". Kept in this browser, so the page
- * opens the way it was left. The address still wins when it says otherwise, so
- * a link someone sends opens exactly the view they meant.
- */
-const PREFS_KEY = "bbloom.admin.campaigns.prefs";
-type Prefs = { tests?: boolean; spending?: boolean; size?: number };
-
-function readPrefs(): Prefs {
-  try {
-    const parsed: unknown = JSON.parse(window.localStorage.getItem(PREFS_KEY) ?? "{}");
-    return parsed && typeof parsed === "object" ? (parsed as Prefs) : {};
-  } catch {
-    return {};
-  }
-}
-
-function writePrefs(changes: Prefs) {
-  try {
-    window.localStorage.setItem(PREFS_KEY, JSON.stringify({ ...readPrefs(), ...changes }));
-  } catch {
-    // Private browsing or a full quota: the switch still works for this visit.
-  }
-}
-
-/** A switch from the address when it is there, else from what was left last time. */
-function flag(params: URLSearchParams, key: "tests" | "spending", prefs: Prefs): boolean {
-  return params.has(key) ? params.get(key) === "1" : Boolean(prefs[key]);
-}
-
-function readFilters(params: URLSearchParams, prefs: Prefs): CampaignFilters {
-  const statuses = (params.get("status") ?? "")
-    .split(",")
-    .filter((s): s is AdCampaignStatus => STATUSES.includes(s as AdCampaignStatus));
-  const channel = params.get("channel") ?? "";
-  return {
-    query: params.get("q") ?? "",
-    statuses,
-    channel: AD_CHANNELS.includes(channel as AdChannel) ? (channel as AdChannel) : "",
-    siteId: params.get("site") ?? "",
-    from: params.get("from") ?? "",
-    to: params.get("to") ?? "",
-    spendingOnly: flag(params, "spending", prefs),
-    metaStatus: params.get("meta") ?? "",
-  };
-}
-
-/** Money totals in each currency, Meta's figures summed exactly. */
-function Money({ totals }: { totals: MoneyTotals }) {
-  const entries = Object.entries(totals);
-  if (!entries.length) return <>—</>;
-  return (
-    <span dir="ltr" className="tabular-nums">
-      {entries
-        .map(([currency, amount]) =>
-          `${formatDecimal(amount)}${currency === "?" ? "" : ` ${currency}`}`,
-        )
-        .join(" · ")}
-    </span>
-  );
-}
-
-function percent(value: number | null): string {
-  return value === null ? "—" : `${value.toFixed(2)}%`;
-}
-
-function Tile({
-  label,
-  children,
-  note,
-}: {
-  label: string;
-  children: React.ReactNode;
-  note?: string;
-}) {
-  return (
-    <div className="rounded-2xl border border-ink-100 bg-surface p-4">
-      <p className="text-xs font-semibold uppercase tracking-wide text-ink-400">
-        {label}
-      </p>
-      <p className="mt-1.5 text-xl font-extrabold text-ink-900">{children}</p>
-      {note && <p className="mt-1 text-xs text-ink-500">{note}</p>}
-    </div>
-  );
-}
-
-/**
- * A breakdown table. The bar is the row's share of the largest row on the
- * chosen measure, drawn in one hue — it is a magnitude, not an identity, and
- * the number beside it is the figure; the bar only makes the ranking visible.
- */
-function Breakdown({
-  title,
-  rows,
-  labels,
-}: {
-  title: string;
-  rows: Array<{ key: string; label: React.ReactNode; bucket: Bucket }>;
-  labels: {
-    campaigns: string;
-    impressions: string;
-    clicks: string;
-    spend: string;
-  };
-}) {
-  const { locale } = useI18n();
-  // Bars by spend when everything is in one currency, by impressions otherwise:
-  // two currencies have no common length.
-  const currencies = new Set(rows.flatMap((r) => Object.keys(r.bucket.spend)));
-  const bySpend = currencies.size === 1;
-  const [currency] = currencies;
-  const measure = (b: Bucket) =>
-    bySpend ? (b.spend[currency] ? decimalToNumber(b.spend[currency]) : 0) : b.impressions;
-  const max = Math.max(...rows.map((r) => measure(r.bucket)), 0);
-
-  return (
-    <section className="rounded-3xl border border-ink-100 bg-surface p-5">
-      <h3 className="text-sm font-bold text-ink-900">{title}</h3>
-      {rows.length === 0 ? (
-        <p className="mt-3 text-sm text-ink-400">—</p>
-      ) : (
-        <div className="mt-3 overflow-x-auto">
-          <table className="w-full min-w-[26rem] text-sm">
-            <thead>
-              <tr className="text-left text-xs font-semibold uppercase tracking-wide text-ink-400">
-                <th className="pb-2 pr-3" />
-                <th className="pb-2 pr-3 text-right">{labels.campaigns}</th>
-                <th className="pb-2 pr-3 text-right">{labels.impressions}</th>
-                <th className="pb-2 pr-3 text-right">{labels.clicks}</th>
-                <th className="pb-2 text-right">{labels.spend}</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-ink-100">
-              {rows.map(({ key, label, bucket }) => {
-                const share = max > 0 ? (measure(bucket) / max) * 100 : 0;
-                return (
-                  <tr key={key}>
-                    <td className="py-2 pr-3">
-                      <div className="font-semibold text-ink-900">{label}</div>
-                      <div
-                        aria-hidden
-                        className="mt-1 h-1.5 rounded-full bg-ink-100"
-                      >
-                        <div
-                          className="h-1.5 rounded-full bg-bloom-500"
-                          style={{ width: `${share}%` }}
-                        />
-                      </div>
-                    </td>
-                    <td className="py-2 pr-3 text-right tabular-nums text-ink-600">
-                      {bucket.campaigns}
-                    </td>
-                    <td className="py-2 pr-3 text-right tabular-nums text-ink-600">
-                      {formatCount(bucket.impressions, locale)}
-                    </td>
-                    <td className="py-2 pr-3 text-right tabular-nums text-ink-600">
-                      {formatCount(bucket.clicks, locale)}
-                    </td>
-                    <td className="py-2 text-right text-ink-600">
-                      <Money totals={bucket.spend} />
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      )}
-    </section>
-  );
-}
 
 function download(filename: string, text: string) {
   // The byte-order mark is for Excel, which otherwise reads Georgian as noise.
@@ -276,16 +66,15 @@ export default function AdCampaigns() {
   const m = t.manager;
   const d = t.detail;
   const { token, handleError } = useSession();
-  const [params, setParams] = useSearchParams();
+  const [page, setPage] = useState(0);
+  const campaigns = useCampaigns(() => setPage(0));
+  const { params, all, filtered, list, sync, refresh, update, query } = campaigns;
 
   const prefs = readPrefs();
-  const includeTests = flag(params, "tests", prefs);
-  const filters = readFilters(params, prefs);
   const sortKey: SortKey = SORT_KEYS.includes(params.get("sort") as SortKey)
     ? (params.get("sort") as SortKey)
     : "date";
   const direction: SortDirection = params.get("dir") === "asc" ? "asc" : "desc";
-  const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(() =>
     PAGE_SIZES.includes(prefs.size ?? 0) ? (prefs.size as number) : PAGE_SIZES[0],
   );
@@ -296,74 +85,10 @@ export default function AdCampaigns() {
   const [progress, setProgress] = useState<{ done: number; total: number } | null>(null);
   const [outcome, setOutcome] = useState<{ text: string; failures: string[] } | null>(null);
 
-  const list = useResource(
-    () => loadCampaigns(token, includeTests),
-    [token, includeTests],
-  );
-  const all = list.data ?? [];
-
-  /** Changes some of the address's parameters, dropping empty ones. */
-  function update(changes: Record<string, string | null>) {
-    if ("tests" in changes) writePrefs({ tests: changes.tests === "1" });
-    if ("spending" in changes) writePrefs({ spending: changes.spending === "1" });
-    const next = new URLSearchParams(params);
-    for (const [key, value] of Object.entries(changes)) {
-      if (value) next.set(key, value);
-      else next.delete(key);
-    }
-    setParams(next, { replace: true });
-    setPage(0);
-  }
-
-  const sites = useMemo(() => {
-    const names = new Map<string, string>();
-    for (const row of all) {
-      if (row.siteId && !names.has(row.siteId)) {
-        names.set(row.siteId, row.siteName ?? m.unknownSite);
-      }
-    }
-    return [...names.entries()].sort((a, b) => a[1].localeCompare(b[1]));
-  }, [all, m.unknownSite]);
-
-  // Meta's states as they occur in this list, so the filter offers only what
-  // can match — and still offers a state Meta added that we have no name for.
-  const metaStates = useMemo(() => {
-    const seen = new Set<string>();
-    for (const row of all) seen.add(metaDelivery(row) ?? META_NOT_READ);
-    return [...seen].sort();
-  }, [all]);
-
-  const [sync, setSync] = useState<{ busy: boolean; note?: string; failed?: boolean }>({
-    busy: false,
-  });
-
-  /**
-   * Refresh asks Meta first, then reloads. Without that it would only re-read
-   * what the hourly sweep last stored, and "In review" would sit on screen for
-   * up to an hour after Meta approved the ad.
-   */
-  async function refresh() {
-    setSync({ busy: true });
-    try {
-      const result = await syncAdCampaigns(token);
-      setSync({ busy: false, note: m.synced(result.read, result.tried) });
-    } catch {
-      setSync({ busy: false, note: m.syncFailed, failed: true });
-    }
-    list.reload();
-  }
-
-  const filtered = useMemo(
-    () => filterCampaigns(all, filters),
-    // The filters are read from the address, so the address is the dependency.
-    [all, params.toString(), filters.spendingOnly],
-  );
   const sorted = useMemo(
     () => sortCampaigns(filtered, sortKey, direction),
     [filtered, sortKey, direction],
   );
-  const totals = useMemo(() => totalCampaigns(filtered), [filtered]);
-  const cpc = costPerClick(totals.spend, totals.clicks);
 
   const pages = Math.max(Math.ceil(sorted.length / pageSize), 1);
   const current = Math.min(page, pages - 1);
@@ -441,23 +166,6 @@ export default function AdCampaigns() {
     }
   }
 
-  const anyFilter =
-    filters.query ||
-    filters.statuses.length ||
-    filters.channel ||
-    filters.siteId ||
-    filters.from ||
-    filters.to ||
-    filters.spendingOnly ||
-    filters.metaStatus;
-
-  function toggleStatus(status: AdCampaignStatus) {
-    const next = filters.statuses.includes(status)
-      ? filters.statuses.filter((s) => s !== status)
-      : [...filters.statuses, status];
-    update({ status: next.join(",") || null });
-  }
-
   function sortBy(key: SortKey) {
     // Text columns start A→Z; figures start with the largest.
     const textual = key === "name" || key === "site" || key === "status";
@@ -497,13 +205,6 @@ export default function AdCampaigns() {
     );
   }
 
-  const breakdownLabels = {
-    campaigns: m.colCampaigns,
-    impressions: m.colImpressions,
-    clicks: m.colClicks,
-    spend: c.colSpend,
-  };
-
   return (
     <div>
       <div className="flex flex-wrap items-end justify-between gap-4">
@@ -522,6 +223,9 @@ export default function AdCampaigns() {
           >
             {sync.busy ? m.syncing : m.refresh}
           </button>
+          <Link to={`${adminPath("/ads/analytics")}${query}`} className="btn-secondary">
+            {m.openAnalytics}
+          </Link>
           <button
             type="button"
             className="btn-secondary"
@@ -541,285 +245,10 @@ export default function AdCampaigns() {
         </div>
       </div>
 
-      {sync.note && (
-        <p
-          className={`mt-3 text-sm ${sync.failed ? "font-semibold text-danger" : "text-ink-500"}`}
-          role="status"
-        >
-          {sync.note}
-        </p>
-      )}
+      <SyncNote sync={sync} />
+      <FilterPanel campaigns={campaigns} />
 
-      {/* Filters */}
-      <section className="mt-6 rounded-3xl border border-ink-100 bg-surface p-5">
-        <label className="flex cursor-pointer items-start gap-3">
-          <input
-            type="checkbox"
-            role="switch"
-            checked={includeTests}
-            onChange={(event) => update({ tests: event.target.checked ? "1" : null })}
-            className="mt-1 h-4 w-4 accent-bloom-600"
-          />
-          <span>
-            <span className="block text-sm font-bold text-ink-900">{m.includeTests}</span>
-            <span className="block text-xs text-ink-500">{m.includeTestsHint}</span>
-          </span>
-        </label>
-
-        <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
-          <label className="text-sm lg:col-span-2">
-            <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-ink-400">
-              {m.search}
-            </span>
-            <input
-              type="search"
-              value={filters.query}
-              placeholder={m.searchPlaceholder}
-              onChange={(event) => update({ q: event.target.value || null })}
-              className="field w-full"
-            />
-          </label>
-          <label className="text-sm">
-            <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-ink-400">
-              {m.site}
-            </span>
-            <select
-              value={filters.siteId}
-              onChange={(event) => update({ site: event.target.value || null })}
-              className="field w-full"
-            >
-              <option value="">{m.allSites}</option>
-              {sites.map(([id, name]) => (
-                <option key={id} value={id}>
-                  {name}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label className="text-sm">
-            <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-ink-400">
-              {m.from}
-            </span>
-            <input
-              type="date"
-              value={filters.from}
-              max={filters.to || undefined}
-              onChange={(event) => update({ from: event.target.value || null })}
-              className="field w-full"
-            />
-          </label>
-          <label className="text-sm">
-            <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-ink-400">
-              {m.to}
-            </span>
-            <input
-              type="date"
-              value={filters.to}
-              min={filters.from || undefined}
-              onChange={(event) => update({ to: event.target.value || null })}
-              className="field w-full"
-            />
-          </label>
-        </div>
-
-        <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-3">
-          <div className="flex flex-wrap items-center gap-2" role="group" aria-label={m.status}>
-            <span className="text-xs font-semibold uppercase tracking-wide text-ink-400">
-              {m.status}
-            </span>
-            {STATUSES.map((status) => {
-              const on = filters.statuses.includes(status);
-              return (
-                <button
-                  key={status}
-                  type="button"
-                  aria-pressed={on}
-                  onClick={() => toggleStatus(status)}
-                  className={`rounded-full border px-3 py-1 text-xs font-semibold ${
-                    on
-                      ? "border-ink-900 bg-contrast text-canvas"
-                      : "border-ink-200 bg-surface text-ink-600 hover:border-ink-400"
-                  }`}
-                >
-                  {t.statuses[status] ?? status}
-                </button>
-              );
-            })}
-          </div>
-          <label className="flex items-center gap-2 text-sm">
-            <span className="text-xs font-semibold uppercase tracking-wide text-ink-400">
-              {m.channel}
-            </span>
-            <select
-              value={filters.channel}
-              onChange={(event) => update({ channel: event.target.value || null })}
-              className="field"
-            >
-              <option value="">{m.allChannels}</option>
-              {AD_CHANNELS.map((channel) => (
-                <option key={channel} value={channel}>
-                  {t.channels[channel] ?? channel}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label className="flex items-center gap-2 text-sm">
-            <span className="text-xs font-semibold uppercase tracking-wide text-ink-400">
-              {m.metaFilter}
-            </span>
-            <select
-              value={filters.metaStatus}
-              onChange={(event) => update({ meta: event.target.value || null })}
-              className="field"
-            >
-              <option value="">{strings.list.all}</option>
-              {metaStates.map((state) => (
-                <option key={state} value={state}>
-                  {t.metaStatuses[state] ?? state}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label className="flex cursor-pointer items-center gap-2 text-sm font-semibold text-ink-700">
-            <input
-              type="checkbox"
-              checked={filters.spendingOnly}
-              onChange={(event) => update({ spending: event.target.checked ? "1" : null })}
-              className="h-4 w-4 accent-bloom-600"
-            />
-            {m.spendingOnly}
-          </label>
-          {anyFilter ? (
-            <button
-              type="button"
-              onClick={() =>
-                update({
-                  q: null,
-                  status: null,
-                  channel: null,
-                  site: null,
-                  from: null,
-                  to: null,
-                  spending: null,
-                  meta: null,
-                })
-              }
-              className="ms-auto text-sm font-semibold text-tint-fg hover:underline"
-            >
-              {m.clear}
-            </button>
-          ) : null}
-        </div>
-      </section>
-
-      {list.error ? (
-        <div className="mt-6 rounded-3xl border border-ink-100 bg-surface p-6">
-          <p className="text-sm text-ink-500">{t.loadFailed}</p>
-          <button type="button" onClick={list.reload} className="btn-primary mt-3">
-            {t.retry}
-          </button>
-        </div>
-      ) : list.loading && !list.data ? (
-        <p className="mt-8 text-sm text-ink-400">{strings.loading}</p>
-      ) : (
-        <>
-          {/* Analytics */}
-          <section className="mt-6">
-            <h2 className="text-lg font-bold text-ink-900">{m.analyticsTitle}</h2>
-            <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-              <Tile
-                label={m.kpiCampaigns}
-                note={[
-                  m.kpiLive(totals.live),
-                  includeTests && totals.test ? m.kpiTests(totals.test) : "",
-                ]
-                  .filter(Boolean)
-                  .join(" · ")}
-              >
-                {formatCount(totals.campaigns, locale)}
-              </Tile>
-              <Tile label={m.kpiLiveBudget} note={m.kpiLiveBudgetHint}>
-                {Object.keys(totals.liveDailyBudgetMinor).length ? (
-                  <span dir="ltr">
-                    {Object.entries(totals.liveDailyBudgetMinor).map(([cur, minor], i) => (
-                      <span key={cur}>
-                        {i > 0 && " · "}
-                        <Budget
-                          minor={minor}
-                          currency={cur === "?" ? undefined : cur}
-                          locale={locale}
-                        />
-                      </span>
-                    ))}
-                  </span>
-                ) : (
-                  "—"
-                )}
-              </Tile>
-              <Tile label={m.kpiSpend}>
-                <Money totals={totals.spend} />
-              </Tile>
-              <Tile label={m.kpiImpressions}>
-                {formatCount(totals.impressions, locale)}
-              </Tile>
-              <Tile label={m.kpiClicks}>{formatCount(totals.clicks, locale)}</Tile>
-              <Tile label={m.kpiCtr} note={m.calculated}>
-                <span dir="ltr">{percent(totals.ctr)}</span>
-              </Tile>
-              <Tile label={m.kpiCpc} note={m.calculated}>
-                {Object.keys(cpc).length ? (
-                  <span dir="ltr" className="tabular-nums">
-                    {Object.entries(cpc)
-                      .map(([cur, value]) => `${value.toFixed(2)}${cur === "?" ? "" : ` ${cur}`}`)
-                      .join(" · ")}
-                  </span>
-                ) : (
-                  "—"
-                )}
-              </Tile>
-            </div>
-            {totals.unreported > 0 && (
-              <p className="mt-3 text-xs text-ink-500">{m.unreported(totals.unreported)}</p>
-            )}
-
-            <div className="mt-4 grid gap-4 lg:grid-cols-2">
-              <Breakdown
-                title={m.byStatus}
-                labels={breakdownLabels}
-                rows={STATUSES.filter((s) => totals.byStatus[s]).map((s) => ({
-                  key: s,
-                  label: <StatusPill status={s} labels={t.statuses} />,
-                  bucket: totals.byStatus[s],
-                }))}
-              />
-              <Breakdown
-                title={m.byChannel}
-                labels={breakdownLabels}
-                rows={Object.entries(totals.byChannel).map(([key, bucket]) => ({
-                  key,
-                  label: (
-                    <Channels
-                      channels={key.split("+") as AdChannel[]}
-                      labels={t.channels}
-                    />
-                  ),
-                  bucket,
-                }))}
-              />
-            </div>
-            <div className="mt-4">
-              <Breakdown
-                title={m.bySite}
-                labels={breakdownLabels}
-                rows={totals.bySite.slice(0, 10).map((site) => ({
-                  key: site.siteId || "none",
-                  label: site.siteName ?? m.unknownSite,
-                  bucket: site,
-                }))}
-              />
-            </div>
-          </section>
-
+      <LoadState list={list}>
           {/* The list */}
           <section className="mt-6 rounded-3xl border border-ink-100 bg-surface p-6">
             <h2 className="text-lg font-bold text-ink-900">
@@ -1094,9 +523,7 @@ export default function AdCampaigns() {
               </div>
             )}
           </section>
-        </>
-      )}
+      </LoadState>
     </div>
   );
 }
-
