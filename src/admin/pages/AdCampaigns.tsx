@@ -4,11 +4,12 @@ import { AD_CHANNELS, formatCount, isSpending } from "../../api/ads";
 import { useI18n } from "../../i18n";
 import { useSession } from "../auth";
 import { useResource } from "../hooks";
-import { fetchAdCampaigns, fetchAdTestCampaigns } from "../api/client";
+import { fetchAdCampaigns, fetchAdTestCampaigns, syncAdCampaigns } from "../api/client";
 import { adminStrings } from "../strings";
 import { formatDateTime } from "../format";
-import { Budget, Channels, Insight, StatusPill } from "../components/AdBits";
+import { Budget, Channels, Insight, MetaStatus, StatusPill } from "../components/AdBits";
 import {
+  META_NOT_READ,
   SORT_KEYS,
   campaignsToCsv,
   costPerClick,
@@ -66,7 +67,38 @@ async function loadCampaigns(
   return rows.filter((row) => (seen.has(row.id) ? false : (seen.add(row.id), true)));
 }
 
-function readFilters(params: URLSearchParams): CampaignFilters {
+/**
+ * The two switches staff set once and expect to stay set: whether tests are
+ * included, and "only what may be spending". Kept in this browser, so the page
+ * opens the way it was left. The address still wins when it says otherwise, so
+ * a link someone sends opens exactly the view they meant.
+ */
+const PREFS_KEY = "bbloom.admin.campaigns.prefs";
+type Prefs = { tests?: boolean; spending?: boolean };
+
+function readPrefs(): Prefs {
+  try {
+    const parsed: unknown = JSON.parse(window.localStorage.getItem(PREFS_KEY) ?? "{}");
+    return parsed && typeof parsed === "object" ? (parsed as Prefs) : {};
+  } catch {
+    return {};
+  }
+}
+
+function writePrefs(changes: Prefs) {
+  try {
+    window.localStorage.setItem(PREFS_KEY, JSON.stringify({ ...readPrefs(), ...changes }));
+  } catch {
+    // Private browsing or a full quota: the switch still works for this visit.
+  }
+}
+
+/** A switch from the address when it is there, else from what was left last time. */
+function flag(params: URLSearchParams, key: "tests" | "spending", prefs: Prefs): boolean {
+  return params.has(key) ? params.get(key) === "1" : Boolean(prefs[key]);
+}
+
+function readFilters(params: URLSearchParams, prefs: Prefs): CampaignFilters {
   const statuses = (params.get("status") ?? "")
     .split(",")
     .filter((s): s is AdCampaignStatus => STATUSES.includes(s as AdCampaignStatus));
@@ -78,7 +110,8 @@ function readFilters(params: URLSearchParams): CampaignFilters {
     siteId: params.get("site") ?? "",
     from: params.get("from") ?? "",
     to: params.get("to") ?? "",
-    spendingOnly: params.get("spending") === "1",
+    spendingOnly: flag(params, "spending", prefs),
+    metaStatus: params.get("meta") ?? "",
   };
 }
 
@@ -227,8 +260,9 @@ export default function AdCampaigns() {
   const { token } = useSession();
   const [params, setParams] = useSearchParams();
 
-  const includeTests = params.get("tests") === "1";
-  const filters = readFilters(params);
+  const prefs = readPrefs();
+  const includeTests = flag(params, "tests", prefs);
+  const filters = readFilters(params, prefs);
   const sortKey: SortKey = SORT_KEYS.includes(params.get("sort") as SortKey)
     ? (params.get("sort") as SortKey)
     : "date";
@@ -243,6 +277,8 @@ export default function AdCampaigns() {
 
   /** Changes some of the address's parameters, dropping empty ones. */
   function update(changes: Record<string, string | null>) {
+    if ("tests" in changes) writePrefs({ tests: changes.tests === "1" });
+    if ("spending" in changes) writePrefs({ spending: changes.spending === "1" });
     const next = new URLSearchParams(params);
     for (const [key, value] of Object.entries(changes)) {
       if (value) next.set(key, value);
@@ -262,10 +298,38 @@ export default function AdCampaigns() {
     return [...names.entries()].sort((a, b) => a[1].localeCompare(b[1]));
   }, [all, m.unknownSite]);
 
+  // Meta's states as they occur in this list, so the filter offers only what
+  // can match — and still offers a state Meta added that we have no name for.
+  const metaStates = useMemo(() => {
+    const seen = new Set<string>();
+    for (const row of all) seen.add(row.metaEffectiveStatus ?? META_NOT_READ);
+    return [...seen].sort();
+  }, [all]);
+
+  const [sync, setSync] = useState<{ busy: boolean; note?: string; failed?: boolean }>({
+    busy: false,
+  });
+
+  /**
+   * Refresh asks Meta first, then reloads. Without that it would only re-read
+   * what the hourly sweep last stored, and "In review" would sit on screen for
+   * up to an hour after Meta approved the ad.
+   */
+  async function refresh() {
+    setSync({ busy: true });
+    try {
+      const result = await syncAdCampaigns(token);
+      setSync({ busy: false, note: m.synced(result.read, result.tried) });
+    } catch {
+      setSync({ busy: false, note: m.syncFailed, failed: true });
+    }
+    list.reload();
+  }
+
   const filtered = useMemo(
     () => filterCampaigns(all, filters),
     // The filters are read from the address, so the address is the dependency.
-    [all, params.toString()],
+    [all, params.toString(), filters.spendingOnly],
   );
   const sorted = useMemo(
     () => sortCampaigns(filtered, sortKey, direction),
@@ -285,7 +349,8 @@ export default function AdCampaigns() {
     filters.siteId ||
     filters.from ||
     filters.to ||
-    filters.spendingOnly;
+    filters.spendingOnly ||
+    filters.metaStatus;
 
   function toggleStatus(status: AdCampaignStatus) {
     const next = filters.statuses.includes(status)
@@ -350,8 +415,13 @@ export default function AdCampaigns() {
           <p className="mt-1 max-w-2xl text-sm text-ink-600">{m.subtitle}</p>
         </div>
         <div className="flex flex-wrap gap-3">
-          <button type="button" onClick={list.reload} className="btn-secondary">
-            {m.refresh}
+          <button
+            type="button"
+            onClick={() => void refresh()}
+            disabled={sync.busy}
+            className="btn-secondary disabled:opacity-60"
+          >
+            {sync.busy ? m.syncing : m.refresh}
           </button>
           <button
             type="button"
@@ -371,6 +441,15 @@ export default function AdCampaigns() {
           </Link>
         </div>
       </div>
+
+      {sync.note && (
+        <p
+          className={`mt-3 text-sm ${sync.failed ? "font-semibold text-danger" : "text-ink-500"}`}
+          role="status"
+        >
+          {sync.note}
+        </p>
+      )}
 
       {/* Filters */}
       <section className="mt-6 rounded-3xl border border-ink-100 bg-surface p-5">
@@ -485,6 +564,23 @@ export default function AdCampaigns() {
               ))}
             </select>
           </label>
+          <label className="flex items-center gap-2 text-sm">
+            <span className="text-xs font-semibold uppercase tracking-wide text-ink-400">
+              {m.metaFilter}
+            </span>
+            <select
+              value={filters.metaStatus}
+              onChange={(event) => update({ meta: event.target.value || null })}
+              className="field"
+            >
+              <option value="">{strings.list.all}</option>
+              {metaStates.map((state) => (
+                <option key={state} value={state}>
+                  {t.metaStatuses[state] ?? state}
+                </option>
+              ))}
+            </select>
+          </label>
           <label className="flex cursor-pointer items-center gap-2 text-sm font-semibold text-ink-700">
             <input
               type="checkbox"
@@ -506,6 +602,7 @@ export default function AdCampaigns() {
                   from: null,
                   to: null,
                   spending: null,
+                  meta: null,
                 })
               }
               className="ms-auto text-sm font-semibold text-tint-fg hover:underline"
@@ -677,7 +774,18 @@ export default function AdCampaigns() {
                           {campaign.siteName ?? "—"}
                         </td>
                         <td className="py-3 pr-4">
-                          <StatusPill status={campaign.status} labels={t.statuses} />
+                          <div className="flex flex-col items-start gap-1.5">
+                            <StatusPill status={campaign.status} labels={t.statuses} />
+                            {campaign.metaCampaignId && (
+                              <MetaStatus
+                                status={campaign.metaEffectiveStatus}
+                                issue={campaign.metaDeliveryIssue}
+                                labels={t.metaStatuses}
+                                prefix={m.metaPrefix}
+                                notRead={m.metaNotRead}
+                              />
+                            )}
+                          </div>
                         </td>
                         <td className="py-3 pr-4 text-ink-600">
                           <Channels channels={campaign.channels} labels={t.channels} />

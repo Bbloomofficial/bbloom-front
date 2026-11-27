@@ -209,8 +209,19 @@ export type UpdateSiteRequest = {
  * `OFF` means no from-address is configured, so mail is deliberately a no-op.
  * That is the correct state on a developer's laptop and must not be rendered
  * as an outage.
+ *
+ * `UNTESTED` means nothing has been sent since the server started, and
+ * `LAST_FAILED` that the last send failed but its people were dismissed. Neither
+ * is `OK`, and neither raises the banner: nobody is listed as waiting.
  */
-export const MAIL_STATUSES = ["OK", "DEGRADED", "FAILING", "OFF"] as const;
+export const MAIL_STATUSES = [
+  "OK",
+  "UNTESTED",
+  "LAST_FAILED",
+  "DEGRADED",
+  "FAILING",
+  "OFF",
+] as const;
 export type MailStatus = (typeof MAIL_STATUSES)[number];
 
 /**
@@ -749,7 +760,20 @@ export type AdCampaignDto = {
      * afterwards, so the staleness is stated rather than implied.
      */
     insightsReadAt?: string | null;
+    /**
+     * Meta's own delivery status, verbatim (`PENDING_REVIEW`, `DISAPPROVED`,
+     * `WITH_ISSUES`, ...), beside ours. Ours is what we asked for; this is what
+     * Meta is doing about it. Absent until first read. Render an unknown value
+     * as it is rather than dropping it.
+     */
+    metaEffectiveStatus?: string;
+    /** Meta's explanation when delivery is held back or the ad was rejected. */
+    metaDeliveryIssue?: string;
+    metaStatusReadAt?: string;
   };
+
+/** What reading every campaign back from Meta managed. */
+export type AdSyncResult = { read: number; tried: number };
 
 export type AdTestOutcome = "LAUNCHED" | "FAILED" | "NOT_CONFIGURED";
 

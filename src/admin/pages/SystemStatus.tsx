@@ -22,13 +22,15 @@ function toneFor(status: MailStatus): string {
   if (mailNeedsAttention(status)) {
     return "border-danger/30 bg-danger/10 dark:bg-danger/15";
   }
-  if (status === "OFF") return "border-ink-100 bg-ink-50";
+  if (status === "LAST_FAILED") return "border-danger/30 bg-danger/5";
+  if (status === "OFF" || status === "UNTESTED") return "border-ink-100 bg-ink-50";
   return "border-success-border bg-success-soft";
 }
 
 function dotFor(status: MailStatus): string {
   if (mailNeedsAttention(status)) return "bg-danger";
-  if (status === "OFF") return "bg-ink-400";
+  if (status === "LAST_FAILED") return "bg-danger";
+  if (status === "OFF" || status === "UNTESTED") return "bg-ink-400";
   return "bg-success";
 }
 
@@ -86,6 +88,12 @@ export default function SystemStatus() {
             )}
             {mail.status === "OK" && (
               <p className="mt-3 text-sm text-ink-600">{t.system.okNote}</p>
+            )}
+            {mail.status === "UNTESTED" && (
+              <p className="mt-3 text-sm text-ink-600">{t.system.untestedNote}</p>
+            )}
+            {mail.status === "LAST_FAILED" && (
+              <p className="mt-3 text-sm text-ink-600">{t.system.lastFailedNote}</p>
             )}
             {mailNeedsAttention(mail.status) && (
               <>

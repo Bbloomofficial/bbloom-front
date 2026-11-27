@@ -9,6 +9,7 @@ import type {
   AdminNewCustomerOfferDto,
   ConnectPaymentAccountRequest,
   AdCampaignDto,
+  AdSyncResult,
   AdCampaignCreateRequest,
   AdCampaignQuery,
   AdSettings,
@@ -551,6 +552,14 @@ export function fetchAdTestCampaigns(
   token: string,
 ): Promise<AdCampaignDto[]> {
   return authed<AdCampaignDto[]>(token, "/admin/ads/test-campaigns");
+}
+
+/**
+ * Reads every campaign that still exists at Meta back from it now: Meta's own
+ * status, and the figures of anything that may be spending.
+ */
+export function syncAdCampaigns(token: string): Promise<AdSyncResult> {
+  return authed<AdSyncResult>(token, "/admin/ads/campaigns/sync", { method: "POST" });
 }
 
 /** Stops a test campaign at Meta. Answers with the updated row. */

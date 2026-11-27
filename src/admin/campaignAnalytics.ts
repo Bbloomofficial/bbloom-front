@@ -90,7 +90,12 @@ export type CampaignFilters = {
   to: string;
   /** Only what may still be costing money, by `isSpending`'s rule. */
   spendingOnly: boolean;
+  /** Meta's own status, verbatim; `NOT_READ` for rows Meta has not been asked about. */
+  metaStatus: string;
 };
+
+/** The Meta-status filter value for rows whose status at Meta was never read. */
+export const META_NOT_READ = "NOT_READ";
 
 export const NO_FILTERS: CampaignFilters = {
   query: "",
@@ -100,6 +105,7 @@ export const NO_FILTERS: CampaignFilters = {
   from: "",
   to: "",
   spendingOnly: false,
+  metaStatus: "",
 };
 
 /** When a campaign started: its launch, or its creation if it never launched. */
@@ -138,6 +144,10 @@ export function filterCampaigns(
     }
     if (filters.siteId && campaign.siteId !== filters.siteId) return false;
     if (filters.spendingOnly && !isSpending(campaign)) return false;
+    if (filters.metaStatus) {
+      const atMeta = campaign.metaEffectiveStatus ?? META_NOT_READ;
+      if (atMeta !== filters.metaStatus) return false;
+    }
     if (filters.from || filters.to) {
       const day = localDay(campaignDate(campaign));
       if (!day) return false;
@@ -380,6 +390,7 @@ export function campaignsToCsv(
         c.name,
         c.siteName,
         c.status,
+        c.metaEffectiveStatus,
         c.test ? "test" : "",
         c.channels.join("+"),
         (c.dailyBudgetMinor / 100).toFixed(2),
