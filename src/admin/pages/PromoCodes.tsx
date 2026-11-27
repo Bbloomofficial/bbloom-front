@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useI18n } from "../../i18n";
 import { useSession } from "../auth";
@@ -7,6 +7,11 @@ import { deletePromoCode, fetchPromoCodes } from "../api/client";
 import { adminStrings } from "../strings";
 import { formatEndDay } from "../datetime";
 import { adminPath } from "../../routes";
+import { instant, matchesQuery, sortRows } from "../listTools";
+import { FilterSelect, ListToolbar, SortTh, useListParams } from "../components/ListTools";
+
+const FILTERS = ["status", "plan"] as const;
+const SORTS = ["code", "percent", "used", "status", "created"] as const;
 
 /**
  * Promo codes staff hand out, and how much of each has been used.
@@ -44,7 +49,53 @@ export default function PromoCodes() {
     }
   }
 
-  const codes = data ?? [];
+  const list = useListParams(FILTERS, SORTS, { sort: "created", direction: "desc" });
+  const all = data ?? [];
+  const planCodes = useMemo(
+    () => [...new Set(all.flatMap((promo) => promo.planCodes))].sort(),
+    [all],
+  );
+
+  const filtered = useMemo(
+    () =>
+      all.filter((promo) => {
+        if (list.filters.status === "usable" && !promo.usable) return false;
+        if (list.filters.status === "unusable" && promo.usable) return false;
+        // A code with no plan restriction applies to every plan, this one too.
+        if (
+          list.filters.plan &&
+          promo.planCodes.length > 0 &&
+          !promo.planCodes.includes(list.filters.plan)
+        ) {
+          return false;
+        }
+        return matchesQuery([promo.code, ...promo.planCodes], list.query);
+      }),
+    [all, list.query, JSON.stringify(list.filters)],
+  );
+  const codes = useMemo(
+    () =>
+      sortRows(
+        filtered,
+        (promo) => {
+          switch (list.sort) {
+            case "code":
+              return promo.code;
+            case "percent":
+              return promo.percentOff;
+            case "used":
+              return promo.redemptions;
+            case "status":
+              return promo.usable ? 0 : 1;
+            case "created":
+              return instant(promo.createdAt);
+          }
+        },
+        list.direction,
+        locale,
+      ),
+    [filtered, list.sort, list.direction, locale],
+  );
 
   return (
     <div>
@@ -59,6 +110,32 @@ export default function PromoCodes() {
           {t.promoCodes.create}
         </Link>
       </div>
+
+      <ListToolbar
+        query={list.query}
+        onQuery={(value) => list.update({ q: value || null })}
+        placeholder={t.promoCodes.code}
+        shown={filtered.length}
+        total={all.length}
+        narrowed={list.narrowed}
+        onClear={list.clear}
+      >
+        <FilterSelect
+          label={t.promoCodes.status}
+          value={list.filters.status}
+          onChange={(value) => list.update({ status: value || null })}
+          options={[
+            { value: "usable", label: t.promoCodes.usable },
+            { value: "unusable", label: t.promoCodes.notUsable },
+          ]}
+        />
+        <FilterSelect
+          label={t.promoCodes.appliesTo}
+          value={list.filters.plan}
+          onChange={(value) => list.update({ plan: value || null })}
+          options={planCodes.map((code) => ({ value: code, label: code }))}
+        />
+      </ListToolbar>
 
       {error && (
         <div className="mt-6 rounded-3xl border border-ink-100 bg-surface p-6 text-center">
@@ -79,7 +156,7 @@ export default function PromoCodes() {
 
       {data && codes.length === 0 && (
         <p className="mt-8 rounded-3xl border border-ink-100 bg-surface p-8 text-center text-sm text-ink-600">
-          {t.promoCodes.empty}
+          {all.length === 0 ? t.promoCodes.empty : t.list.noneMatching}
         </p>
       )}
 
@@ -88,21 +165,24 @@ export default function PromoCodes() {
           <table className="w-full text-start text-sm">
             <thead className="border-b border-ink-100 text-xs uppercase tracking-wide text-ink-400">
               <tr>
-                <th className="px-5 py-3 text-start font-semibold">
-                  {t.promoCodes.code}
-                </th>
-                <th className="px-5 py-3 text-start font-semibold">
-                  {t.promoCodes.percentOff}
-                </th>
-                <th className="hidden px-5 py-3 text-start font-semibold sm:table-cell">
-                  {t.promoCodes.used}
-                </th>
+                <SortTh column="code" label={t.promoCodes.code} list={list} />
+                <SortTh
+                  column="percent"
+                  label={t.promoCodes.percentOff}
+                  list={list}
+                  first="desc"
+                />
+                <SortTh
+                  column="used"
+                  label={t.promoCodes.used}
+                  list={list}
+                  first="desc"
+                  className="hidden sm:table-cell"
+                />
                 <th className="hidden px-5 py-3 text-start font-semibold md:table-cell">
                   {t.promoCodes.appliesTo}
                 </th>
-                <th className="px-5 py-3 text-start font-semibold">
-                  {t.promoCodes.status}
-                </th>
+                <SortTh column="status" label={t.promoCodes.status} list={list} />
                 <th className="px-5 py-3 text-end font-semibold">
                   <span className="sr-only">{t.promoCodes.edit}</span>
                 </th>

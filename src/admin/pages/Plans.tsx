@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useI18n } from "../../i18n";
 import { useSession } from "../auth";
@@ -8,6 +8,12 @@ import { formatMinor } from "../../api/plans";
 import { ApiError } from "../../api/http";
 import { adminStrings } from "../strings";
 import { adminPath } from "../../routes";
+import { matchesQuery, sortRows } from "../listTools";
+import { FilterSelect, ListToolbar, SortTh, useListParams } from "../components/ListTools";
+import type { AdminPlanDto } from "../api/types";
+
+const FILTERS = ["status", "period"] as const;
+const SORTS = ["name", "code", "price", "period", "status"] as const;
 
 /**
  * Every plan, including the ones the public pricing page will not show. Staff
@@ -49,7 +55,52 @@ export default function Plans() {
     }
   }
 
-  const plans = data ?? [];
+  const list = useListParams(FILTERS, SORTS, { sort: "price", direction: "asc" });
+  const all = data ?? [];
+
+  // Staff read this screen in their own language; a plan without that
+  // translation still has to be identifiable, so the code is the fallback.
+  const nameOf = (plan: AdminPlanDto) =>
+    (plan.translations.find((item) => item.language === locale) ??
+      plan.translations[0])?.name || plan.code;
+
+  const filtered = useMemo(
+    () =>
+      all.filter((plan) => {
+        if (list.filters.status === "active" && !plan.active) return false;
+        if (list.filters.status === "inactive" && plan.active) return false;
+        if (list.filters.period && plan.billingPeriod !== list.filters.period) return false;
+        return matchesQuery(
+          [plan.code, ...plan.translations.map((item) => item.name)],
+          list.query,
+        );
+      }),
+    [all, list.query, JSON.stringify(list.filters)],
+  );
+  const plans = useMemo(
+    () =>
+      sortRows(
+        filtered,
+        (plan) => {
+          switch (list.sort) {
+            case "name":
+              return nameOf(plan);
+            case "code":
+              return plan.code;
+            // What a client is charged, so a live sale sorts where it bills.
+            case "price":
+              return plan.effectivePriceMinor;
+            case "period":
+              return t.plans.periods[plan.billingPeriod] ?? plan.billingPeriod;
+            case "status":
+              return plan.active ? 0 : 1;
+          }
+        },
+        list.direction,
+        locale,
+      ),
+    [filtered, list.sort, list.direction, locale],
+  );
 
   return (
     <div>
@@ -64,6 +115,35 @@ export default function Plans() {
           {t.plans.create}
         </Link>
       </div>
+
+      <ListToolbar
+        query={list.query}
+        onQuery={(value) => list.update({ q: value || null })}
+        placeholder={t.plans.name}
+        shown={filtered.length}
+        total={all.length}
+        narrowed={list.narrowed}
+        onClear={list.clear}
+      >
+        <FilterSelect
+          label={t.plans.status}
+          value={list.filters.status}
+          onChange={(value) => list.update({ status: value || null })}
+          options={[
+            { value: "active", label: t.plans.active },
+            { value: "inactive", label: t.accounts.disabled },
+          ]}
+        />
+        <FilterSelect
+          label={t.plans.billingPeriod}
+          value={list.filters.period}
+          onChange={(value) => list.update({ period: value || null })}
+          options={Object.entries(t.plans.periods).map(([value, label]) => ({
+            value,
+            label,
+          }))}
+        />
+      </ListToolbar>
 
       {error && (
         <div className="mt-6 rounded-3xl border border-ink-100 bg-surface p-6 text-center">
@@ -82,7 +162,7 @@ export default function Plans() {
 
       {data && plans.length === 0 && (
         <p className="mt-8 rounded-3xl border border-ink-100 bg-surface p-8 text-center text-sm text-ink-600">
-          {t.plans.empty}
+          {all.length === 0 ? t.plans.empty : t.list.noneMatching}
         </p>
       )}
 
@@ -91,15 +171,21 @@ export default function Plans() {
           <table className="w-full text-start text-sm">
             <thead className="border-b border-ink-100 text-xs uppercase tracking-wide text-ink-400">
               <tr>
-                <th className="px-5 py-3 text-start font-semibold">{t.plans.name}</th>
-                <th className="hidden px-5 py-3 text-start font-semibold sm:table-cell">
-                  {t.plans.code}
-                </th>
-                <th className="px-5 py-3 text-start font-semibold">{t.plans.price}</th>
-                <th className="hidden px-5 py-3 text-start font-semibold md:table-cell">
-                  {t.plans.billingPeriod}
-                </th>
-                <th className="px-5 py-3 text-start font-semibold">{t.plans.status}</th>
+                <SortTh column="name" label={t.plans.name} list={list} />
+                <SortTh
+                  column="code"
+                  label={t.plans.code}
+                  list={list}
+                  className="hidden sm:table-cell"
+                />
+                <SortTh column="price" label={t.plans.price} list={list} />
+                <SortTh
+                  column="period"
+                  label={t.plans.billingPeriod}
+                  list={list}
+                  className="hidden md:table-cell"
+                />
+                <SortTh column="status" label={t.plans.status} list={list} />
                 <th className="px-5 py-3 text-end font-semibold">
                   <span className="sr-only">{t.plans.edit}</span>
                 </th>
@@ -107,12 +193,6 @@ export default function Plans() {
             </thead>
             <tbody>
               {plans.map((plan) => {
-                // Staff read this screen in their own language; a plan without
-                // that translation still has to be identifiable, so the code is
-                // the fallback rather than an empty cell.
-                const copy =
-                  plan.translations.find((item) => item.language === locale) ??
-                  plan.translations[0];
                 return (
                   <tr
                     key={plan.id}
@@ -123,7 +203,7 @@ export default function Plans() {
                         to={adminPath(`/plans/${plan.id}`)}
                         className="font-semibold text-ink-900 hover:text-bloom-600"
                       >
-                        {copy?.name || plan.code}
+                        {nameOf(plan)}
                       </Link>
                       {plan.featured && (
                         <span className="ms-2 inline-flex items-center rounded-full bg-tint px-2 py-0.5 text-xs font-semibold text-tint-fg">

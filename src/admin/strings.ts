@@ -7,8 +7,56 @@ import type { Locale } from "../i18n";
  */
 export type AdminStrings = {
   brand: string;
-  nav: { sites: string; newSite: string; system: string; accounts: string; plans: string; promoCodes: string; newCustomerOffer: string; ads: string; pricing: string; openMenu: string; closeMenu: string };
+  nav: { sites: string; newSite: string; system: string; accounts: string; plans: string; promoCodes: string; newCustomerOffer: string; ads: string; pricing: string; openMenu: string; closeMenu: string; overview: string; systemStatus: string; emails: string };
   signedInAs: string;
+  /** Shared by every admin list: search, filters, the count and paging. */
+  list: {
+    search: string;
+    all: string;
+    clear: string;
+    results: (shown: number, total: number) => string;
+    prev: string;
+    next: string;
+    page: (page: number, total: number) => string;
+    noneMatching: string;
+  };
+  /** Filter names and options specific to one list. */
+  listFilters: {
+    siteKind: string;
+    siteKindClient: string;
+    siteKindDemo: string;
+    siteDesign: string;
+    siteChanges: string;
+    siteChangesPending: string;
+    accountSignIn: string;
+    accountSignedIn: string;
+    accountNeverSignedIn: string;
+    accountFreeSites: string;
+    accountAtLimit: string;
+  };
+  /** The email page: who is still owed an email we could not send. */
+  emails: {
+    title: string;
+    subtitle: string;
+    owedEmpty: string;
+    searchPlaceholder: string;
+    colRecipient: string;
+    colSubject: string;
+    colReason: string;
+    colWhen: string;
+    inOutage: string;
+    filterOutage: string;
+    outageOnly: string;
+    dismiss: string;
+    dismissing: string;
+    dismissConfirm: (recipient: string) => string;
+    dismissAll: string;
+    dismissAllConfirm: (count: number) => string;
+    dismissFailed: string;
+    unlisted: (count: number) => string;
+    notWorking: string;
+    memoryNote: string;
+  };
   signOut: string;
   backToBbloom: string;
   loading: string;
@@ -827,8 +875,63 @@ export type AdminStrings = {
 
 const en: AdminStrings = {
   brand: "bbloom staff",
-  nav: { sites: "Sites", newSite: "New site", system: "System", accounts: "Accounts", plans: "Plans", promoCodes: "Discounts", newCustomerOffer: "New customers", ads: "Ads", pricing: "Pricing", openMenu: "Open menu", closeMenu: "Close menu" },
+  nav: { sites: "Sites", newSite: "New site", system: "System", accounts: "Accounts", plans: "Plans", promoCodes: "Discounts", newCustomerOffer: "New customers", ads: "Ads", pricing: "Pricing", openMenu: "Open menu", closeMenu: "Close menu", overview: "Overview", systemStatus: "Status", emails: "Emails" },
   signedInAs: "Signed in as",
+  list: {
+    search: "Search",
+    all: "All",
+    clear: "Clear filters",
+    results: (shown, total) => (shown === total ? `${total} total` : `${shown} of ${total}`),
+    prev: "Previous",
+    next: "Next",
+    page: (page, total) => `Page ${page} of ${total}`,
+    noneMatching: "Nothing matches these filters.",
+  },
+  listFilters: {
+    siteKind: "Type",
+    siteKindClient: "Client sites",
+    siteKindDemo: "Showcase sites",
+    siteDesign: "Design",
+    siteChanges: "Changes",
+    siteChangesPending: "Unpublished changes",
+    accountSignIn: "Signed in",
+    accountSignedIn: "Has signed in",
+    accountNeverSignedIn: "Never signed in",
+    accountFreeSites: "Free sites",
+    accountAtLimit: "At the free limit",
+  },
+  emails: {
+    title: "Emails",
+    subtitle:
+      "Who is still waiting for an email we couldn't send. Once you've reached someone another way, for example by confirming their address on their account page, dismiss them.",
+    owedEmpty: "Nobody is waiting for an email.",
+    searchPlaceholder: "Address, email or reason",
+    colRecipient: "Recipient",
+    colSubject: "Email",
+    colReason: "Why it failed",
+    colWhen: "Failed",
+    inOutage: "Current outage",
+    filterOutage: "Outage",
+    outageOnly: "Current outage only",
+    dismiss: "Dismiss",
+    dismissing: "Dismissing…",
+    dismissConfirm: (recipient) =>
+      `Take ${recipient} off the list? Nothing is sent to them. Only do this once you've dealt with them another way.`,
+    dismissAll: "Dismiss all",
+    dismissAllConfirm: (count) =>
+      count === 1
+        ? "Take this person off the list? Nothing is sent to them."
+        : `Take all ${count} people off the list? Nothing is sent to anyone.`,
+    dismissFailed: "Couldn't dismiss. Try again.",
+    unlisted: (count) =>
+      count === 1
+        ? "1 more person is waiting for an email but isn't listed. The list only keeps the most recent."
+        : `${count} more people are waiting for an email but aren't listed. The list only keeps the most recent.`,
+    notWorking:
+      "Mail is still failing. Dismissing clears the warning, but the next email will fail too until the mail settings are fixed. Send a test from the Status tab.",
+    memoryNote:
+      "This list is kept in the server's memory, so a server restart clears it as well.",
+  },
   signOut: "Sign out",
   backToBbloom: "Back to bbloom.ge",
   loading: "Loading…",
@@ -1846,8 +1949,59 @@ const en: AdminStrings = {
 
 const ka: AdminStrings = {
   brand: "ბიბლუმის გუნდი",
-  nav: { sites: "საიტები", newSite: "ახალი საიტი", system: "სისტემა", accounts: "ანგარიშები", plans: "პაკეტები", promoCodes: "ფასდაკლებები", newCustomerOffer: "ახალი კლიენტები", ads: "რეკლამა", pricing: "ფასები", openMenu: "მენიუს გახსნა", closeMenu: "მენიუს დახურვა" },
+  nav: { sites: "საიტები", newSite: "ახალი საიტი", system: "სისტემა", accounts: "ანგარიშები", plans: "პაკეტები", promoCodes: "ფასდაკლებები", newCustomerOffer: "ახალი კლიენტები", ads: "რეკლამა", pricing: "ფასები", openMenu: "მენიუს გახსნა", closeMenu: "მენიუს დახურვა", overview: "მიმოხილვა", systemStatus: "სტატუსი", emails: "ელფოსტა" },
   signedInAs: "შესული ხართ როგორც",
+  list: {
+    search: "ძებნა",
+    all: "ყველა",
+    clear: "ფილტრების გასუფთავება",
+    results: (shown, total) => (shown === total ? `სულ ${total}` : `${total}-დან ${shown}`),
+    prev: "წინა",
+    next: "შემდეგი",
+    page: (page, total) => `გვერდი ${page} / ${total}`,
+    noneMatching: "ამ ფილტრებს არაფერი შეესაბამება.",
+  },
+  listFilters: {
+    siteKind: "ტიპი",
+    siteKindClient: "კლიენტების საიტები",
+    siteKindDemo: "საჩვენებელი საიტები",
+    siteDesign: "დიზაინი",
+    siteChanges: "ცვლილებები",
+    siteChangesPending: "გამოუქვეყნებელი ცვლილებები",
+    accountSignIn: "შესვლა",
+    accountSignedIn: "ერთხელ მაინც შესულა",
+    accountNeverSignedIn: "არასდროს შესულა",
+    accountFreeSites: "უფასო საიტები",
+    accountAtLimit: "უფასო ლიმიტი ამოწურულია",
+  },
+  emails: {
+    title: "ელფოსტა",
+    subtitle:
+      "ვინ ელოდება წერილს, რომლის გაგზავნაც ვერ მოხერხდა. როცა ადამიანს სხვა გზით დაუკავშირდებით (მაგალითად, მის ელფოსტას ანგარიშის გვერდზე დაადასტურებთ), ამოიღეთ სიიდან.",
+    owedEmpty: "წერილს არავინ ელოდება.",
+    searchPlaceholder: "მისამართი, წერილი ან მიზეზი",
+    colRecipient: "მიმღები",
+    colSubject: "წერილი",
+    colReason: "რატომ ვერ გაიგზავნა",
+    colWhen: "როდის",
+    inOutage: "მიმდინარე შეფერხება",
+    filterOutage: "შეფერხება",
+    outageOnly: "მხოლოდ მიმდინარე შეფერხება",
+    dismiss: "ამოღება",
+    dismissing: "ამოღება…",
+    dismissConfirm: (recipient) =>
+      `ამოვიღოთ ${recipient} სიიდან? მას არაფერი გაეგზავნება. ეს მხოლოდ მაშინ გააკეთეთ, როცა საკითხი სხვა გზით უკვე მოაგვარეთ.`,
+    dismissAll: "ყველას ამოღება",
+    dismissAllConfirm: (count) =>
+      `ამოვიღოთ სიიდან ${count} ადამიანი? არავის არაფერი გაეგზავნება.`,
+    dismissFailed: "ამოღება ვერ მოხერხდა. სცადეთ თავიდან.",
+    unlisted: (count) =>
+      `კიდევ ${count} ადამიანი ელოდება წერილს, მაგრამ სიაში არ ჩანს: სია მხოლოდ ბოლო ჩანაწერებს ინახავს.`,
+    notWorking:
+      "ელფოსტა ისევ ვერ იგზავნება. ამოღება გაფრთხილებას გააქრობს, მაგრამ სანამ ელფოსტის პარამეტრებს არ შეასწორებთ, შემდეგი წერილიც ვერ გაიგზავნება. სატესტო წერილი „სტატუსის“ ჩანართიდან გაგზავნეთ.",
+    memoryNote:
+      "ეს სია სერვერის მეხსიერებაში ინახება, ამიტომ სერვერის გადატვირთვაც ასუფთავებს მას.",
+  },
   signOut: "გამოსვლა",
   backToBbloom: "დაბრუნება bbloom.ge-ზე",
   loading: "იტვირთება…",

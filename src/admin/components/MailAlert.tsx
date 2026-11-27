@@ -149,7 +149,7 @@ export default function MailAlert() {
             : t.system.owedTitle(owed)}
         </p>
         <Link
-          to={adminPath("/system")}
+          to={adminPath("/system/emails")}
           className={`ms-auto shrink-0 text-sm font-semibold underline underline-offset-2 hover:opacity-80 ${text}`}
         >
           {t.system.bannerAction}

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useI18n } from "../../i18n";
 import { useSession } from "../auth";
@@ -13,34 +13,33 @@ import {
 } from "../components/Badges";
 import { adminStrings } from "../strings";
 import { adminPath } from "../../routes";
+import { instant, loadAllPages, matchesQuery, pageOf, sortRows } from "../listTools";
+import {
+  FilterSelect,
+  ListToolbar,
+  Pager,
+  SortTh,
+  useListParams,
+} from "../components/ListTools";
 
-const PAGE_SIZE = 20;
+const PAGE_SIZE = 25;
+const FILTERS = ["status", "tier", "kind", "changes"] as const;
+const SORTS = ["business", "template", "status", "address", "updated"] as const;
 
 export default function Sites() {
   const { locale } = useI18n();
   const t = adminStrings(locale);
   const { token } = useSession();
 
-  const [search, setSearch] = useState("");
-  const [query, setQuery] = useState("");
-  const [page, setPage] = useState(0);
+  const list = useListParams(FILTERS, SORTS, { sort: "updated", direction: "desc" });
 
-  // Debounce the search box so typing does not fire a request per keystroke.
-  useEffect(() => {
-    const timer = window.setTimeout(() => {
-      setQuery(search.trim());
-      setPage(0);
-    }, 300);
-    return () => window.clearTimeout(timer);
-  }, [search]);
-
+  // Every site at once, so the search, the filters and every column's sort
+  // work on all of them rather than on the page the server happened to send.
   const { data, loading, error, reload } = useResource(
-    () => fetchSites(token, { q: query, page, size: PAGE_SIZE }),
-    [token, query, page],
+    () => loadAllPages((page, size) => fetchSites(token, { page, size })),
+    [token],
   );
-
-  const sites = data?.items ?? [];
-  const totalPages = Math.max(data?.totalPages ?? 1, 1);
+  const all = data ?? [];
 
   // The backend provisions a showcase site per template, and they sit in this
   // list next to real clients. Match them against the catalog's own demoSlugs
@@ -66,6 +65,56 @@ export default function Sites() {
     };
   }, []);
 
+  const templateName = (site: (typeof all)[number]) =>
+    localised(site.templateNameKa, site.templateNameEn, locale) || site.templateCode;
+
+  const filtered = useMemo(() => {
+    const { status, tier, kind, changes } = list.filters;
+    return all.filter((site) => {
+      if (status && site.status !== status) return false;
+      if (tier && site.tier !== tier) return false;
+      if (kind === "demo" && !demoSlugs.has(site.slug)) return false;
+      if (kind === "client" && demoSlugs.has(site.slug)) return false;
+      if (
+        changes === "pending" &&
+        !(site.status === "PUBLISHED" && site.hasUnpublishedChanges)
+      ) {
+        return false;
+      }
+      return matchesQuery(
+        [site.businessName, site.slug, site.primaryUrl, templateName(site)],
+        list.query,
+      );
+    });
+    // `list` is rebuilt every render; its contents are what matter.
+  }, [all, demoSlugs, list.query, JSON.stringify(list.filters), locale]);
+
+  const sorted = useMemo(
+    () =>
+      sortRows(
+        filtered,
+        (site) => {
+          switch (list.sort) {
+            case "business":
+              return site.businessName;
+            case "template":
+              return templateName(site);
+            case "status":
+              return t.statuses[site.status] ?? site.status;
+            case "address":
+              return site.primaryUrl?.replace(/^https?:\/\//, "");
+            case "updated":
+              return instant(site.updatedAt);
+          }
+        },
+        list.direction,
+        locale,
+      ),
+    [filtered, list.sort, list.direction, locale],
+  );
+  const view = pageOf(sorted, list.page, PAGE_SIZE);
+  const sites = view.rows;
+
   return (
     <div>
       <div className="flex flex-wrap items-end justify-between gap-4">
@@ -80,26 +129,43 @@ export default function Sites() {
         </Link>
       </div>
 
-      <div className="mt-6 flex flex-wrap items-center gap-3">
-        <div className="min-w-60 flex-1">
-          <label className="sr-only" htmlFor="site-search">
-            {t.sites.search}
-          </label>
-          <input
-            id="site-search"
-            type="search"
-            className="field"
-            placeholder={t.sites.searchPlaceholder}
-            value={search}
-            onChange={(event) => setSearch(event.target.value)}
-          />
-        </div>
-        {data && (
-          <span className="text-sm text-ink-400">
-            {t.sites.results(data.totalItems)}
-          </span>
-        )}
-      </div>
+      <ListToolbar
+        query={list.query}
+        onQuery={(value) => list.update({ q: value || null })}
+        placeholder={t.sites.searchPlaceholder}
+        shown={filtered.length}
+        total={all.length}
+        narrowed={list.narrowed}
+        onClear={list.clear}
+      >
+        <FilterSelect
+          label={t.sites.status}
+          value={list.filters.status}
+          onChange={(value) => list.update({ status: value || null })}
+          options={Object.entries(t.statuses).map(([value, label]) => ({ value, label }))}
+        />
+        <FilterSelect
+          label={t.listFilters.siteDesign}
+          value={list.filters.tier}
+          onChange={(value) => list.update({ tier: value || null })}
+          options={Object.entries(t.tiers).map(([value, label]) => ({ value, label }))}
+        />
+        <FilterSelect
+          label={t.listFilters.siteKind}
+          value={list.filters.kind}
+          onChange={(value) => list.update({ kind: value || null })}
+          options={[
+            { value: "client", label: t.listFilters.siteKindClient },
+            { value: "demo", label: t.listFilters.siteKindDemo },
+          ]}
+        />
+        <FilterSelect
+          label={t.listFilters.siteChanges}
+          value={list.filters.changes}
+          onChange={(value) => list.update({ changes: value || null })}
+          options={[{ value: "pending", label: t.listFilters.siteChangesPending }]}
+        />
+      </ListToolbar>
 
       {error && (
         <div className="mt-6 rounded-3xl border border-ink-100 bg-surface p-6 text-center">
@@ -114,7 +180,7 @@ export default function Sites() {
 
       {data && sites.length === 0 && (
         <p className="mt-8 rounded-3xl border border-ink-100 bg-surface p-8 text-center text-sm text-ink-600">
-          {query ? t.sites.emptyFiltered : t.sites.empty}
+          {all.length === 0 ? t.sites.empty : t.list.noneMatching}
         </p>
       )}
 
@@ -123,21 +189,27 @@ export default function Sites() {
           <table className="w-full text-start text-sm">
             <thead className="border-b border-ink-100 text-xs uppercase tracking-wide text-ink-400">
               <tr>
-                <th className="px-5 py-3 text-start font-semibold">
-                  {t.sites.business}
-                </th>
-                <th className="hidden px-5 py-3 text-start font-semibold md:table-cell">
-                  {t.sites.template}
-                </th>
-                <th className="px-5 py-3 text-start font-semibold">
-                  {t.sites.status}
-                </th>
-                <th className="hidden px-5 py-3 text-start font-semibold lg:table-cell">
-                  {t.sites.address}
-                </th>
-                <th className="hidden px-5 py-3 text-start font-semibold sm:table-cell">
-                  {t.sites.updated}
-                </th>
+                <SortTh column="business" label={t.sites.business} list={list} />
+                <SortTh
+                  column="template"
+                  label={t.sites.template}
+                  list={list}
+                  className="hidden md:table-cell"
+                />
+                <SortTh column="status" label={t.sites.status} list={list} />
+                <SortTh
+                  column="address"
+                  label={t.sites.address}
+                  list={list}
+                  className="hidden lg:table-cell"
+                />
+                <SortTh
+                  column="updated"
+                  label={t.sites.updated}
+                  list={list}
+                  first="desc"
+                  className="hidden sm:table-cell"
+                />
                 <th className="px-5 py-3" />
               </tr>
             </thead>
@@ -229,29 +301,7 @@ export default function Sites() {
         </div>
       )}
 
-      {totalPages > 1 && (
-        <div className="mt-5 flex items-center justify-between gap-3">
-          <button
-            type="button"
-            className="btn-secondary disabled:opacity-50"
-            disabled={page === 0}
-            onClick={() => setPage((current) => Math.max(current - 1, 0))}
-          >
-            {t.sites.prev}
-          </button>
-          <span className="text-sm text-ink-400">
-            {t.sites.page(page + 1, totalPages)}
-          </span>
-          <button
-            type="button"
-            className="btn-secondary disabled:opacity-50"
-            disabled={!data?.hasNext}
-            onClick={() => setPage((current) => current + 1)}
-          >
-            {t.sites.next}
-          </button>
-        </div>
-      )}
+      <Pager page={view.page} pages={view.pages} onPage={list.setPage} />
     </div>
   );
 }
