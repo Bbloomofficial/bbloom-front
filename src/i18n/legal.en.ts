@@ -29,7 +29,7 @@ export const legal: Legal = {
       {
         heading: 'Visitors to websites we host',
         body: [
-          'When someone sends an enquiry or places an order on a website we host for a business, we store what they enter — name, email, phone number, message and order details — together with their IP address and browser details.',
+          'When someone sends an enquiry or places an order on a website we host for a business, we store what they enter - name, email, phone number, message and order details - together with their IP address and browser details.',
           'We keep this on behalf of that business, and the business decides how it is used. If you contacted a business through its website, ask that business first; we will help it act on your request.',
         ],
       },
@@ -38,7 +38,7 @@ export const legal: Legal = {
         items: [
           'To provide the service: your account, your website, your orders and enquiries, and your advertising.',
           'To reply when you contact us.',
-          'To send the emails the service depends on — sign-in codes, alerts about new enquiries, payment confirmations — and the newsletter, if you subscribed.',
+          'To send the emails the service depends on - sign-in codes, alerts about new enquiries, payment confirmations - and the newsletter, if you subscribed.',
           'To keep the service secure and stop abuse, which is why forms record your IP address and browser details.',
           'To meet our legal and accounting obligations.',
         ],
@@ -77,7 +77,7 @@ export const legal: Legal = {
         heading: 'Your rights',
         body: [
           'Under the Law of Georgia on Personal Data Protection, you can ask us to tell you what data we hold about you, to give you a copy, to correct it, to delete it, or to stop using it for a particular purpose.',
-          'Write to team@bbloom.ge from the email address on your account and we will reply as soon as we can. You can also complain to the Personal Data Protection Service of Georgia.',
+          'Write to team@bbloom.ge from the email address on your account and we will reply as soon as we can.',
         ],
       },
       {
@@ -103,7 +103,7 @@ export const legal: Legal = {
         items: [
           'Email team@bbloom.ge with the subject “Delete my data”.',
           'Send it from the email address on your bbloom account, or tell us the email address or phone number you used, so we can find your data.',
-          'If you only want part of it deleted — one website, for example — say which.',
+          'If you only want part of it deleted - one website, for example - say which.',
         ],
       },
       {
@@ -121,9 +121,9 @@ export const legal: Legal = {
         ],
       },
       {
-        heading: 'If you contacted a business through its website',
+        heading: 'If you contacted a business through their website',
         body: [
-          'Enquiries and orders sent through a website we host belong to that business. Ask the business to delete them, or write to us and we will pass your request on.',
+          'Enquiries and orders sent through a website we host belong to that business. Ask the business to delete them.',
         ],
       },
     ],
