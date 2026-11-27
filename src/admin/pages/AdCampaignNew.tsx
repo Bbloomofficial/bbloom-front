@@ -494,7 +494,7 @@ export default function AdCampaignNew() {
         {error && <p role="alert" className="mt-4 text-sm font-semibold text-danger">{error}</p>}
 
         <div className="mt-5 flex flex-wrap items-center gap-3">
-          <button type="submit" className="rounded-xl bg-danger px-4 py-3 text-sm font-semibold text-white dark:text-contrast transition hover:opacity-90 active:scale-95 disabled:opacity-40" disabled={submitting}>
+          <button type="submit" className="rounded-xl bg-danger px-4 py-3 text-sm font-semibold text-white dark:text-contrast transition hover:opacity-90 motion-safe:active:scale-95 disabled:opacity-40" disabled={submitting}>
             {submitting ? f.creating : f.create}
           </button>
           <Link to="/ads" className="btn-secondary">

@@ -399,7 +399,7 @@ export default function AdCampaignDetail() {
             onClick={() =>
               void act(d.resumeConfirm, () => resumeAdCampaign(token, data.id))
             }
-            className="rounded-xl bg-danger px-4 py-3 text-sm font-semibold text-white dark:text-contrast transition hover:opacity-90 active:scale-95 disabled:opacity-40"
+            className="rounded-xl bg-danger px-4 py-3 text-sm font-semibold text-white dark:text-contrast transition hover:opacity-90 motion-safe:active:scale-95 disabled:opacity-40"
           >
             {busy ? d.resuming : d.resume}
           </button>
@@ -411,7 +411,7 @@ export default function AdCampaignDetail() {
             onClick={() =>
               void act(d.deleteConfirm, () => deleteAdCampaign(token, data.id), true)
             }
-            className="rounded-xl bg-danger px-4 py-3 text-sm font-semibold text-white dark:text-contrast transition hover:opacity-90 active:scale-95 disabled:opacity-40"
+            className="rounded-xl bg-danger px-4 py-3 text-sm font-semibold text-white dark:text-contrast transition hover:opacity-90 motion-safe:active:scale-95 disabled:opacity-40"
           >
             {busy ? d.deleting : d.delete}
           </button>
