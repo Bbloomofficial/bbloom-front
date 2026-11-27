@@ -180,7 +180,7 @@ export default function Emails() {
                       className="border-b border-ink-100 align-top last:border-0 hover:bg-ink-50"
                     >
                       <td className="px-5 py-4">
-                        <span dir="ltr" translate="no" className="font-semibold text-ink-900">
+                        <span dir="ltr" translate="no" className="font-semibold wrap-anywhere text-ink-900">
                           {row.recipient}
                         </span>
                         {inOutage.has(normalise(row.recipient)) && (
@@ -190,7 +190,7 @@ export default function Emails() {
                         )}
                       </td>
                       <td className="px-5 py-4 text-ink-600">{row.subject}</td>
-                      <td className="max-w-80 px-5 py-4 text-xs text-ink-500" dir="ltr">
+                      <td className="max-w-80 px-5 py-4 text-xs wrap-anywhere text-ink-500" dir="ltr">
                         {row.reason}
                       </td>
                       <td className="whitespace-nowrap px-5 py-4 tabular-nums text-ink-600">
