@@ -7,9 +7,10 @@ import { useResource } from "../hooks";
 import { fetchAdCampaigns, fetchAdTestCampaigns, syncAdCampaigns } from "../api/client";
 import { adminStrings } from "../strings";
 import { formatDateTime } from "../format";
-import { Budget, Channels, Insight, MetaStatus, StatusPill } from "../components/AdBits";
+import { Budget, Channels, DeliveryStatus, Insight, StatusPill } from "../components/AdBits";
 import {
   META_NOT_READ,
+  metaDelivery,
   SORT_KEYS,
   campaignsToCsv,
   costPerClick,
@@ -302,7 +303,7 @@ export default function AdCampaigns() {
   // can match — and still offers a state Meta added that we have no name for.
   const metaStates = useMemo(() => {
     const seen = new Set<string>();
-    for (const row of all) seen.add(row.metaEffectiveStatus ?? META_NOT_READ);
+    for (const row of all) seen.add(metaDelivery(row) ?? META_NOT_READ);
     return [...seen].sort();
   }, [all]);
 
@@ -774,18 +775,11 @@ export default function AdCampaigns() {
                           {campaign.siteName ?? "—"}
                         </td>
                         <td className="py-3 pr-4">
-                          <div className="flex flex-col items-start gap-1.5">
-                            <StatusPill status={campaign.status} labels={t.statuses} />
-                            {campaign.metaCampaignId && (
-                              <MetaStatus
-                                status={campaign.metaEffectiveStatus}
-                                issue={campaign.metaDeliveryIssue}
-                                labels={t.metaStatuses}
-                                prefix={m.metaPrefix}
-                                notRead={m.metaNotRead}
-                              />
-                            )}
-                          </div>
+                          <DeliveryStatus
+                            campaign={campaign}
+                            labels={t.statuses}
+                            metaLabels={t.metaStatuses}
+                          />
                         </td>
                         <td className="py-3 pr-4 text-ink-600">
                           <Channels channels={campaign.channels} labels={t.channels} />

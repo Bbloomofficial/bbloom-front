@@ -6,6 +6,7 @@ import {
   campaignsToCsv,
   filterCampaigns,
   formatDecimal,
+  metaDelivery,
   parseDecimal,
   sortCampaigns,
   totalCampaigns,
@@ -91,8 +92,8 @@ describe("filterCampaigns", () => {
 
   it("filters by Meta's own status, with unread rows as their own choice", () => {
     const withMeta = [
-      campaign({ id: "review", metaEffectiveStatus: "PENDING_REVIEW" }),
-      campaign({ id: "rejected", metaEffectiveStatus: "DISAPPROVED" }),
+      campaign({ id: "review", metaCampaignId: "m1", metaEffectiveStatus: "PENDING_REVIEW" }),
+      campaign({ id: "rejected", metaCampaignId: "m2", metaEffectiveStatus: "DISAPPROVED" }),
       campaign({ id: "unread" }),
     ];
     const pick = (metaStatus: string) =>
@@ -100,6 +101,31 @@ describe("filterCampaigns", () => {
     expect(pick("DISAPPROVED")).toEqual(["rejected"]);
     expect(pick(META_NOT_READ)).toEqual(["unread"]);
     expect(pick("")).toEqual(["review", "rejected", "unread"]);
+  });
+});
+
+describe("metaDelivery", () => {
+  it("says Preparing, as Ads Manager does, for an active ad with no impressions yet", () => {
+    const fresh = campaign({ metaCampaignId: "m1", metaEffectiveStatus: "ACTIVE" });
+    expect(metaDelivery(fresh)).toBe("PREPARING");
+    expect(metaDelivery({ ...fresh, impressions: "0" })).toBe("PREPARING");
+    expect(metaDelivery({ ...fresh, impressions: "12" })).toBe("ACTIVE");
+  });
+
+  it("passes Meta's other states through verbatim", () => {
+    expect(
+      metaDelivery(campaign({ metaCampaignId: "m1", metaEffectiveStatus: "DISAPPROVED" })),
+    ).toBe("DISAPPROVED");
+  });
+
+  it("falls back to ours when Meta was never asked, not read, or the row is deleted", () => {
+    expect(metaDelivery(campaign({ metaEffectiveStatus: "ACTIVE" }))).toBeUndefined();
+    expect(metaDelivery(campaign({ metaCampaignId: "m1" }))).toBeUndefined();
+    expect(
+      metaDelivery(
+        campaign({ metaCampaignId: "m1", metaEffectiveStatus: "ACTIVE", status: "DELETED" }),
+      ),
+    ).toBeUndefined();
   });
 });
 

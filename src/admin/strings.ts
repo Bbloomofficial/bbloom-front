@@ -534,9 +534,7 @@ export type AdminStrings = {
       subtitle: string;
       openLink: string;
       refresh: string;
-      metaPrefix: string;
       metaFilter: string;
-      metaNotRead: string;
       syncing: string;
       synced: (read: number, tried: number) => string;
       syncFailed: string;
@@ -1300,7 +1298,8 @@ const en: AdminStrings = {
     retry: "Try again",
     channels: { FACEBOOK: "Facebook", INSTAGRAM: "Instagram" },
     metaStatuses: {
-      ACTIVE: "Delivering",
+      ACTIVE: "Active",
+      PREPARING: "Preparing",
       PAUSED: "Paused",
       CAMPAIGN_PAUSED: "Campaign paused",
       ADSET_PAUSED: "Ad set paused",
@@ -1567,9 +1566,7 @@ const en: AdminStrings = {
         "Every client campaign in one place. Filter and sort them, and compare what each one has spent and delivered.",
       openLink: "Campaign manager",
       refresh: "Refresh",
-      metaPrefix: "Meta:",
       metaFilter: "At Meta",
-      metaNotRead: "not read yet",
       syncing: "Reading from Meta…",
       synced: (read, tried) =>
         read === tried
@@ -2398,7 +2395,8 @@ const ka: AdminStrings = {
     retry: "კიდევ სცადეთ",
     channels: { FACEBOOK: "Facebook", INSTAGRAM: "Instagram" },
     metaStatuses: {
-      ACTIVE: "ჩვენება მიმდინარეობს",
+      ACTIVE: "აქტიური",
+      PREPARING: "მზადდება",
       PAUSED: "შეჩერებულია",
       CAMPAIGN_PAUSED: "კამპანია შეჩერებულია",
       ADSET_PAUSED: "რეკლამების ნაკრები შეჩერებულია",
@@ -2656,9 +2654,7 @@ const ka: AdminStrings = {
         "კლიენტების ყველა კამპანია ერთ ადგილას. გაფილტრეთ, დაალაგეთ და შეადარეთ, რამდენი დახარჯა თითოეულმა და რა შედეგი მოიტანა.",
       openLink: "კამპანიების მართვა",
       refresh: "განახლება",
-      metaPrefix: "Meta:",
       metaFilter: "Meta-ზე",
-      metaNotRead: "ჯერ არ წაკითხულა",
       syncing: "Meta-დან იკითხება…",
       synced: (read, tried) =>
         read === tried
