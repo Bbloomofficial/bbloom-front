@@ -203,3 +203,12 @@ export function dashboardHome(): string {
 export function marketingHome(): string {
   return appHost ? `https://${baseDomain()}/` : "/";
 }
+
+/**
+ * A page of the marketing site, such as `/privacy`, from wherever the visitor
+ * is. Absolute on the app hostnames for the same reason `marketingHome` is.
+ */
+export function marketingPage(path: `/${string}`): string {
+  const base = marketingHome();
+  return base === "/" ? path : `${base.replace(/\/$/, "")}${path}`;
+}

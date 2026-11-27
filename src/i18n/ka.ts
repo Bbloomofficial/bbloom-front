@@ -1,4 +1,5 @@
 import type { Dict } from './types'
+import { legal } from './legal.ka'
 
 export const ka: Dict = {
   meta: {
@@ -222,6 +223,8 @@ export const ka: Dict = {
     pricing: 'ფასები',
     templates: 'შაბლონები',
     contact: 'კონტაქტი',
+    privacy: 'კონფიდენციალურობა',
+    dataDeletion: 'მონაცემების წაშლა',
     rights: 'ყველა უფლება დაცულია.',
     tagline: 'განავითარე ბიზნესი, მოიზიდე კლიენტები.',
   },
@@ -386,4 +389,5 @@ export const ka: Dict = {
         'კინემატოგრაფიული მოზაიკური გალერეა, პაკეტების ფასები გამოკვეთილი ვარიანტით, კლიენტების შეფასებები და მომართვის ფორმა — მუქი, ფართო და შეგნებულად შთამბეჭდავი.',
     },
   },
+  legal,
 }

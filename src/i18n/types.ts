@@ -10,6 +10,38 @@ export type Step = { number: string; title: string; description: string }
 export type Faq = { question: string; answer: string }
 
 /**
+ * One section of a legal page. `body` paragraphs come first, then `items` as
+ * a list, then `after` — enough for "here is who we share with: …, and also".
+ */
+export type LegalSection = {
+  heading: string
+  body?: string[]
+  items?: string[]
+  after?: string[]
+}
+
+export type LegalDoc = {
+  title: string
+  intro: string[]
+  sections: LegalSection[]
+}
+
+/**
+ * The privacy policy and data deletion instructions.
+ *
+ * Written against what the system actually stores (see the backend's Flyway
+ * migrations) rather than a template, because a policy that lists data we do
+ * not collect, or omits data we do, is wrong in a way that matters. Change it
+ * when that changes, and move `updated` when you do.
+ */
+export type Legal = {
+  updatedLabel: string
+  updated: string
+  privacy: LegalDoc
+  dataDeletion: LegalDoc
+}
+
+/**
  * Sales copy for a website template, keyed by the backend's template code. The
  * API describes each template in Georgian only, so the bilingual marketing site
  * keeps its own pitch and falls back to the API text for anything new.
@@ -170,6 +202,8 @@ export type Dict = {
     pricing: string
     templates: string
     contact: string
+    privacy: string
+    dataDeletion: string
     rights: string
     tagline: string
   }
@@ -182,4 +216,5 @@ export type Dict = {
    */
   faqs: Faq[]
   templateCopy: Record<string, TemplateCopy>
+  legal: Legal
 }

@@ -11,6 +11,7 @@ import Templates from "./pages/Templates";
 import Pricing from "./pages/Pricing";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
+import LegalPage from './pages/LegalPage'
 import NotFound from "./pages/NotFound";
 import { resolveSiteHost } from "./site/host";
 import { resolveAppHost, dashPath, AUTH_MODES } from "./routes";
@@ -136,6 +137,8 @@ function MarketingApp() {
           />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/privacy" element={<LegalPage doc="privacy" />} />
+          <Route path="/data-deletion" element={<LegalPage doc="dataDeletion" />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>

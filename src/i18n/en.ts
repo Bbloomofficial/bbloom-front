@@ -1,4 +1,5 @@
 import type { Dict } from './types'
+import { legal } from './legal.en'
 
 export const en: Dict = {
   meta: {
@@ -220,6 +221,8 @@ export const en: Dict = {
     pricing: 'Pricing',
     templates: 'Templates',
     contact: 'Contact',
+    privacy: 'Privacy',
+    dataDeletion: 'Data deletion',
     rights: 'All rights reserved.',
     tagline: 'Grow your business, win more customers.',
   },
@@ -384,4 +387,5 @@ export const en: Dict = {
         'A cinematic masonry gallery, package pricing with a highlighted option, client reviews and an enquiry form — dark, spacious and deliberately striking.',
     },
   },
+  legal,
 }

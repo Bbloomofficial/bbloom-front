@@ -11,6 +11,7 @@ import { useI18n } from "../../i18n";
 import { useAuth } from "../auth";
 import { dashboardStrings } from "../strings";
 import { AuthSwitch, useAuthSurface } from "./authSurface";
+import { marketingPage } from "../../routes";
 
 /** Shared chrome for the signed-out screens. */
 export function AuthShell({ children }: { children: React.ReactNode }) {
@@ -262,6 +263,25 @@ export default function Register() {
           >
             {t.register.signIn}
           </AuthSwitch>
+        </p>
+
+        {/*
+          Inside the card rather than under it with `terms`: in the sign-up
+          dialog, anything below the card sits on the dimmed backdrop and is
+          close to unreadable. A new tab, so a half-filled form is still here
+          when they come back.
+        */}
+        <p className="mt-4 border-t border-ink-100 pt-4 text-center text-xs text-ink-500">
+          {t.register.privacy.before}
+          <a
+            href={marketingPage("/privacy")}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-semibold text-tint-fg underline hover:no-underline"
+          >
+            {t.register.privacy.link}
+          </a>
+          {t.register.privacy.after}
         </p>
       </div>
 
