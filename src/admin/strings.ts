@@ -199,6 +199,7 @@ export type AdminStrings = {
     verified: string;
     unverified: string;
     remove: string;
+    removeDomainConfirm: (hostname: string) => string;
     noDomains: string;
     users: string;
     usersHint: string;
@@ -1124,6 +1125,8 @@ const en: AdminStrings = {
     verified: "Verified",
     unverified: "Not verified",
     remove: "Remove",
+    removeDomainConfirm: (hostname) =>
+      `Remove ${hostname} from this site? To use it again, you will need to add it back.`,
     noDomains: "No custom domain yet.",
     users: "Client accounts",
     usersHint:
@@ -2266,6 +2269,8 @@ const ka: AdminStrings = {
     verified: "დადასტურებულია",
     unverified: "დაუდასტურებელი",
     remove: "წაშლა",
+    removeDomainConfirm: (hostname) =>
+      `მოვაშოროთ ${hostname} ამ საიტს? ხელახლა გამოსაყენებლად თავიდან დამატება მოგიწევთ.`,
     noDomains: "საკუთარი დომენი ჯერ არ არის.",
     users: "კლიენტის ანგარიშები",
     usersHint:

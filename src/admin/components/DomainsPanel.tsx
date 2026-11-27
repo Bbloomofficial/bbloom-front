@@ -43,7 +43,8 @@ export default function DomainsPanel({
     }
   }
 
-  async function onRemove(domainId: string) {
+  async function onRemove(domainId: string, hostname: string) {
+    if (busy || !window.confirm(t.detail.removeDomainConfirm(hostname))) return;
     setBusy(true);
     setError(null);
     try {
@@ -90,7 +91,7 @@ export default function DomainsPanel({
               <button
                 type="button"
                 disabled={busy}
-                onClick={() => onRemove(domain.id)}
+                onClick={() => onRemove(domain.id, domain.hostname)}
                 className="ms-auto text-sm font-semibold text-danger hover:underline disabled:opacity-50"
               >
                 {t.detail.remove}
