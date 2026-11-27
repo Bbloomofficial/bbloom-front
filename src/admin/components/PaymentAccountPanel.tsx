@@ -244,6 +244,8 @@ export default function PaymentAccountPanel({ site }: { site: SiteDetail }) {
                 {t.payments.merchantRef}
               </label>
               <input
+                autoComplete="off"
+                spellCheck={false}
                 id="payment-merchant-ref"
                 className="field"
                 dir="ltr"
@@ -260,6 +262,7 @@ export default function PaymentAccountPanel({ site }: { site: SiteDetail }) {
                 {t.payments.clientId}
               </label>
               <input
+                spellCheck={false}
                 id="payment-client-id"
                 className="field"
                 dir="ltr"
@@ -274,6 +277,7 @@ export default function PaymentAccountPanel({ site }: { site: SiteDetail }) {
                 {t.payments.clientSecret}
               </label>
               <input
+                spellCheck={false}
                 id="payment-client-secret"
                 className="field"
                 dir="ltr"
@@ -289,6 +293,8 @@ export default function PaymentAccountPanel({ site }: { site: SiteDetail }) {
                 {t.payments.currency}
               </label>
               <input
+                autoComplete="off"
+                spellCheck={false}
                 id="payment-currency"
                 className="field"
                 dir="ltr"
@@ -304,6 +310,8 @@ export default function PaymentAccountPanel({ site }: { site: SiteDetail }) {
                 {t.payments.returnUrl}
               </label>
               <input
+                autoComplete="off"
+                spellCheck={false}
                 id="payment-return-url"
                 className="field"
                 dir="ltr"
@@ -332,6 +340,7 @@ export default function PaymentAccountPanel({ site }: { site: SiteDetail }) {
                       {t.payments[field.label]}
                     </label>
                     <input
+                      spellCheck={false}
                       id={`payment-${field.key}`}
                       className="field"
                       dir="ltr"

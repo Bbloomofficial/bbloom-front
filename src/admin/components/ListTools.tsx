@@ -107,6 +107,7 @@ export function ListToolbar({
           {t.search}
         </span>
         <input
+          autoComplete="off"
           type="search"
           className="field w-full"
           placeholder={placeholder}

@@ -197,6 +197,7 @@ export default function SettingsPanel({
         </label>
         {options.textarea ? (
           <textarea
+            autoComplete="off"
             id={id}
             rows={2}
             className="field"
@@ -207,6 +208,8 @@ export default function SettingsPanel({
           />
         ) : (
           <input
+            autoComplete="off"
+            spellCheck={options.ltr || options.type === "email" ? false : undefined}
             id={id}
             type={options.type ?? "text"}
             dir={options.ltr ? "ltr" : undefined}
@@ -303,7 +306,7 @@ export default function SettingsPanel({
 
         <div className="grid gap-4 sm:grid-cols-2">
           {textField("currency", t.detail.currency, { ltr: true })}
-          {textField("contactPhone", t.detail.contactPhone, { ltr: true })}
+          {textField("contactPhone", t.detail.contactPhone, { ltr: true, type: "tel" })}
           {textField("contactEmail", t.detail.contactEmail, {
             ltr: true,
             type: "email",

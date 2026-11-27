@@ -62,6 +62,7 @@ export default function Login() {
                   {t.login.email}
                 </label>
                 <input
+                  spellCheck={false}
                   id="admin-email"
                   name="email"
                   type="email"

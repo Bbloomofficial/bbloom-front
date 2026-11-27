@@ -354,6 +354,7 @@ export default function AdSettings() {
                 : t.tokenNotStored}
             </p>
             <input
+              spellCheck={false}
               id="ad-token"
               className="field"
               type="password"
@@ -391,6 +392,8 @@ export default function AdSettings() {
                 {t.adAccountLabel}
               </label>
               <input
+                autoComplete="off"
+                spellCheck={false}
                 id="ad-account"
                 className="field"
                 dir="ltr"
@@ -409,6 +412,8 @@ export default function AdSettings() {
                 {t.pageLabel}
               </label>
               <input
+                autoComplete="off"
+                spellCheck={false}
                 id="ad-page"
                 className="field"
                 dir="ltr"
@@ -422,6 +427,8 @@ export default function AdSettings() {
                 {t.instagramLabel}
               </label>
               <input
+                autoComplete="off"
+                spellCheck={false}
                 id="ad-instagram"
                 className="field"
                 dir="ltr"
@@ -445,6 +452,8 @@ export default function AdSettings() {
                 {t.apiVersionLabel}
               </label>
               <input
+                autoComplete="off"
+                spellCheck={false}
                 id="ad-api-version"
                 className="field"
                 dir="ltr"
@@ -457,6 +466,8 @@ export default function AdSettings() {
                 {t.graphBaseUrlLabel}
               </label>
               <input
+                autoComplete="off"
+                spellCheck={false}
                 id="ad-graph-url"
                 className="field"
                 dir="ltr"
@@ -469,6 +480,8 @@ export default function AdSettings() {
                 {t.maxBudgetLabel}
               </label>
               <input
+                autoComplete="off"
+                spellCheck={false}
                 id="ad-max-budget"
                 className="field"
                 dir="ltr"
@@ -483,6 +496,8 @@ export default function AdSettings() {
                 {t.testBudgetLabel}
               </label>
               <input
+                autoComplete="off"
+                spellCheck={false}
                 id="ad-test-budget"
                 className="field"
                 dir="ltr"
@@ -497,6 +512,8 @@ export default function AdSettings() {
                 {t.countryLabel}
               </label>
               <input
+                autoComplete="off"
+                spellCheck={false}
                 id="ad-country"
                 className="field"
                 dir="ltr"
@@ -511,6 +528,8 @@ export default function AdSettings() {
                 {t.testDestinationLabel}
               </label>
               <input
+                autoComplete="off"
+                spellCheck={false}
                 id="ad-test-destination"
                 className="field"
                 dir="ltr"

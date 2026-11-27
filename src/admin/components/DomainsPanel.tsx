@@ -106,6 +106,8 @@ export default function DomainsPanel({
             {t.detail.hostname}
           </label>
           <input
+            autoComplete="off"
+            spellCheck={false}
             id="domain-hostname"
             className="field"
             dir="ltr"

@@ -130,6 +130,8 @@ export default function MailTest() {
             {t.recipientLabel}
           </span>
           <input
+            autoComplete="off"
+            spellCheck={false}
             type="email"
             required
             dir="ltr"

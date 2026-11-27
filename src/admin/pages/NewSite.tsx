@@ -249,6 +249,7 @@ export default function NewSite() {
                   {t.wizard.businessName}
                 </label>
                 <input
+                  autoComplete="off"
                   id="business-name"
                   className="field"
                   required
@@ -278,6 +279,8 @@ export default function NewSite() {
                 </label>
                 <div className="flex items-center gap-2">
                   <input
+                    autoComplete="off"
+                    spellCheck={false}
                     id="business-slug"
                     className="field"
                     dir="ltr"
@@ -416,6 +419,8 @@ export default function NewSite() {
                     {t.wizard.currency}
                   </label>
                   <input
+                    autoComplete="off"
+                    spellCheck={false}
                     id="site-currency"
                     className="field"
                     dir="ltr"
@@ -429,7 +434,10 @@ export default function NewSite() {
                     {t.wizard.contactPhone}
                   </label>
                   <input
+                    autoComplete="off"
+                    spellCheck={false}
                     id="site-phone"
+                    type="tel"
                     className="field"
                     dir="ltr"
                     value={contactPhone}
@@ -443,6 +451,8 @@ export default function NewSite() {
                   {t.wizard.contactEmail}
                 </label>
                 <input
+                  autoComplete="off"
+                  spellCheck={false}
                   id="site-email"
                   type="email"
                   className="field"

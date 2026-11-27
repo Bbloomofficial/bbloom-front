@@ -193,6 +193,8 @@ export default function PromoCodeEditor() {
                 {t.promoCodes.code}
               </label>
               <input
+                autoComplete="off"
+                spellCheck={false}
                 id="promo-code"
                 className="field"
                 dir="ltr"
@@ -209,6 +211,8 @@ export default function PromoCodeEditor() {
                 {t.promoCodes.percentOff}
               </label>
               <input
+                autoComplete="off"
+                spellCheck={false}
                 id="promo-percent"
                 className="field"
                 inputMode="numeric"
@@ -248,6 +252,8 @@ export default function PromoCodeEditor() {
                 {t.promoCodes.maxRedemptions}
               </label>
               <input
+                autoComplete="off"
+                spellCheck={false}
                 id="promo-max"
                 className="field"
                 inputMode="numeric"

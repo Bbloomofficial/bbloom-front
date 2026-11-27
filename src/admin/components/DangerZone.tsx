@@ -47,6 +47,7 @@ export default function DangerZone({ site }: { site: SiteDetail }) {
           {t.detail.deleteConfirm(site.slug)}
         </label>
         <input
+          spellCheck={false}
           id="delete-confirm"
           className="field"
           dir="ltr"

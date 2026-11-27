@@ -110,6 +110,8 @@ export default function NewCustomerOffer() {
               {t.newCustomerOffer.percentOff}
             </label>
             <input
+              autoComplete="off"
+              spellCheck={false}
               id="offer-percent"
               className="field"
               inputMode="numeric"

@@ -186,6 +186,8 @@ function TestTool({
             {t.destinationLabel}
           </span>
           <input
+            autoComplete="off"
+            spellCheck={false}
             type="url"
             dir="ltr"
             value={destination}
