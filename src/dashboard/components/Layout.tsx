@@ -10,7 +10,7 @@ import { dashboardStrings } from "../strings";
 import { canSell, useOrdering } from "../ordering";
 import { SiteStatusBadge } from "./Badges";
 import VerifyBanner from "./VerifyBanner";
-import { dashPath, marketingHome } from "../../routes";
+import { dashPath, marketingHome, marketingPage } from "../../routes";
 
 type NavKey =
   | "overview"
@@ -522,6 +522,16 @@ export default function Layout({
           <div className="container-page flex flex-wrap items-center justify-between gap-3 text-xs text-ink-400">
             <span>
               {t.signedInAs} {user.email}
+            </span>
+            {/* Signed-in clients never see the marketing footer, and this is
+                where they would look for what we do with their data. */}
+            <span className="flex gap-4">
+              <a href={marketingPage("/privacy")} className="hover:text-tint-fg">
+                {t.privacyLink}
+              </a>
+              <a href={marketingPage("/data-deletion")} className="hover:text-tint-fg">
+                {t.dataDeletionLink}
+              </a>
             </span>
             {/*
               The way back to bbloom.ge used to be here, and being here is why

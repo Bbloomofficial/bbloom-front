@@ -46,6 +46,8 @@ export type DashboardStrings = {
     menu: string;
   };
   signedInAs: string;
+  privacyLink: string;
+  dataDeletionLink: string;
   signOut: string;
   viewSite: string;
   opensInNewWindow: string;
@@ -80,6 +82,8 @@ export type DashboardStrings = {
     haveAccount: string;
     signIn: string;
     terms: string;
+    /** One sentence around a link; split so each language keeps its own word order. */
+    privacy: { before: string; link: string; after: string };
     confirmTitle: string;
     confirmBody: string;
     confirmExisting: string;
@@ -650,6 +654,8 @@ const en: DashboardStrings = {
     menu: "Menu",
   },
   signedInAs: "Signed in as",
+  privacyLink: "Privacy",
+  dataDeletionLink: "Data deletion",
   signOut: "Sign out",
   viewSite: "View site",
   opensInNewWindow: "Opens in a new window",
@@ -686,6 +692,11 @@ const en: DashboardStrings = {
     signIn: "Sign in",
     terms:
       "You can edit everything straight away. Your website is free to publish at a bbloom.ge address — you only pay to drop our badge or use your own domain.",
+    privacy: {
+      before: "How we handle your data is explained in our ",
+      link: "privacy policy",
+      after: ".",
+    },
     confirmTitle: "Confirm your email",
     confirmBody:
       "Your account is ready. Enter the code we just emailed you to finish signing in.",
@@ -1357,6 +1368,8 @@ const ka: DashboardStrings = {
     menu: "მენიუ",
   },
   signedInAs: "შესული ხართ როგორც",
+  privacyLink: "კონფიდენციალურობა",
+  dataDeletionLink: "მონაცემების წაშლა",
   signOut: "გამოსვლა",
   viewSite: "საიტის ნახვა",
   opensInNewWindow: "იხსნება ახალ ფანჯარაში",
@@ -1393,6 +1406,11 @@ const ka: DashboardStrings = {
     signIn: "შესვლა",
     terms:
       "რედაქტირება მაშინვე შეგიძლიათ. bbloom.ge-ის მისამართზე გამოქვეყნება უფასოა — გადახდა მხოლოდ ჩვენი ნიშნის მოსახსნელად ან საკუთარი დომენისთვის დაგჭირდებათ.",
+    privacy: {
+      before: "როგორ ვამუშავებთ თქვენს მონაცემებს, ამას ჩვენი ",
+      link: "კონფიდენციალურობის პოლიტიკა",
+      after: " განმარტავს.",
+    },
     confirmTitle: "დაადასტურეთ ელფოსტა",
     confirmBody:
       "ანგარიში მზადაა. შეიყვანეთ კოდი, რომელიც ახლახან გამოგიგზავნეთ, და შესვლას დაასრულებთ.",
