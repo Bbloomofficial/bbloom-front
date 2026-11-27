@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
-import { Link } from "react-router-dom";
 import { ApiError } from "../../api/http";
 import { adErrorMessage } from "../../api/ads";
 import { useI18n } from "../../i18n";
@@ -230,11 +229,8 @@ export default function AdSettings() {
   if (!settings) {
     return (
       <div>
-        <Link to="/ads" className="text-sm font-semibold text-bloom-600">
-          {strings.ads.backToCampaigns}
-        </Link>
         {view.error ? (
-          <div className="mt-6 rounded-3xl border border-ink-100 bg-surface p-6">
+          <div className="rounded-3xl border border-ink-100 bg-surface p-6">
             <p className="text-sm text-ink-500">{t.loadFailed}</p>
             <button
               type="button"
@@ -255,11 +251,7 @@ export default function AdSettings() {
 
   return (
     <div className="pb-16">
-      <Link to="/ads" className="text-sm font-semibold text-bloom-600">
-        {strings.ads.backToCampaigns}
-      </Link>
-
-      <h1 className="mt-3 text-2xl font-extrabold tracking-tight text-ink-900 sm:text-3xl">
+      <h1 className="text-2xl font-extrabold tracking-tight text-ink-900 sm:text-3xl">
         {t.title}
       </h1>
       <p className="mt-1 text-sm text-ink-600">{t.subtitle}</p>

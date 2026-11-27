@@ -77,6 +77,27 @@ export function fetchSystemStatus(token: string): Promise<SystemStatus> {
 }
 
 /**
+ * Takes one person off the "still owed an email" list, or everybody when
+ * `recipient` is left out. Nothing is sent to anyone: this is for people staff
+ * have dealt with some other way. Answers with the fresh status.
+ *
+ * When nobody from the current outage is left, the server also stands the
+ * outage down, which is what clears the red banner. It does not mean mail
+ * works; only a successful send shows that.
+ */
+export function dismissOwedMail(
+  token: string,
+  recipient?: string,
+): Promise<SystemStatus> {
+  const query = recipient
+    ? `?${new URLSearchParams({ recipient })}`
+    : "";
+  return authed<SystemStatus>(token, `/admin/system/mail/owed${query}`, {
+    method: "DELETE",
+  });
+}
+
+/**
  * Sends one real email and reports what happened to it.
  *
  * There is deliberately no subject or body parameter. Staff have no reason to

@@ -342,10 +342,7 @@ export default function AdCampaigns() {
 
   return (
     <div>
-      <Link to="/ads" className="text-sm font-semibold text-ink-500 hover:text-ink-900">
-        ← {t.title}
-      </Link>
-      <div className="mt-2 flex flex-wrap items-end justify-between gap-4">
+      <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <h1 className="text-2xl font-extrabold tracking-tight text-ink-900 sm:text-3xl">
             {m.title}

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type ComponentType, type ReactNode } from "react";
-import { NavLink, Link, useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import Logo from "../../components/Logo";
 import LanguageSwitcher from "../../components/LanguageSwitcher";
 import ThemeToggle from "../../components/ThemeToggle";
@@ -144,6 +144,12 @@ export default function Layout({ children }: { children: ReactNode }) {
       label: t.nav.ads,
       icon: AdsIcon,
       match: [adminPath("/ads")],
+      tabs: [
+        { to: adminPath("/ads"), label: t.nav.overview },
+        { to: adminPath("/ads/campaigns"), label: t.ads.manager.openLink },
+        { to: adminPath("/ads/settings"), label: t.ads.settingsLink },
+        { to: adminPath("/ads/tools"), label: t.ads.tools },
+      ],
     },
     ...(forbidden
       ? []
@@ -154,6 +160,10 @@ export default function Layout({ children }: { children: ReactNode }) {
             label: t.nav.system,
             icon: SystemIcon,
             match: [adminPath("/system")],
+            tabs: [
+              { to: adminPath("/system"), label: t.nav.systemStatus },
+              { to: adminPath("/system/emails"), label: t.nav.emails },
+            ],
           },
         ]),
   ];
@@ -187,7 +197,7 @@ export default function Layout({ children }: { children: ReactNode }) {
           const active = inSection(pathname, section);
           const Icon = section.icon;
           return (
-            <NavLink
+            <Link
               key={section.key}
               to={section.to}
               aria-current={active ? "page" : undefined}
@@ -199,7 +209,7 @@ export default function Layout({ children }: { children: ReactNode }) {
             >
               <Icon className="h-5 w-5 shrink-0" />
               <span className="truncate">{section.label}</span>
-            </NavLink>
+            </Link>
           );
         })}
       </nav>

@@ -8,6 +8,7 @@ import Sites from "./pages/Sites";
 import NewSite from "./pages/NewSite";
 import SiteDetail from "./pages/SiteDetail";
 import SystemStatus from "./pages/SystemStatus";
+import Emails from "./pages/Emails";
 import Accounts from "./pages/Accounts";
 import AccountDetail from "./pages/AccountDetail";
 import Plans from "./pages/Plans";
@@ -54,6 +55,7 @@ function Routed() {
           <Route path="ads/settings" element={<AdSettings />} />
           <Route path="ads/:campaignId" element={<AdCampaignDetail />} />
           <Route path="system" element={<SystemStatus />} />
+          <Route path="system/emails" element={<Emails />} />
           <Route path="*" element={<Navigate to={adminPath()} replace />} />
         </Routes>
       </Layout>

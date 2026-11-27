@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useMemo } from "react";
 import { Link } from "react-router-dom";
 import { useI18n } from "../../i18n";
 import { useSession } from "../auth";
@@ -7,33 +7,74 @@ import { fetchAccounts } from "../api/client";
 import { formatDate } from "../format";
 import { adminStrings } from "../strings";
 import { adminPath } from "../../routes";
+import { instant, loadAllPages, matchesQuery, pageOf, sortRows } from "../listTools";
+import {
+  FilterSelect,
+  ListToolbar,
+  Pager,
+  SortTh,
+  useListParams,
+} from "../components/ListTools";
 
-const PAGE_SIZE = 20;
+const PAGE_SIZE = 25;
+const FILTERS = ["email", "signin", "free"] as const;
+const SORTS = ["email", "name", "created", "lastLogin", "free"] as const;
 
 export default function Accounts() {
   const { locale } = useI18n();
   const t = adminStrings(locale);
   const { token } = useSession();
 
-  const [search, setSearch] = useState("");
-  const [query, setQuery] = useState("");
-  const [page, setPage] = useState(0);
-
-  useEffect(() => {
-    const timer = window.setTimeout(() => {
-      setQuery(search.trim());
-      setPage(0);
-    }, 300);
-    return () => window.clearTimeout(timer);
-  }, [search]);
+  const list = useListParams(FILTERS, SORTS, { sort: "created", direction: "desc" });
 
   const { data, loading, error, reload } = useResource(
-    () => fetchAccounts(token, { q: query, page, size: PAGE_SIZE }),
-    [token, query, page],
+    () => loadAllPages((page, size) => fetchAccounts(token, { page, size })),
+    [token],
   );
+  const all = data ?? [];
 
-  const accounts = data?.items ?? [];
-  const totalPages = Math.max(data?.totalPages ?? 1, 1);
+  const filtered = useMemo(() => {
+    const { email, signin, free } = list.filters;
+    return all.filter((account) => {
+      if (email === "verified" && !account.emailVerified) return false;
+      if (email === "unverified" && account.emailVerified) return false;
+      if (signin === "yes" && !account.lastLoginAt) return false;
+      if (signin === "never" && account.lastLoginAt) return false;
+      if (free === "limit" && !account.atFreeLimit) return false;
+      // Website names are searched too: staff on a call hear "it's about
+      // Marita", not the client's address.
+      return matchesQuery(
+        [account.email, account.fullName, ...(account.sites ?? []).map((s) => s.businessName)],
+        list.query,
+      );
+    });
+  }, [all, list.query, JSON.stringify(list.filters)]);
+
+  const sorted = useMemo(
+    () =>
+      sortRows(
+        filtered,
+        (account) => {
+          switch (list.sort) {
+            case "email":
+              return account.email;
+            case "name":
+              return account.fullName;
+            case "created":
+              return instant(account.createdAt);
+            case "lastLogin":
+              return instant(account.lastLoginAt);
+            case "free":
+              return account.freeSitesUsed;
+          }
+        },
+        list.direction,
+        locale,
+      ),
+    [filtered, list.sort, list.direction, locale],
+  );
+  const view = pageOf(sorted, list.page, PAGE_SIZE);
+  const accounts = view.rows;
 
   return (
     <div>
@@ -44,26 +85,40 @@ export default function Accounts() {
         <p className="mt-1 text-sm text-ink-600">{t.accounts.subtitle}</p>
       </div>
 
-      <div className="mt-6 flex flex-wrap items-center gap-3">
-        <div className="min-w-60 flex-1">
-          <label className="sr-only" htmlFor="account-search">
-            {t.accounts.search}
-          </label>
-          <input
-            id="account-search"
-            type="search"
-            className="field"
-            placeholder={t.accounts.searchPlaceholder}
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-        </div>
-        {data && (
-          <span className="text-sm text-ink-400">
-            {t.accounts.results(data.totalItems)}
-          </span>
-        )}
-      </div>
+      <ListToolbar
+        query={list.query}
+        onQuery={(value) => list.update({ q: value || null })}
+        placeholder={t.accounts.searchPlaceholder}
+        shown={filtered.length}
+        total={all.length}
+        narrowed={list.narrowed}
+        onClear={list.clear}
+      >
+        <FilterSelect
+          label={t.accounts.emailStatus}
+          value={list.filters.email}
+          onChange={(value) => list.update({ email: value || null })}
+          options={[
+            { value: "verified", label: t.accounts.verified },
+            { value: "unverified", label: t.accounts.unverified },
+          ]}
+        />
+        <FilterSelect
+          label={t.listFilters.accountSignIn}
+          value={list.filters.signin}
+          onChange={(value) => list.update({ signin: value || null })}
+          options={[
+            { value: "yes", label: t.listFilters.accountSignedIn },
+            { value: "never", label: t.listFilters.accountNeverSignedIn },
+          ]}
+        />
+        <FilterSelect
+          label={t.listFilters.accountFreeSites}
+          value={list.filters.free}
+          onChange={(value) => list.update({ free: value || null })}
+          options={[{ value: "limit", label: t.listFilters.accountAtLimit }]}
+        />
+      </ListToolbar>
 
       {error && (
         <div className="mt-6 rounded-3xl border border-ink-100 bg-surface p-6 text-center">
@@ -80,7 +135,7 @@ export default function Accounts() {
 
       {data && accounts.length === 0 && (
         <p className="mt-8 rounded-3xl border border-ink-100 bg-surface p-8 text-center text-sm text-ink-600">
-          {query ? t.accounts.emptyFiltered : t.accounts.empty}
+          {all.length === 0 ? t.accounts.empty : t.list.noneMatching}
         </p>
       )}
 
@@ -89,24 +144,31 @@ export default function Accounts() {
           <table className="w-full text-start text-sm">
             <thead className="border-b border-ink-100 text-xs uppercase tracking-wide text-ink-400">
               <tr>
-                <th className="px-5 py-3 text-start font-semibold">
-                  {t.accounts.email}
-                </th>
-                <th className="hidden px-5 py-3 text-start font-semibold md:table-cell">
-                  {t.accounts.fullName}
-                </th>
-                <th className="hidden px-5 py-3 text-start font-semibold sm:table-cell">
-                  {t.accounts.created}
-                </th>
-                <th className="hidden px-5 py-3 text-start font-semibold lg:table-cell">
-                  {t.accounts.lastLogin}
-                </th>
+                <SortTh column="email" label={t.accounts.email} list={list} />
+                <SortTh
+                  column="name"
+                  label={t.accounts.fullName}
+                  list={list}
+                  className="hidden md:table-cell"
+                />
+                <SortTh
+                  column="created"
+                  label={t.accounts.created}
+                  list={list}
+                  first="desc"
+                  className="hidden sm:table-cell"
+                />
+                <SortTh
+                  column="lastLogin"
+                  label={t.accounts.lastLogin}
+                  list={list}
+                  first="desc"
+                  className="hidden lg:table-cell"
+                />
                 <th className="px-5 py-3 text-start font-semibold">
                   {t.accounts.emailStatus}
                 </th>
-                <th className="px-5 py-3 text-start font-semibold">
-                  {t.accounts.freeUsage}
-                </th>
+                <SortTh column="free" label={t.accounts.freeUsage} list={list} first="desc" />
               </tr>
             </thead>
             <tbody>
@@ -177,29 +239,7 @@ export default function Accounts() {
         </div>
       )}
 
-      {totalPages > 1 && (
-        <div className="mt-5 flex items-center justify-between gap-3">
-          <button
-            type="button"
-            className="btn-secondary disabled:opacity-50"
-            disabled={page === 0}
-            onClick={() => setPage((p) => Math.max(p - 1, 0))}
-          >
-            {t.accounts.prev}
-          </button>
-          <span className="text-sm text-ink-400">
-            {t.accounts.page(page + 1, totalPages)}
-          </span>
-          <button
-            type="button"
-            className="btn-secondary disabled:opacity-50"
-            disabled={!data?.hasNext}
-            onClick={() => setPage((p) => p + 1)}
-          >
-            {t.accounts.next}
-          </button>
-        </div>
-      )}
+      <Pager page={view.page} pages={view.pages} onPage={list.setPage} />
     </div>
   );
 }

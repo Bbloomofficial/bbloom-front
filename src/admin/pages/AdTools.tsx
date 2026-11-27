@@ -1,6 +1,5 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
-import { Link } from "react-router-dom";
 import { ApiError } from "../../api/http";
 import { AD_CHANNELS, adErrorMessage, isSpending } from "../../api/ads";
 import type { AdChannel } from "../../api/ads";
@@ -482,9 +481,6 @@ export default function AdTools() {
           </h1>
           <p className="mt-1 text-sm text-ink-600">{t.test.body}</p>
         </div>
-        <Link to="/ads" className="btn-secondary">
-          {t.backToCampaigns}
-        </Link>
       </div>
 
       <TestTool status={status.data} onLaunched={reloadBoth} />
