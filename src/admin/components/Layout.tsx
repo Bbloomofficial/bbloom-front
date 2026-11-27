@@ -142,7 +142,13 @@ export default function Layout({ children }: { children: ReactNode }) {
       }
     };
     window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+    // The page behind the drawer must not scroll while the drawer covers it.
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      document.body.style.overflow = previousOverflow;
+    };
   }, [menuOpen]);
 
   // One list, rendered in both the sidebar and the drawer, so a link cannot
@@ -238,7 +244,7 @@ export default function Layout({ children }: { children: ReactNode }) {
         <ThemeToggle />
       </div>
 
-      <nav className="mt-6 flex-1 space-y-1 overflow-y-auto px-3">
+      <nav className="mt-6 flex-1 space-y-1 overflow-y-auto overscroll-contain px-3">
         {sections.map((section) => {
           const active = inSection(pathname, section);
           const Icon = section.icon;
