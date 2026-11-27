@@ -7,7 +7,7 @@ import type { Locale } from "../i18n";
  */
 export type AdminStrings = {
   brand: string;
-  nav: { sites: string; newSite: string; system: string; accounts: string; plans: string; promoCodes: string; newCustomerOffer: string; ads: string };
+  nav: { sites: string; newSite: string; system: string; accounts: string; plans: string; promoCodes: string; newCustomerOffer: string; ads: string; pricing: string; openMenu: string; closeMenu: string };
   signedInAs: string;
   signOut: string;
   backToBbloom: string;
@@ -827,7 +827,7 @@ export type AdminStrings = {
 
 const en: AdminStrings = {
   brand: "bbloom staff",
-  nav: { sites: "Sites", newSite: "New site", system: "System", accounts: "Accounts", plans: "Plans", promoCodes: "Discounts", newCustomerOffer: "New customers", ads: "Ads" },
+  nav: { sites: "Sites", newSite: "New site", system: "System", accounts: "Accounts", plans: "Plans", promoCodes: "Discounts", newCustomerOffer: "New customers", ads: "Ads", pricing: "Pricing", openMenu: "Open menu", closeMenu: "Close menu" },
   signedInAs: "Signed in as",
   signOut: "Sign out",
   backToBbloom: "Back to bbloom.ge",
@@ -1846,7 +1846,7 @@ const en: AdminStrings = {
 
 const ka: AdminStrings = {
   brand: "ბიბლუმის გუნდი",
-  nav: { sites: "საიტები", newSite: "ახალი საიტი", system: "სისტემა", accounts: "ანგარიშები", plans: "პაკეტები", promoCodes: "ფასდაკლებები", newCustomerOffer: "ახალი კლიენტები", ads: "რეკლამა" },
+  nav: { sites: "საიტები", newSite: "ახალი საიტი", system: "სისტემა", accounts: "ანგარიშები", plans: "პაკეტები", promoCodes: "ფასდაკლებები", newCustomerOffer: "ახალი კლიენტები", ads: "რეკლამა", pricing: "ფასები", openMenu: "მენიუს გახსნა", closeMenu: "მენიუს დახურვა" },
   signedInAs: "შესული ხართ როგორც",
   signOut: "გამოსვლა",
   backToBbloom: "დაბრუნება bbloom.ge-ზე",
