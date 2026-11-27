@@ -7,7 +7,7 @@ import { useResource } from "../hooks";
 import { fetchAdCampaigns, fetchAdTestCampaigns, syncAdCampaigns } from "../api/client";
 import { adminStrings } from "../strings";
 import { formatDateTime } from "../format";
-import { Budget, Channels, DeliveryStatus, Insight, StatusPill } from "../components/AdBits";
+import { Budget, Channels, DeliveryStatus, Insight, PostLinks, StatusPill } from "../components/AdBits";
 import {
   META_NOT_READ,
   metaDelivery,
@@ -783,6 +783,9 @@ export default function AdCampaigns() {
                         </td>
                         <td className="py-3 pr-4 text-ink-600">
                           <Channels channels={campaign.channels} labels={t.channels} />
+                          <div className="mt-1">
+                            <PostLinks campaign={campaign} labels={t.posts} compact />
+                          </div>
                         </td>
                         <td className="py-3 pr-4 text-right text-ink-600" dir="ltr">
                           <Budget

@@ -449,6 +449,8 @@ export type AdminStrings = {
     tools: string;
     settingsLink: string;
     backToCampaigns: string;
+    /** Links to the ad's posts, opened in a new tab. */
+    posts: { facebook: string; instagram: string; instagramPending: string };
     settings: {
       title: string;
       subtitle: string;
@@ -1463,6 +1465,11 @@ const en: AdminStrings = {
     tools: "Test tools",
     settingsLink: "Meta settings",
     backToCampaigns: "Back to campaigns",
+    posts: {
+      facebook: "View on Facebook",
+      instagram: "View on Instagram",
+      instagramPending: "The Instagram post appears once Meta places the ad there.",
+    },
     settings: {
       title: "Meta settings",
       subtitle:
@@ -2553,6 +2560,11 @@ const ka: AdminStrings = {
     tools: "სატესტო ხელსაწყოები",
     settingsLink: "Meta-ს პარამეტრები",
     backToCampaigns: "კამპანიებზე დაბრუნება",
+    posts: {
+      facebook: "Facebook-ზე ნახვა",
+      instagram: "Instagram-ზე ნახვა",
+      instagramPending: "Instagram-ის პოსტი გამოჩნდება, როცა Meta რეკლამას იქ განათავსებს.",
+    },
     settings: {
       title: "Meta-ს პარამეტრები",
       subtitle:

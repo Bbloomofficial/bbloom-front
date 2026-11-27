@@ -128,6 +128,48 @@ export function DeliveryStatus({
 }
 
 /**
+ * Where the ad can be seen as people see it: its Facebook post, and its
+ * Instagram post when the campaign runs there. Nothing for a link Meta has not
+ * given us yet, rather than a link that guesses.
+ */
+export function PostLinks({
+  campaign,
+  labels,
+  compact = false,
+}: {
+  campaign: AdCampaignDto;
+  labels: { facebook: string; instagram: string; instagramPending: string };
+  /** The list's version: links only, no note about a missing Instagram post. */
+  compact?: boolean;
+}) {
+  if (campaign.status === "DELETED" || campaign.deletedAt) return null;
+  const facebook = campaign.metaFacebookPostUrl;
+  const onInstagram = campaign.channels.includes("INSTAGRAM");
+  const instagram = onInstagram ? campaign.metaInstagramPostUrl : undefined;
+  if (!facebook && !instagram && (compact || !onInstagram)) return null;
+  const link = compact
+    ? "text-xs font-semibold text-bloom-600 hover:underline"
+    : "btn-secondary";
+  return (
+    <span className={`flex flex-wrap items-center ${compact ? "gap-x-3 gap-y-1" : "gap-2"}`}>
+      {facebook && (
+        <a href={facebook} target="_blank" rel="noopener noreferrer" className={link}>
+          {labels.facebook} ↗
+        </a>
+      )}
+      {instagram && (
+        <a href={instagram} target="_blank" rel="noopener noreferrer" className={link}>
+          {labels.instagram} ↗
+        </a>
+      )}
+      {!compact && onInstagram && !instagram && (
+        <span className="text-xs text-ink-500">{labels.instagramPending}</span>
+      )}
+    </span>
+  );
+}
+
+/**
  * The status word.
  *
  * Unknown values render raw rather than falling through to a friendly-looking

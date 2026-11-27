@@ -13,7 +13,7 @@ import {
 } from "../api/client";
 import { adminStrings } from "../strings";
 import { formatDateTime } from "../format";
-import { Budget, Channels, DeliveryStatus, Insight } from "../components/AdBits";
+import { Budget, Channels, DeliveryStatus, Insight, PostLinks } from "../components/AdBits";
 import type { AdCampaignDto } from "../api/types";
 
 /**
@@ -262,9 +262,12 @@ export default function AdCampaignDetail() {
             <span className="text-sm text-ink-500">{data.siteName}</span>
           </div>
         </div>
-        <Link to="/ads" className="btn-secondary">
-          {t.backToCampaigns}
-        </Link>
+        <div className="flex flex-wrap items-center gap-2">
+          <PostLinks campaign={data} labels={t.posts} />
+          <Link to="/ads" className="btn-secondary">
+            {t.backToCampaigns}
+          </Link>
+        </div>
       </div>
 
       {/* Louder than anything else on the page, and deliberately placed above
