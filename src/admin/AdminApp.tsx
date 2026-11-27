@@ -20,6 +20,7 @@ import AdTools from "./pages/AdTools";
 import AdSettings from "./pages/AdSettings";
 import AdCampaignNew from "./pages/AdCampaignNew";
 import AdCampaignDetail from "./pages/AdCampaignDetail";
+import AdCampaigns from "./pages/AdCampaigns";
 
 function Routed() {
   const { token, restoring } = useAuth();
@@ -47,6 +48,7 @@ function Routed() {
           <Route path="promo-codes/:promoId" element={<PromoCodeEditor />} />
           <Route path="new-customer-offer" element={<NewCustomerOffer />} />
           <Route path="ads" element={<Ads />} />
+          <Route path="ads/campaigns" element={<AdCampaigns />} />
           <Route path="ads/new" element={<AdCampaignNew />} />
           <Route path="ads/tools" element={<AdTools />} />
           <Route path="ads/settings" element={<AdSettings />} />
