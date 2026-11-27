@@ -105,13 +105,29 @@ export function DeliveryStatus({
   campaign,
   labels,
   metaLabels,
+  pausedReasons,
 }: {
   campaign: AdCampaignDto;
   labels: Record<string, string>;
   metaLabels: Record<string, string>;
+  /** Why the system paused it; shown under the pill so nobody hunts for who did. */
+  pausedReasons: Record<string, string>;
 }) {
+  const reason =
+    campaign.status === "PAUSED" && campaign.pausedReason
+      ? pausedReasons[campaign.pausedReason] ?? campaign.pausedReason
+      : undefined;
+  const why = reason && <span className="max-w-64 text-xs text-ink-500">{reason}</span>;
   const state = metaDelivery(campaign);
-  if (!state) return <StatusPill status={campaign.status} labels={labels} />;
+  if (!state) {
+    if (!why) return <StatusPill status={campaign.status} labels={labels} />;
+    return (
+      <span className="inline-flex flex-col items-start gap-1">
+        <StatusPill status={campaign.status} labels={labels} />
+        {why}
+      </span>
+    );
+  }
   const issue = campaign.metaDeliveryIssue;
   const tone = META_TONE[state] ?? "border-ink-200 bg-ink-50 text-ink-600";
   return (
@@ -123,6 +139,7 @@ export function DeliveryStatus({
         {metaLabels[state] ?? state}
       </span>
       {issue && <span className="max-w-64 text-xs text-danger">{issue}</span>}
+      {why}
     </span>
   );
 }

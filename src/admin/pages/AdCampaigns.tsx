@@ -779,6 +779,7 @@ export default function AdCampaigns() {
                             campaign={campaign}
                             labels={t.statuses}
                             metaLabels={t.metaStatuses}
+                            pausedReasons={t.pausedReasons}
                           />
                         </td>
                         <td className="py-3 pr-4 text-ink-600">
