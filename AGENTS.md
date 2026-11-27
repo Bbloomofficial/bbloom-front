@@ -17,6 +17,10 @@ commercial â€” what a plan costs, what it includes, who is allowed to do what â€
 decided there. This repository renders those decisions and must not invent its
 own.
 
+How the shells should *look* (colours, type, components, and the theming
+rules that have already been broken once) is in `DESIGN.md`. Read it before
+any visual change.
+
 ## Getting started
 
 ```bash
