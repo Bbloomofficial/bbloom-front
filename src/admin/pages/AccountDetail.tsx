@@ -134,7 +134,7 @@ export default function AccountDetail() {
         <h1 className="text-2xl font-extrabold tracking-tight text-ink-900 sm:text-3xl">
           {account.fullName}
         </h1>
-        <p className="mt-1 text-sm text-ink-600" dir="ltr">
+        <p className="mt-1 text-sm text-ink-600" dir="ltr" translate="no">
           {account.email}
         </p>
       </div>
@@ -335,7 +335,7 @@ export default function AccountDetail() {
                       >
                         {site.businessName}
                       </Link>
-                      <div className="text-xs text-ink-400" dir="ltr">
+                      <div className="text-xs text-ink-400" dir="ltr" translate="no">
                         {site.slug}
                       </div>
                     </td>

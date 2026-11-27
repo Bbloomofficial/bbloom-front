@@ -211,7 +211,7 @@ export default function Plans() {
                         </span>
                       )}
                     </td>
-                    <td className="hidden px-5 py-4 text-ink-600 sm:table-cell">
+                    <td className="hidden px-5 py-4 text-ink-600 sm:table-cell" translate="no">
                       {plan.code}
                     </td>
                     <td className="px-5 py-4 text-ink-900" dir="ltr">

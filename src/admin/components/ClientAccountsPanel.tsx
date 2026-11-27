@@ -146,7 +146,7 @@ export default function ClientAccountsPanel({ site }: { site: SiteDetail }) {
               <div className="flex flex-wrap items-center gap-3">
                 <div className="min-w-40 flex-1">
                   <div className="font-semibold text-ink-900">{user.fullName}</div>
-                  <div className="text-xs text-ink-400" dir="ltr">
+                  <div className="text-xs text-ink-400" dir="ltr" translate="no">
                     {user.email}
                   </div>
                 </div>

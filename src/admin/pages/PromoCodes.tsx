@@ -198,7 +198,7 @@ export default function PromoCodes() {
                     <Link
                       to={adminPath(`/promo-codes/${promo.id}`)}
                       className="font-semibold text-ink-900 hover:text-bloom-600"
-                      dir="ltr"
+                      dir="ltr" translate="no"
                     >
                       {promo.code}
                     </Link>

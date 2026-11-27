@@ -216,7 +216,7 @@ export default function MailTest() {
           )}
 
           <p className="mt-3 text-sm text-ink-600">
-            <span dir="ltr" className="font-semibold text-ink-900">
+            <span dir="ltr" translate="no" className="font-semibold text-ink-900">
               {result.recipient}
             </span>
             {result.attemptedAt && (

@@ -369,7 +369,7 @@ export default function PromoCodeEditor() {
                     <span className="block text-sm font-semibold text-ink-900">
                       {copy?.name || plan.code}
                     </span>
-                    <span className="block text-xs text-ink-400" dir="ltr">
+                    <span className="block text-xs text-ink-400" dir="ltr" translate="no">
                       {plan.code}
                     </span>
                   </span>

@@ -230,7 +230,7 @@ export default function Sites() {
                       className="flex flex-wrap items-center gap-2 text-xs text-ink-400"
                       dir="ltr"
                     >
-                      <span>{site.slug}</span>
+                      <span translate="no">{site.slug}</span>
                       {demoSlugs.has(site.slug) && (
                         <span title={t.sites.demoHint}>
                           <MutedBadge label={t.sites.demo} />
@@ -274,7 +274,7 @@ export default function Sites() {
                         href={site.primaryUrl}
                         target="_blank"
                         rel="noreferrer"
-                        dir="ltr"
+                        dir="ltr" translate="no"
                         className="text-ink-600 hover:text-bloom-600"
                       >
                         {site.primaryUrl.replace(/^https?:\/\//, "")}

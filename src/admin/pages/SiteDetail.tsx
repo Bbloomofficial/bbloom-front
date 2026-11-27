@@ -120,7 +120,7 @@ export default function SiteDetailPage() {
                 <MutedBadge label={t.categories[site.category] ?? site.category} />
               )}
               {site.tier && <TierBadge label={t.tiers[site.tier] ?? site.tier} />}
-              <span className="text-xs text-ink-400" dir="ltr">
+              <span className="text-xs text-ink-400" dir="ltr" translate="no">
                 {site.slug}
               </span>
             </div>

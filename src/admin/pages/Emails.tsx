@@ -180,7 +180,7 @@ export default function Emails() {
                       className="border-b border-ink-100 align-top last:border-0 hover:bg-ink-50"
                     >
                       <td className="px-5 py-4">
-                        <span dir="ltr" className="font-semibold text-ink-900">
+                        <span dir="ltr" translate="no" className="font-semibold text-ink-900">
                           {row.recipient}
                         </span>
                         {inOutage.has(normalise(row.recipient)) && (

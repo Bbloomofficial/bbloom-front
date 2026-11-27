@@ -262,7 +262,7 @@ export default function Layout({ children }: { children: ReactNode }) {
 
       <div className="border-t border-ink-100 px-3 py-4">
         <p className="truncate px-3 text-xs text-ink-400" title={user.email}>
-          {t.signedInAs} {user.email}
+          {t.signedInAs} <span translate="no">{user.email}</span>
         </p>
         <button
           type="button"

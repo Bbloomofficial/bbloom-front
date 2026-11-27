@@ -70,7 +70,7 @@ export default function DomainsPanel({
               key={domain.id}
               className="flex flex-wrap items-center gap-3 py-3"
             >
-              <span className="font-semibold text-ink-900" dir="ltr">
+              <span className="font-semibold text-ink-900" dir="ltr" translate="no">
                 {domain.hostname}
               </span>
               {domain.primaryDomain && (

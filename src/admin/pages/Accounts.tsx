@@ -181,6 +181,7 @@ export default function Accounts() {
                     <Link
                       to={adminPath("/accounts/" + account.id)}
                       className="font-semibold text-ink-900 hover:text-bloom-600"
+                      translate="no"
                     >
                       {account.email}
                     </Link>
