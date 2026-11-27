@@ -193,7 +193,7 @@ function TestTool({
             value={destination}
             placeholder="https://…"
             onChange={(event) => setDestination(event.target.value)}
-            className="mt-1.5 w-full rounded-2xl border border-ink-100 bg-surface px-4 py-3 text-sm text-ink-900 outline-none focus:border-bloom-400"
+            className="field mt-1.5"
           />
           <span className="mt-1.5 block text-xs text-ink-400">
             {t.destinationHint}
