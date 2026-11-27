@@ -20,6 +20,12 @@ import {
 } from "./NavIcons";
 import { adminStrings } from "../strings";
 
+/**
+ * Pages given the whole width of the window rather than the usual reading
+ * width: tables with more columns than that width holds.
+ */
+const WIDE_PAGES = [adminPath("/ads/campaigns")];
+
 type Tab = { to: string; label: string };
 
 /**
@@ -147,6 +153,7 @@ export default function Layout({ children }: { children: ReactNode }) {
       tabs: [
         { to: adminPath("/ads"), label: t.nav.overview },
         { to: adminPath("/ads/campaigns"), label: t.ads.manager.openLink },
+        { to: adminPath("/ads/analytics"), label: t.ads.analytics.tab },
         { to: adminPath("/ads/settings"), label: t.ads.settingsLink },
         { to: adminPath("/ads/tools"), label: t.ads.tools },
       ],
@@ -284,7 +291,11 @@ export default function Layout({ children }: { children: ReactNode }) {
       <div className="flex min-w-0 flex-1 flex-col">
         <MailAlert />
 
-        <main className="container-page flex-1 py-8 sm:py-10">
+        <main
+          className={`flex-1 py-8 sm:py-10 ${
+            WIDE_PAGES.includes(pathname) ? "w-full px-5 sm:px-8" : "container-page"
+          }`}
+        >
           {tabs && <SectionTabs tabs={tabs} pathname={pathname} />}
           {children}
         </main>
