@@ -186,12 +186,14 @@ function TestTool({
             {t.destinationLabel}
           </span>
           <input
+            autoComplete="off"
+            spellCheck={false}
             type="url"
             dir="ltr"
             value={destination}
             placeholder="https://…"
             onChange={(event) => setDestination(event.target.value)}
-            className="mt-1.5 w-full rounded-2xl border border-ink-100 bg-surface px-4 py-3 text-sm text-ink-900 outline-none focus:border-bloom-400"
+            className="field mt-1.5"
           />
           <span className="mt-1.5 block text-xs text-ink-400">
             {t.destinationHint}
@@ -202,7 +204,7 @@ function TestTool({
           <button
             type="submit"
             disabled={pending || channels.length === 0}
-            className="rounded-xl bg-danger px-4 py-3 text-sm font-semibold text-white transition hover:opacity-90 active:scale-95 disabled:opacity-40"
+            className="rounded-xl bg-danger px-4 py-3 text-sm font-semibold text-white dark:text-contrast transition hover:opacity-90 motion-safe:active:scale-95 disabled:opacity-40"
           >
             {pending ? t.launching : t.launch}
           </button>
@@ -435,7 +437,7 @@ function TestCampaigns({
                           type="button"
                           onClick={() => void remove(campaign)}
                           disabled={busyId === campaign.id}
-                          className="rounded-xl bg-danger px-3 py-2 text-xs font-semibold text-white transition hover:opacity-90 active:scale-95 disabled:opacity-40"
+                          className="rounded-xl bg-danger px-3 py-2 text-xs font-semibold text-white dark:text-contrast transition hover:opacity-90 motion-safe:active:scale-95 disabled:opacity-40"
                         >
                           {busyId === campaign.id ? t.deleting : t.delete}
                         </button>
@@ -476,7 +478,7 @@ export default function AdTools() {
     <div>
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-extrabold tracking-tight text-ink-900 sm:text-3xl">
+          <h1 className="text-2xl font-extrabold text-balance tracking-tight text-ink-900 sm:text-3xl">
             {t.tools}
           </h1>
           <p className="mt-1 text-sm text-ink-600">{t.test.body}</p>

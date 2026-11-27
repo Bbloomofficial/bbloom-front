@@ -265,7 +265,7 @@ export default function AdCampaignNew() {
     <div>
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-extrabold tracking-tight text-ink-900 sm:text-3xl">
+          <h1 className="text-2xl font-extrabold text-balance tracking-tight text-ink-900 sm:text-3xl">
             {f.title}
           </h1>
           <p className="mt-1 max-w-2xl text-sm text-ink-600">{f.subtitle}</p>
@@ -305,6 +305,7 @@ export default function AdCampaignNew() {
             {f.nameLabel}
           </span>
           <input
+            autoComplete="off"
             value={name}
             onChange={(event) => setName(event.target.value)}
             maxLength={200}
@@ -352,6 +353,8 @@ export default function AdCampaignNew() {
             {f.budgetLabel}
           </span>
           <input
+            autoComplete="off"
+            spellCheck={false}
             value={budget}
             onChange={(event) => setBudget(event.target.value)}
             inputMode="decimal"
@@ -371,6 +374,8 @@ export default function AdCampaignNew() {
             {f.destinationLabel}
           </span>
           <input
+            autoComplete="off"
+            spellCheck={false}
             value={destinationUrl}
             onChange={(event) => setDestinationUrl(event.target.value)}
             dir="ltr"
@@ -387,6 +392,7 @@ export default function AdCampaignNew() {
             {f.headlineLabel}
           </span>
           <input
+            autoComplete="off"
             value={headline}
             onChange={(event) => setHeadline(event.target.value)}
             maxLength={200}
@@ -399,6 +405,7 @@ export default function AdCampaignNew() {
             {f.primaryTextLabel}
           </span>
           <textarea
+            autoComplete="off"
             value={primaryText}
             onChange={(event) => setPrimaryText(event.target.value)}
             maxLength={600}
@@ -412,6 +419,8 @@ export default function AdCampaignNew() {
             {f.imageLabel}
           </span>
           <input
+            autoComplete="off"
+            spellCheck={false}
             value={imageUrl}
             onChange={(event) => setImageUrl(event.target.value)}
             maxLength={500}
@@ -426,6 +435,8 @@ export default function AdCampaignNew() {
               {f.countryLabel}
             </span>
             <input
+              autoComplete="off"
+              spellCheck={false}
               value={country}
               onChange={(event) => setCountry(event.target.value)}
               maxLength={2}
@@ -438,6 +449,7 @@ export default function AdCampaignNew() {
               {f.cityLabel}
             </span>
             <input
+              autoComplete="off"
               value={cityKey}
               onChange={(event) => setCityKey(event.target.value)}
               className="field w-full"
@@ -452,7 +464,10 @@ export default function AdCampaignNew() {
           </legend>
           <div className="flex items-center gap-3">
             <input
+              autoComplete="off"
+              spellCheck={false}
               value={ageMin}
+              aria-label={f.ageMin}
               onChange={(event) => setAgeMin(event.target.value)}
               inputMode="numeric"
               dir="ltr"
@@ -460,7 +475,10 @@ export default function AdCampaignNew() {
             />
             <span className="text-sm text-ink-500">{f.ageTo}</span>
             <input
+              autoComplete="off"
+              spellCheck={false}
               value={ageMax}
+              aria-label={f.ageMax}
               onChange={(event) => setAgeMax(event.target.value)}
               inputMode="numeric"
               dir="ltr"
@@ -473,10 +491,10 @@ export default function AdCampaignNew() {
           {f.warning}
         </p>
 
-        {error && <p className="mt-4 text-sm font-semibold text-danger">{error}</p>}
+        {error && <p role="alert" className="mt-4 text-sm font-semibold text-danger">{error}</p>}
 
         <div className="mt-5 flex flex-wrap items-center gap-3">
-          <button type="submit" className="rounded-xl bg-danger px-4 py-3 text-sm font-semibold text-white transition hover:opacity-90 active:scale-95 disabled:opacity-40" disabled={submitting}>
+          <button type="submit" className="rounded-xl bg-danger px-4 py-3 text-sm font-semibold text-white dark:text-contrast transition hover:opacity-90 motion-safe:active:scale-95 disabled:opacity-40" disabled={submitting}>
             {submitting ? f.creating : f.create}
           </button>
           <Link to="/ads" className="btn-secondary">

@@ -119,7 +119,7 @@ export default function Sites() {
     <div>
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-extrabold tracking-tight text-ink-900 sm:text-3xl">
+          <h1 className="text-2xl font-extrabold text-balance tracking-tight text-ink-900 sm:text-3xl">
             {t.sites.title}
           </h1>
           <p className="mt-1 text-sm text-ink-600">{t.sites.subtitle}</p>
@@ -230,7 +230,7 @@ export default function Sites() {
                       className="flex flex-wrap items-center gap-2 text-xs text-ink-400"
                       dir="ltr"
                     >
-                      <span>{site.slug}</span>
+                      <span translate="no">{site.slug}</span>
                       {demoSlugs.has(site.slug) && (
                         <span title={t.sites.demoHint}>
                           <MutedBadge label={t.sites.demo} />
@@ -274,7 +274,7 @@ export default function Sites() {
                         href={site.primaryUrl}
                         target="_blank"
                         rel="noreferrer"
-                        dir="ltr"
+                        dir="ltr" translate="no"
                         className="text-ink-600 hover:text-bloom-600"
                       >
                         {site.primaryUrl.replace(/^https?:\/\//, "")}
@@ -283,7 +283,7 @@ export default function Sites() {
                       <span className="text-ink-400">—</span>
                     )}
                   </td>
-                  <td className="hidden px-5 py-4 text-ink-600 sm:table-cell">
+                  <td className="hidden px-5 py-4 tabular-nums text-ink-600 sm:table-cell">
                     {formatDate(site.updatedAt, locale)}
                   </td>
                   <td className="px-5 py-4 text-end">

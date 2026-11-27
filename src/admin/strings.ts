@@ -7,7 +7,7 @@ import type { Locale } from "../i18n";
  */
 export type AdminStrings = {
   brand: string;
-  nav: { sites: string; newSite: string; system: string; accounts: string; plans: string; promoCodes: string; newCustomerOffer: string; ads: string; pricing: string; openMenu: string; closeMenu: string; overview: string; systemStatus: string; emails: string };
+  nav: { sites: string; newSite: string; system: string; accounts: string; plans: string; promoCodes: string; newCustomerOffer: string; ads: string; pricing: string; openMenu: string; closeMenu: string; menu: string; skipToContent: string; overview: string; systemStatus: string; emails: string };
   signedInAs: string;
   /** Shared by every admin list: search, filters, the count and paging. */
   list: {
@@ -199,6 +199,7 @@ export type AdminStrings = {
     verified: string;
     unverified: string;
     remove: string;
+    removeDomainConfirm: (hostname: string) => string;
     noDomains: string;
     users: string;
     usersHint: string;
@@ -633,6 +634,8 @@ export type AdminStrings = {
       cityHint: string;
       ageLabel: string;
       ageTo: string;
+      ageMin: string;
+      ageMax: string;
       required: string;
       create: string;
       creating: string;
@@ -909,7 +912,7 @@ export type AdminStrings = {
 
 const en: AdminStrings = {
   brand: "bbloom staff",
-  nav: { sites: "Sites", newSite: "New site", system: "System", accounts: "Accounts", plans: "Plans", promoCodes: "Discounts", newCustomerOffer: "New customers", ads: "Ads", pricing: "Pricing", openMenu: "Open menu", closeMenu: "Close menu", overview: "Overview", systemStatus: "Status", emails: "Emails" },
+  nav: { sites: "Sites", newSite: "New site", system: "System", accounts: "Accounts", plans: "Plans", promoCodes: "Discounts", newCustomerOffer: "New customers", ads: "Ads", pricing: "Pricing", openMenu: "Open menu", closeMenu: "Close menu", menu: "Menu", skipToContent: "Skip to content", overview: "Overview", systemStatus: "Status", emails: "Emails" },
   signedInAs: "Signed in as",
   list: {
     search: "Search",
@@ -1122,6 +1125,8 @@ const en: AdminStrings = {
     verified: "Verified",
     unverified: "Not verified",
     remove: "Remove",
+    removeDomainConfirm: (hostname) =>
+      `Remove ${hostname} from this site? To use it again, you will need to add it back.`,
     noDomains: "No custom domain yet.",
     users: "Client accounts",
     usersHint:
@@ -1732,6 +1737,8 @@ const en: AdminStrings = {
       cityHint: "Optional. Leave blank to cover the whole country.",
       ageLabel: "Ages",
       ageTo: "to",
+      ageMin: "Minimum age",
+      ageMax: "Maximum age",
       required: "Fill this in.",
       create: "Launch this campaign",
       creating: "Launching…",
@@ -1809,7 +1816,7 @@ const en: AdminStrings = {
       spend: "Spent",
       loadFailed: "We could not read the results.",
       loadFailedNeverRead:
-        "This campaign has never been read successfully either, so the same failure has most likely been happening since it launched. Nothing else shows this: the hourly refresh logs a failure and moves on, the list still reads \"not yet\", and the site's impression count leaves this campaign out entirely. Worth checking the logs rather than waiting.",
+        "This campaign has never been read successfully either, so the same failure has most likely been happening since it launched. Nothing else shows this: the hourly refresh logs a failure and moves on, the list still reads “not yet”, and the site's impression count leaves this campaign out entirely. Worth checking the logs rather than waiting.",
       notLaunched: "This campaign never reached Meta, so there is nothing to read.",
     },
   },
@@ -1909,7 +1916,7 @@ const en: AdminStrings = {
     comingSoonBeatsFeatured:
       "This plan is also marked most popular. Only the coming-soon badge will show, since a plan nobody can buy yet cannot be the popular choice.",
     comingSoonHidden:
-      "This plan is not shown on the pricing page, so nobody will see that it is coming. Turn on \"Shown on the pricing page\" as well if you meant to announce it.",
+      "This plan is not shown on the pricing page, so nobody will see that it is coming. Turn on “Shown on the pricing page” as well if you meant to announce it.",
     status: "Status",
     translations: "Copy",
     translationsHint:
@@ -2050,7 +2057,7 @@ const en: AdminStrings = {
 
 const ka: AdminStrings = {
   brand: "ბიბლუმის გუნდი",
-  nav: { sites: "საიტები", newSite: "ახალი საიტი", system: "სისტემა", accounts: "ანგარიშები", plans: "პაკეტები", promoCodes: "ფასდაკლებები", newCustomerOffer: "ახალი კლიენტები", ads: "რეკლამა", pricing: "ფასები", openMenu: "მენიუს გახსნა", closeMenu: "მენიუს დახურვა", overview: "მიმოხილვა", systemStatus: "სტატუსი", emails: "ელფოსტა" },
+  nav: { sites: "საიტები", newSite: "ახალი საიტი", system: "სისტემა", accounts: "ანგარიშები", plans: "პაკეტები", promoCodes: "ფასდაკლებები", newCustomerOffer: "ახალი კლიენტები", ads: "რეკლამა", pricing: "ფასები", openMenu: "მენიუს გახსნა", closeMenu: "მენიუს დახურვა", menu: "მენიუ", skipToContent: "მთავარ შინაარსზე გადასვლა", overview: "მიმოხილვა", systemStatus: "სტატუსი", emails: "ელფოსტა" },
   signedInAs: "შესული ხართ როგორც",
   list: {
     search: "ძებნა",
@@ -2262,6 +2269,8 @@ const ka: AdminStrings = {
     verified: "დადასტურებულია",
     unverified: "დაუდასტურებელი",
     remove: "წაშლა",
+    removeDomainConfirm: (hostname) =>
+      `მოვაშოროთ ${hostname} ამ საიტს? ხელახლა გამოსაყენებლად თავიდან დამატება მოგიწევთ.`,
     noDomains: "საკუთარი დომენი ჯერ არ არის.",
     users: "კლიენტის ანგარიშები",
     usersHint:
@@ -2855,6 +2864,8 @@ const ka: AdminStrings = {
       cityHint: "სურვილისამებრ. ცარიელი დატოვეთ მთელი ქვეყნისთვის.",
       ageLabel: "ასაკი",
       ageTo: "—",
+      ageMin: "მინიმალური ასაკი",
+      ageMax: "მაქსიმალური ასაკი",
       required: "შეავსეთ ეს ველი.",
       create: "კამპანიის გაშვება",
       creating: "იშვება…",

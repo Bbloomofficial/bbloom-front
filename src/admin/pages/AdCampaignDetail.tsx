@@ -258,7 +258,7 @@ export default function AdCampaignDetail() {
     <div>
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-extrabold tracking-tight text-ink-900 sm:text-3xl">
+          <h1 className="text-2xl font-extrabold text-balance tracking-tight text-ink-900 sm:text-3xl">
             {data.name}
           </h1>
           <div className="mt-2 flex flex-wrap items-center gap-3">
@@ -377,7 +377,7 @@ export default function AdCampaignDetail() {
         </dl>
       </section>
 
-      {error && <p className="mt-4 text-sm font-semibold text-danger">{error}</p>}
+      {error && <p role="alert" className="mt-4 text-sm font-semibold text-danger">{error}</p>}
 
       <div className="mt-6 flex flex-wrap gap-3">
         {canPause && (
@@ -399,7 +399,7 @@ export default function AdCampaignDetail() {
             onClick={() =>
               void act(d.resumeConfirm, () => resumeAdCampaign(token, data.id))
             }
-            className="rounded-xl bg-danger px-4 py-3 text-sm font-semibold text-white transition hover:opacity-90 active:scale-95 disabled:opacity-40"
+            className="rounded-xl bg-danger px-4 py-3 text-sm font-semibold text-white dark:text-contrast transition hover:opacity-90 motion-safe:active:scale-95 disabled:opacity-40"
           >
             {busy ? d.resuming : d.resume}
           </button>
@@ -411,7 +411,7 @@ export default function AdCampaignDetail() {
             onClick={() =>
               void act(d.deleteConfirm, () => deleteAdCampaign(token, data.id), true)
             }
-            className="rounded-xl bg-danger px-4 py-3 text-sm font-semibold text-white transition hover:opacity-90 active:scale-95 disabled:opacity-40"
+            className="rounded-xl bg-danger px-4 py-3 text-sm font-semibold text-white dark:text-contrast transition hover:opacity-90 motion-safe:active:scale-95 disabled:opacity-40"
           >
             {busy ? d.deleting : d.delete}
           </button>

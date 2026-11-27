@@ -106,7 +106,7 @@ export default function Plans() {
     <div>
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-extrabold tracking-tight text-ink-900 sm:text-3xl">
+          <h1 className="text-2xl font-extrabold text-balance tracking-tight text-ink-900 sm:text-3xl">
             {t.plans.title}
           </h1>
           <p className="mt-1 text-sm text-ink-600">{t.plans.subtitle}</p>
@@ -157,7 +157,7 @@ export default function Plans() {
       {loading && !data && <p className="mt-8 text-sm text-ink-400">{t.loading}</p>}
 
       {problem && (
-        <p className="mt-6 text-sm font-semibold text-danger">{problem}</p>
+        <p role="alert" className="mt-6 text-sm font-semibold text-danger">{problem}</p>
       )}
 
       {data && plans.length === 0 && (
@@ -211,10 +211,10 @@ export default function Plans() {
                         </span>
                       )}
                     </td>
-                    <td className="hidden px-5 py-4 text-ink-600 sm:table-cell">
+                    <td className="hidden px-5 py-4 text-ink-600 sm:table-cell" translate="no">
                       {plan.code}
                     </td>
-                    <td className="px-5 py-4 text-ink-900" dir="ltr">
+                    <td className="px-5 py-4 tabular-nums text-ink-900" dir="ltr">
                       {/* `effectivePriceMinor` rather than a sum worked out
                           here: the price staff read on this row and the price a
                           client is charged must come from the same place. */}

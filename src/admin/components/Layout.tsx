@@ -94,16 +94,77 @@ export default function Layout({ children }: { children: ReactNode }) {
   const { forbidden } = useSystemStatus();
   const { pathname } = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const drawerRef = useRef<HTMLDivElement>(null);
+  const wasOpen = useRef(false);
+  // Set when the drawer closes because the window widened past `lg`. The menu
+  // button is hidden there, so focus must not be sent back to it.
+  const closedByWidth = useRef(false);
 
   // A link chosen in the narrow-screen drawer should close it.
   useEffect(() => setMenuOpen(false), [pathname]);
   useEffect(() => {
-    if (!menuOpen) return;
+    if (!menuOpen) {
+      // Focus goes back to the button that opened the drawer; otherwise it
+      // falls to <body> when the drawer unmounts and a keyboard user starts
+      // again from the top of the page.
+      if (wasOpen.current) {
+        wasOpen.current = false;
+        if (!closedByWidth.current) menuButtonRef.current?.focus();
+        closedByWidth.current = false;
+      }
+      return;
+    }
+    wasOpen.current = true;
+    closeButtonRef.current?.focus();
+    // The drawer is `lg:hidden`, but hiding it does not close it: rotating a
+    // tablet or widening the window past `lg` would leave the scroll lock and
+    // the Tab trap below on, over a page that shows no drawer. Close it there.
+    // 1024px is Tailwind's `lg`.
+    const wide = window.matchMedia("(min-width: 1024px)");
+    const onWide = (event: MediaQueryListEvent) => {
+      if (!event.matches) return;
+      closedByWidth.current = true;
+      setMenuOpen(false);
+    };
+    wide.addEventListener("change", onWide);
     const onKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setMenuOpen(false);
+      if (event.key === "Escape") {
+        setMenuOpen(false);
+        return;
+      }
+      // Keep Tab inside the drawer: the page behind it is covered, so focus
+      // wandering there would be on something nobody can see.
+      const drawer = drawerRef.current;
+      if (event.key !== "Tab" || !drawer) return;
+      const focusable = Array.from(
+        drawer.querySelectorAll<HTMLElement>(
+          'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])',
+        ),
+      );
+      if (focusable.length === 0) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      const active = document.activeElement;
+      const outside = !drawer.contains(active);
+      if (event.shiftKey && (active === first || outside)) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && (active === last || outside)) {
+        event.preventDefault();
+        first.focus();
+      }
     };
     window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+    // The page behind the drawer must not scroll while the drawer covers it.
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      wide.removeEventListener("change", onWide);
+      document.body.style.overflow = previousOverflow;
+    };
   }, [menuOpen]);
 
   // One list, rendered in both the sidebar and the drawer, so a link cannot
@@ -199,7 +260,7 @@ export default function Layout({ children }: { children: ReactNode }) {
         <ThemeToggle />
       </div>
 
-      <nav className="mt-6 flex-1 space-y-1 overflow-y-auto px-3">
+      <nav className="mt-6 flex-1 space-y-1 overflow-y-auto overscroll-contain px-3">
         {sections.map((section) => {
           const active = inSection(pathname, section);
           const Icon = section.icon;
@@ -223,7 +284,7 @@ export default function Layout({ children }: { children: ReactNode }) {
 
       <div className="border-t border-ink-100 px-3 py-4">
         <p className="truncate px-3 text-xs text-ink-400" title={user.email}>
-          {t.signedInAs} {user.email}
+          {t.signedInAs} <span translate="no">{user.email}</span>
         </p>
         <button
           type="button"
@@ -239,6 +300,12 @@ export default function Layout({ children }: { children: ReactNode }) {
 
   return (
     <div className="min-h-screen bg-canvas lg:flex">
+      <a
+        href="#admin-main"
+        className="sr-only rounded-full border border-ink-100 bg-surface px-4 py-2 text-sm font-semibold text-ink-900 shadow-lg focus:not-sr-only focus:fixed focus:start-4 focus:top-3 focus:z-50 focus:px-4 focus:py-2"
+      >
+        {t.nav.skipToContent}
+      </a>
       {/* Wide screens: a fixed sidebar. Sticky rather than fixed so the page
           beside it keeps its normal flow and scrolls on its own. */}
       <aside className="sticky top-0 hidden h-screen w-64 shrink-0 border-e border-ink-100 bg-surface lg:block">
@@ -249,6 +316,7 @@ export default function Layout({ children }: { children: ReactNode }) {
           drawer. */}
       <header className="sticky top-0 z-30 flex h-14 items-center gap-3 border-b border-ink-100 bg-surface/95 px-4 backdrop-blur lg:hidden">
         <button
+          ref={menuButtonRef}
           type="button"
           onClick={() => setMenuOpen(true)}
           aria-label={t.nav.openMenu}
@@ -267,15 +335,27 @@ export default function Layout({ children }: { children: ReactNode }) {
         )}
       </header>
       {menuOpen && (
-        <div className="fixed inset-0 z-40 lg:hidden" role="dialog" aria-modal="true">
+        <div
+          className="fixed inset-0 z-40 lg:hidden"
+          role="dialog"
+          aria-modal="true"
+          aria-label={t.nav.menu}
+        >
+          {/* Out of the tab order: the close button inside the drawer does the
+              same job, and the trap keeps focus in the drawer anyway. */}
           <button
             type="button"
+            tabIndex={-1}
             aria-label={t.nav.closeMenu}
             onClick={() => setMenuOpen(false)}
-            className="absolute inset-0 bg-ink-900/40"
+            className="absolute inset-0 bg-contrast/60"
           />
-          <div className="absolute inset-y-0 start-0 w-72 max-w-[85vw] bg-surface pt-10 shadow-xl">
+          <div
+            ref={drawerRef}
+            className="absolute inset-y-0 start-0 w-72 max-w-[85vw] bg-surface pt-10 shadow-xl"
+          >
             <button
+              ref={closeButtonRef}
               type="button"
               onClick={() => setMenuOpen(false)}
               aria-label={t.nav.closeMenu}
@@ -292,7 +372,9 @@ export default function Layout({ children }: { children: ReactNode }) {
         <MailAlert />
 
         <main
-          className={`flex-1 py-8 sm:py-10 ${
+          id="admin-main"
+          tabIndex={-1}
+          className={`flex-1 scroll-mt-14 py-8 focus:outline-none lg:scroll-mt-0 sm:py-10 ${
             WIDE_PAGES.includes(pathname) ? "w-full px-5 sm:px-8" : "container-page"
           }`}
         >

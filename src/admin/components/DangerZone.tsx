@@ -47,6 +47,7 @@ export default function DangerZone({ site }: { site: SiteDetail }) {
           {t.detail.deleteConfirm(site.slug)}
         </label>
         <input
+          spellCheck={false}
           id="delete-confirm"
           className="field"
           dir="ltr"
@@ -66,7 +67,7 @@ export default function DangerZone({ site }: { site: SiteDetail }) {
         type="button"
         onClick={onDelete}
         disabled={!armed || busy}
-        className="btn mt-5 bg-danger text-white hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
+        className="btn mt-5 bg-danger text-white dark:text-contrast hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
       >
         {busy ? t.detail.deleting : t.detail.deleteSite}
       </button>

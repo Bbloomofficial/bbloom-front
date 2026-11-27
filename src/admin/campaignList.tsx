@@ -316,6 +316,7 @@ export function FilterPanel({ campaigns }: { campaigns: Campaigns }) {
             {m.search}
           </span>
           <input
+            autoComplete="off"
             type="search"
             value={filters.query}
             placeholder={m.searchPlaceholder}

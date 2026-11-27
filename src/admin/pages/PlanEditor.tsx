@@ -441,7 +441,7 @@ export default function PlanEditor() {
         {t.plans.back}
       </Link>
 
-      <h1 className="mt-3 text-2xl font-extrabold tracking-tight text-ink-900 sm:text-3xl">
+      <h1 className="mt-3 text-2xl font-extrabold text-balance tracking-tight text-ink-900 sm:text-3xl">
         {isNew ? t.plans.newTitle : t.plans.editTitle}
       </h1>
 
@@ -453,6 +453,8 @@ export default function PlanEditor() {
                 {t.plans.code}
               </label>
               <input
+                autoComplete="off"
+                spellCheck={false}
                 id="plan-code"
                 className="field"
                 value={form.code}
@@ -466,6 +468,8 @@ export default function PlanEditor() {
                 {t.plans.price}
               </label>
               <input
+                autoComplete="off"
+                spellCheck={false}
                 id="plan-price"
                 className="field"
                 inputMode="decimal"
@@ -638,6 +642,8 @@ export default function PlanEditor() {
                 {t.plans.adImpressions}
               </label>
               <input
+                autoComplete="off"
+                spellCheck={false}
                 id="plan-ad-impressions"
                 className="field"
                 inputMode="numeric"
@@ -721,6 +727,8 @@ export default function PlanEditor() {
                     {t.plans.discountPercent}
                   </label>
                   <input
+                    autoComplete="off"
+                    spellCheck={false}
                     id="plan-discount"
                     className="field"
                     inputMode="numeric"
@@ -828,6 +836,7 @@ export default function PlanEditor() {
                   {t.plans.name}
                 </label>
                 <input
+                  autoComplete="off"
                   id="plan-name"
                   className="field"
                   value={translation.name}
@@ -840,6 +849,7 @@ export default function PlanEditor() {
                   {t.plans.cta}
                 </label>
                 <input
+                  autoComplete="off"
                   id="plan-cta"
                   className="field"
                   value={translation.cta}
@@ -874,6 +884,7 @@ export default function PlanEditor() {
                       {t.plans.displayPrice}
                     </label>
                     <input
+                      autoComplete="off"
                       id="plan-display-price"
                       className="field"
                       value={translation.price}
@@ -891,6 +902,7 @@ export default function PlanEditor() {
                   {t.plans.cadence}
                 </label>
                 <input
+                  autoComplete="off"
                   id="plan-cadence"
                   className="field"
                   value={translation.cadence}
@@ -904,6 +916,7 @@ export default function PlanEditor() {
                   {t.plans.summary}
                 </label>
                 <textarea
+                  autoComplete="off"
                   id="plan-summary"
                   className="field"
                   rows={2}
@@ -917,6 +930,7 @@ export default function PlanEditor() {
                   {t.plans.features}
                 </label>
                 <textarea
+                  autoComplete="off"
                   id="plan-features"
                   className="field"
                   rows={6}
@@ -938,7 +952,7 @@ export default function PlanEditor() {
         </section>
 
         {problem && (
-          <p className="text-sm font-semibold text-danger">{problem}</p>
+          <p role="alert" className="text-sm font-semibold text-danger">{problem}</p>
         )}
 
         {saved && !problem && (

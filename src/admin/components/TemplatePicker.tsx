@@ -101,7 +101,7 @@ export default function TemplatePicker({
                             {text.tagline}
                           </p>
                         )}
-                        <p className="mt-2 text-[11px] text-ink-400" dir="ltr">
+                        <p className="mt-2 text-[11px] text-ink-400" dir="ltr" translate="no">
                           {template.code}
                         </p>
                       </div>

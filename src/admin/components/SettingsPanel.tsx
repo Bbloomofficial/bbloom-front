@@ -197,19 +197,26 @@ export default function SettingsPanel({
         </label>
         {options.textarea ? (
           <textarea
+            autoComplete="off"
             id={id}
             rows={2}
             className="field"
+            aria-invalid={fieldErrors[key] ? true : undefined}
+            aria-describedby={fieldErrors[key] ? `${id}-error` : undefined}
             value={draft[key]}
             onChange={(event) => set(key, event.target.value)}
           />
         ) : (
           <input
+            autoComplete="off"
+            spellCheck={options.ltr || options.type === "email" ? false : undefined}
             id={id}
             type={options.type ?? "text"}
             dir={options.ltr ? "ltr" : undefined}
             className="field"
             placeholder={options.placeholder}
+            aria-invalid={fieldErrors[key] ? true : undefined}
+            aria-describedby={fieldErrors[key] ? `${id}-error` : undefined}
             value={draft[key]}
             onChange={(event) => set(key, event.target.value)}
           />
@@ -218,7 +225,7 @@ export default function SettingsPanel({
           <p className="mt-1.5 text-xs text-ink-400">{options.hint}</p>
         )}
         {fieldErrors[key] && (
-          <p className="mt-1.5 text-xs font-semibold text-danger">
+          <p id={`${id}-error`} className="mt-1.5 text-xs font-semibold text-danger">
             {fieldErrors[key]}
           </p>
         )}
@@ -299,7 +306,7 @@ export default function SettingsPanel({
 
         <div className="grid gap-4 sm:grid-cols-2">
           {textField("currency", t.detail.currency, { ltr: true })}
-          {textField("contactPhone", t.detail.contactPhone, { ltr: true })}
+          {textField("contactPhone", t.detail.contactPhone, { ltr: true, type: "tel" })}
           {textField("contactEmail", t.detail.contactEmail, {
             ltr: true,
             type: "email",

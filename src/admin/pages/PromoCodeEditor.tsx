@@ -181,7 +181,7 @@ export default function PromoCodeEditor() {
         {t.promoCodes.back}
       </Link>
 
-      <h1 className="mt-3 text-2xl font-extrabold tracking-tight text-ink-900 sm:text-3xl">
+      <h1 className="mt-3 text-2xl font-extrabold text-balance tracking-tight text-ink-900 sm:text-3xl">
         {isNew ? t.promoCodes.newTitle : t.promoCodes.editTitle}
       </h1>
 
@@ -193,6 +193,8 @@ export default function PromoCodeEditor() {
                 {t.promoCodes.code}
               </label>
               <input
+                autoComplete="off"
+                spellCheck={false}
                 id="promo-code"
                 className="field"
                 dir="ltr"
@@ -209,6 +211,8 @@ export default function PromoCodeEditor() {
                 {t.promoCodes.percentOff}
               </label>
               <input
+                autoComplete="off"
+                spellCheck={false}
                 id="promo-percent"
                 className="field"
                 inputMode="numeric"
@@ -248,6 +252,8 @@ export default function PromoCodeEditor() {
                 {t.promoCodes.maxRedemptions}
               </label>
               <input
+                autoComplete="off"
+                spellCheck={false}
                 id="promo-max"
                 className="field"
                 inputMode="numeric"
@@ -363,7 +369,7 @@ export default function PromoCodeEditor() {
                     <span className="block text-sm font-semibold text-ink-900">
                       {copy?.name || plan.code}
                     </span>
-                    <span className="block text-xs text-ink-400" dir="ltr">
+                    <span className="block text-xs text-ink-400" dir="ltr" translate="no">
                       {plan.code}
                     </span>
                   </span>
@@ -374,7 +380,7 @@ export default function PromoCodeEditor() {
         </section>
 
         {problem && (
-          <p className="text-sm font-semibold text-danger">{problem}</p>
+          <p role="alert" className="text-sm font-semibold text-danger">{problem}</p>
         )}
 
         {saved && !problem && (

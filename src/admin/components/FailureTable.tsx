@@ -47,14 +47,14 @@ export default function FailureTable({ rows }: { rows: MailFailure[] }) {
               <td className="px-3 py-4">
                 {/* Never masked. Working out who to apologise to is the only
                     job this screen has. */}
-                <span dir="ltr" className="font-semibold text-ink-900">
+                <span dir="ltr" translate="no" className="font-semibold wrap-anywhere text-ink-900">
                   {failure.recipient}
                 </span>
               </td>
               <td className="hidden max-w-72 px-3 py-4 text-ink-600 md:table-cell">
                 {failure.subject}
               </td>
-              <td className="px-3 py-4 text-danger">{failure.reason}</td>
+              <td className="px-3 py-4 wrap-anywhere text-danger">{failure.reason}</td>
             </tr>
           ))}
         </tbody>

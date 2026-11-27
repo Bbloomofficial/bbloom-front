@@ -101,7 +101,7 @@ export default function Emails() {
     <div>
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-extrabold tracking-tight text-ink-900 sm:text-3xl">
+          <h1 className="text-2xl font-extrabold text-balance tracking-tight text-ink-900 sm:text-3xl">
             {e.title}
           </h1>
           <p className="mt-1 max-w-3xl text-sm text-ink-600">{e.subtitle}</p>
@@ -151,7 +151,7 @@ export default function Emails() {
             />
           </ListToolbar>
 
-          {problem && <p className="mt-4 text-sm font-semibold text-danger">{problem}</p>}
+          {problem && <p role="alert" className="mt-4 text-sm font-semibold text-danger">{problem}</p>}
 
           {all.length === 0 ? (
             <p className="mt-6 rounded-3xl border border-ink-100 bg-surface p-8 text-center text-sm text-ink-600">
@@ -180,7 +180,7 @@ export default function Emails() {
                       className="border-b border-ink-100 align-top last:border-0 hover:bg-ink-50"
                     >
                       <td className="px-5 py-4">
-                        <span dir="ltr" className="font-semibold text-ink-900">
+                        <span dir="ltr" translate="no" className="font-semibold wrap-anywhere text-ink-900">
                           {row.recipient}
                         </span>
                         {inOutage.has(normalise(row.recipient)) && (
@@ -190,10 +190,10 @@ export default function Emails() {
                         )}
                       </td>
                       <td className="px-5 py-4 text-ink-600">{row.subject}</td>
-                      <td className="max-w-80 px-5 py-4 text-xs text-ink-500" dir="ltr">
+                      <td className="max-w-80 px-5 py-4 text-xs wrap-anywhere text-ink-500" dir="ltr">
                         {row.reason}
                       </td>
-                      <td className="whitespace-nowrap px-5 py-4 text-ink-600">
+                      <td className="whitespace-nowrap px-5 py-4 tabular-nums text-ink-600">
                         {formatDateTime(row.at, locale)}
                       </td>
                       <td className="px-5 py-4 text-end">

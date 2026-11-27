@@ -146,7 +146,7 @@ export default function ClientAccountsPanel({ site }: { site: SiteDetail }) {
               <div className="flex flex-wrap items-center gap-3">
                 <div className="min-w-40 flex-1">
                   <div className="font-semibold text-ink-900">{user.fullName}</div>
-                  <div className="text-xs text-ink-400" dir="ltr">
+                  <div className="text-xs text-ink-400" dir="ltr" translate="no">
                     {user.email}
                   </div>
                 </div>
@@ -199,6 +199,7 @@ export default function ClientAccountsPanel({ site }: { site: SiteDetail }) {
                       {t.detail.newPassword}
                     </label>
                     <input
+                      spellCheck={false}
                       id={`reset-${user.id}`}
                       type="text"
                       dir="ltr"
@@ -240,6 +241,7 @@ export default function ClientAccountsPanel({ site }: { site: SiteDetail }) {
                 {t.detail.userName}
               </label>
               <input
+                autoComplete="off"
                 id="user-name"
                 className="field"
                 required
@@ -252,6 +254,8 @@ export default function ClientAccountsPanel({ site }: { site: SiteDetail }) {
                 {t.detail.userEmail}
               </label>
               <input
+                autoComplete="off"
+                spellCheck={false}
                 id="user-email"
                 type="email"
                 dir="ltr"
@@ -266,6 +270,8 @@ export default function ClientAccountsPanel({ site }: { site: SiteDetail }) {
                 {t.detail.userPassword}
               </label>
               <input
+                autoComplete="off"
+                spellCheck={false}
                 id="user-password"
                 type="text"
                 dir="ltr"

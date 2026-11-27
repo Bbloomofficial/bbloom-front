@@ -130,12 +130,14 @@ export default function MailTest() {
             {t.recipientLabel}
           </span>
           <input
+            autoComplete="off"
+            spellCheck={false}
             type="email"
             required
             dir="ltr"
             value={recipient}
             onChange={(event) => setRecipient(event.target.value)}
-            className="mt-1.5 w-full rounded-2xl border border-ink-100 bg-surface px-4 py-3 text-sm text-ink-900 outline-none focus:border-bloom-400"
+            className="field mt-1.5"
           />
           <span className="mt-1.5 block text-xs text-ink-400">
             {t.recipientHint}
@@ -214,7 +216,7 @@ export default function MailTest() {
           )}
 
           <p className="mt-3 text-sm text-ink-600">
-            <span dir="ltr" className="font-semibold text-ink-900">
+            <span dir="ltr" translate="no" className="font-semibold text-ink-900">
               {result.recipient}
             </span>
             {result.attemptedAt && (
