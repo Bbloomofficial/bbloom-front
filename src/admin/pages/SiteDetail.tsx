@@ -108,7 +108,7 @@ export default function SiteDetailPage() {
 
         <div className="mt-3 flex flex-wrap items-start justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-extrabold tracking-tight text-ink-900 sm:text-3xl">
+            <h1 className="text-2xl font-extrabold text-balance tracking-tight text-ink-900 sm:text-3xl">
               {site.businessName}
             </h1>
             <div className="mt-2 flex flex-wrap items-center gap-2">

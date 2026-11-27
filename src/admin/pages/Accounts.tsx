@@ -79,7 +79,7 @@ export default function Accounts() {
   return (
     <div>
       <div>
-        <h1 className="text-2xl font-extrabold tracking-tight text-ink-900 sm:text-3xl">
+        <h1 className="text-2xl font-extrabold text-balance tracking-tight text-ink-900 sm:text-3xl">
           {t.accounts.title}
         </h1>
         <p className="mt-1 text-sm text-ink-600">{t.accounts.subtitle}</p>
@@ -204,10 +204,10 @@ export default function Accounts() {
                   <td className="hidden px-5 py-4 text-ink-600 md:table-cell">
                     {account.fullName}
                   </td>
-                  <td className="hidden px-5 py-4 text-ink-600 sm:table-cell">
+                  <td className="hidden px-5 py-4 tabular-nums text-ink-600 sm:table-cell">
                     {formatDate(account.createdAt, locale)}
                   </td>
-                  <td className="hidden px-5 py-4 text-ink-600 lg:table-cell">
+                  <td className="hidden px-5 py-4 tabular-nums text-ink-600 lg:table-cell">
                     {account.lastLoginAt
                       ? formatDate(account.lastLoginAt, locale)
                       : t.accounts.never}
@@ -224,7 +224,7 @@ export default function Accounts() {
                     )}
                   </td>
                   <td className="px-5 py-4">
-                    <span className="text-ink-600">
+                    <span className="tabular-nums text-ink-600">
                       {account.freeSitesUsed} / {account.freeSiteAllowance}
                     </span>
                     {account.atFreeLimit && (

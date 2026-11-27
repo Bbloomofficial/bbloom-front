@@ -181,7 +181,7 @@ export default function PromoCodeEditor() {
         {t.promoCodes.back}
       </Link>
 
-      <h1 className="mt-3 text-2xl font-extrabold tracking-tight text-ink-900 sm:text-3xl">
+      <h1 className="mt-3 text-2xl font-extrabold text-balance tracking-tight text-ink-900 sm:text-3xl">
         {isNew ? t.promoCodes.newTitle : t.promoCodes.editTitle}
       </h1>
 

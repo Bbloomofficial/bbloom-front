@@ -119,7 +119,7 @@ export default function Sites() {
     <div>
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-extrabold tracking-tight text-ink-900 sm:text-3xl">
+          <h1 className="text-2xl font-extrabold text-balance tracking-tight text-ink-900 sm:text-3xl">
             {t.sites.title}
           </h1>
           <p className="mt-1 text-sm text-ink-600">{t.sites.subtitle}</p>
@@ -283,7 +283,7 @@ export default function Sites() {
                       <span className="text-ink-400">—</span>
                     )}
                   </td>
-                  <td className="hidden px-5 py-4 text-ink-600 sm:table-cell">
+                  <td className="hidden px-5 py-4 tabular-nums text-ink-600 sm:table-cell">
                     {formatDate(site.updatedAt, locale)}
                   </td>
                   <td className="px-5 py-4 text-end">

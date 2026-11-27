@@ -1813,7 +1813,7 @@ const en: AdminStrings = {
       spend: "Spent",
       loadFailed: "We could not read the results.",
       loadFailedNeverRead:
-        "This campaign has never been read successfully either, so the same failure has most likely been happening since it launched. Nothing else shows this: the hourly refresh logs a failure and moves on, the list still reads \"not yet\", and the site's impression count leaves this campaign out entirely. Worth checking the logs rather than waiting.",
+        "This campaign has never been read successfully either, so the same failure has most likely been happening since it launched. Nothing else shows this: the hourly refresh logs a failure and moves on, the list still reads “not yet”, and the site's impression count leaves this campaign out entirely. Worth checking the logs rather than waiting.",
       notLaunched: "This campaign never reached Meta, so there is nothing to read.",
     },
   },
@@ -1913,7 +1913,7 @@ const en: AdminStrings = {
     comingSoonBeatsFeatured:
       "This plan is also marked most popular. Only the coming-soon badge will show, since a plan nobody can buy yet cannot be the popular choice.",
     comingSoonHidden:
-      "This plan is not shown on the pricing page, so nobody will see that it is coming. Turn on \"Shown on the pricing page\" as well if you meant to announce it.",
+      "This plan is not shown on the pricing page, so nobody will see that it is coming. Turn on “Shown on the pricing page” as well if you meant to announce it.",
     status: "Status",
     translations: "Copy",
     translationsHint:

@@ -101,7 +101,7 @@ export default function Emails() {
     <div>
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-extrabold tracking-tight text-ink-900 sm:text-3xl">
+          <h1 className="text-2xl font-extrabold text-balance tracking-tight text-ink-900 sm:text-3xl">
             {e.title}
           </h1>
           <p className="mt-1 max-w-3xl text-sm text-ink-600">{e.subtitle}</p>
@@ -193,7 +193,7 @@ export default function Emails() {
                       <td className="max-w-80 px-5 py-4 text-xs text-ink-500" dir="ltr">
                         {row.reason}
                       </td>
-                      <td className="whitespace-nowrap px-5 py-4 text-ink-600">
+                      <td className="whitespace-nowrap px-5 py-4 tabular-nums text-ink-600">
                         {formatDateTime(row.at, locale)}
                       </td>
                       <td className="px-5 py-4 text-end">

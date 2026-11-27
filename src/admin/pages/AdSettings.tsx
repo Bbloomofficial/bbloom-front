@@ -251,7 +251,7 @@ export default function AdSettings() {
 
   return (
     <div className="pb-16">
-      <h1 className="text-2xl font-extrabold tracking-tight text-ink-900 sm:text-3xl">
+      <h1 className="text-2xl font-extrabold text-balance tracking-tight text-ink-900 sm:text-3xl">
         {t.title}
       </h1>
       <p className="mt-1 text-sm text-ink-600">{t.subtitle}</p>

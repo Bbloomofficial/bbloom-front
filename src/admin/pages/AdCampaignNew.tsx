@@ -265,7 +265,7 @@ export default function AdCampaignNew() {
     <div>
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-extrabold tracking-tight text-ink-900 sm:text-3xl">
+          <h1 className="text-2xl font-extrabold text-balance tracking-tight text-ink-900 sm:text-3xl">
             {f.title}
           </h1>
           <p className="mt-1 max-w-2xl text-sm text-ink-600">{f.subtitle}</p>

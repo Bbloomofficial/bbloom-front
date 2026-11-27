@@ -258,7 +258,7 @@ export default function AdCampaignDetail() {
     <div>
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-extrabold tracking-tight text-ink-900 sm:text-3xl">
+          <h1 className="text-2xl font-extrabold text-balance tracking-tight text-ink-900 sm:text-3xl">
             {data.name}
           </h1>
           <div className="mt-2 flex flex-wrap items-center gap-3">

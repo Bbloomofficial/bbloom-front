@@ -51,7 +51,7 @@ export default function Login() {
         <div className="w-full max-w-md">
           <div className="rounded-3xl border border-ink-100 bg-surface p-6 shadow-xl shadow-bloom-600/5 sm:p-8">
             <span className="eyebrow">{t.brand}</span>
-            <h1 className="mt-4 text-2xl font-extrabold tracking-tight text-ink-900">
+            <h1 className="mt-4 text-2xl font-extrabold text-balance tracking-tight text-ink-900">
               {t.login.title}
             </h1>
             <p className="mt-2 text-sm text-ink-600">{t.login.subtitle}</p>

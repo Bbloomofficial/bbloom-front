@@ -101,7 +101,7 @@ export default function PromoCodes() {
     <div>
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-extrabold tracking-tight text-ink-900 sm:text-3xl">
+          <h1 className="text-2xl font-extrabold text-balance tracking-tight text-ink-900 sm:text-3xl">
             {t.promoCodes.title}
           </h1>
           <p className="mt-1 text-sm text-ink-600">{t.promoCodes.subtitle}</p>
@@ -203,11 +203,11 @@ export default function PromoCodes() {
                       {promo.code}
                     </Link>
                   </td>
-                  <td className="px-5 py-4 text-ink-900" dir="ltr">
+                  <td className="px-5 py-4 tabular-nums text-ink-900" dir="ltr">
                     −{promo.percentOff}%
                   </td>
                   <td
-                    className="hidden px-5 py-4 text-ink-600 sm:table-cell"
+                    className="hidden px-5 py-4 tabular-nums text-ink-600 sm:table-cell"
                     dir="ltr"
                   >
                     {/* No limit is the common case and reads as a bare count

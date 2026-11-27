@@ -131,7 +131,7 @@ export default function AccountDetail() {
       </Link>
 
       <div className="mt-4">
-        <h1 className="text-2xl font-extrabold tracking-tight text-ink-900 sm:text-3xl">
+        <h1 className="text-2xl font-extrabold text-balance tracking-tight text-ink-900 sm:text-3xl">
           {account.fullName}
         </h1>
         <p className="mt-1 text-sm text-ink-600" dir="ltr" translate="no">
