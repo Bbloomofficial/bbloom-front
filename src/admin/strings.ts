@@ -579,6 +579,20 @@ export type AdminStrings = {
       unknownSite: string;
       listTitle: (shown: number, total: number) => string;
       exportCsv: string;
+      colActions: string;
+      selectAll: string;
+      selectRow: (name: string) => string;
+      selected: (count: number) => string;
+      clearSelection: string;
+      bulkPause: (count: number) => string;
+      bulkResume: (count: number) => string;
+      bulkDelete: (count: number) => string;
+      bulkPauseConfirm: (count: number) => string;
+      bulkResumeConfirm: (count: number) => string;
+      bulkDeleteConfirm: (count: number) => string;
+      bulkWorking: (done: number, total: number) => string;
+      bulkDone: (ok: number, total: number) => string;
+      pageSize: string;
       csvHeaders: string[];
       none: string;
       noneMatching: string;
@@ -1630,6 +1644,23 @@ const en: AdminStrings = {
       listTitle: (shown, total) =>
         shown === total ? `${total} campaigns` : `${shown} of ${total} campaigns`,
       exportCsv: "Export CSV",
+      colActions: "Actions",
+      selectAll: "Select every campaign on this page",
+      selectRow: (name) => `Select ${name}`,
+      selected: (count) => `${count} selected`,
+      clearSelection: "Clear selection",
+      bulkPause: (count) => `Pause ${count}`,
+      bulkResume: (count) => `Resume ${count}`,
+      bulkDelete: (count) => `Delete ${count} at Meta`,
+      bulkPauseConfirm: (count) =>
+        `Pause ${count} ${count === 1 ? "campaign" : "campaigns"}? They stop spending straight away.`,
+      bulkResumeConfirm: (count) =>
+        `Resume ${count} ${count === 1 ? "campaign" : "campaigns"}? They start spending again immediately.`,
+      bulkDeleteConfirm: (count) =>
+        `Delete ${count} ${count === 1 ? "campaign" : "campaigns"} at Meta? This cannot be undone, and each client will need a new one.`,
+      bulkWorking: (done, total) => `Working… ${done} of ${total}`,
+      bulkDone: (ok, total) => `Done: ${ok} of ${total}.`,
+      pageSize: "Rows per page",
       csvHeaders: [
         "Name",
         "Site",
@@ -2727,6 +2758,23 @@ const ka: AdminStrings = {
       listTitle: (shown, total) =>
         shown === total ? `${total} კამპანია` : `${total}-დან ნაჩვენებია ${shown} კამპანია`,
       exportCsv: "CSV-ად ჩამოტვირთვა",
+      colActions: "მოქმედებები",
+      selectAll: "ამ გვერდის ყველა კამპანიის მონიშვნა",
+      selectRow: (name) => `${name} — მონიშვნა`,
+      selected: (count) => `მონიშნულია ${count}`,
+      clearSelection: "მონიშვნის მოხსნა",
+      bulkPause: (count) => `შეჩერება (${count})`,
+      bulkResume: (count) => `გაგრძელება (${count})`,
+      bulkDelete: (count) => `Meta-ში წაშლა (${count})`,
+      bulkPauseConfirm: (count) =>
+        `შევაჩეროთ ${count} კამპანია? ხარჯვა მაშინვე შეწყდება.`,
+      bulkResumeConfirm: (count) =>
+        `გავაგრძელოთ ${count} კამპანია? ხარჯვა მაშინვე განახლდება.`,
+      bulkDeleteConfirm: (count) =>
+        `წავშალოთ ${count} კამპანია Meta-ში? ამის დაბრუნება შეუძლებელია და თითოეულ კლიენტს ახალი დასჭირდება.`,
+      bulkWorking: (done, total) => `სრულდება… ${done} / ${total}`,
+      bulkDone: (ok, total) => `შესრულდა: ${ok} / ${total}.`,
+      pageSize: "სტრიქონი გვერდზე",
       csvHeaders: [
         "დასახელება",
         "საიტი",
