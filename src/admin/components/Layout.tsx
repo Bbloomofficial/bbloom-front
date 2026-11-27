@@ -98,6 +98,9 @@ export default function Layout({ children }: { children: ReactNode }) {
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const drawerRef = useRef<HTMLDivElement>(null);
   const wasOpen = useRef(false);
+  // Set when the drawer closes because the window widened past `lg`. The menu
+  // button is hidden there, so focus must not be sent back to it.
+  const closedByWidth = useRef(false);
 
   // A link chosen in the narrow-screen drawer should close it.
   useEffect(() => setMenuOpen(false), [pathname]);
@@ -108,12 +111,24 @@ export default function Layout({ children }: { children: ReactNode }) {
       // again from the top of the page.
       if (wasOpen.current) {
         wasOpen.current = false;
-        menuButtonRef.current?.focus();
+        if (!closedByWidth.current) menuButtonRef.current?.focus();
+        closedByWidth.current = false;
       }
       return;
     }
     wasOpen.current = true;
     closeButtonRef.current?.focus();
+    // The drawer is `lg:hidden`, but hiding it does not close it: rotating a
+    // tablet or widening the window past `lg` would leave the scroll lock and
+    // the Tab trap below on, over a page that shows no drawer. Close it there.
+    // 1024px is Tailwind's `lg`.
+    const wide = window.matchMedia("(min-width: 1024px)");
+    const onWide = (event: MediaQueryListEvent) => {
+      if (!event.matches) return;
+      closedByWidth.current = true;
+      setMenuOpen(false);
+    };
+    wide.addEventListener("change", onWide);
     const onKey = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         setMenuOpen(false);
@@ -147,6 +162,7 @@ export default function Layout({ children }: { children: ReactNode }) {
     document.body.style.overflow = "hidden";
     return () => {
       window.removeEventListener("keydown", onKey);
+      wide.removeEventListener("change", onWide);
       document.body.style.overflow = previousOverflow;
     };
   }, [menuOpen]);
