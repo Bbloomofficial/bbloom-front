@@ -146,7 +146,7 @@ export default function Layout({ children }: { children: ReactNode }) {
     },
     {
       key: "ads",
-      to: adminPath("/ads"),
+      to: adminPath("/ads/campaigns"),
       label: t.nav.ads,
       icon: AdsIcon,
       match: [adminPath("/ads")],
