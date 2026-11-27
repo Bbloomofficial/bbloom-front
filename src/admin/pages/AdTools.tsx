@@ -202,7 +202,7 @@ function TestTool({
           <button
             type="submit"
             disabled={pending || channels.length === 0}
-            className="rounded-xl bg-danger px-4 py-3 text-sm font-semibold text-white transition hover:opacity-90 active:scale-95 disabled:opacity-40"
+            className="rounded-xl bg-danger px-4 py-3 text-sm font-semibold text-white dark:text-contrast transition hover:opacity-90 active:scale-95 disabled:opacity-40"
           >
             {pending ? t.launching : t.launch}
           </button>
@@ -435,7 +435,7 @@ function TestCampaigns({
                           type="button"
                           onClick={() => void remove(campaign)}
                           disabled={busyId === campaign.id}
-                          className="rounded-xl bg-danger px-3 py-2 text-xs font-semibold text-white transition hover:opacity-90 active:scale-95 disabled:opacity-40"
+                          className="rounded-xl bg-danger px-3 py-2 text-xs font-semibold text-white dark:text-contrast transition hover:opacity-90 active:scale-95 disabled:opacity-40"
                         >
                           {busyId === campaign.id ? t.deleting : t.delete}
                         </button>

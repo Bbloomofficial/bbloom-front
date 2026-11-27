@@ -272,7 +272,7 @@ export default function Layout({ children }: { children: ReactNode }) {
             type="button"
             aria-label={t.nav.closeMenu}
             onClick={() => setMenuOpen(false)}
-            className="absolute inset-0 bg-ink-900/40"
+            className="absolute inset-0 bg-contrast/60"
           />
           <div className="absolute inset-y-0 start-0 w-72 max-w-[85vw] bg-surface pt-10 shadow-xl">
             <button
