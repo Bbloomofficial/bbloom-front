@@ -1,5 +1,5 @@
-import type { ReactNode } from "react";
-import { NavLink, Link } from "react-router-dom";
+import { useEffect, useRef, useState, type ComponentType, type ReactNode } from "react";
+import { NavLink, Link, useLocation } from "react-router-dom";
 import Logo from "../../components/Logo";
 import LanguageSwitcher from "../../components/LanguageSwitcher";
 import ThemeToggle from "../../components/ThemeToggle";
@@ -8,18 +8,75 @@ import { adminPath, marketingHome } from "../../routes";
 import { useSession } from "../auth";
 import { useSystemStatus } from "../system";
 import MailAlert from "./MailAlert";
+import {
+  AccountsIcon,
+  AdsIcon,
+  CloseIcon,
+  MenuIcon,
+  PricingIcon,
+  SignOutIcon,
+  SitesIcon,
+  SystemIcon,
+} from "./NavIcons";
 import { adminStrings } from "../strings";
 
-function navClass({ isActive }: { isActive: boolean }) {
-  return [
-    // `whitespace-nowrap` and `shrink-0` are both load-bearing: without them a
-    // flex item is free to shrink below its own text, and a two-word label like
-    // "ახალი საიტი" breaks across two lines inside a 16-unit-tall header.
-    "shrink-0 whitespace-nowrap rounded-xl px-3 py-2 text-sm font-semibold transition",
-    isActive
-      ? "bg-tint text-tint-fg"
-      : "text-ink-600 hover:bg-ink-50 hover:text-ink-900",
-  ].join(" ");
+type Tab = { to: string; label: string };
+
+/**
+ * One sidebar entry. `match` lists the path prefixes that count as being in
+ * this section, so the entry stays lit on its detail and editor screens.
+ * `tabs` are the screens merged under it, shown as tabs above those screens.
+ */
+type Section = {
+  key: string;
+  to: string;
+  label: string;
+  icon: ComponentType<{ className?: string }>;
+  match: string[];
+  /** Whether `to` itself matches only exactly — the sites list is the root. */
+  exactRoot?: boolean;
+  tabs?: Tab[];
+};
+
+function inSection(pathname: string, section: Section): boolean {
+  if (section.exactRoot && pathname === section.to) return true;
+  return section.match.some(
+    (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
+  );
+}
+
+/** The tab bar for a merged section, on the screens that are its tabs. */
+function SectionTabs({ tabs, pathname }: { tabs: Tab[]; pathname: string }) {
+  const activeRef = useRef<HTMLAnchorElement>(null);
+  // On a phone the strip scrolls, and the active tab may start off-screen.
+  useEffect(() => {
+    activeRef.current?.scrollIntoView({ block: "nearest", inline: "nearest" });
+  }, [pathname]);
+  return (
+    // The line under the tabs is an inset shadow rather than a border, and the
+    // tabs carry no negative margin: either would overflow the scroll box by a
+    // pixel, and Windows then draws a scrollbar beside two words.
+    <nav className="mb-6 flex gap-1 overflow-x-auto [scrollbar-width:none] shadow-[inset_0_-1px_0_var(--color-ink-100)]">
+      {tabs.map((tab) => {
+        const active = pathname === tab.to;
+        return (
+          <Link
+            key={tab.to}
+            ref={active ? activeRef : undefined}
+            to={tab.to}
+            aria-current={active ? "page" : undefined}
+            className={`shrink-0 whitespace-nowrap border-b-2 px-4 py-2.5 text-sm font-semibold transition ${
+              active
+                ? "border-bloom-500 text-ink-900"
+                : "border-transparent text-ink-500 hover:text-ink-900"
+            }`}
+          >
+            {tab.label}
+          </Link>
+        );
+      })}
+    </nav>
+  );
 }
 
 export default function Layout({ children }: { children: ReactNode }) {
@@ -29,117 +86,207 @@ export default function Layout({ children }: { children: ReactNode }) {
   // Staff below ADMIN cannot read the health endpoint, so the link is hidden
   // rather than left to lead them to an empty screen.
   const { forbidden } = useSystemStatus();
+  const { pathname } = useLocation();
+  const [menuOpen, setMenuOpen] = useState(false);
 
-  // One list, rendered twice — the wide and narrow navs used to be separate
-  // copies, which is how a link ends up existing on only one of them.
-  const links = [
-    { to: adminPath(), label: t.nav.sites, end: true },
-    { to: adminPath("/accounts"), label: t.nav.accounts, end: false },
-    { to: adminPath("/plans"), label: t.nav.plans, end: false },
-    { to: adminPath("/promo-codes"), label: t.nav.promoCodes, end: false },
+  // A link chosen in the narrow-screen drawer should close it.
+  useEffect(() => setMenuOpen(false), [pathname]);
+  useEffect(() => {
+    if (!menuOpen) return;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setMenuOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [menuOpen]);
+
+  // One list, rendered in both the sidebar and the drawer, so a link cannot
+  // end up existing on only one of them.
+  const sections: Section[] = [
     {
-      to: adminPath("/new-customer-offer"),
-      label: t.nav.newCustomerOffer,
-      end: false,
+      key: "sites",
+      to: adminPath(),
+      label: t.nav.sites,
+      icon: SitesIcon,
+      exactRoot: true,
+      match: [adminPath("/sites")],
+      tabs: [
+        { to: adminPath(), label: t.nav.sites },
+        { to: adminPath("/sites/new"), label: t.nav.newSite },
+      ],
     },
-    { to: adminPath("/ads"), label: t.nav.ads, end: false },
-    { to: adminPath("/sites/new"), label: t.nav.newSite, end: false },
+    {
+      key: "accounts",
+      to: adminPath("/accounts"),
+      label: t.nav.accounts,
+      icon: AccountsIcon,
+      match: [adminPath("/accounts")],
+    },
+    {
+      key: "pricing",
+      to: adminPath("/plans"),
+      label: t.nav.pricing,
+      icon: PricingIcon,
+      match: [
+        adminPath("/plans"),
+        adminPath("/promo-codes"),
+        adminPath("/new-customer-offer"),
+      ],
+      tabs: [
+        { to: adminPath("/plans"), label: t.nav.plans },
+        { to: adminPath("/promo-codes"), label: t.nav.promoCodes },
+        { to: adminPath("/new-customer-offer"), label: t.nav.newCustomerOffer },
+      ],
+    },
+    {
+      key: "ads",
+      to: adminPath("/ads"),
+      label: t.nav.ads,
+      icon: AdsIcon,
+      match: [adminPath("/ads")],
+    },
     ...(forbidden
       ? []
-      : [{ to: adminPath("/system"), label: t.nav.system, end: false }]),
+      : [
+          {
+            key: "system",
+            to: adminPath("/system"),
+            label: t.nav.system,
+            icon: SystemIcon,
+            match: [adminPath("/system")],
+          },
+        ]),
   ];
 
+  const current = sections.find((section) => inSection(pathname, section));
+  // Tabs only on the screens that are tabs — not on an editor or a detail
+  // page, which have their own way back.
+  const tabs =
+    current?.tabs && current.tabs.some((tab) => tab.to === pathname)
+      ? current.tabs
+      : null;
+
+  const sidebar = (
+    <div className="flex h-full flex-col">
+      <div className="flex items-center gap-3 px-5 pt-5">
+        <Link to={adminPath()} aria-label={t.brand} className="shrink-0">
+          <Logo />
+        </Link>
+        <span className="shrink-0 whitespace-nowrap rounded-full bg-tint px-2.5 py-1 text-xs font-semibold text-tint-fg">
+          {t.brand}
+        </span>
+      </div>
+
+      <div className="mt-4 flex items-center gap-2 px-5">
+        <LanguageSwitcher />
+        <ThemeToggle />
+      </div>
+
+      <nav className="mt-6 flex-1 space-y-1 overflow-y-auto px-3">
+        {sections.map((section) => {
+          const active = inSection(pathname, section);
+          const Icon = section.icon;
+          return (
+            <NavLink
+              key={section.key}
+              to={section.to}
+              aria-current={active ? "page" : undefined}
+              className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition ${
+                active
+                  ? "bg-tint text-tint-fg"
+                  : "text-ink-600 hover:bg-ink-50 hover:text-ink-900"
+              }`}
+            >
+              <Icon className="h-5 w-5 shrink-0" />
+              <span className="truncate">{section.label}</span>
+            </NavLink>
+          );
+        })}
+      </nav>
+
+      <div className="border-t border-ink-100 px-3 py-4">
+        <p className="truncate px-3 text-xs text-ink-400" title={user.email}>
+          {t.signedInAs} {user.email}
+        </p>
+        <button
+          type="button"
+          onClick={signOut}
+          className="mt-2 flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-ink-600 transition hover:bg-ink-50 hover:text-bloom-600"
+        >
+          <SignOutIcon className="h-5 w-5 shrink-0" />
+          {t.signOut}
+        </button>
+      </div>
+    </div>
+  );
+
   return (
-    <div className="flex min-h-screen flex-col bg-canvas">
-      <header className="sticky top-0 z-30 border-b border-ink-100 bg-surface/95 backdrop-blur">
-        {/* Deliberately not `container-page`. Everything else on the screen is
-            capped at `max-w-6xl` and should be — a form is unreadable ruler-wide
-            — but that cap was making the header fight for 1088px on a 1920px
-            monitor, which is why seven links plus the account controls had
-            nowhere to go. The bar spans the window and keeps the same padding
-            either side, so the first link and the last control sit the same
-            distance from their edges. */}
-        <div className="flex h-16 items-center gap-3 px-5 sm:px-8">
-          <Link to={adminPath()} aria-label={t.brand} className="shrink-0">
-            <Logo />
-          </Link>
-          {/* `shrink-0` and `whitespace-nowrap` for the same reason the links
-              have them: this was the only shrinkable item in the row, so it was
-              the one the browser crushed, and "bbloom გუნდი" wrapped onto two
-              lines inside a 16-unit-tall header and rode up over the logo. */}
-          <span className="hidden shrink-0 whitespace-nowrap rounded-full bg-tint px-2.5 py-1 text-xs font-semibold text-tint-fg sm:inline">
-            {t.brand}
+    <div className="min-h-screen bg-canvas lg:flex">
+      {/* Wide screens: a fixed sidebar. Sticky rather than fixed so the page
+          beside it keeps its normal flow and scrolls on its own. */}
+      <aside className="sticky top-0 hidden h-screen w-64 shrink-0 border-e border-ink-100 bg-surface lg:block">
+        {sidebar}
+      </aside>
+
+      {/* Narrow screens: a bar with a menu button, and the same sidebar as a
+          drawer. */}
+      <header className="sticky top-0 z-30 flex h-14 items-center gap-3 border-b border-ink-100 bg-surface/95 px-4 backdrop-blur lg:hidden">
+        <button
+          type="button"
+          onClick={() => setMenuOpen(true)}
+          aria-label={t.nav.openMenu}
+          aria-expanded={menuOpen}
+          className="rounded-xl p-2 text-ink-600 hover:bg-ink-50 hover:text-ink-900"
+        >
+          <MenuIcon />
+        </button>
+        <Link to={adminPath()} aria-label={t.brand}>
+          <Logo />
+        </Link>
+        {current && (
+          <span className="ms-auto truncate text-sm font-semibold text-ink-600">
+            {current.label}
           </span>
-
-          {/* Not `xl`, and no longer 1340px either. The seven Georgian labels
-              plus the brand and the account controls measured at about 1316px,
-              which is why this was never the stock 1280px breakpoint. "რეკლამა"
-              makes eight and adds roughly another hundred, so the row needs
-              about 1416px to fit and switches at 1440. If a ninth link is ever
-              added, re-measure rather than nudging this — past about 1500px
-              there is no monitor left to widen into and the links should be
-              grouped instead. */}
-          <nav className="ms-4 hidden items-center gap-1 [@media(min-width:1440px)]:flex">
-            {links.map((link) => (
-              <NavLink
-                key={link.to}
-                to={link.to}
-                end={link.end}
-                className={navClass}
-              >
-                {link.label}
-              </NavLink>
-            ))}
-          </nav>
-
-          <div className="ms-auto flex items-center gap-2">
-            <LanguageSwitcher />
-            <ThemeToggle />
+        )}
+      </header>
+      {menuOpen && (
+        <div className="fixed inset-0 z-40 lg:hidden" role="dialog" aria-modal="true">
+          <button
+            type="button"
+            aria-label={t.nav.closeMenu}
+            onClick={() => setMenuOpen(false)}
+            className="absolute inset-0 bg-ink-900/40"
+          />
+          <div className="absolute inset-y-0 start-0 w-72 max-w-[85vw] bg-surface pt-10 shadow-xl">
             <button
               type="button"
-              onClick={signOut}
-              className="rounded-xl border border-ink-100 bg-control px-3 py-2 text-sm font-semibold text-ink-600 transition hover:border-bloom-300 hover:text-bloom-600"
+              onClick={() => setMenuOpen(false)}
+              aria-label={t.nav.closeMenu}
+              className="absolute end-3 top-3 rounded-xl p-2 text-ink-600 hover:bg-ink-50"
             >
-              {t.signOut}
+              <CloseIcon />
             </button>
+            {sidebar}
           </div>
         </div>
+      )}
 
-        {/* Below the width where the links fit beside the brand they move to
-            their own row and scroll on purpose — a row that scrolls when you
-            expect it to is better than one that quietly clips. Same padding as
-            the bar above, so the first link lines up under the logo. */}
-        <nav className="flex items-center gap-1 overflow-x-auto border-t border-ink-100 px-5 py-2 sm:px-8 [@media(min-width:1440px)]:hidden">
-          {links.map((link) => (
-            <NavLink
-              key={link.to}
-              to={link.to}
-              end={link.end}
-              className={navClass}
-            >
-              {link.label}
-            </NavLink>
-          ))}
-        </nav>
-      </header>
+      <div className="flex min-w-0 flex-1 flex-col">
+        <MailAlert />
 
-      <MailAlert />
+        <main className="container-page flex-1 py-8 sm:py-10">
+          {tabs && <SectionTabs tabs={tabs} pathname={pathname} />}
+          {children}
+        </main>
 
-      <main className="container-page flex-1 py-8 sm:py-10">{children}</main>
-
-      <footer className="border-t border-ink-100 py-6">
-        <div className="container-page flex flex-wrap items-center justify-between gap-3 text-xs text-ink-400">
-          <span>
-            {t.signedInAs} {user.email}
-          </span>
-          <a
-            href={marketingHome()}
-            className="font-semibold hover:text-bloom-600"
-          >
-            {t.backToBbloom}
-          </a>
-        </div>
-      </footer>
+        <footer className="border-t border-ink-100 py-6">
+          <div className="container-page flex flex-wrap items-center justify-end gap-3 text-xs text-ink-400">
+            <a href={marketingHome()} className="font-semibold hover:text-bloom-600">
+              {t.backToBbloom}
+            </a>
+          </div>
+        </footer>
+      </div>
     </div>
   );
 }
