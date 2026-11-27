@@ -275,8 +275,10 @@ function TestTool({
 
           {/* The case the outcome alone gets wrong: a FAILED that got far
               enough to create the campaign is spending money while reading as
-              though nothing happened. */}
-          {result.stillSpending && (
+              though nothing happened. Only for that case — a LAUNCHED test is
+              always still spending, its own copy already says so, and this
+              box's wording ("it failed part-way through") would contradict it. */}
+          {result.stillSpending && outcome !== "LAUNCHED" && (
             <div className="mt-3 rounded-2xl border border-danger/30 bg-danger/10 p-4 dark:bg-danger/15">
               <p className="text-sm font-bold text-danger">
                 {t.stillSpendingTitle}
