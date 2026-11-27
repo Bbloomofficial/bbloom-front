@@ -151,9 +151,9 @@ export default function Layout({ children }: { children: ReactNode }) {
       icon: AdsIcon,
       match: [adminPath("/ads")],
       tabs: [
-        { to: adminPath("/ads"), label: t.nav.overview },
         { to: adminPath("/ads/campaigns"), label: t.ads.manager.openLink },
         { to: adminPath("/ads/analytics"), label: t.ads.analytics.tab },
+        { to: adminPath("/ads"), label: t.nav.overview },
         { to: adminPath("/ads/settings"), label: t.ads.settingsLink },
         { to: adminPath("/ads/tools"), label: t.ads.tools },
       ],
