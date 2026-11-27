@@ -97,6 +97,30 @@ export type CampaignFilters = {
 /** The Meta-status filter value for rows whose status at Meta was never read. */
 export const META_NOT_READ = "NOT_READ";
 
+/**
+ * Our name for what Ads Manager's Delivery column shows as "Preparing": Meta has
+ * the ad switched on (`ACTIVE`) but has not served a single impression yet. The
+ * API has no such state of its own, so calling it "Active" would claim delivery
+ * that has not happened.
+ */
+export const META_PREPARING = "PREPARING";
+
+/**
+ * The delivery word to show for a campaign, in Meta's terms, or undefined when
+ * only ours is meaningful: never sent to Meta, deleted (we stop reading those,
+ * so Meta's last word is stale), or not read yet.
+ */
+export function metaDelivery(campaign: AdCampaignDto): string | undefined {
+  if (!campaign.metaCampaignId) return undefined;
+  if (campaign.status === "DELETED" || campaign.deletedAt) return undefined;
+  const state = campaign.metaEffectiveStatus;
+  if (!state) return undefined;
+  if (state === "ACTIVE" && !(Number(campaign.impressions ?? 0) > 0)) {
+    return META_PREPARING;
+  }
+  return state;
+}
+
 export const NO_FILTERS: CampaignFilters = {
   query: "",
   statuses: [],
@@ -145,7 +169,7 @@ export function filterCampaigns(
     if (filters.siteId && campaign.siteId !== filters.siteId) return false;
     if (filters.spendingOnly && !isSpending(campaign)) return false;
     if (filters.metaStatus) {
-      const atMeta = campaign.metaEffectiveStatus ?? META_NOT_READ;
+      const atMeta = metaDelivery(campaign) ?? META_NOT_READ;
       if (atMeta !== filters.metaStatus) return false;
     }
     if (filters.from || filters.to) {
@@ -390,7 +414,7 @@ export function campaignsToCsv(
         c.name,
         c.siteName,
         c.status,
-        c.metaEffectiveStatus,
+        metaDelivery(c) ?? "",
         c.test ? "test" : "",
         c.channels.join("+"),
         (c.dailyBudgetMinor / 100).toFixed(2),

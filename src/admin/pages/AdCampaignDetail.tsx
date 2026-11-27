@@ -13,7 +13,7 @@ import {
 } from "../api/client";
 import { adminStrings } from "../strings";
 import { formatDateTime } from "../format";
-import { Budget, Channels, Insight, MetaStatus, StatusPill } from "../components/AdBits";
+import { Budget, Channels, DeliveryStatus, Insight } from "../components/AdBits";
 import type { AdCampaignDto } from "../api/types";
 
 /**
@@ -258,16 +258,7 @@ export default function AdCampaignDetail() {
             {data.name}
           </h1>
           <div className="mt-2 flex flex-wrap items-center gap-3">
-            <StatusPill status={data.status} labels={t.statuses} />
-            {data.metaCampaignId && (
-              <MetaStatus
-                status={data.metaEffectiveStatus}
-                issue={data.metaDeliveryIssue}
-                labels={t.metaStatuses}
-                prefix={t.manager.metaPrefix}
-                notRead={t.manager.metaNotRead}
-              />
-            )}
+            <DeliveryStatus campaign={data} labels={t.statuses} metaLabels={t.metaStatuses} />
             <span className="text-sm text-ink-500">{data.siteName}</span>
           </div>
         </div>

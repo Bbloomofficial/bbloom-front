@@ -1,6 +1,8 @@
 import { formatMinor } from "../../api/plans";
 import { figure } from "../../api/ads";
 import type { AdCampaignStatus, AdChannel } from "../../api/ads";
+import type { AdCampaignDto } from "../api/types";
+import { metaDelivery } from "../campaignAnalytics";
 
 /**
  * The small pieces every ads screen renders the same way.
@@ -84,6 +86,7 @@ const STATUS_TONE: Record<AdCampaignStatus, string> = {
  */
 const META_TONE: Record<string, string> = {
   ACTIVE: "border-success-border bg-success-soft text-success-strong",
+  PREPARING: "border-amber-300/70 bg-amber-50 text-amber-800 dark:border-amber-800 dark:bg-amber-950/30 dark:text-amber-300",
   PENDING_REVIEW: "border-amber-300/70 bg-amber-50 text-amber-800 dark:border-amber-800 dark:bg-amber-950/30 dark:text-amber-300",
   IN_PROCESS: "border-amber-300/70 bg-amber-50 text-amber-800 dark:border-amber-800 dark:bg-amber-950/30 dark:text-amber-300",
   PREAPPROVED: "border-amber-300/70 bg-amber-50 text-amber-800 dark:border-amber-800 dark:bg-amber-950/30 dark:text-amber-300",
@@ -93,34 +96,31 @@ const META_TONE: Record<string, string> = {
 };
 
 /**
- * Meta's own word on delivery, beside ours. Ours says what we asked for; an ad
- * in review or rejected reads "Running" on our side, which is why this exists.
+ * One delivery word per campaign. Meta's, in Ads Manager's terms, whenever Meta
+ * has been read for it: ours only says what we asked for, so an ad in review or
+ * rejected would read "Running". Ours otherwise — never launched, deleted, or
+ * not read yet.
  */
-export function MetaStatus({
-  status,
-  issue,
+export function DeliveryStatus({
+  campaign,
   labels,
-  prefix,
-  notRead,
+  metaLabels,
 }: {
-  status?: string;
-  issue?: string;
+  campaign: AdCampaignDto;
   labels: Record<string, string>;
-  /** "Meta:" — so the pill is not mistaken for a second copy of ours. */
-  prefix: string;
-  notRead: string;
+  metaLabels: Record<string, string>;
 }) {
-  if (!status) {
-    return <span className="text-xs text-ink-400">{`${prefix} ${notRead}`}</span>;
-  }
-  const tone = META_TONE[status] ?? "border-ink-200 bg-ink-50 text-ink-600";
+  const state = metaDelivery(campaign);
+  if (!state) return <StatusPill status={campaign.status} labels={labels} />;
+  const issue = campaign.metaDeliveryIssue;
+  const tone = META_TONE[state] ?? "border-ink-200 bg-ink-50 text-ink-600";
   return (
     <span className="inline-flex flex-col items-start gap-1">
       <span
         title={issue}
         className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold ${tone}`}
       >
-        {prefix} {labels[status] ?? status}
+        {metaLabels[state] ?? state}
       </span>
       {issue && <span className="max-w-64 text-xs text-danger">{issue}</span>}
     </span>
