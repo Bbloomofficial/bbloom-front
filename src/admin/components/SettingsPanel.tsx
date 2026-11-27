@@ -200,6 +200,8 @@ export default function SettingsPanel({
             id={id}
             rows={2}
             className="field"
+            aria-invalid={fieldErrors[key] ? true : undefined}
+            aria-describedby={fieldErrors[key] ? `${id}-error` : undefined}
             value={draft[key]}
             onChange={(event) => set(key, event.target.value)}
           />
@@ -210,6 +212,8 @@ export default function SettingsPanel({
             dir={options.ltr ? "ltr" : undefined}
             className="field"
             placeholder={options.placeholder}
+            aria-invalid={fieldErrors[key] ? true : undefined}
+            aria-describedby={fieldErrors[key] ? `${id}-error` : undefined}
             value={draft[key]}
             onChange={(event) => set(key, event.target.value)}
           />
@@ -218,7 +222,7 @@ export default function SettingsPanel({
           <p className="mt-1.5 text-xs text-ink-400">{options.hint}</p>
         )}
         {fieldErrors[key] && (
-          <p className="mt-1.5 text-xs font-semibold text-danger">
+          <p id={`${id}-error`} className="mt-1.5 text-xs font-semibold text-danger">
             {fieldErrors[key]}
           </p>
         )}

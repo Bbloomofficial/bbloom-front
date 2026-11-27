@@ -157,7 +157,7 @@ export default function Plans() {
       {loading && !data && <p className="mt-8 text-sm text-ink-400">{t.loading}</p>}
 
       {problem && (
-        <p className="mt-6 text-sm font-semibold text-danger">{problem}</p>
+        <p role="alert" className="mt-6 text-sm font-semibold text-danger">{problem}</p>
       )}
 
       {data && plans.length === 0 && (

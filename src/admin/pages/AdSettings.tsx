@@ -524,9 +524,9 @@ export default function AdSettings() {
           </div>
         </section>
 
-        {error && <p className="text-sm font-semibold text-danger">{error}</p>}
+        {error && <p role="alert" className="text-sm font-semibold text-danger">{error}</p>}
         {saved && !error && (
-          <p className="text-sm font-semibold text-ink-900">{t.saved}</p>
+          <p role="status" className="text-sm font-semibold text-ink-900">{t.saved}</p>
         )}
 
         <div className="flex flex-wrap items-center gap-4">

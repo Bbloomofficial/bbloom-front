@@ -140,7 +140,7 @@ export default function AccountDetail() {
       </div>
 
       {actionError && (
-        <p className="mt-4 text-sm font-semibold text-danger">{actionError}</p>
+        <p role="alert" className="mt-4 text-sm font-semibold text-danger">{actionError}</p>
       )}
 
       <div className="mt-6 rounded-3xl border border-ink-100 bg-surface p-6">
@@ -237,12 +237,12 @@ export default function AccountDetail() {
           </div>
         )}
         {resendNotice && (
-          <p className="mt-3 text-sm font-semibold text-success">
+          <p role="status" className="mt-3 text-sm font-semibold text-success">
             {resendNotice}
           </p>
         )}
         {resendError && (
-          <p className="mt-3 text-sm font-semibold text-danger">
+          <p role="alert" className="mt-3 text-sm font-semibold text-danger">
             {resendError}
           </p>
         )}
@@ -272,6 +272,7 @@ export default function AccountDetail() {
             type="number"
             min={0}
             max={10}
+            aria-label={t.accounts.freeAllowance}
             className="field w-24"
             value={currentAllowance}
             onChange={(e) => {

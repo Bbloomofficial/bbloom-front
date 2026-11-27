@@ -453,6 +453,7 @@ export default function AdCampaignNew() {
           <div className="flex items-center gap-3">
             <input
               value={ageMin}
+              aria-label={f.ageMin}
               onChange={(event) => setAgeMin(event.target.value)}
               inputMode="numeric"
               dir="ltr"
@@ -461,6 +462,7 @@ export default function AdCampaignNew() {
             <span className="text-sm text-ink-500">{f.ageTo}</span>
             <input
               value={ageMax}
+              aria-label={f.ageMax}
               onChange={(event) => setAgeMax(event.target.value)}
               inputMode="numeric"
               dir="ltr"
@@ -473,7 +475,7 @@ export default function AdCampaignNew() {
           {f.warning}
         </p>
 
-        {error && <p className="mt-4 text-sm font-semibold text-danger">{error}</p>}
+        {error && <p role="alert" className="mt-4 text-sm font-semibold text-danger">{error}</p>}
 
         <div className="mt-5 flex flex-wrap items-center gap-3">
           <button type="submit" className="rounded-xl bg-danger px-4 py-3 text-sm font-semibold text-white dark:text-contrast transition hover:opacity-90 active:scale-95 disabled:opacity-40" disabled={submitting}>

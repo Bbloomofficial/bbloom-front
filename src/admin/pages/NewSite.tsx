@@ -252,6 +252,10 @@ export default function NewSite() {
                   id="business-name"
                   className="field"
                   required
+                  aria-invalid={fieldErrors.businessName ? true : undefined}
+                  aria-describedby={
+                    fieldErrors.businessName ? "business-name-error" : undefined
+                  }
                   value={businessName}
                   onChange={(event) => setBusinessName(event.target.value)}
                 />
@@ -259,7 +263,10 @@ export default function NewSite() {
                   {t.wizard.businessNameHint}
                 </p>
                 {fieldErrors.businessName && (
-                  <p className="mt-1.5 text-xs font-semibold text-danger">
+                  <p
+                    id="business-name-error"
+                    className="mt-1.5 text-xs font-semibold text-danger"
+                  >
                     {fieldErrors.businessName}
                   </p>
                 )}
@@ -274,6 +281,15 @@ export default function NewSite() {
                     id="business-slug"
                     className="field"
                     dir="ltr"
+                    aria-invalid={!slugValid || fieldErrors.slug ? true : undefined}
+                    aria-describedby={
+                      [
+                        !slugValid && "business-slug-invalid",
+                        fieldErrors.slug && "business-slug-error",
+                      ]
+                        .filter(Boolean)
+                        .join(" ") || undefined
+                    }
                     value={effectiveSlug}
                     onChange={(event) => {
                       setSlugTouched(true);
@@ -293,12 +309,18 @@ export default function NewSite() {
                   {effectiveSlug || "…"}.bbloom.ge
                 </p>
                 {!slugValid && (
-                  <p className="mt-1.5 text-xs font-semibold text-danger">
+                  <p
+                    id="business-slug-invalid"
+                    className="mt-1.5 text-xs font-semibold text-danger"
+                  >
                     {t.wizard.slugInvalid}
                   </p>
                 )}
                 {fieldErrors.slug && (
-                  <p className="mt-1.5 text-xs font-semibold text-danger">
+                  <p
+                    id="business-slug-error"
+                    className="mt-1.5 text-xs font-semibold text-danger"
+                  >
                     {fieldErrors.slug}
                   </p>
                 )}
@@ -376,7 +398,7 @@ export default function NewSite() {
                 </p>
 
                 {languages.length === 0 ? (
-                  <p className="mt-2 text-xs font-semibold text-danger">
+                  <p role="alert" className="mt-2 text-xs font-semibold text-danger">
                     {t.wizard.needOneLanguage}
                   </p>
                 ) : (
@@ -425,11 +447,18 @@ export default function NewSite() {
                   type="email"
                   className="field"
                   dir="ltr"
+                  aria-invalid={fieldErrors.contactEmail ? true : undefined}
+                  aria-describedby={
+                    fieldErrors.contactEmail ? "site-email-error" : undefined
+                  }
                   value={contactEmail}
                   onChange={(event) => setContactEmail(event.target.value)}
                 />
                 {fieldErrors.contactEmail && (
-                  <p className="mt-1.5 text-xs font-semibold text-danger">
+                  <p
+                    id="site-email-error"
+                    className="mt-1.5 text-xs font-semibold text-danger"
+                  >
                     {fieldErrors.contactEmail}
                   </p>
                 )}

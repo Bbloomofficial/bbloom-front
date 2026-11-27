@@ -377,7 +377,7 @@ export default function AdCampaignDetail() {
         </dl>
       </section>
 
-      {error && <p className="mt-4 text-sm font-semibold text-danger">{error}</p>}
+      {error && <p role="alert" className="mt-4 text-sm font-semibold text-danger">{error}</p>}
 
       <div className="mt-6 flex flex-wrap gap-3">
         {canPause && (

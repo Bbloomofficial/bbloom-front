@@ -374,7 +374,7 @@ export default function PromoCodeEditor() {
         </section>
 
         {problem && (
-          <p className="text-sm font-semibold text-danger">{problem}</p>
+          <p role="alert" className="text-sm font-semibold text-danger">{problem}</p>
         )}
 
         {saved && !problem && (

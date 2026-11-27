@@ -151,7 +151,7 @@ export default function Emails() {
             />
           </ListToolbar>
 
-          {problem && <p className="mt-4 text-sm font-semibold text-danger">{problem}</p>}
+          {problem && <p role="alert" className="mt-4 text-sm font-semibold text-danger">{problem}</p>}
 
           {all.length === 0 ? (
             <p className="mt-6 rounded-3xl border border-ink-100 bg-surface p-8 text-center text-sm text-ink-600">

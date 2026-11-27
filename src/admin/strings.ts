@@ -7,7 +7,7 @@ import type { Locale } from "../i18n";
  */
 export type AdminStrings = {
   brand: string;
-  nav: { sites: string; newSite: string; system: string; accounts: string; plans: string; promoCodes: string; newCustomerOffer: string; ads: string; pricing: string; openMenu: string; closeMenu: string; overview: string; systemStatus: string; emails: string };
+  nav: { sites: string; newSite: string; system: string; accounts: string; plans: string; promoCodes: string; newCustomerOffer: string; ads: string; pricing: string; openMenu: string; closeMenu: string; menu: string; skipToContent: string; overview: string; systemStatus: string; emails: string };
   signedInAs: string;
   /** Shared by every admin list: search, filters, the count and paging. */
   list: {
@@ -633,6 +633,8 @@ export type AdminStrings = {
       cityHint: string;
       ageLabel: string;
       ageTo: string;
+      ageMin: string;
+      ageMax: string;
       required: string;
       create: string;
       creating: string;
@@ -909,7 +911,7 @@ export type AdminStrings = {
 
 const en: AdminStrings = {
   brand: "bbloom staff",
-  nav: { sites: "Sites", newSite: "New site", system: "System", accounts: "Accounts", plans: "Plans", promoCodes: "Discounts", newCustomerOffer: "New customers", ads: "Ads", pricing: "Pricing", openMenu: "Open menu", closeMenu: "Close menu", overview: "Overview", systemStatus: "Status", emails: "Emails" },
+  nav: { sites: "Sites", newSite: "New site", system: "System", accounts: "Accounts", plans: "Plans", promoCodes: "Discounts", newCustomerOffer: "New customers", ads: "Ads", pricing: "Pricing", openMenu: "Open menu", closeMenu: "Close menu", menu: "Menu", skipToContent: "Skip to content", overview: "Overview", systemStatus: "Status", emails: "Emails" },
   signedInAs: "Signed in as",
   list: {
     search: "Search",
@@ -1732,6 +1734,8 @@ const en: AdminStrings = {
       cityHint: "Optional. Leave blank to cover the whole country.",
       ageLabel: "Ages",
       ageTo: "to",
+      ageMin: "Minimum age",
+      ageMax: "Maximum age",
       required: "Fill this in.",
       create: "Launch this campaign",
       creating: "Launching…",
@@ -2050,7 +2054,7 @@ const en: AdminStrings = {
 
 const ka: AdminStrings = {
   brand: "ბიბლუმის გუნდი",
-  nav: { sites: "საიტები", newSite: "ახალი საიტი", system: "სისტემა", accounts: "ანგარიშები", plans: "პაკეტები", promoCodes: "ფასდაკლებები", newCustomerOffer: "ახალი კლიენტები", ads: "რეკლამა", pricing: "ფასები", openMenu: "მენიუს გახსნა", closeMenu: "მენიუს დახურვა", overview: "მიმოხილვა", systemStatus: "სტატუსი", emails: "ელფოსტა" },
+  nav: { sites: "საიტები", newSite: "ახალი საიტი", system: "სისტემა", accounts: "ანგარიშები", plans: "პაკეტები", promoCodes: "ფასდაკლებები", newCustomerOffer: "ახალი კლიენტები", ads: "რეკლამა", pricing: "ფასები", openMenu: "მენიუს გახსნა", closeMenu: "მენიუს დახურვა", menu: "მენიუ", skipToContent: "მთავარ შინაარსზე გადასვლა", overview: "მიმოხილვა", systemStatus: "სტატუსი", emails: "ელფოსტა" },
   signedInAs: "შესული ხართ როგორც",
   list: {
     search: "ძებნა",
@@ -2855,6 +2859,8 @@ const ka: AdminStrings = {
       cityHint: "სურვილისამებრ. ცარიელი დატოვეთ მთელი ქვეყნისთვის.",
       ageLabel: "ასაკი",
       ageTo: "—",
+      ageMin: "მინიმალური ასაკი",
+      ageMax: "მაქსიმალური ასაკი",
       required: "შეავსეთ ეს ველი.",
       create: "კამპანიის გაშვება",
       creating: "იშვება…",
