@@ -770,6 +770,13 @@ export type AdCampaignDto = {
     /** Meta's explanation when delivery is held back or the ad was rejected. */
     metaDeliveryIssue?: string;
     metaStatusReadAt?: string;
+    /** The ad as people see it on Facebook. Absent until read from Meta. */
+    metaFacebookPostUrl?: string;
+    /**
+     * The same on Instagram, for campaigns placed there. Meta creates it only
+     * once the ad has been placed on Instagram, so it can lag the Facebook one.
+     */
+    metaInstagramPostUrl?: string;
   };
 
 /** What reading every campaign back from Meta managed. */
