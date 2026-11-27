@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  META_NOT_READ,
   NO_FILTERS,
   addDecimals,
   campaignsToCsv,
@@ -86,6 +87,19 @@ describe("filterCampaigns", () => {
       channel: "INSTAGRAM",
     });
     expect(result.map((r) => r.id)).toEqual(["paused"]);
+  });
+
+  it("filters by Meta's own status, with unread rows as their own choice", () => {
+    const withMeta = [
+      campaign({ id: "review", metaEffectiveStatus: "PENDING_REVIEW" }),
+      campaign({ id: "rejected", metaEffectiveStatus: "DISAPPROVED" }),
+      campaign({ id: "unread" }),
+    ];
+    const pick = (metaStatus: string) =>
+      filterCampaigns(withMeta, { ...NO_FILTERS, metaStatus }).map((r) => r.id);
+    expect(pick("DISAPPROVED")).toEqual(["rejected"]);
+    expect(pick(META_NOT_READ)).toEqual(["unread"]);
+    expect(pick("")).toEqual(["review", "rejected", "unread"]);
   });
 });
 

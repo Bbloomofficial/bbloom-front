@@ -296,6 +296,8 @@ export type AdminStrings = {
     mailStatuses: Record<string, string>;
     offNote: string;
     okNote: string;
+    untestedNote: string;
+    lastFailedNote: string;
     lastSuccess: string;
     latestFailure: string;
     unknown: string;
@@ -360,6 +362,8 @@ export type AdminStrings = {
     loadFailed: string;
     retry: string;
     channels: Record<string, string>;
+    /** Meta's own delivery states, by the name Meta gives them. */
+    metaStatuses: Record<string, string>;
     statuses: Record<string, string>;
     status: {
       title: string;
@@ -530,6 +534,12 @@ export type AdminStrings = {
       subtitle: string;
       openLink: string;
       refresh: string;
+      metaPrefix: string;
+      metaFilter: string;
+      metaNotRead: string;
+      syncing: string;
+      synced: (read: number, tried: number) => string;
+      syncFailed: string;
       includeTests: string;
       includeTestsHint: string;
       testTag: string;
@@ -1183,6 +1193,8 @@ const en: AdminStrings = {
     mailTitle: "Outgoing email",
     mailStatuses: {
       OK: "Sending",
+      UNTESTED: "Not checked yet",
+      LAST_FAILED: "Not sending",
       DEGRADED: "Some mail is failing",
       FAILING: "Not sending",
       OFF: "Turned off",
@@ -1190,6 +1202,10 @@ const en: AdminStrings = {
     offNote:
       "No from-address is configured, so email is deliberately doing nothing. That is the expected state outside production.",
     okNote: "Sending is working right now.",
+    untestedNote:
+      "Nothing has been sent since the server last restarted, so it isn't known whether email works. Send a test below to find out.",
+    lastFailedNote:
+      "The last email failed and nothing has been sent successfully since. Nobody is listed as waiting, because they were dismissed. The next email will fail too until the mail service is fixed.",
     lastSuccess: "Last successful send",
     latestFailure: "Most recent failure",
     unknown: "Unknown",
@@ -1283,6 +1299,21 @@ const en: AdminStrings = {
     loadFailed: "We could not read the advertising status.",
     retry: "Try again",
     channels: { FACEBOOK: "Facebook", INSTAGRAM: "Instagram" },
+    metaStatuses: {
+      ACTIVE: "Delivering",
+      PAUSED: "Paused",
+      CAMPAIGN_PAUSED: "Campaign paused",
+      ADSET_PAUSED: "Ad set paused",
+      PENDING_REVIEW: "In review",
+      IN_PROCESS: "Processing",
+      PREAPPROVED: "Pre-approved",
+      DISAPPROVED: "Rejected",
+      WITH_ISSUES: "Has issues",
+      PENDING_BILLING_INFO: "Billing details needed",
+      ARCHIVED: "Archived",
+      DELETED: "Deleted",
+      NOT_READ: "Not read yet",
+    },
     statuses: {
       ACTIVE: "Running",
       PAUSED: "Paused",
@@ -1536,6 +1567,15 @@ const en: AdminStrings = {
         "Every client campaign in one place. Filter and sort them, and compare what each one has spent and delivered.",
       openLink: "Campaign manager",
       refresh: "Refresh",
+      metaPrefix: "Meta:",
+      metaFilter: "At Meta",
+      metaNotRead: "not read yet",
+      syncing: "Reading from Meta…",
+      synced: (read, tried) =>
+        read === tried
+          ? `Read ${tried} campaigns from Meta.`
+          : `Read ${read} of ${tried} campaigns from Meta. The rest kept their last reading.`,
+      syncFailed: "Couldn't read from Meta. Showing the last reading.",
       includeTests: "Include test campaigns",
       includeTestsHint:
         "Adds the test tool's campaigns to the list and to every figure on this page.",
@@ -1582,6 +1622,7 @@ const en: AdminStrings = {
         "Name",
         "Site",
         "Status",
+        "Meta status",
         "Test",
         "Where",
         "Daily budget",
@@ -2256,6 +2297,8 @@ const ka: AdminStrings = {
     mailTitle: "გამავალი ელფოსტა",
     mailStatuses: {
       OK: "იგზავნება",
+      UNTESTED: "ჯერ არ შემოწმებულა",
+      LAST_FAILED: "არ იგზავნება",
       DEGRADED: "ნაწილი ვერ გაიგზავნა",
       FAILING: "არ იგზავნება",
       OFF: "გამორთულია",
@@ -2263,6 +2306,10 @@ const ka: AdminStrings = {
     offNote:
       "გამგზავნი მისამართი მითითებული არ არის, ამიტომ ელფოსტა განზრახ არაფერს აკეთებს. სატესტო გარემოში ეს გამართული მდგომარეობაა.",
     okNote: "გაგზავნა ამჟამად მუშაობს.",
+    untestedNote:
+      "სერვერის ბოლო გადატვირთვის შემდეგ არცერთი წერილი არ გაგზავნილა, ამიტომ უცნობია, მუშაობს თუ არა ელფოსტა. გასარკვევად ქვემოთ სატესტო წერილი გაგზავნეთ.",
+    lastFailedNote:
+      "ბოლო წერილი ვერ გაიგზავნა და მას შემდეგ არცერთი არ გასულა. სიაში არავინ ჩანს, რადგან ისინი ამოიღეს. სანამ ელფოსტის სერვისს არ შეაკეთებთ, შემდეგი წერილიც ვერ გაიგზავნება.",
     lastSuccess: "ბოლო წარმატებული გაგზავნა",
     latestFailure: "ბოლო შეცდომა",
     unknown: "უცნობია",
@@ -2350,6 +2397,21 @@ const ka: AdminStrings = {
     loadFailed: "რეკლამის სტატუსის წაკითხვა ვერ მოხერხდა.",
     retry: "კიდევ სცადეთ",
     channels: { FACEBOOK: "Facebook", INSTAGRAM: "Instagram" },
+    metaStatuses: {
+      ACTIVE: "ჩვენება მიმდინარეობს",
+      PAUSED: "შეჩერებულია",
+      CAMPAIGN_PAUSED: "კამპანია შეჩერებულია",
+      ADSET_PAUSED: "რეკლამების ნაკრები შეჩერებულია",
+      PENDING_REVIEW: "განხილვაშია",
+      IN_PROCESS: "მუშავდება",
+      PREAPPROVED: "წინასწარ დამტკიცდა",
+      DISAPPROVED: "უარყოფილია",
+      WITH_ISSUES: "პრობლემა აქვს",
+      PENDING_BILLING_INFO: "საჭიროა გადახდის მონაცემები",
+      ARCHIVED: "დაარქივებულია",
+      DELETED: "წაშლილია",
+      NOT_READ: "ჯერ არ წაკითხულა",
+    },
     statuses: {
       ACTIVE: "მიმდინარე",
       PAUSED: "შეჩერებული",
@@ -2594,6 +2656,15 @@ const ka: AdminStrings = {
         "კლიენტების ყველა კამპანია ერთ ადგილას. გაფილტრეთ, დაალაგეთ და შეადარეთ, რამდენი დახარჯა თითოეულმა და რა შედეგი მოიტანა.",
       openLink: "კამპანიების მართვა",
       refresh: "განახლება",
+      metaPrefix: "Meta:",
+      metaFilter: "Meta-ზე",
+      metaNotRead: "ჯერ არ წაკითხულა",
+      syncing: "Meta-დან იკითხება…",
+      synced: (read, tried) =>
+        read === tried
+          ? `Meta-დან წაიკითხა ${tried} კამპანია.`
+          : `Meta-დან წაიკითხა ${tried}-დან ${read} კამპანია. დანარჩენებზე ბოლო ცნობილი მონაცემები ჩანს.`,
+      syncFailed: "Meta-დან წაკითხვა ვერ მოხერხდა. ჩანს ბოლო ცნობილი მონაცემები.",
       includeTests: "სატესტო კამპანიების ჩვენება",
       includeTestsHint:
         "სატესტო ხელსაწყოთი გაშვებული კამპანიები დაემატება სიას და ამ გვერდის ყველა მაჩვენებელს.",
@@ -2638,6 +2709,7 @@ const ka: AdminStrings = {
         "დასახელება",
         "საიტი",
         "სტატუსი",
+        "სტატუსი Meta-ზე",
         "სატესტო",
         "სად",
         "დღიური ბიუჯეტი",

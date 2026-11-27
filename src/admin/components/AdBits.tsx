@@ -79,6 +79,55 @@ const STATUS_TONE: Record<AdCampaignStatus, string> = {
 };
 
 /**
+ * How loudly to show each of Meta's delivery states. Anything Meta adds later
+ * falls through to the neutral tone with its raw name, rather than vanishing.
+ */
+const META_TONE: Record<string, string> = {
+  ACTIVE: "border-success-border bg-success-soft text-success-strong",
+  PENDING_REVIEW: "border-amber-300/70 bg-amber-50 text-amber-800 dark:border-amber-800 dark:bg-amber-950/30 dark:text-amber-300",
+  IN_PROCESS: "border-amber-300/70 bg-amber-50 text-amber-800 dark:border-amber-800 dark:bg-amber-950/30 dark:text-amber-300",
+  PREAPPROVED: "border-amber-300/70 bg-amber-50 text-amber-800 dark:border-amber-800 dark:bg-amber-950/30 dark:text-amber-300",
+  DISAPPROVED: "border-danger/30 bg-danger/10 text-danger",
+  WITH_ISSUES: "border-danger/30 bg-danger/10 text-danger",
+  PENDING_BILLING_INFO: "border-danger/30 bg-danger/10 text-danger",
+};
+
+/**
+ * Meta's own word on delivery, beside ours. Ours says what we asked for; an ad
+ * in review or rejected reads "Running" on our side, which is why this exists.
+ */
+export function MetaStatus({
+  status,
+  issue,
+  labels,
+  prefix,
+  notRead,
+}: {
+  status?: string;
+  issue?: string;
+  labels: Record<string, string>;
+  /** "Meta:" — so the pill is not mistaken for a second copy of ours. */
+  prefix: string;
+  notRead: string;
+}) {
+  if (!status) {
+    return <span className="text-xs text-ink-400">{`${prefix} ${notRead}`}</span>;
+  }
+  const tone = META_TONE[status] ?? "border-ink-200 bg-ink-50 text-ink-600";
+  return (
+    <span className="inline-flex flex-col items-start gap-1">
+      <span
+        title={issue}
+        className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold ${tone}`}
+      >
+        {prefix} {labels[status] ?? status}
+      </span>
+      {issue && <span className="max-w-64 text-xs text-danger">{issue}</span>}
+    </span>
+  );
+}
+
+/**
  * The status word.
  *
  * Unknown values render raw rather than falling through to a friendly-looking

@@ -127,7 +127,7 @@ export default function Emails() {
         <p className="mt-8 text-sm text-ink-400">{t.loading}</p>
       ) : (
         <>
-          {mailNeedsAttention(mail.status) && (
+          {(mailNeedsAttention(mail.status) || mail.status === "LAST_FAILED") && (
             <p className="mt-6 rounded-2xl border border-danger/30 bg-danger/10 p-4 text-sm font-semibold text-danger dark:bg-danger/15">
               {t.system.mailTitle}: {t.system.mailStatuses[mail.status] ?? mail.status}.{" "}
               <span className="font-normal text-ink-600">{e.notWorking}</span>
