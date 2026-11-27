@@ -747,6 +747,12 @@ export type AdCampaignDto = {
   failureReason?: string;
   launchedAt?: string;
   pausedAt?: string;
+  /**
+   * Why the system paused it, as the plan check's code (`ADS_IMPRESSION_LIMIT`,
+   * `ADS_PLAN_INACTIVE`). Absent when staff paused it. Show an unknown code as
+   * it is.
+   */
+  pausedReason?: string;
   deletedAt?: string;
   createdAt: string;
 } & AdInsightsFigures & {

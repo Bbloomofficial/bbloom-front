@@ -258,7 +258,12 @@ export default function AdCampaignDetail() {
             {data.name}
           </h1>
           <div className="mt-2 flex flex-wrap items-center gap-3">
-            <DeliveryStatus campaign={data} labels={t.statuses} metaLabels={t.metaStatuses} />
+            <DeliveryStatus
+              campaign={data}
+              labels={t.statuses}
+              metaLabels={t.metaStatuses}
+              pausedReasons={t.pausedReasons}
+            />
             <span className="text-sm text-ink-500">{data.siteName}</span>
           </div>
         </div>

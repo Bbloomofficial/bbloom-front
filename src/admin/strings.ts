@@ -451,6 +451,8 @@ export type AdminStrings = {
     backToCampaigns: string;
     /** Links to the ad's posts, opened in a new tab. */
     posts: { facebook: string; instagram: string; instagramPending: string };
+    /** Why the system paused a campaign, by the plan check's code. */
+    pausedReasons: Record<string, string>;
     settings: {
       title: string;
       subtitle: string;
@@ -1465,6 +1467,12 @@ const en: AdminStrings = {
     tools: "Test tools",
     settingsLink: "Meta settings",
     backToCampaigns: "Back to campaigns",
+    pausedReasons: {
+      ADS_IMPRESSION_LIMIT:
+        "Paused automatically: the plan's impressions for this period are used up. It can be resumed once the plan renews or is upgraded.",
+      ADS_PLAN_INACTIVE:
+        "Paused automatically: the website's plan is no longer active.",
+    },
     posts: {
       facebook: "View on Facebook",
       instagram: "View on Instagram",
@@ -2560,6 +2568,12 @@ const ka: AdminStrings = {
     tools: "სატესტო ხელსაწყოები",
     settingsLink: "Meta-ს პარამეტრები",
     backToCampaigns: "კამპანიებზე დაბრუნება",
+    pausedReasons: {
+      ADS_IMPRESSION_LIMIT:
+        "ავტომატურად შეჩერდა: პაკეტში შემავალი ჩვენებები ამ პერიოდისთვის ამოიწურა. ხელახლა ჩართვა შესაძლებელია პაკეტის განახლების ან აწევის შემდეგ.",
+      ADS_PLAN_INACTIVE:
+        "ავტომატურად შეჩერდა: საიტის პაკეტი აღარ არის აქტიური.",
+    },
     posts: {
       facebook: "Facebook-ზე ნახვა",
       instagram: "Instagram-ზე ნახვა",
