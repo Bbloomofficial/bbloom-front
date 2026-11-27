@@ -286,7 +286,7 @@ export default function Layout({ children }: { children: ReactNode }) {
     <div className="min-h-screen bg-canvas lg:flex">
       <a
         href="#admin-main"
-        className="sr-only rounded-full border border-ink-100 bg-surface px-4 py-2 text-sm font-semibold text-ink-900 shadow-lg focus:not-sr-only focus:fixed focus:start-4 focus:top-3 focus:z-50"
+        className="sr-only rounded-full border border-ink-100 bg-surface px-4 py-2 text-sm font-semibold text-ink-900 shadow-lg focus:not-sr-only focus:fixed focus:start-4 focus:top-3 focus:z-50 focus:px-4 focus:py-2"
       >
         {t.nav.skipToContent}
       </a>
