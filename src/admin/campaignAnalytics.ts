@@ -94,6 +94,16 @@ export type CampaignFilters = {
   metaStatus: string;
 };
 
+/**
+ * A campaign as the server answered a pause or resume, without Meta's last
+ * word on it. That word was read before the change and now describes the
+ * campaign as it was, so ours is shown until Meta is next read.
+ */
+export function afterOwnChange(campaign: AdCampaignDto): AdCampaignDto {
+  const { metaEffectiveStatus: _status, metaDeliveryIssue: _issue, ...rest } = campaign;
+  return rest;
+}
+
 /** The Meta-status filter value for rows whose status at Meta was never read. */
 export const META_NOT_READ = "NOT_READ";
 
@@ -115,6 +125,15 @@ export function metaDelivery(campaign: AdCampaignDto): string | undefined {
   if (campaign.status === "DELETED" || campaign.deletedAt) return undefined;
   const state = campaign.metaEffectiveStatus;
   if (!state) return undefined;
+  // Read before our own last pause, so it describes the campaign before it:
+  // a pause made here would otherwise still read "Active" for up to an hour.
+  if (
+    campaign.status === "PAUSED" &&
+    campaign.pausedAt &&
+    !(Date.parse(campaign.metaStatusReadAt ?? "") >= Date.parse(campaign.pausedAt))
+  ) {
+    return undefined;
+  }
   if (state === "ACTIVE" && !(Number(campaign.impressions ?? 0) > 0)) {
     return META_PREPARING;
   }

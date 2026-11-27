@@ -1,15 +1,23 @@
 import { useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import { AD_CHANNELS, formatCount, isSpending } from "../../api/ads";
+import { AD_CHANNELS, adErrorMessage, formatCount, isSpending } from "../../api/ads";
 import { useI18n } from "../../i18n";
 import { useSession } from "../auth";
 import { useResource } from "../hooks";
-import { fetchAdCampaigns, fetchAdTestCampaigns, syncAdCampaigns } from "../api/client";
+import {
+  deleteAdCampaign,
+  fetchAdCampaigns,
+  fetchAdTestCampaigns,
+  pauseAdCampaign,
+  resumeAdCampaign,
+  syncAdCampaigns,
+} from "../api/client";
 import { adminStrings } from "../strings";
 import { formatDateTime } from "../format";
 import { Budget, Channels, DeliveryStatus, Insight, PostLinks, StatusPill } from "../components/AdBits";
 import {
   META_NOT_READ,
+  afterOwnChange,
   metaDelivery,
   SORT_KEYS,
   campaignsToCsv,
@@ -47,7 +55,7 @@ import type { AdCampaignDto, AdCampaignStatus, AdChannel } from "../api/types";
  */
 
 const STATUSES: AdCampaignStatus[] = ["ACTIVE", "PAUSED", "FAILED", "DELETED"];
-const PAGE_SIZE = 25;
+const PAGE_SIZES = [25, 50, 100];
 /** The server's page size here; well under Spring's 2000 ceiling. */
 const FETCH_SIZE = 200;
 /** A safety stop, not a limit anyone should meet: 10,000 campaigns. */
@@ -68,6 +76,14 @@ async function loadCampaigns(
   return rows.filter((row) => (seen.has(row.id) ? false : (seen.add(row.id), true)));
 }
 
+/** Which rows an action applies to. The same rules as the campaign page's buttons. */
+const canPause = (row: AdCampaignDto) => row.status === "ACTIVE";
+const canResume = (row: AdCampaignDto) => row.status === "PAUSED";
+const canDelete = (row: AdCampaignDto) =>
+  row.status !== "DELETED" && !row.deletedAt && Boolean(row.metaCampaignId);
+
+type Action = "pause" | "resume" | "delete";
+
 /**
  * The two switches staff set once and expect to stay set: whether tests are
  * included, and "only what may be spending". Kept in this browser, so the page
@@ -75,7 +91,7 @@ async function loadCampaigns(
  * a link someone sends opens exactly the view they meant.
  */
 const PREFS_KEY = "bbloom.admin.campaigns.prefs";
-type Prefs = { tests?: boolean; spending?: boolean };
+type Prefs = { tests?: boolean; spending?: boolean; size?: number };
 
 function readPrefs(): Prefs {
   try {
@@ -258,7 +274,8 @@ export default function AdCampaigns() {
   const t = strings.ads;
   const c = t.campaigns;
   const m = t.manager;
-  const { token } = useSession();
+  const d = t.detail;
+  const { token, handleError } = useSession();
   const [params, setParams] = useSearchParams();
 
   const prefs = readPrefs();
@@ -269,6 +286,15 @@ export default function AdCampaigns() {
     : "date";
   const direction: SortDirection = params.get("dir") === "asc" ? "asc" : "desc";
   const [page, setPage] = useState(0);
+  const [pageSize, setPageSize] = useState(() =>
+    PAGE_SIZES.includes(prefs.size ?? 0) ? (prefs.size as number) : PAGE_SIZES[0],
+  );
+  /** Ticked rows, by id. Rows a filter hides are never acted on. */
+  const [selected, setSelected] = useState<Set<string>>(() => new Set());
+  /** Rows with a call to Meta in flight, so their buttons cannot be pressed twice. */
+  const [busy, setBusy] = useState<Set<string>>(() => new Set());
+  const [progress, setProgress] = useState<{ done: number; total: number } | null>(null);
+  const [outcome, setOutcome] = useState<{ text: string; failures: string[] } | null>(null);
 
   const list = useResource(
     () => loadCampaigns(token, includeTests),
@@ -339,9 +365,81 @@ export default function AdCampaigns() {
   const totals = useMemo(() => totalCampaigns(filtered), [filtered]);
   const cpc = costPerClick(totals.spend, totals.clicks);
 
-  const pages = Math.max(Math.ceil(sorted.length / PAGE_SIZE), 1);
+  const pages = Math.max(Math.ceil(sorted.length / pageSize), 1);
   const current = Math.min(page, pages - 1);
-  const visible = sorted.slice(current * PAGE_SIZE, (current + 1) * PAGE_SIZE);
+  const visible = sorted.slice(current * pageSize, (current + 1) * pageSize);
+
+  // Only what is ticked *and* still in view: a filter changed after ticking
+  // must not leave hidden rows to be paused or deleted unseen.
+  const chosen = sorted.filter((row) => selected.has(row.id));
+  const toPause = chosen.filter(canPause);
+  const toResume = chosen.filter(canResume);
+  const toDelete = chosen.filter(canDelete);
+  const allVisibleChosen = visible.length > 0 && visible.every((row) => selected.has(row.id));
+
+  function toggleRow(id: string) {
+    setSelected((now) => {
+      const next = new Set(now);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
+
+  function toggleVisible() {
+    setSelected((now) => {
+      const next = new Set(now);
+      for (const row of visible) {
+        if (allVisibleChosen) next.delete(row.id);
+        else next.add(row.id);
+      }
+      return next;
+    });
+  }
+
+  /**
+   * Runs one action over some rows, one call at a time.
+   *
+   * Sequential on purpose: each call spends or stops real money at Meta, and a
+   * burst of them in parallel is how an ad account meets its rate limit halfway
+   * through, with no clear picture of which half went through. Each row is
+   * replaced from the server's answer, as the campaign page does, so a delete
+   * Meta refused comes back showing why.
+   */
+  async function run(action: Action, rows: AdCampaignDto[], confirmText: string) {
+    if (!rows.length || !window.confirm(confirmText)) return;
+    const call =
+      action === "pause"
+        ? pauseAdCampaign
+        : action === "resume"
+          ? resumeAdCampaign
+          : deleteAdCampaign;
+    setBusy(new Set(rows.map((row) => row.id)));
+    setOutcome(null);
+    const updated = new Map<string, AdCampaignDto>();
+    const failures: string[] = [];
+    for (const [index, row] of rows.entries()) {
+      if (rows.length > 1) setProgress({ done: index, total: rows.length });
+      try {
+        const answer = await call(token, row.id);
+        updated.set(row.id, action === "delete" ? answer : afterOwnChange(answer));
+      } catch (caught) {
+        handleError(caught);
+        failures.push(`${row.name}: ${adErrorMessage(caught, t.refusals, () => d.actionFailed)}`);
+      }
+    }
+    list.set(all.map((row) => updated.get(row.id) ?? row));
+    setSelected((now) => {
+      const next = new Set(now);
+      for (const id of updated.keys()) next.delete(id);
+      return next;
+    });
+    setBusy(new Set());
+    setProgress(null);
+    if (rows.length > 1 || failures.length) {
+      setOutcome({ text: m.bulkDone(updated.size, rows.length), failures });
+    }
+  }
 
   const anyFilter =
     filters.query ||
@@ -732,10 +830,88 @@ export default function AdCampaigns() {
             ) : sorted.length === 0 ? (
               <p className="mt-4 text-sm text-ink-500">{m.noneMatching}</p>
             ) : (
+              <>
+                {chosen.length > 0 && (
+                  <div className="mt-4 flex flex-wrap items-center gap-2 rounded-2xl border border-ink-100 bg-ink-50 px-4 py-3">
+                    <span className="me-2 text-sm font-semibold text-ink-900">
+                      {m.selected(chosen.length)}
+                    </span>
+                    <button
+                      type="button"
+                      className="btn-secondary"
+                      disabled={!toPause.length || busy.size > 0}
+                      onClick={() => void run("pause", toPause, m.bulkPauseConfirm(toPause.length))}
+                    >
+                      {m.bulkPause(toPause.length)}
+                    </button>
+                    <button
+                      type="button"
+                      className="btn-secondary"
+                      disabled={!toResume.length || busy.size > 0}
+                      onClick={() =>
+                        void run("resume", toResume, m.bulkResumeConfirm(toResume.length))
+                      }
+                    >
+                      {m.bulkResume(toResume.length)}
+                    </button>
+                    <button
+                      type="button"
+                      className="btn-secondary text-danger"
+                      disabled={!toDelete.length || busy.size > 0}
+                      onClick={() =>
+                        void run("delete", toDelete, m.bulkDeleteConfirm(toDelete.length))
+                      }
+                    >
+                      {m.bulkDelete(toDelete.length)}
+                    </button>
+                    <button
+                      type="button"
+                      className="ms-auto text-sm font-semibold text-ink-600 hover:underline"
+                      disabled={busy.size > 0}
+                      onClick={() => setSelected(new Set())}
+                    >
+                      {m.clearSelection}
+                    </button>
+                  </div>
+                )}
+                {(progress || outcome) && (
+                  <div className="mt-3 text-sm" role="status">
+                    {progress ? (
+                      <p className="text-ink-500">{m.bulkWorking(progress.done, progress.total)}</p>
+                    ) : outcome ? (
+                      <>
+                        <p
+                          className={
+                            outcome.failures.length ? "font-semibold text-danger" : "text-ink-500"
+                          }
+                        >
+                          {outcome.text}
+                        </p>
+                        {outcome.failures.length > 0 && (
+                          <ul className="mt-1 list-disc ps-5 text-danger">
+                            {outcome.failures.map((line) => (
+                              <li key={line}>{line}</li>
+                            ))}
+                          </ul>
+                        )}
+                      </>
+                    ) : null}
+                  </div>
+                )}
               <div className="mt-4 overflow-x-auto">
-                <table className="w-full min-w-[64rem] text-sm">
+                <table className="w-full min-w-[72rem] text-sm">
                   <thead>
                     <tr className="text-left text-xs font-semibold uppercase tracking-wide text-ink-400">
+                      <th className="w-8 pb-2 pr-3">
+                        <input
+                          type="checkbox"
+                          aria-label={m.selectAll}
+                          title={m.selectAll}
+                          checked={allVisibleChosen}
+                          onChange={toggleVisible}
+                          className="h-4 w-4 accent-bloom-600"
+                        />
+                      </th>
                       <SortHeader column="name" label={c.colName} />
                       <SortHeader column="site" label={c.colSite} />
                       <SortHeader column="status" label={c.colStatus} />
@@ -746,11 +922,24 @@ export default function AdCampaigns() {
                       <SortHeader column="clicks" label={m.colClicks} align="right" />
                       <SortHeader column="ctr" label={m.colCtr} align="right" />
                       <SortHeader column="date" label={c.colWhen} />
+                      <th className="pb-2 pl-4">{m.colActions}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-ink-100">
                     {visible.map((campaign) => (
-                      <tr key={campaign.id} className="align-top">
+                      <tr
+                        key={campaign.id}
+                        className={`align-top ${selected.has(campaign.id) ? "bg-ink-50" : ""}`}
+                      >
+                        <td className="py-3 pr-3">
+                          <input
+                            type="checkbox"
+                            aria-label={m.selectRow(campaign.name)}
+                            checked={selected.has(campaign.id)}
+                            onChange={() => toggleRow(campaign.id)}
+                            className="mt-0.5 h-4 w-4 accent-bloom-600"
+                          />
+                        </td>
                         <td className="py-3 pr-4">
                           <Link
                             to={`/ads/${campaign.id}`}
@@ -818,15 +1007,71 @@ export default function AdCampaigns() {
                             </span>
                           )}
                         </td>
+                        <td className="py-3 pl-4">
+                          <div className="flex flex-col items-start gap-1 text-xs font-semibold">
+                            {canPause(campaign) && (
+                              <button
+                                type="button"
+                                className="text-ink-700 hover:underline disabled:opacity-50"
+                                disabled={busy.size > 0}
+                                onClick={() => void run("pause", [campaign], d.pauseConfirm)}
+                              >
+                                {busy.has(campaign.id) ? d.pausing : d.pause}
+                              </button>
+                            )}
+                            {canResume(campaign) && (
+                              <button
+                                type="button"
+                                className="text-ink-700 hover:underline disabled:opacity-50"
+                                disabled={busy.size > 0}
+                                onClick={() => void run("resume", [campaign], d.resumeConfirm)}
+                              >
+                                {busy.has(campaign.id) ? d.resuming : d.resume}
+                              </button>
+                            )}
+                            {canDelete(campaign) && (
+                              <button
+                                type="button"
+                                className="whitespace-nowrap text-danger hover:underline disabled:opacity-50"
+                                disabled={busy.size > 0}
+                                onClick={() => void run("delete", [campaign], d.deleteConfirm)}
+                              >
+                                {d.delete}
+                              </button>
+                            )}
+                          </div>
+                        </td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
               </div>
+              </>
             )}
 
-            {pages > 1 && (
-              <div className="mt-5 flex items-center justify-between gap-3">
+            {sorted.length > 0 && (
+              <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
+                <label className="flex items-center gap-2 text-sm text-ink-500">
+                  {m.pageSize}
+                  <select
+                    className="field w-auto"
+                    value={pageSize}
+                    onChange={(event) => {
+                      const size = Number(event.target.value);
+                      setPageSize(size);
+                      writePrefs({ size });
+                      setPage(0);
+                    }}
+                  >
+                    {PAGE_SIZES.map((size) => (
+                      <option key={size} value={size}>
+                        {size}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                {pages > 1 && (
+                <div className="flex items-center gap-3">
                 <button
                   type="button"
                   className="btn-secondary"
@@ -844,6 +1089,8 @@ export default function AdCampaigns() {
                 >
                   {c.next}
                 </button>
+                </div>
+                )}
               </div>
             )}
           </section>

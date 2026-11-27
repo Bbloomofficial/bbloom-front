@@ -112,6 +112,25 @@ describe("metaDelivery", () => {
     expect(metaDelivery({ ...fresh, impressions: "12" })).toBe("ACTIVE");
   });
 
+  it("ignores a Meta status read before our own pause", () => {
+    const paused = campaign({
+      metaCampaignId: "m1",
+      metaEffectiveStatus: "ACTIVE",
+      impressions: "40",
+      status: "PAUSED",
+      pausedAt: "2026-11-27T12:00:00Z",
+    });
+    expect(metaDelivery({ ...paused, metaStatusReadAt: "2026-11-27T11:00:00Z" })).toBeUndefined();
+    expect(metaDelivery(paused)).toBeUndefined();
+    expect(
+      metaDelivery({
+        ...paused,
+        metaEffectiveStatus: "CAMPAIGN_PAUSED",
+        metaStatusReadAt: "2026-11-27T13:00:00Z",
+      }),
+    ).toBe("CAMPAIGN_PAUSED");
+  });
+
   it("passes Meta's other states through verbatim", () => {
     expect(
       metaDelivery(campaign({ metaCampaignId: "m1", metaEffectiveStatus: "DISAPPROVED" })),

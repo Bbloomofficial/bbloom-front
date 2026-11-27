@@ -14,6 +14,7 @@ import {
 import { adminStrings } from "../strings";
 import { formatDateTime } from "../format";
 import { Budget, Channels, DeliveryStatus, Insight, PostLinks } from "../components/AdBits";
+import { afterOwnChange } from "../campaignAnalytics";
 import type { AdCampaignDto } from "../api/types";
 
 /**
@@ -217,12 +218,15 @@ export default function AdCampaignDetail() {
   async function act(
     confirmText: string,
     call: () => Promise<AdCampaignDto>,
+    keepMeta = false,
   ) {
     if (!window.confirm(confirmText)) return;
     setBusy(true);
     setError(null);
     try {
-      campaign.set(await call());
+      const answer = await call();
+      // Meta's last word predates a pause or resume made here; see afterOwnChange.
+      campaign.set(keepMeta ? answer : afterOwnChange(answer));
     } catch (caught) {
       handleError(caught);
       setError(adErrorMessage(caught, t.refusals, () => d.actionFailed));
@@ -405,7 +409,7 @@ export default function AdCampaignDetail() {
             type="button"
             disabled={busy}
             onClick={() =>
-              void act(d.deleteConfirm, () => deleteAdCampaign(token, data.id))
+              void act(d.deleteConfirm, () => deleteAdCampaign(token, data.id), true)
             }
             className="rounded-xl bg-danger px-4 py-3 text-sm font-semibold text-white transition hover:opacity-90 active:scale-95 disabled:opacity-40"
           >
