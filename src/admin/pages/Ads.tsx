@@ -413,6 +413,9 @@ export default function Ads() {
           <p className="mt-1 text-sm text-ink-600">{t.subtitle}</p>
         </div>
         <div className="flex flex-wrap gap-3">
+          <Link to="/ads/campaigns" className="btn-primary">
+            {t.manager.openLink}
+          </Link>
           <Link to="/ads/settings" className="btn-secondary">
             {t.settingsLink}
           </Link>

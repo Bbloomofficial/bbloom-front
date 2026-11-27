@@ -476,6 +476,53 @@ export type AdminStrings = {
       prev: string;
       next: string;
     };
+    /** The campaign manager: every campaign, filtered, sorted and totalled. */
+    manager: {
+      title: string;
+      subtitle: string;
+      openLink: string;
+      refresh: string;
+      includeTests: string;
+      includeTestsHint: string;
+      testTag: string;
+      search: string;
+      searchPlaceholder: string;
+      status: string;
+      channel: string;
+      allChannels: string;
+      site: string;
+      allSites: string;
+      from: string;
+      to: string;
+      spendingOnly: string;
+      clear: string;
+      analyticsTitle: string;
+      kpiCampaigns: string;
+      kpiLive: (count: number) => string;
+      kpiTests: (count: number) => string;
+      kpiLiveBudget: string;
+      kpiLiveBudgetHint: string;
+      kpiSpend: string;
+      kpiImpressions: string;
+      kpiClicks: string;
+      kpiCtr: string;
+      kpiCpc: string;
+      calculated: string;
+      unreported: (count: number) => string;
+      byStatus: string;
+      bySite: string;
+      byChannel: string;
+      colCampaigns: string;
+      colImpressions: string;
+      colClicks: string;
+      colCtr: string;
+      unknownSite: string;
+      listTitle: (shown: number, total: number) => string;
+      exportCsv: string;
+      csvHeaders: string[];
+      none: string;
+      noneMatching: string;
+    };
     form: {
       title: string;
       subtitle: string;
@@ -1379,6 +1426,73 @@ const en: AdminStrings = {
       pageOf: (page, total) => `Page ${page} of ${total}`,
       prev: "Previous",
       next: "Next",
+    },
+    manager: {
+      title: "Campaign manager",
+      subtitle:
+        "Every client campaign in one place. Filter and sort them, and compare what each one has spent and delivered.",
+      openLink: "Campaign manager",
+      refresh: "Refresh",
+      includeTests: "Include test campaigns",
+      includeTestsHint:
+        "Adds the test tool's campaigns to the list and to every figure on this page.",
+      testTag: "Test",
+      search: "Search",
+      searchPlaceholder: "Name, site or who launched it",
+      status: "Status",
+      channel: "Where",
+      allChannels: "Anywhere",
+      site: "Site",
+      allSites: "All sites",
+      from: "Launched from",
+      to: "Launched to",
+      spendingOnly: "Only what may be spending",
+      clear: "Clear filters",
+      analyticsTitle: "Figures for the campaigns shown",
+      kpiCampaigns: "Campaigns",
+      kpiLive: (count) => `${count} may be spending`,
+      kpiTests: (count) => (count === 1 ? "1 of them a test" : `${count} of them tests`),
+      kpiLiveBudget: "Daily budget, live",
+      kpiLiveBudgetHint: "The most the live campaigns can spend in a day.",
+      kpiSpend: "Spent",
+      kpiImpressions: "Impressions",
+      kpiClicks: "Clicks",
+      kpiCtr: "Click rate",
+      kpiCpc: "Cost per click",
+      calculated: "Calculated from the totals, not reported by Meta.",
+      unreported: (count) =>
+        count === 1
+          ? "Meta hasn't reported on 1 campaign yet, so it isn't in these figures."
+          : `Meta hasn't reported on ${count} campaigns yet, so they aren't in these figures.`,
+      byStatus: "By status",
+      bySite: "By site",
+      byChannel: "By placement",
+      colCampaigns: "Campaigns",
+      colImpressions: "Impressions",
+      colClicks: "Clicks",
+      colCtr: "Click rate",
+      unknownSite: "No site",
+      listTitle: (shown, total) =>
+        shown === total ? `${total} campaigns` : `${shown} of ${total} campaigns`,
+      exportCsv: "Export CSV",
+      csvHeaders: [
+        "Name",
+        "Site",
+        "Status",
+        "Test",
+        "Where",
+        "Daily budget",
+        "Currency",
+        "Spent",
+        "Impressions",
+        "Clicks",
+        "Launched",
+        "Created",
+        "Launched by",
+        "ID",
+      ],
+      none: "No campaigns yet.",
+      noneMatching: "No campaigns match these filters.",
     },
     form: {
       title: "New campaign",
@@ -2319,6 +2433,71 @@ const ka: AdminStrings = {
       pageOf: (page, total) => `გვერდი ${page} / ${total}`,
       prev: "წინა",
       next: "შემდეგი",
+    },
+    manager: {
+      title: "კამპანიების მართვა",
+      subtitle:
+        "კლიენტების ყველა კამპანია ერთ ადგილას. გაფილტრეთ, დაალაგეთ და შეადარეთ, რამდენი დახარჯა თითოეულმა და რა შედეგი მოიტანა.",
+      openLink: "კამპანიების მართვა",
+      refresh: "განახლება",
+      includeTests: "სატესტო კამპანიების ჩვენება",
+      includeTestsHint:
+        "სატესტო ხელსაწყოთი გაშვებული კამპანიები დაემატება სიას და ამ გვერდის ყველა მაჩვენებელს.",
+      testTag: "სატესტო",
+      search: "ძებნა",
+      searchPlaceholder: "დასახელება, საიტი ან ვინ გაუშვა",
+      status: "სტატუსი",
+      channel: "სად",
+      allChannels: "ყველგან",
+      site: "საიტი",
+      allSites: "ყველა საიტი",
+      from: "გაშვებულია, დან",
+      to: "გაშვებულია, მდე",
+      spendingOnly: "მხოლოდ ის, რაც შეიძლება ხარჯავდეს",
+      clear: "ფილტრების გასუფთავება",
+      analyticsTitle: "ნაჩვენები კამპანიების მაჩვენებლები",
+      kpiCampaigns: "კამპანიები",
+      kpiLive: (count) => `${count} შეიძლება ხარჯავდეს`,
+      kpiTests: (count) => `მათგან ${count} სატესტოა`,
+      kpiLiveBudget: "აქტიურების დღიური ბიუჯეტი",
+      kpiLiveBudgetHint: "მაქსიმუმი, რისი დახარჯვაც აქტიურ კამპანიებს დღეში შეუძლიათ.",
+      kpiSpend: "დახარჯული",
+      kpiImpressions: "ჩვენებები",
+      kpiClicks: "დაჭერები",
+      kpiCtr: "დაჭერის მაჩვენებელი",
+      kpiCpc: "ერთი დაჭერის ფასი",
+      calculated: "გამოთვლილია ჯამებიდან, Meta-ს არ მოუწოდებია.",
+      unreported: (count) =>
+        `Meta-ს ჯერ არ მოუწოდებია მონაცემები ${count} კამპანიაზე, ამიტომ ისინი ამ მაჩვენებლებში არ შედის.`,
+      byStatus: "სტატუსის მიხედვით",
+      bySite: "საიტების მიხედვით",
+      byChannel: "განთავსების მიხედვით",
+      colCampaigns: "კამპანიები",
+      colImpressions: "ჩვენებები",
+      colClicks: "დაჭერები",
+      colCtr: "დაჭერის მაჩვენებელი",
+      unknownSite: "საიტის გარეშე",
+      listTitle: (shown, total) =>
+        shown === total ? `${total} კამპანია` : `${total}-დან ნაჩვენებია ${shown} კამპანია`,
+      exportCsv: "CSV-ად ჩამოტვირთვა",
+      csvHeaders: [
+        "დასახელება",
+        "საიტი",
+        "სტატუსი",
+        "სატესტო",
+        "სად",
+        "დღიური ბიუჯეტი",
+        "ვალუტა",
+        "დახარჯული",
+        "ჩვენებები",
+        "დაჭერები",
+        "გაშვებულია",
+        "შექმნილია",
+        "გაუშვა",
+        "ID",
+      ],
+      none: "კამპანია ჯერ არ არის.",
+      noneMatching: "ამ ფილტრებს არცერთი კამპანია არ შეესაბამება.",
     },
     form: {
       title: "ახალი კამპანია",
