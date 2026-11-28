@@ -83,7 +83,7 @@ export default function NewCustomerOffer() {
 
   if (error && !data) {
     return (
-      <div className="rounded-3xl border border-ink-100 bg-surface p-6 text-center">
+      <div className="rounded-2xl border border-ink-100 bg-surface p-6 text-center">
         <p className="text-sm font-semibold text-danger">
           {error.message || t.newCustomerOffer.loadFailed}
         </p>
@@ -96,15 +96,15 @@ export default function NewCustomerOffer() {
 
   return (
     <div>
-      <h1 className="text-2xl font-extrabold text-balance tracking-tight text-ink-900 sm:text-3xl">
+      <h1 className="text-[28px] font-bold text-balance tracking-[-0.01em] text-ink-900 leading-tight">
         {t.newCustomerOffer.title}
       </h1>
-      <p className="mt-1 max-w-2xl text-sm text-ink-600">
+      <p className="mt-1 max-w-2xl text-base text-ink-600">
         {t.newCustomerOffer.subtitle}
       </p>
 
       <form onSubmit={save} className="mt-6 max-w-2xl space-y-6">
-        <section className="rounded-3xl border border-ink-100 bg-surface p-6">
+        <section className="rounded-2xl border border-ink-100 bg-surface p-6">
           <div className="max-w-xs">
             <label className="label" htmlFor="offer-percent">
               {t.newCustomerOffer.percentOff}
@@ -156,7 +156,7 @@ export default function NewCustomerOffer() {
           {data && (
             <dl className="mt-6 grid gap-4 border-t border-ink-100 pt-5 text-sm sm:grid-cols-2">
               <div>
-                <dt className="text-xs uppercase tracking-wide text-ink-400">
+                <dt className="text-[13px] text-ink-600 font-semibold">
                   {t.newCustomerOffer.status}
                 </dt>
                 {/* The saved state, not the state of the tick box above it: a
@@ -173,7 +173,7 @@ export default function NewCustomerOffer() {
                 </dd>
               </div>
               <div>
-                <dt className="text-xs uppercase tracking-wide text-ink-400">
+                <dt className="text-[13px] text-ink-600 font-semibold">
                   {t.newCustomerOffer.updated}
                 </dt>
                 <dd className="mt-1 text-ink-600">
@@ -186,7 +186,7 @@ export default function NewCustomerOffer() {
           )}
         </section>
 
-        <p className="rounded-2xl bg-tint px-4 py-3 text-sm text-tint-fg">
+        <p className="rounded-2xl bg-ink-50 px-4 py-3 text-sm text-ink-900">
           {t.newCustomerOffer.rules}
         </p>
 

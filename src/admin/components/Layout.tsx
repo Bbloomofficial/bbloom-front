@@ -73,7 +73,7 @@ function SectionTabs({ tabs, pathname }: { tabs: Tab[]; pathname: string }) {
             aria-current={active ? "page" : undefined}
             className={`shrink-0 whitespace-nowrap border-b-2 px-4 py-2.5 text-sm font-semibold transition ${
               active
-                ? "border-bloom-500 text-ink-900"
+                ? "border-ink-900 text-ink-900"
                 : "border-transparent text-ink-500 hover:text-ink-900"
             }`}
           >
@@ -250,7 +250,7 @@ export default function Layout({ children }: { children: ReactNode }) {
         <Link to={adminPath()} aria-label={t.brand} className="shrink-0">
           <Logo />
         </Link>
-        <span className="shrink-0 whitespace-nowrap rounded-full bg-tint px-2.5 py-1 text-xs font-semibold text-tint-fg">
+        <span className="shrink-0 whitespace-nowrap rounded-full bg-ink-50 px-2.5 py-1 text-xs font-semibold text-ink-900">
           {t.brand}
         </span>
       </div>
@@ -271,7 +271,7 @@ export default function Layout({ children }: { children: ReactNode }) {
               aria-current={active ? "page" : undefined}
               className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition ${
                 active
-                  ? "bg-tint text-tint-fg"
+                  ? "bg-ink-50 text-ink-900"
                   : "text-ink-600 hover:bg-ink-50 hover:text-ink-900"
               }`}
             >
@@ -289,7 +289,7 @@ export default function Layout({ children }: { children: ReactNode }) {
         <button
           type="button"
           onClick={signOut}
-          className="mt-2 flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-ink-600 transition hover:bg-ink-50 hover:text-bloom-600"
+          className="mt-2 flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-ink-600 transition hover:bg-ink-50 hover:text-ink-900"
         >
           <SignOutIcon className="h-5 w-5 shrink-0" />
           {t.signOut}
@@ -302,7 +302,7 @@ export default function Layout({ children }: { children: ReactNode }) {
     <div className="min-h-screen bg-canvas lg:flex">
       <a
         href="#admin-main"
-        className="sr-only rounded-full border border-ink-100 bg-surface px-4 py-2 text-sm font-semibold text-ink-900 shadow-lg focus:not-sr-only focus:fixed focus:start-4 focus:top-3 focus:z-50 focus:px-4 focus:py-2"
+        className="sr-only rounded-full border border-ink-100 bg-surface px-4 py-2 text-sm font-semibold text-ink-900 shadow-card focus:not-sr-only focus:fixed focus:start-4 focus:top-3 focus:z-50 focus:px-4 focus:py-2"
       >
         {t.nav.skipToContent}
       </a>
@@ -352,7 +352,7 @@ export default function Layout({ children }: { children: ReactNode }) {
           />
           <div
             ref={drawerRef}
-            className="absolute inset-y-0 start-0 w-72 max-w-[85vw] bg-surface pt-10 shadow-xl"
+            className="absolute inset-y-0 start-0 w-72 max-w-[85vw] bg-surface pt-10 shadow-card"
           >
             <button
               ref={closeButtonRef}
@@ -384,7 +384,7 @@ export default function Layout({ children }: { children: ReactNode }) {
 
         <footer className="border-t border-ink-100 py-6">
           <div className="container-page flex flex-wrap items-center justify-end gap-3 text-xs text-ink-400">
-            <a href={marketingHome()} className="font-semibold hover:text-bloom-600">
+            <a href={marketingHome()} className="font-semibold hover:text-ink-900">
               {t.backToBbloom}
             </a>
           </div>

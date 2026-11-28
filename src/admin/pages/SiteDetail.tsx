@@ -77,7 +77,7 @@ export default function SiteDetailPage() {
 
   if (error || !site) {
     return (
-      <div className="rounded-3xl border border-ink-100 bg-surface p-8 text-center">
+      <div className="rounded-2xl border border-ink-100 bg-surface p-8 text-center">
         <p className="text-sm font-semibold text-danger">
           {error?.message ?? "—"}
         </p>
@@ -101,14 +101,14 @@ export default function SiteDetailPage() {
       <div>
         <Link
           to={adminPath()}
-          className="text-sm font-semibold text-ink-400 hover:text-bloom-600"
+          className="text-sm font-semibold text-ink-400 hover:text-ink-900"
         >
           ← {t.detail.back}
         </Link>
 
         <div className="mt-3 flex flex-wrap items-start justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-extrabold text-balance tracking-tight text-ink-900 sm:text-3xl">
+            <h1 className="text-[28px] font-bold text-balance tracking-[-0.01em] text-ink-900 leading-tight">
               {site.businessName}
             </h1>
             <div className="mt-2 flex flex-wrap items-center gap-2">
@@ -164,7 +164,7 @@ export default function SiteDetailPage() {
               "mt-3 rounded-2xl px-4 py-3 text-sm font-semibold",
               announced === "unpublished"
                 ? "bg-ink-50 text-ink-600"
-                : "bg-tint text-tint-fg",
+                : "bg-ink-50 text-ink-900",
             ].join(" ")}
           >
             {announced === "published"
@@ -183,9 +183,9 @@ export default function SiteDetailPage() {
         {/* Only meaningful on a live site: on a draft nothing is public yet,
             so pending edits are not a state anyone needs warning about. */}
         {published && site.hasUnpublishedChanges && (
-          <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-tint-strong bg-tint px-4 py-3">
+          <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-ink-200 bg-ink-50 px-4 py-3">
             <div>
-              <p className="text-sm font-bold text-tint-fg">
+              <p className="text-sm font-bold text-ink-900">
                 {t.detail.pendingTitle}
               </p>
               <p className="mt-0.5 text-xs text-ink-600">
@@ -235,7 +235,7 @@ export default function SiteDetailPage() {
             ],
           ].map(([label, value]) => (
             <div key={label}>
-              <dt className="text-xs uppercase tracking-wide text-ink-400">
+              <dt className="text-[13px] text-ink-600 font-semibold">
                 {label}
               </dt>
               <dd className="mt-1 break-words text-sm font-semibold text-ink-900">

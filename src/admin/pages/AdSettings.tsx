@@ -230,7 +230,7 @@ export default function AdSettings() {
     return (
       <div>
         {view.error ? (
-          <div className="rounded-3xl border border-ink-100 bg-surface p-6">
+          <div className="rounded-2xl border border-ink-100 bg-surface p-6">
             <p className="text-sm text-ink-500">{t.loadFailed}</p>
             <button
               type="button"
@@ -251,10 +251,10 @@ export default function AdSettings() {
 
   return (
     <div className="pb-16">
-      <h1 className="text-2xl font-extrabold text-balance tracking-tight text-ink-900 sm:text-3xl">
+      <h1 className="text-[28px] font-bold text-balance tracking-[-0.01em] text-ink-900 leading-tight">
         {t.title}
       </h1>
-      <p className="mt-1 text-sm text-ink-600">{t.subtitle}</p>
+      <p className="mt-1 text-base text-ink-600">{t.subtitle}</p>
 
       {/*
         The one fault the server reports as prose rather than a code, and the
@@ -263,7 +263,7 @@ export default function AdSettings() {
         while it is set nothing else on this page matters.
       */}
       {settings.problem && (
-        <div className="mt-6 rounded-3xl border border-danger/30 bg-danger/5 p-6">
+        <div className="mt-6 rounded-2xl border border-danger/30 bg-danger/5 p-6">
           <p className="text-sm font-bold text-danger">{t.problemTitle}</p>
           <p className="mt-2 text-sm text-ink-700">{settings.problem}</p>
         </div>
@@ -305,7 +305,7 @@ export default function AdSettings() {
         rather they had not.
       */}
       {!settings.credentialKeyConfigured && (
-        <div className="mt-6 rounded-3xl border border-warning/30 bg-warning/5 p-6">
+        <div className="mt-6 rounded-2xl border border-warning/30 bg-warning/5 p-6">
           <p className="text-sm font-bold text-ink-900">{t.noKeyTitle}</p>
           <p className="mt-2 text-sm text-ink-600">{t.noKeyBody}</p>
         </div>
@@ -316,7 +316,7 @@ export default function AdSettings() {
           <label className="flex items-start gap-3">
             <input
               type="checkbox"
-              className="mt-1 h-4 w-4 shrink-0 accent-bloom-600"
+              className="mt-1 h-4 w-4 shrink-0 accent-ink-900"
               checked={enabled}
               onChange={(event) => setEnabled(event.target.checked)}
             />

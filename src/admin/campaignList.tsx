@@ -236,7 +236,7 @@ export function LoadState({
   const strings = adminStrings(locale);
   if (list.error) {
     return (
-      <div className="mt-6 rounded-3xl border border-ink-100 bg-surface p-6">
+      <div className="mt-6 rounded-2xl border border-ink-100 bg-surface p-6">
         <p className="text-sm text-ink-500">{strings.ads.loadFailed}</p>
         <button type="button" onClick={list.reload} className="btn-primary mt-3">
           {strings.ads.retry}
@@ -295,14 +295,14 @@ export function FilterPanel({ campaigns }: { campaigns: Campaigns }) {
   }
 
   return (
-    <section className="mt-6 rounded-3xl border border-ink-100 bg-surface p-5">
+    <section className="mt-6 rounded-2xl border border-ink-100 bg-surface p-5">
       <label className="flex cursor-pointer items-start gap-3">
         <input
           type="checkbox"
           role="switch"
           checked={includeTests}
           onChange={(event) => update({ tests: event.target.checked ? "1" : null })}
-          className="mt-1 h-4 w-4 accent-bloom-600"
+          className="mt-1 h-4 w-4 accent-ink-900"
         />
         <span>
           <span className="block text-sm font-bold text-ink-900">{m.includeTests}</span>
@@ -312,7 +312,7 @@ export function FilterPanel({ campaigns }: { campaigns: Campaigns }) {
 
       <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
         <label className="text-sm lg:col-span-2">
-          <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-ink-400">
+          <span className="mb-1 block text-[13px] font-semibold text-ink-600">
             {m.search}
           </span>
           <input
@@ -325,7 +325,7 @@ export function FilterPanel({ campaigns }: { campaigns: Campaigns }) {
           />
         </label>
         <label className="text-sm">
-          <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-ink-400">
+          <span className="mb-1 block text-[13px] font-semibold text-ink-600">
             {m.site}
           </span>
           <select
@@ -342,7 +342,7 @@ export function FilterPanel({ campaigns }: { campaigns: Campaigns }) {
           </select>
         </label>
         <label className="text-sm">
-          <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-ink-400">
+          <span className="mb-1 block text-[13px] font-semibold text-ink-600">
             {m.from}
           </span>
           <input
@@ -354,7 +354,7 @@ export function FilterPanel({ campaigns }: { campaigns: Campaigns }) {
           />
         </label>
         <label className="text-sm">
-          <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-ink-400">
+          <span className="mb-1 block text-[13px] font-semibold text-ink-600">
             {m.to}
           </span>
           <input
@@ -369,7 +369,7 @@ export function FilterPanel({ campaigns }: { campaigns: Campaigns }) {
 
       <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-3">
         <div className="flex flex-wrap items-center gap-2" role="group" aria-label={m.status}>
-          <span className="text-xs font-semibold uppercase tracking-wide text-ink-400">
+          <span className="text-[13px] font-semibold text-ink-600">
             {m.status}
           </span>
           {STATUSES.map((status) => {
@@ -380,10 +380,10 @@ export function FilterPanel({ campaigns }: { campaigns: Campaigns }) {
                 type="button"
                 aria-pressed={on}
                 onClick={() => toggleStatus(status)}
-                className={`rounded-full border px-3 py-1 text-xs font-semibold ${
+                className={`inline-flex h-9 items-center rounded-full border px-4 text-sm font-semibold ${
                   on
-                    ? "border-bloom-600 bg-bloom-600 text-white"
-                    : "border-ink-200 bg-surface text-ink-600 hover:border-ink-400"
+                    ? "border-ink-900 bg-ink-900 text-canvas"
+                    : "border-ink-200 bg-control font-medium text-ink-800 hover:border-ink-400"
                 }`}
               >
                 {t.statuses[status] ?? status}
@@ -392,7 +392,7 @@ export function FilterPanel({ campaigns }: { campaigns: Campaigns }) {
           })}
         </div>
         <label className="flex items-center gap-2 text-sm">
-          <span className="text-xs font-semibold uppercase tracking-wide text-ink-400">
+          <span className="text-[13px] font-semibold text-ink-600">
             {m.channel}
           </span>
           <select
@@ -409,7 +409,7 @@ export function FilterPanel({ campaigns }: { campaigns: Campaigns }) {
           </select>
         </label>
         <label className="flex items-center gap-2 text-sm">
-          <span className="text-xs font-semibold uppercase tracking-wide text-ink-400">
+          <span className="text-[13px] font-semibold text-ink-600">
             {m.metaFilter}
           </span>
           <select
@@ -430,7 +430,7 @@ export function FilterPanel({ campaigns }: { campaigns: Campaigns }) {
             type="checkbox"
             checked={filters.spendingOnly}
             onChange={(event) => update({ spending: event.target.checked ? "1" : null })}
-            className="h-4 w-4 accent-bloom-600"
+            className="h-4 w-4 accent-ink-900"
           />
           {m.spendingOnly}
         </label>
@@ -449,7 +449,7 @@ export function FilterPanel({ campaigns }: { campaigns: Campaigns }) {
                 meta: null,
               })
             }
-            className="ms-auto text-sm font-semibold text-tint-fg hover:underline"
+            className="ms-auto text-sm font-semibold text-ink-900 hover:underline"
           >
             {m.clear}
           </button>

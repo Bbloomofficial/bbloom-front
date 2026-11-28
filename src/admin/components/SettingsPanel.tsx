@@ -257,14 +257,14 @@ export default function SettingsPanel({
                   className={[
                     "inline-flex items-center gap-2 rounded-2xl border px-3 py-2 text-sm",
                     checked
-                      ? "border-bloom-200 bg-tint/50"
+                      ? "border-ink-900 bg-ink-50"
                       : "border-ink-100 bg-surface",
                   ].join(" ")}
                 >
                   <input
                     type="checkbox"
                     id={`settings-language-${language}`}
-                    className="h-4 w-4 accent-bloom-600"
+                    className="h-4 w-4 accent-ink-900"
                     checked={checked}
                     onChange={() => toggleLanguage(language)}
                   />
@@ -275,7 +275,7 @@ export default function SettingsPanel({
                     {t.languageNames[language] ?? language}
                   </label>
                   {checked && index === 0 && (
-                    <span className="rounded-full bg-bloom-600 px-2 py-0.5 text-[11px] font-semibold text-white">
+                    <span className="rounded-full bg-ink-900 px-2 py-0.5 text-[11px] font-semibold text-canvas">
                       {t.detail.primary}
                     </span>
                   )}
@@ -288,7 +288,7 @@ export default function SettingsPanel({
                           ...draft.languages.filter((item) => item !== language),
                         ])
                       }
-                      className="text-xs font-semibold text-bloom-600 hover:text-bloom-700"
+                      className="text-xs font-semibold text-ink-900 underline underline-offset-2"
                     >
                       {t.wizard.moveUp}
                     </button>
@@ -317,7 +317,7 @@ export default function SettingsPanel({
         </div>
 
         <div>
-          <h3 className="text-sm font-bold uppercase tracking-wide text-ink-400">
+          <h3 className="text-sm font-bold text-ink-600">
             {t.detail.notifications}
           </h3>
           <p className="mt-1 text-xs text-ink-400">{t.detail.notificationsHint}</p>
@@ -336,7 +336,7 @@ export default function SettingsPanel({
         </div>
 
         <div>
-          <h3 className="text-sm font-bold uppercase tracking-wide text-ink-400">
+          <h3 className="text-sm font-bold text-ink-600">
             {t.detail.seo}
           </h3>
           <div className="mt-3 grid gap-4 sm:grid-cols-2">
@@ -355,7 +355,7 @@ export default function SettingsPanel({
       {error && (
         <p
           role="alert"
-          className="mt-5 rounded-2xl bg-tint px-4 py-3 text-sm font-semibold text-danger"
+          className="mt-5 rounded-2xl bg-danger/10 px-4 py-3 text-sm font-semibold text-danger"
         >
           {error}
         </p>

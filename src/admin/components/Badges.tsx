@@ -44,7 +44,7 @@ export function StatusBadge({
 }
 
 export function TierBadge({ label }: { label: string }) {
-  return <Pill className="bg-tint text-tint-fg">{label}</Pill>;
+  return <Pill className="bg-ink-50 text-ink-900">{label}</Pill>;
 }
 
 /**
@@ -53,7 +53,7 @@ export function TierBadge({ label }: { label: string }) {
  */
 export function PendingBadge({ label }: { label: string }) {
   return (
-    <Pill className="border border-bloom-200 bg-tint text-tint-fg">{label}</Pill>
+    <Pill className="border border-ink-200 bg-ink-50 text-ink-900">{label}</Pill>
   );
 }
 

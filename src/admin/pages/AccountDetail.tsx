@@ -107,7 +107,7 @@ export default function AccountDetail() {
 
   if (error && !account) {
     return (
-      <div className="rounded-3xl border border-ink-100 bg-surface p-6 text-center">
+      <div className="rounded-2xl border border-ink-100 bg-surface p-6 text-center">
         <p className="text-sm font-semibold text-danger">{error.message}</p>
         <button type="button" onClick={reload} className="btn-secondary mt-4">
           {t.retry}
@@ -125,13 +125,13 @@ export default function AccountDetail() {
     <div>
       <Link
         to={adminPath("/accounts")}
-        className="text-sm font-semibold text-bloom-600 hover:text-bloom-700"
+        className="text-sm font-semibold text-ink-900 underline underline-offset-2"
       >
         ← {t.accounts.back}
       </Link>
 
       <div className="mt-4">
-        <h1 className="text-2xl font-extrabold text-balance tracking-tight text-ink-900 sm:text-3xl">
+        <h1 className="text-[28px] font-bold text-balance tracking-[-0.01em] text-ink-900 leading-tight">
           {account.fullName}
         </h1>
         <p className="mt-1 text-sm text-ink-600" dir="ltr" translate="no">
@@ -143,10 +143,10 @@ export default function AccountDetail() {
         <p role="alert" className="mt-4 text-sm font-semibold text-danger">{actionError}</p>
       )}
 
-      <div className="mt-6 rounded-3xl border border-ink-100 bg-surface p-6">
+      <div className="mt-6 rounded-2xl border border-ink-100 bg-surface p-6">
         <dl className="grid gap-4 sm:grid-cols-2">
           <div>
-            <dt className="text-xs font-semibold uppercase tracking-wide text-ink-400">
+            <dt className="text-[13px] font-semibold text-ink-600">
               {t.accounts.created}
             </dt>
             <dd className="mt-1 text-sm text-ink-900">
@@ -154,7 +154,7 @@ export default function AccountDetail() {
             </dd>
           </div>
           <div>
-            <dt className="text-xs font-semibold uppercase tracking-wide text-ink-400">
+            <dt className="text-[13px] font-semibold text-ink-600">
               {t.accounts.lastLogin}
             </dt>
             <dd className="mt-1 text-sm text-ink-900">
@@ -164,7 +164,7 @@ export default function AccountDetail() {
             </dd>
           </div>
           <div>
-            <dt className="text-xs font-semibold uppercase tracking-wide text-ink-400">
+            <dt className="text-[13px] font-semibold text-ink-600">
               {t.accounts.language}
             </dt>
             <dd className="mt-1 text-sm text-ink-900">
@@ -181,7 +181,7 @@ export default function AccountDetail() {
             </dd>
           </div>
           <div>
-            <dt className="text-xs font-semibold uppercase tracking-wide text-ink-400">
+            <dt className="text-[13px] font-semibold text-ink-600">
               {/* This is `enabled`, which is about the account, not the
                   address. Labelling it "email status" made a disabled account
                   read as a disabled mailbox, and put the same heading on two
@@ -196,7 +196,7 @@ export default function AccountDetail() {
       </div>
 
       {/* Email verification section */}
-      <div className="mt-6 rounded-3xl border border-ink-100 bg-surface p-6">
+      <div className="mt-6 rounded-2xl border border-ink-100 bg-surface p-6">
         <h2 className="text-lg font-bold text-ink-900">
           {t.accounts.emailStatus}
         </h2>
@@ -249,7 +249,7 @@ export default function AccountDetail() {
       </div>
 
       {/* Free allowance section */}
-      <div className="mt-6 rounded-3xl border border-ink-100 bg-surface p-6">
+      <div className="mt-6 rounded-2xl border border-ink-100 bg-surface p-6">
         <h2 className="text-lg font-bold text-ink-900">
           {t.accounts.freeAllowance}
         </h2>
@@ -297,7 +297,7 @@ export default function AccountDetail() {
       </div>
 
       {/* Sites section */}
-      <div className="mt-6 rounded-3xl border border-ink-100 bg-surface p-6">
+      <div className="mt-6 rounded-2xl border border-ink-100 bg-surface p-6">
         <h2 className="text-lg font-bold text-ink-900">
           {t.accounts.sitesTitle}
         </h2>
@@ -305,8 +305,8 @@ export default function AccountDetail() {
           <p className="mt-4 text-sm text-ink-600">{t.accounts.noSites}</p>
         ) : (
           <div className="mt-4 overflow-hidden rounded-2xl border border-ink-100">
-            <table className="w-full text-start text-sm">
-              <thead className="border-b border-ink-100 text-xs uppercase tracking-wide text-ink-400">
+            <table className="w-full text-start text-[15px]">
+              <thead className="border-b border-ink-100 bg-ink-50 text-[13px] text-ink-600 font-semibold">
                 <tr>
                   <th className="px-4 py-2.5 text-start font-semibold">
                     {t.accounts.siteSlug}
@@ -331,7 +331,7 @@ export default function AccountDetail() {
                     <td className="px-4 py-3">
                       <Link
                         to={adminPath("/sites/" + site.id)}
-                        className="font-semibold text-ink-900 hover:text-bloom-600"
+                        className="font-semibold text-ink-900 hover:underline"
                       >
                         {site.businessName}
                       </Link>
@@ -362,7 +362,7 @@ export default function AccountDetail() {
                           </span>
                         )}
                         {site.usingFreeSlot && (
-                          <span className="inline-flex items-center rounded-full bg-tint px-2 py-0.5 text-xs font-semibold text-tint-fg">
+                          <span className="inline-flex items-center rounded-full bg-ink-50 px-2 py-0.5 text-xs font-semibold text-ink-900">
                             {t.accounts.freeSlot}
                           </span>
                         )}

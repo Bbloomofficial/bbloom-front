@@ -180,7 +180,7 @@ export default function PaymentAccountPanel({ site }: { site: SiteDetail }) {
               [t.payments.connectedAt, formatDate(account.connectedAt, locale)],
             ].map(([label, value]) => (
               <div key={label}>
-                <dt className="text-xs uppercase tracking-wide text-ink-400">
+                <dt className="text-[13px] text-ink-600 font-semibold">
                   {label}
                 </dt>
                 <dd className="mt-1 break-words text-sm font-semibold text-ink-900">

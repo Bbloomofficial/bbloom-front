@@ -38,7 +38,7 @@ export default function DangerZone({ site }: { site: SiteDetail }) {
   }
 
   return (
-    <section className="rounded-3xl border border-danger/30 bg-surface p-6 sm:p-7">
+    <section className="rounded-2xl border border-danger/30 bg-surface p-6 sm:p-7">
       <h2 className="text-lg font-bold text-danger">{t.detail.danger}</h2>
       <p className="mt-1 text-sm text-ink-600">{t.detail.dangerHint}</p>
 
@@ -67,7 +67,7 @@ export default function DangerZone({ site }: { site: SiteDetail }) {
         type="button"
         onClick={onDelete}
         disabled={!armed || busy}
-        className="btn mt-5 bg-danger text-white dark:text-contrast hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
+        className="btn mt-5 bg-danger hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40 text-on-danger"
       >
         {busy ? t.detail.deleting : t.detail.deleteSite}
       </button>

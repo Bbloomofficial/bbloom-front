@@ -37,7 +37,7 @@ function Row({
 }) {
   return (
     <div className="flex flex-wrap items-baseline justify-between gap-3 border-b border-ink-100 py-2 last:border-0">
-      <dt className="text-xs font-semibold uppercase tracking-wide text-ink-400">
+      <dt className="text-[13px] font-semibold text-ink-600">
         {label}
       </dt>
       <dd className="text-sm text-ink-800">{children}</dd>
@@ -95,7 +95,7 @@ function InsightsPanel({ campaign }: { campaign: AdCampaignDto }) {
     );
 
   return (
-    <section className="mt-6 rounded-3xl border border-ink-100 bg-surface p-6">
+    <section className="mt-6 rounded-2xl border border-ink-100 bg-surface p-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h2 className="text-lg font-bold text-ink-900">{t.title}</h2>
         {launched && (
@@ -258,7 +258,7 @@ export default function AdCampaignDetail() {
     <div>
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-extrabold text-balance tracking-tight text-ink-900 sm:text-3xl">
+          <h1 className="text-[28px] font-bold text-balance tracking-[-0.01em] text-ink-900 leading-tight">
             {data.name}
           </h1>
           <div className="mt-2 flex flex-wrap items-center gap-3">
@@ -283,14 +283,14 @@ export default function AdCampaignDetail() {
           the record rather than inside it: a half-failed launch is running,
           costing money, and says "Stopped" three lines further down. */}
       {spending && data.status !== "ACTIVE" && (
-        <div className="mt-6 rounded-3xl border border-danger/30 bg-danger/10 p-5 dark:bg-danger/15">
+        <div className="mt-6 rounded-2xl border border-danger/30 bg-danger/10 p-5 dark:bg-danger/15">
           <p className="text-sm font-bold text-danger">{d.spendingTitle}</p>
           <p className="mt-1 text-sm text-ink-700">{d.spendingBody}</p>
         </div>
       )}
 
       {data.status === "FAILED" && !data.metaCampaignId && (
-        <div className="mt-6 rounded-3xl border border-ink-100 bg-ink-50 p-5">
+        <div className="mt-6 rounded-2xl border border-ink-100 bg-ink-50 p-5">
           <p className="text-sm text-ink-700">{d.notLaunched}</p>
         </div>
       )}
@@ -301,7 +301,7 @@ export default function AdCampaignDetail() {
         </p>
       )}
 
-      <section className="mt-6 rounded-3xl border border-ink-100 bg-surface p-6">
+      <section className="mt-6 rounded-2xl border border-ink-100 bg-surface p-6">
         <dl className="grid gap-x-8 gap-y-1 sm:grid-cols-2">
           <Row label={d.budget}>
             <span dir="ltr">
@@ -359,7 +359,7 @@ export default function AdCampaignDetail() {
 
       <InsightsPanel campaign={data} />
 
-      <section className="mt-6 rounded-3xl border border-ink-100 bg-surface p-6">
+      <section className="mt-6 rounded-2xl border border-ink-100 bg-surface p-6">
         <h2 className="text-lg font-bold text-ink-900">{d.metaTitle}</h2>
         <dl className="mt-3 grid gap-x-8 gap-y-1 sm:grid-cols-2">
           <Row label={d.metaCampaign}>
@@ -399,7 +399,7 @@ export default function AdCampaignDetail() {
             onClick={() =>
               void act(d.resumeConfirm, () => resumeAdCampaign(token, data.id))
             }
-            className="rounded-xl bg-danger px-4 py-3 text-sm font-semibold text-white dark:text-contrast transition hover:opacity-90 motion-safe:active:scale-95 disabled:opacity-40"
+            className="rounded-lg bg-danger px-4 py-3 text-sm font-semibold transition hover:opacity-90 motion-safe:active:scale-95 disabled:opacity-40 text-on-danger"
           >
             {busy ? d.resuming : d.resume}
           </button>
@@ -411,7 +411,7 @@ export default function AdCampaignDetail() {
             onClick={() =>
               void act(d.deleteConfirm, () => deleteAdCampaign(token, data.id), true)
             }
-            className="rounded-xl bg-danger px-4 py-3 text-sm font-semibold text-white dark:text-contrast transition hover:opacity-90 motion-safe:active:scale-95 disabled:opacity-40"
+            className="rounded-lg bg-danger px-4 py-3 text-sm font-semibold transition hover:opacity-90 motion-safe:active:scale-95 disabled:opacity-40 text-on-danger"
           >
             {busy ? d.deleting : d.delete}
           </button>

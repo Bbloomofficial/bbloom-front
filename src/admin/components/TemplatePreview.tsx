@@ -23,15 +23,15 @@ export function demoHref(template: TemplateSummary): string | null {
 /** Stands in when there is no image, or when the one we were given fails. */
 function Placeholder({ code, label }: { code: string; label: string }) {
   return (
-    <div className="flex h-full w-full flex-col items-center justify-center gap-2 bg-gradient-to-br from-tint to-tint-strong">
+    <div className="flex h-full w-full flex-col items-center justify-center gap-2 bg-gradient-to-br from-ink-50 to-ink-100">
       <span
         aria-hidden
-        className="text-2xl font-extrabold uppercase text-tint-fg/70"
+        className="text-2xl font-bold uppercase text-ink-500"
         dir="ltr"
       >
         {code.slice(0, 2)}
       </span>
-      <span className="px-3 text-center text-[11px] font-semibold text-tint-fg/70">
+      <span className="px-3 text-center text-[11px] font-semibold text-ink-500">
         {label}
       </span>
     </div>
@@ -111,7 +111,7 @@ export function TemplatePreviewDialog({
       onClick={onClose}
     >
       <div
-        className="max-h-full w-full max-w-3xl overflow-y-auto rounded-3xl bg-surface shadow-2xl"
+        className="max-h-full w-full max-w-3xl overflow-y-auto rounded-2xl bg-surface shadow-card"
         onClick={(event) => event.stopPropagation()}
       >
         <div className="flex items-start justify-between gap-4 border-b border-ink-100 p-5">
@@ -147,13 +147,13 @@ export function TemplatePreviewDialog({
               href={demo}
               target="_blank"
               rel="noreferrer"
-              className="flex items-start gap-3 rounded-2xl border border-bloom-200 bg-tint p-3 transition hover:border-bloom-400"
+              className="flex items-start gap-3 rounded-2xl border border-ink-200 bg-ink-50 p-3 transition hover:border-ink-900"
             >
               <span aria-hidden className="text-lg leading-none">
                 ↗
               </span>
               <span>
-                <span className="block text-sm font-bold text-tint-fg">
+                <span className="block text-sm font-bold text-ink-900">
                   {t.wizard.demo}
                 </span>
                 <span className="mt-0.5 block text-xs text-ink-600">

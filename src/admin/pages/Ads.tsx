@@ -27,7 +27,7 @@ import type { AdStatus } from "../api/types";
 function StatusRow({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex flex-wrap items-baseline justify-between gap-3 py-1.5">
-      <dt className="text-xs font-semibold uppercase tracking-wide text-ink-400">
+      <dt className="text-[13px] font-semibold text-ink-600">
         {label}
       </dt>
       <dd dir="ltr" className="text-sm font-semibold text-ink-900">
@@ -225,17 +225,17 @@ export default function Ads() {
     <div>
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-extrabold text-balance tracking-tight text-ink-900 sm:text-3xl">
+          <h1 className="text-[28px] font-bold text-balance tracking-[-0.01em] text-ink-900 leading-tight">
             {t.title}
           </h1>
-          <p className="mt-1 text-sm text-ink-600">{t.subtitle}</p>
+          <p className="mt-1 text-base text-ink-600">{t.subtitle}</p>
         </div>
       </div>
 
       {status.data ? (
         <StatusCard status={status.data} onRefresh={status.reload} />
       ) : status.error ? (
-        <div className="mt-6 rounded-3xl border border-ink-100 bg-surface p-6">
+        <div className="mt-6 rounded-2xl border border-ink-100 bg-surface p-6">
           <p className="text-sm text-ink-500">{t.loadFailed}</p>
           <button
             type="button"

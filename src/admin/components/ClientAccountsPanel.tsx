@@ -109,7 +109,7 @@ export default function ClientAccountsPanel({ site }: { site: SiteDetail }) {
         // No owner means the handover is unfinished; make that impossible to miss.
         hasOwner
           ? "hover:border-ink-100"
-          : "border-bloom-300 bg-tint/40 hover:border-bloom-300",
+          : "border-ink-900 bg-ink-50 hover:border-ink-900",
       ].join(" ")}
     >
       <div className="flex flex-wrap items-start justify-between gap-3">
@@ -156,7 +156,7 @@ export default function ClientAccountsPanel({ site }: { site: SiteDetail }) {
                     : t.detail.roleEditor}
                 </span>
                 {!user.enabled && (
-                  <span className="rounded-full bg-tint px-2.5 py-1 text-[11px] font-semibold text-danger">
+                  <span className="rounded-full bg-danger/10 px-2.5 py-1 text-[11px] font-semibold text-danger">
                     {t.detail.disabled}
                   </span>
                 )}
@@ -177,7 +177,7 @@ export default function ClientAccountsPanel({ site }: { site: SiteDetail }) {
                       setResetPassword("");
                       setFormError(null);
                     }}
-                    className="text-sm font-semibold text-ink-600 hover:text-bloom-600 disabled:opacity-50"
+                    className="text-sm font-semibold text-ink-600 disabled:opacity-50 hover:text-ink-900"
                   >
                     {t.detail.resetPassword}
                   </button>
@@ -185,7 +185,7 @@ export default function ClientAccountsPanel({ site }: { site: SiteDetail }) {
                     type="button"
                     disabled={busy}
                     onClick={() => toggleEnabled(user)}
-                    className="text-sm font-semibold text-ink-600 hover:text-bloom-600 disabled:opacity-50"
+                    className="text-sm font-semibold text-ink-600 disabled:opacity-50 hover:text-ink-900"
                   >
                     {user.enabled ? t.detail.disable : t.detail.enable}
                   </button>
