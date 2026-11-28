@@ -54,7 +54,7 @@ export default function Login() {
             <h1 className="mt-4 text-[28px] font-bold text-balance tracking-[-0.01em] text-ink-900 leading-tight">
               {t.login.title}
             </h1>
-            <p className="mt-2 text-sm text-ink-600">{t.login.subtitle}</p>
+            <p className="mt-2 text-base text-ink-600">{t.login.subtitle}</p>
 
             <form onSubmit={onSubmit} className="mt-6 space-y-4" noValidate>
               <div>

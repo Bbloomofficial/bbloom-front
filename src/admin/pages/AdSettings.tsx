@@ -254,7 +254,7 @@ export default function AdSettings() {
       <h1 className="text-[28px] font-bold text-balance tracking-[-0.01em] text-ink-900 leading-tight">
         {t.title}
       </h1>
-      <p className="mt-1 text-sm text-ink-600">{t.subtitle}</p>
+      <p className="mt-1 text-base text-ink-600">{t.subtitle}</p>
 
       {/*
         The one fault the server reports as prose rather than a code, and the

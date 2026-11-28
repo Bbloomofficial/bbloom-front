@@ -104,7 +104,7 @@ export default function PromoCodes() {
           <h1 className="text-[28px] font-bold text-balance tracking-[-0.01em] text-ink-900 leading-tight">
             {t.promoCodes.title}
           </h1>
-          <p className="mt-1 text-sm text-ink-600">{t.promoCodes.subtitle}</p>
+          <p className="mt-1 text-base text-ink-600">{t.promoCodes.subtitle}</p>
         </div>
         <Link to={adminPath("/promo-codes/new")} className="btn-primary">
           {t.promoCodes.create}
@@ -162,8 +162,8 @@ export default function PromoCodes() {
 
       {codes.length > 0 && (
         <div className="mt-6 overflow-hidden rounded-2xl border border-ink-100 bg-surface">
-          <table className="w-full text-start text-sm">
-            <thead className="border-b border-ink-100 text-[13px] text-ink-600 font-semibold">
+          <table className="w-full text-start text-[15px]">
+            <thead className="border-b border-ink-100 bg-ink-50 text-[13px] text-ink-600 font-semibold">
               <tr>
                 <SortTh column="code" label={t.promoCodes.code} list={list} />
                 <SortTh

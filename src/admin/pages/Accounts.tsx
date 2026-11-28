@@ -82,7 +82,7 @@ export default function Accounts() {
         <h1 className="text-[28px] font-bold text-balance tracking-[-0.01em] text-ink-900 leading-tight">
           {t.accounts.title}
         </h1>
-        <p className="mt-1 text-sm text-ink-600">{t.accounts.subtitle}</p>
+        <p className="mt-1 text-base text-ink-600">{t.accounts.subtitle}</p>
       </div>
 
       <ListToolbar
@@ -141,8 +141,8 @@ export default function Accounts() {
 
       {accounts.length > 0 && (
         <div className="mt-6 overflow-hidden rounded-2xl border border-ink-100 bg-surface">
-          <table className="w-full text-start text-sm">
-            <thead className="border-b border-ink-100 text-[13px] text-ink-600 font-semibold">
+          <table className="w-full text-start text-[15px]">
+            <thead className="border-b border-ink-100 bg-ink-50 text-[13px] text-ink-600 font-semibold">
               <tr>
                 <SortTh column="email" label={t.accounts.email} list={list} />
                 <SortTh

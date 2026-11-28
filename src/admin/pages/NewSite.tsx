@@ -138,7 +138,7 @@ export default function NewSite() {
           <h1 className="text-[28px] font-bold text-balance tracking-[-0.01em] text-ink-900 leading-tight">
             {t.wizard.title}
           </h1>
-          <p className="mt-1 text-sm text-ink-600">{t.wizard.subtitle}</p>
+          <p className="mt-1 text-base text-ink-600">{t.wizard.subtitle}</p>
         </div>
         <Link to={adminPath()} className="text-sm font-semibold text-ink-600 hover:text-ink-900">
           {t.cancel}

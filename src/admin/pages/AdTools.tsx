@@ -373,9 +373,9 @@ function TestCampaigns({
         <p className="mt-4 text-sm text-ink-400">{t.empty}</p>
       ) : (
         <div className="mt-4 overflow-x-auto">
-          <table className="w-full min-w-[42rem] text-start text-sm">
+          <table className="w-full min-w-[42rem] text-start text-[15px] [&_tr>*:first-child]:ps-3 [&_tr>*:last-child]:pe-3">
             <thead>
-              <tr className="text-[13px] font-semibold text-ink-600">
+              <tr className="text-[13px] font-semibold text-ink-600 bg-ink-50 [&>th]:py-3 [&>th:first-child]:rounded-s-lg [&>th:last-child]:rounded-e-lg">
                 <th className="py-2 text-start font-semibold">{t.colWhen}</th>
                 <th className="py-2 text-start font-semibold">{t.colName}</th>
                 <th className="py-2 text-start font-semibold">
@@ -481,7 +481,7 @@ export default function AdTools() {
           <h1 className="text-[28px] font-bold text-balance tracking-[-0.01em] text-ink-900 leading-tight">
             {t.tools}
           </h1>
-          <p className="mt-1 text-sm text-ink-600">{t.test.body}</p>
+          <p className="mt-1 text-base text-ink-600">{t.test.body}</p>
         </div>
       </div>
 

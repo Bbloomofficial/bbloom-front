@@ -212,7 +212,7 @@ export default function AdCampaigns() {
           <h1 className="text-[28px] font-bold text-balance tracking-[-0.01em] text-ink-900 leading-tight">
             {m.title}
           </h1>
-          <p className="mt-1 max-w-2xl text-sm text-ink-600">{m.subtitle}</p>
+          <p className="mt-1 max-w-2xl text-base text-ink-600">{m.subtitle}</p>
         </div>
         <div className="flex flex-wrap gap-3">
           <button
@@ -328,9 +328,9 @@ export default function AdCampaigns() {
                   </div>
                 )}
               <div className="mt-4 overflow-x-auto">
-                <table className="w-full min-w-[72rem] text-sm">
+                <table className="w-full min-w-[72rem] text-[15px] [&_tr>*:first-child]:ps-3 [&_tr>*:last-child]:pe-3">
                   <thead>
-                    <tr className="text-left text-[13px] font-semibold text-ink-600">
+                    <tr className="text-left text-[13px] font-semibold text-ink-600 bg-ink-50 [&>th]:py-3 [&>th:first-child]:rounded-s-lg [&>th:last-child]:rounded-e-lg">
                       <th className="w-8 pb-2 pr-3">
                         <input
                           type="checkbox"

@@ -51,7 +51,7 @@ export default function SystemStatus() {
           <h1 className="text-[28px] font-bold text-balance tracking-[-0.01em] text-ink-900 leading-tight">
             {t.system.title}
           </h1>
-          <p className="mt-1 text-sm text-ink-600">{t.system.subtitle}</p>
+          <p className="mt-1 text-base text-ink-600">{t.system.subtitle}</p>
         </div>
         <button type="button" onClick={reload} className="btn-secondary">
           {t.system.refresh}

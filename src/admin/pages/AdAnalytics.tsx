@@ -81,9 +81,9 @@ function Breakdown({
         <p className="mt-3 text-sm text-ink-400">—</p>
       ) : (
         <div className="mt-3 overflow-x-auto">
-          <table className="w-full min-w-[26rem] text-sm">
+          <table className="w-full min-w-[26rem] text-[15px] [&_tr>*:first-child]:ps-3 [&_tr>*:last-child]:pe-3">
             <thead>
-              <tr className="text-left text-[13px] font-semibold text-ink-600">
+              <tr className="text-left text-[13px] font-semibold text-ink-600 bg-ink-50 [&>th]:py-3 [&>th:first-child]:rounded-s-lg [&>th:last-child]:rounded-e-lg">
                 <th className="pb-2 pr-3" />
                 <th className="pb-2 pr-3 text-right">{labels.campaigns}</th>
                 <th className="pb-2 pr-3 text-right">{labels.impressions}</th>
@@ -157,7 +157,7 @@ export default function AdAnalytics() {
           <h1 className="text-[28px] font-bold text-balance tracking-[-0.01em] text-ink-900 leading-tight">
             {a.title}
           </h1>
-          <p className="mt-1 max-w-2xl text-sm text-ink-600">{a.subtitle}</p>
+          <p className="mt-1 max-w-2xl text-base text-ink-600">{a.subtitle}</p>
         </div>
         <div className="flex flex-wrap gap-3">
           <button

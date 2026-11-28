@@ -305,8 +305,8 @@ export default function AccountDetail() {
           <p className="mt-4 text-sm text-ink-600">{t.accounts.noSites}</p>
         ) : (
           <div className="mt-4 overflow-hidden rounded-2xl border border-ink-100">
-            <table className="w-full text-start text-sm">
-              <thead className="border-b border-ink-100 text-[13px] text-ink-600 font-semibold">
+            <table className="w-full text-start text-[15px]">
+              <thead className="border-b border-ink-100 bg-ink-50 text-[13px] text-ink-600 font-semibold">
                 <tr>
                   <th className="px-4 py-2.5 text-start font-semibold">
                     {t.accounts.siteSlug}
