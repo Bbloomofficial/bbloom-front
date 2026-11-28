@@ -45,7 +45,7 @@ export default function VerifyBanner() {
       : t.verify.bannerBody;
 
   return (
-    <div className="rounded-3xl border border-amber-200 bg-amber-50 p-5 dark:border-amber-900/60 dark:bg-amber-950/30">
+    <div className="rounded-2xl border border-amber-200 bg-amber-50 p-5 dark:border-amber-900/60 dark:bg-amber-950/30">
       <p className="font-bold text-amber-900 dark:text-amber-100">{title}</p>
       <p className="mt-1 text-sm text-amber-800 dark:text-amber-200/90">
         {body}

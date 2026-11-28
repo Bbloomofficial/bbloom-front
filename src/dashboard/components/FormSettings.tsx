@@ -53,7 +53,7 @@ export function FormSettings({
     site.effectiveFeatures?.reservations !== undefined;
 
   return (
-    <section className="rounded-3xl border border-ink-100 bg-surface p-6 sm:p-7">
+    <section className="rounded-2xl border border-ink-100 bg-surface p-6 sm:p-7">
       <h2 className="text-lg font-bold text-ink-900">{t.title}</h2>
       <p className="mt-1 text-sm text-ink-600">{t.subtitle}</p>
 
@@ -156,7 +156,7 @@ function FormSwitch({
           disabled={saving}
           onClick={toggle}
           className={`relative mt-0.5 h-7 w-12 shrink-0 rounded-full transition disabled:opacity-50 ${
-            on ? "bg-bloom-500" : "bg-ink-200"
+            on ? "bg-ink-800" : "bg-ink-200"
           }`}
         >
           <span
@@ -170,7 +170,7 @@ function FormSwitch({
             <span className="text-sm font-semibold text-ink-900">
               {copy.title}
             </span>
-            <span className="text-xs font-semibold text-ink-500">
+            <span className="text-sm font-semibold text-ink-900">
               {on ? t.on : t.off}
             </span>
           </div>
@@ -217,7 +217,7 @@ function PlansLink({ siteId, label }: { siteId: string; label: string }) {
   return (
     <Link
       to={dashPath(`/s/${siteId}/billing`)}
-      className="mt-2 inline-block text-sm font-semibold text-tint-fg hover:underline"
+      className="mt-2 inline-block text-sm font-semibold text-ink-900 hover:underline"
     >
       {label}
     </Link>

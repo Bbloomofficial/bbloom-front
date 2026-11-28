@@ -68,7 +68,7 @@ function NavIcon({ name, className }: { name: NavKey; className?: string }) {
 function navClass({ isActive }: { isActive: boolean }) {
   return `flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition ${
     isActive
-      ? "bg-tint text-tint-fg"
+      ? "bg-ink-50 text-ink-900"
       : "text-ink-600 hover:bg-ink-50 hover:text-ink-900"
   }`;
 }
@@ -97,7 +97,7 @@ function BackToSite({ label }: { label: string }) {
     // `text-sm gap-3 px-3` it gets ellipsised. Keep the label naming bbloom.ge
     // rather than shortening it — „მთავარი გვერდი" would collide with „გვერდი",
     // which is this panel's word for the *site's* page editor.
-    "flex w-full items-center gap-2 rounded-xl border border-ink-100 bg-control px-2 py-2.5 text-[13px] font-semibold text-ink-600 transition hover:border-bloom-300 hover:bg-tint hover:text-bloom-600 active:scale-95";
+    "flex w-full items-center gap-2 rounded-lg border border-ink-100 bg-control px-2 py-2.5 text-[13px] font-semibold text-ink-600 transition hover:border-ink-900 hover:bg-ink-50 motion-safe:active:scale-[0.98] hover:text-ink-900";
   const inner = (
     <>
       <NavIcon name="exit" className="h-4 w-4" />
@@ -152,7 +152,7 @@ function AccountHeader() {
 
   return (
     <div className="flex w-full min-w-0 items-center gap-2.5 rounded-2xl px-2 py-1.5 text-start sm:gap-3">
-      <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-bloom-500 to-bloom-700 text-sm font-extrabold text-white shadow-lg shadow-bloom-600/25">
+      <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-bloom-500 to-bloom-700 text-sm font-bold text-white">
         {initial(user.fullName)}
       </span>
       <span className="min-w-0 flex-1">
@@ -172,7 +172,7 @@ function AccountHeader() {
 function tabClass({ isActive }: { isActive: boolean }) {
   return `flex shrink-0 items-center gap-2 rounded-xl px-3 py-2 text-sm font-semibold transition ${
     isActive
-      ? "bg-tint text-tint-fg"
+      ? "bg-ink-50 text-ink-900"
       : "text-ink-600 hover:bg-ink-50 hover:text-ink-900"
   }`;
 }
@@ -427,7 +427,7 @@ export default function Layout({
           <button
             type="button"
             onClick={signOut}
-            className="ms-auto rounded-xl border border-ink-100 bg-control px-3 py-2 text-sm font-semibold text-ink-600 transition hover:border-bloom-300 hover:bg-tint hover:text-bloom-600 active:scale-95"
+            className="ms-auto rounded-lg border border-ink-100 bg-control px-3 py-2 text-sm font-semibold text-ink-600 transition hover:border-ink-900 hover:bg-ink-50 motion-safe:active:scale-[0.98] hover:text-ink-900"
           >
             {t.signOut}
           </button>
@@ -451,7 +451,7 @@ export default function Layout({
             onClick={() => setDrawer(true)}
             aria-label={t.nav.menu}
             aria-expanded={drawer}
-            className="rounded-xl border border-ink-100 bg-control p-2.5 text-ink-600 transition hover:border-bloom-300 hover:bg-tint hover:text-bloom-600 active:scale-95"
+            className="rounded-lg border border-ink-100 bg-control p-2.5 text-ink-600 transition hover:border-ink-900 hover:bg-ink-50 motion-safe:active:scale-[0.98] hover:text-ink-900"
           >
             <svg
               viewBox="0 0 20 20"
@@ -480,7 +480,7 @@ export default function Layout({
             onClick={() => setDrawer(false)}
             className="absolute inset-0 h-full w-full bg-ink-900/40"
           />
-          <div className="absolute inset-y-0 start-0 w-72 max-w-[85vw] border-e border-ink-100 bg-surface shadow-xl">
+          <div className="absolute inset-y-0 start-0 w-72 max-w-[85vw] border-e border-ink-100 bg-surface shadow-card">
             {sidebar}
           </div>
         </div>
@@ -526,10 +526,10 @@ export default function Layout({
             {/* Signed-in clients never see the marketing footer, and this is
                 where they would look for what we do with their data. */}
             <span className="flex gap-4">
-              <a href={marketingPage("/privacy")} className="hover:text-tint-fg">
+              <a href={marketingPage("/privacy")} className="hover:text-ink-900">
                 {t.privacyLink}
               </a>
-              <a href={marketingPage("/data-deletion")} className="hover:text-tint-fg">
+              <a href={marketingPage("/data-deletion")} className="hover:text-ink-900">
                 {t.dataDeletionLink}
               </a>
             </span>

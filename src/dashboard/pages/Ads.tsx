@@ -35,7 +35,7 @@ function Figure({
   const text = value === null || value === undefined || value === "" ? null : value;
   return (
     <div>
-      <dt className="text-xs font-semibold uppercase tracking-wide text-ink-400">
+      <dt className="text-[13px] font-semibold text-ink-600">
         {label}
       </dt>
       <dd className="mt-0.5 text-sm text-ink-800">
@@ -80,8 +80,8 @@ function Allowance({ allowance }: { allowance: AdAllowance }) {
       allowance.impressionsRemaining === 0);
 
   return (
-    <section className="mt-6 rounded-3xl border border-ink-100 bg-surface p-6">
-      <h2 className="text-xs font-semibold uppercase tracking-wide text-ink-400">
+    <section className="mt-6 rounded-2xl border border-ink-100 bg-surface p-6">
+      <h2 className="text-[13px] font-semibold text-ink-600">
         {t.allowanceTitle}
       </h2>
       <p className="mt-2 text-sm text-ink-800">
@@ -114,7 +114,7 @@ function Upsell() {
   const { locale } = useI18n();
   const t = dashboardStrings(locale).ads;
   return (
-    <section className="mt-6 rounded-3xl border border-bloom-200 bg-bloom-50 p-6">
+    <section className="mt-6 rounded-2xl border border-ink-200 bg-ink-50 p-6">
       <h2 className="text-lg font-bold text-ink-900">{t.upsellTitle}</h2>
       <p className="mt-2 max-w-2xl text-sm text-ink-700">{t.upsellBody}</p>
       <a href="mailto:hello@bbloom.ge" className="btn-primary mt-4 inline-flex">
@@ -155,10 +155,10 @@ export default function Ads() {
 
   return (
     <div>
-      <h1 className="text-2xl font-extrabold tracking-tight text-ink-900 sm:text-3xl">
+      <h1 className="text-[28px] font-bold tracking-[-0.01em] text-ink-900 leading-tight">
         {t.title}
       </h1>
-      <p className="mt-1 max-w-2xl text-sm text-ink-600">{t.subtitle}</p>
+      <p className="mt-1 max-w-2xl text-base text-ink-600">{t.subtitle}</p>
 
       {list.error && <p className="mt-6 text-sm text-ink-500">{t.loadFailed}</p>}
 
@@ -166,7 +166,7 @@ export default function Ads() {
         (allowance.allowed ? <Allowance allowance={allowance} /> : <Upsell />)}
 
       {allowance?.allowed && !list.loading && !list.error && rows.length === 0 && (
-        <section className="mt-6 rounded-3xl border border-ink-100 bg-surface p-6">
+        <section className="mt-6 rounded-2xl border border-ink-100 bg-surface p-6">
           <h2 className="text-lg font-bold text-ink-900">{t.empty}</h2>
           <p className="mt-2 text-sm text-ink-600">{t.emptyBody}</p>
         </section>
@@ -178,7 +178,7 @@ export default function Ads() {
             {rows.map((campaign) => (
               <li
                 key={campaign.id}
-                className="rounded-3xl border border-ink-100 bg-surface p-6"
+                className="rounded-2xl border border-ink-100 bg-surface p-6"
               >
                 <div className="flex flex-wrap items-baseline justify-between gap-3">
                   <h2 className="text-lg font-bold text-ink-900">
@@ -193,7 +193,7 @@ export default function Ads() {
                 )}
                 <dl className="mt-4 grid gap-4 sm:grid-cols-4">
                   <div>
-                    <dt className="text-xs font-semibold uppercase tracking-wide text-ink-400">
+                    <dt className="text-[13px] font-semibold text-ink-600">
                       {t.colChannels}
                     </dt>
                     <dd className="mt-0.5 text-sm text-ink-800">
@@ -203,7 +203,7 @@ export default function Ads() {
                     </dd>
                   </div>
                   <div>
-                    <dt className="text-xs font-semibold uppercase tracking-wide text-ink-400">
+                    <dt className="text-[13px] font-semibold text-ink-600">
                       {t.colBudget}
                     </dt>
                     <dd className="mt-0.5 text-sm text-ink-800" dir="ltr">
@@ -217,7 +217,7 @@ export default function Ads() {
                     notYet={t.notYet}
                   />
                   <div>
-                    <dt className="text-xs font-semibold uppercase tracking-wide text-ink-400">
+                    <dt className="text-[13px] font-semibold text-ink-600">
                       {t.colWhen}
                     </dt>
                     <dd className="mt-0.5 text-sm text-ink-800">

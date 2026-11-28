@@ -36,11 +36,11 @@ function titleCase(value: string) {
 
 function Stat({ label, value }: { label: string; value: number | string }) {
   return (
-    <div className="rounded-2xl border border-ink-100 bg-surface p-5">
-      <p className="text-xs font-semibold uppercase tracking-wide text-ink-400">
+    <div className="rounded-2xl border border-ink-100 bg-surface p-6">
+      <p className="text-sm font-medium text-ink-500">
         {label}
       </p>
-      <p className="mt-1 text-3xl font-extrabold tracking-tight text-ink-900">
+      <p className="mt-1 break-words text-[44px] font-bold leading-[1.1] tracking-tight tabular-nums text-ink-900">
         {value}
       </p>
     </div>
@@ -122,13 +122,13 @@ export default function Overview() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-2xl font-extrabold tracking-tight text-ink-900 sm:text-3xl">
+        <h1 className="text-[28px] font-bold tracking-[-0.01em] text-ink-900 leading-tight">
           {t.overview.greeting(user.fullName || active.businessName)}
         </h1>
-        <p className="mt-1 text-sm text-ink-600">{t.overview.subtitle}</p>
+        <p className="mt-1 text-base text-ink-600">{t.overview.subtitle}</p>
       </div>
 
-      <section className="rounded-3xl border border-ink-100 bg-surface p-6 sm:p-7">
+      <section className="rounded-2xl border border-ink-100 bg-surface p-6 sm:p-7">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
             <h2 className="text-lg font-bold text-ink-900">
@@ -227,7 +227,7 @@ export default function Overview() {
                   {isOwner && (
                     <Link
                       to={dashPath(`/s/${siteId}/design`)}
-                      className="text-xs font-bold text-bloom-600 hover:underline"
+                      className="text-xs font-bold text-ink-900 underline underline-offset-2"
                     >
                       {t.overview.changeDesign}
                     </Link>
@@ -313,7 +313,7 @@ export default function Overview() {
 
         {stats.data && stats.data.total > 0 && (
           <div className="mt-4 flex flex-wrap items-center gap-2">
-            <span className="text-xs font-semibold uppercase tracking-wide text-ink-400">
+            <span className="text-[13px] font-semibold text-ink-600">
               {t.overview.byType}
             </span>
             {ENQUIRY_TYPES.filter(
@@ -322,7 +322,7 @@ export default function Overview() {
               <Link
                 key={type}
                 to={dashPath(`/s/${siteId}/inbox?type=${type}`)}
-                className="inline-flex items-center gap-2 rounded-full border border-ink-100 bg-control px-3 py-1.5 text-xs font-semibold text-ink-600 transition hover:border-bloom-300 hover:text-bloom-600"
+                className="inline-flex items-center gap-2 rounded-full border border-ink-100 bg-control px-3 py-1.5 text-xs font-semibold text-ink-600 transition hover:border-ink-900 hover:text-ink-900"
               >
                 {t.types[type]}
                 <span className="text-ink-400">{stats.data?.byType[type]}</span>
@@ -337,13 +337,13 @@ export default function Overview() {
           <h2 className="text-lg font-bold text-ink-900">{t.overview.recent}</h2>
           <Link
             to={dashPath(`/s/${siteId}/inbox`)}
-            className="text-sm font-semibold text-tint-fg hover:underline"
+            className="text-sm font-semibold text-ink-900 hover:underline"
           >
             {t.overview.viewAll}
           </Link>
         </div>
 
-        <div className="mt-4 overflow-hidden rounded-3xl border border-ink-100 bg-surface">
+        <div className="mt-4 overflow-hidden rounded-2xl border border-ink-100 bg-surface">
           {recent.loading && !recent.data ? (
             <p className="p-6 text-sm text-ink-400">{t.loading}</p>
           ) : recent.data?.items.length ? (

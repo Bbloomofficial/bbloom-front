@@ -67,10 +67,10 @@ export default function TemplateCard({
     <div
       className={`relative flex flex-col overflow-hidden rounded-2xl border transition ${
         selected
-          ? "border-bloom-500 ring-2 ring-bloom-500/30"
+          ? "border-ink-900 ring-1 ring-ink-900"
           : locked
             ? "border-ink-100"
-            : "border-ink-100 hover:border-bloom-300"
+            : "border-ink-100 hover:border-ink-900"
       }`}
     >
       {locked && (
@@ -87,7 +87,7 @@ export default function TemplateCard({
         </span>
       )}
       {current && !locked && (
-        <span className="absolute end-2 top-2 z-10 rounded-full bg-bloom-600 px-2.5 py-1 text-[11px] font-bold text-white">
+        <span className="absolute end-2 top-2 z-10 rounded-full bg-ink-900 px-2.5 py-1 text-[11px] font-bold text-canvas">
           {t.design.current}
         </span>
       )}
@@ -122,7 +122,7 @@ export default function TemplateCard({
         {locked ? (
           <Link
             to={plansHref}
-            className="inline-flex items-center justify-center rounded-xl bg-bloom-600 px-3 py-2 text-xs font-bold text-white transition hover:bg-bloom-700"
+            className="inline-flex items-center justify-center rounded-lg bg-bloom-600 px-3 py-2 text-xs font-bold text-white transition hover:bg-bloom-700 motion-safe:active:scale-[0.98]"
           >
             {t.design.seePlans}
           </Link>
@@ -132,7 +132,7 @@ export default function TemplateCard({
             <button
               type="button"
               onClick={onSelect}
-              className="inline-flex items-center justify-center rounded-xl border border-ink-100 px-3 py-2 text-xs font-semibold text-ink-600 transition hover:border-bloom-300 hover:text-bloom-600"
+              className="inline-flex items-center justify-center rounded-lg border border-ink-100 px-3 py-2 text-xs font-semibold text-ink-600 transition hover:border-ink-900 hover:text-ink-900"
             >
               {selectLabel}
             </button>
@@ -148,7 +148,7 @@ export default function TemplateCard({
             href={demoUrl(template.demoSlug)}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-ink-100 px-3 py-2 text-xs font-semibold text-ink-600 transition hover:border-bloom-300 hover:text-bloom-600"
+            className="inline-flex items-center justify-center gap-1.5 rounded-lg border border-ink-100 px-3 py-2 text-xs font-semibold text-ink-600 transition hover:border-ink-900 hover:text-ink-900"
           >
             {t.newSite.viewDemo}
             <svg

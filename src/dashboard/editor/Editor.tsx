@@ -70,7 +70,7 @@ function Toggle<T extends string>({
           aria-pressed={value === option.value}
           className={`${chipClass} ${
             value === option.value
-              ? "bg-tint text-tint-fg"
+              ? "bg-ink-50 text-ink-900"
               : "text-ink-500 hover:text-ink-900"
           }`}
         >
@@ -450,7 +450,7 @@ export default function Editor() {
     <div className="flex min-h-0 flex-1 flex-col">
       <header className="flex flex-wrap items-center gap-3 border-b border-ink-100 bg-sunken px-4 py-3">
         <div className="min-w-0">
-          <h1 className="text-lg font-extrabold text-ink-900">{t.title}</h1>
+          <h1 className="text-lg font-bold text-ink-900">{t.title}</h1>
           <p className="text-xs text-ink-400">{t.subtitle}</p>
         </div>
 
@@ -468,7 +468,7 @@ export default function Editor() {
             type="button"
             onClick={discard}
             disabled={!hasDraft || busy}
-            className="rounded-xl border border-ink-100 bg-surface px-3 py-2 text-sm font-semibold text-ink-500 transition hover:border-red-300 hover:text-red-600 active:scale-95 disabled:opacity-40"
+            className="rounded-lg border border-ink-100 bg-surface px-3 py-2 text-sm font-semibold text-ink-500 transition hover:border-red-300 hover:text-red-600 motion-safe:active:scale-[0.98] disabled:opacity-40"
           >
             {t.discard}
           </button>
@@ -476,7 +476,7 @@ export default function Editor() {
             type="button"
             onClick={publish}
             disabled={!hasDraft || busy}
-            className="rounded-xl bg-bloom-600 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-bloom-600/20 transition hover:bg-bloom-700 hover:shadow-xl active:scale-95 disabled:opacity-40 disabled:shadow-none"
+            className="rounded-lg bg-bloom-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-bloom-700 disabled:opacity-40 disabled:shadow-none motion-safe:active:scale-[0.98]"
           >
             {busy ? t.publishing : t.publish}
           </button>
@@ -505,7 +505,7 @@ export default function Editor() {
                 value={selectedKey ?? ""}
                 onChange={(event) => setSelectedKey(event.target.value)}
                 aria-label={t.sections}
-                className="min-w-0 flex-1 rounded-xl border border-ink-100 bg-surface px-3 py-2 text-sm font-semibold text-ink-900 transition hover:border-bloom-300"
+                className="min-w-0 flex-1 rounded-lg border border-ink-100 bg-surface px-3 py-2 text-sm font-semibold text-ink-900 transition hover:border-ink-900"
               >
                 {sections.map((section) => (
                   <option key={section.key} value={section.key}>
@@ -553,7 +553,7 @@ export default function Editor() {
                     type="button"
                     onClick={() => void toggleVisible(selected)}
                     disabled={busy}
-                    className="ms-auto rounded-lg border border-ink-100 px-2.5 py-1 text-xs font-semibold text-ink-500 transition hover:border-bloom-300 hover:text-bloom-600 disabled:opacity-40"
+                    className="ms-auto rounded-lg border border-ink-100 px-2.5 py-1 text-xs font-semibold text-ink-500 transition hover:border-ink-900 disabled:opacity-40 hover:text-ink-900"
                   >
                     {selected.visible ? t.hide : t.show}
                   </button>
@@ -645,7 +645,7 @@ export default function Editor() {
                     type="button"
                     onClick={() => void save()}
                     disabled={!dirty || saving}
-                    className="inline-flex min-h-11 items-center rounded-xl bg-bloom-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-bloom-700 active:scale-95 disabled:opacity-40 lg:min-h-0"
+                    className="inline-flex min-h-11 items-center rounded-lg bg-bloom-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-bloom-700 disabled:opacity-40 lg:min-h-0 motion-safe:active:scale-[0.98]"
                   >
                     {saving ? t.saving : t.save}
                   </button>
@@ -653,7 +653,7 @@ export default function Editor() {
                     type="button"
                     onClick={reset}
                     disabled={busy}
-                    className="inline-flex min-h-11 items-center rounded-xl border border-ink-100 px-3 py-2 text-xs font-semibold text-ink-500 transition hover:border-bloom-300 hover:bg-tint hover:text-bloom-600 active:scale-95 disabled:opacity-40 lg:min-h-0"
+                    className="inline-flex min-h-11 items-center rounded-lg border border-ink-100 px-3 py-2 text-xs font-semibold text-ink-500 transition hover:border-ink-900 hover:bg-ink-50 motion-safe:active:scale-[0.98] disabled:opacity-40 lg:min-h-0 hover:text-ink-900"
                   >
                     {t.reset}
                   </button>
@@ -668,7 +668,7 @@ export default function Editor() {
 
         <section className="flex min-h-[32rem] min-w-0 flex-col overflow-hidden bg-surface lg:min-h-0">
           <div className="flex flex-wrap items-center gap-2 border-b border-ink-100 px-3 py-2">
-            <h2 className="text-xs font-bold uppercase tracking-wide text-ink-400">
+            <h2 className="text-[13px] font-bold text-ink-600">
               {t.preview}
             </h2>
             <div className="ms-auto flex flex-wrap gap-2">

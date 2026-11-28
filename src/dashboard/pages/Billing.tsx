@@ -74,7 +74,7 @@ function CheckoutResult({ result }: { result: CheckoutResponse }) {
             {t.billing.comingSoonBody}
           </p>
           <a
-            className="mt-3 inline-block text-sm font-semibold text-bloom-600 hover:underline"
+            className="mt-3 inline-block text-sm font-semibold text-ink-900 underline underline-offset-2"
             href={`mailto:${contact.email}`}
           >
             {t.billing.comingSoonContact} · {contact.email}
@@ -136,7 +136,7 @@ function QuoteLine({
               {formatMinor(quote.listAmountMinor, quote.currency, locale)}
             </span>
           )}
-          <span className="text-base font-extrabold text-ink-900" dir="ltr">
+          <span className="text-base font-bold text-ink-900" dir="ltr">
             {formatMinor(quote.amountMinor, quote.currency, locale)}
           </span>
         </span>
@@ -322,7 +322,7 @@ export default function Billing() {
 
   if (loadError) {
     return (
-      <div className="rounded-3xl border border-ink-100 bg-surface p-6">
+      <div className="rounded-2xl border border-ink-100 bg-surface p-6">
         <p className="text-sm text-ink-600">{loadError.message}</p>
         <button type="button" onClick={load} className="btn-secondary mt-4">
           {t.retry}
@@ -342,13 +342,13 @@ export default function Billing() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-extrabold tracking-tight text-ink-900">
+        <h1 className="text-[28px] font-bold tracking-[-0.01em] text-ink-900 leading-tight">
           {t.billing.title}
         </h1>
-        <p className="mt-1 text-sm text-ink-600">{t.billing.subtitle}</p>
+        <p className="mt-1 text-base text-ink-600">{t.billing.subtitle}</p>
       </div>
 
-      <section className="rounded-3xl border border-ink-100 bg-surface p-5 sm:p-6">
+      <section className="rounded-2xl border border-ink-100 bg-surface p-5 sm:p-6">
         <Row
           label={t.billing.status}
           value={<SubscriptionBadge status={subscription.status} />}
@@ -378,7 +378,7 @@ export default function Billing() {
         )}
 
         {subscription.cancelAtPeriodEnd && subscription.currentPeriodEnd && (
-          <p className="mt-3 rounded-2xl bg-tint px-4 py-3 text-sm text-tint-fg">
+          <p className="mt-3 rounded-2xl bg-ink-50 px-4 py-3 text-sm text-ink-900">
             {t.billing.cancelAtPeriodEndOn(date(subscription.currentPeriodEnd))}
           </p>
         )}
@@ -390,7 +390,7 @@ export default function Billing() {
           otherwise reads as "my shop is down", and it is not: nothing about a
           bbloom.ge address is withdrawn for billing reasons. */}
       {paid && (
-        <section className="rounded-3xl border border-ink-100 bg-sunken p-5 sm:p-6">
+        <section className="rounded-2xl border border-ink-100 bg-sunken p-5 sm:p-6">
           <h2 className="text-sm font-bold text-ink-900">
             {t.billing.paidTitle[paid]}
           </h2>
@@ -412,7 +412,7 @@ export default function Billing() {
           straight, because a client who believes they have paid and finds the
           badge still on their pages will assume we broke it. */}
       {pending && (
-        <section className="rounded-3xl border border-amber-200 bg-amber-50 p-5 dark:border-amber-900/60 dark:bg-amber-950/30">
+        <section className="rounded-2xl border border-amber-200 bg-amber-50 p-5 dark:border-amber-900/60 dark:bg-amber-950/30">
           <p className="font-bold text-amber-900 dark:text-amber-100">
             {t.billing.pendingTitle}
           </p>
@@ -444,7 +444,7 @@ export default function Billing() {
       )}
 
       {checkout && (
-        <section className="rounded-3xl border border-ink-100 bg-surface p-5 sm:p-6">
+        <section className="rounded-2xl border border-ink-100 bg-surface p-5 sm:p-6">
           <h2 className="text-sm font-bold text-ink-900">
             {t.billing.checkoutTitle}
           </h2>
@@ -457,7 +457,7 @@ export default function Billing() {
       {error && (
         <p
           role="alert"
-          className="rounded-2xl bg-tint px-4 py-3 text-sm font-semibold text-danger"
+          className="rounded-2xl bg-danger/10 px-4 py-3 text-sm font-semibold text-danger"
         >
           {error}
         </p>
@@ -622,7 +622,7 @@ export default function Billing() {
                 type="button"
                 onClick={() => void stopRenewing()}
                 disabled={busy !== null}
-                className="rounded-xl border border-ink-100 bg-surface px-4 py-2 text-sm font-semibold text-danger transition hover:border-danger disabled:opacity-60"
+                className="rounded-lg border border-ink-100 bg-surface px-4 py-2 text-sm font-semibold text-danger transition hover:border-danger disabled:opacity-60"
               >
                 {busy === "cancel" ? t.billing.cancelling : t.billing.cancelPlan}
               </button>
@@ -631,12 +631,12 @@ export default function Billing() {
           )}
         </section>
       ) : (
-        <p className="rounded-2xl bg-tint px-4 py-3 text-sm text-tint-fg">
+        <p className="rounded-2xl bg-ink-50 px-4 py-3 text-sm text-ink-900">
           {t.billing.ownerOnly}
         </p>
       )}
 
-      <section className="rounded-3xl border border-ink-100 bg-surface p-5 sm:p-6">
+      <section className="rounded-2xl border border-ink-100 bg-surface p-5 sm:p-6">
         <h2 className="text-sm font-bold text-ink-900">{t.billing.payments}</h2>
         {!subscription.payments || subscription.payments.length === 0 ? (
           <p className="mt-3 text-sm text-ink-400">{t.billing.noPayments}</p>

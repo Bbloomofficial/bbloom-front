@@ -24,7 +24,7 @@ import { FulfilmentBadge, OrderStatusBadge } from "./Badges";
 function Field({ label, children }: { label: string; children: ReactNode }) {
   return (
     <div>
-      <p className="text-xs font-semibold uppercase tracking-wide text-ink-400">
+      <p className="text-[13px] font-semibold text-ink-600">
         {label}
       </p>
       <div className="mt-1 text-sm text-ink-800">{children}</div>
@@ -141,7 +141,7 @@ export default function OrderDetail({
             <OrderStatusBadge status={order.status} />
             <FulfilmentBadge fulfilment={order.fulfilment} />
           </div>
-          <h2 className="mt-3 truncate text-xl font-extrabold tracking-tight text-ink-900">
+          <h2 className="mt-3 truncate text-xl font-bold tracking-tight text-ink-900">
             {t.orders.number(order.orderNumber)}
           </h2>
           <p className="mt-1 text-xs text-ink-400">
@@ -202,7 +202,7 @@ export default function OrderDetail({
           <span className="text-sm font-semibold text-ink-600">
             {t.orders.detail.total}
           </span>
-          <span className="text-base font-extrabold text-ink-900" dir="ltr">
+          <span className="text-base font-bold text-ink-900" dir="ltr">
             {money(order.amountMinor)}
           </span>
         </div>
@@ -218,7 +218,7 @@ export default function OrderDetail({
               {order.customerEmail && (
                 <a
                   href={`mailto:${order.customerEmail}`}
-                  className="font-semibold text-tint-fg hover:underline"
+                  className="font-semibold text-ink-900 hover:underline"
                 >
                   {order.customerEmail}
                 </a>
@@ -226,7 +226,7 @@ export default function OrderDetail({
               {order.customerPhone && (
                 <a
                   href={`tel:${order.customerPhone.replace(/\s+/g, "")}`}
-                  className="font-semibold text-tint-fg hover:underline"
+                  className="font-semibold text-ink-900 hover:underline"
                 >
                   {order.customerPhone}
                 </a>
@@ -247,7 +247,7 @@ export default function OrderDetail({
       )}
 
       <div className="border-t border-ink-100 pt-5">
-        <p className="text-xs font-semibold uppercase tracking-wide text-ink-400">
+        <p className="text-[13px] font-semibold text-ink-600">
           {t.orders.fulfilment}
         </p>
         <div className="mt-2 flex flex-wrap gap-2">
@@ -257,10 +257,10 @@ export default function OrderDetail({
               type="button"
               disabled={busy !== null || status === order.fulfilment}
               onClick={() => void patch({ fulfilment: status }, "fulfilment")}
-              className={`rounded-full px-3 py-1.5 text-xs font-semibold transition ${
+              className={`inline-flex h-9 items-center rounded-full border px-4 text-sm font-semibold transition ${
                 status === order.fulfilment
-                  ? "bg-bloom-600 text-white"
-                  : "border border-ink-100 bg-surface text-ink-600 hover:border-bloom-300 hover:text-bloom-600"
+                  ? "border-ink-900 bg-ink-900 text-canvas"
+                  : "border-ink-200 bg-control font-medium text-ink-800 hover:border-ink-400"
               } disabled:opacity-60`}
             >
               {t.fulfilments[status]}

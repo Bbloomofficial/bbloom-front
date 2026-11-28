@@ -312,7 +312,7 @@ export function FilterPanel({ campaigns }: { campaigns: Campaigns }) {
 
       <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
         <label className="text-sm lg:col-span-2">
-          <span className="mb-1 block text-[13px] font-semibold text-ink-600">
+          <span className="mb-2 block text-sm font-semibold text-ink-900">
             {m.search}
           </span>
           <input
@@ -325,7 +325,7 @@ export function FilterPanel({ campaigns }: { campaigns: Campaigns }) {
           />
         </label>
         <label className="text-sm">
-          <span className="mb-1 block text-[13px] font-semibold text-ink-600">
+          <span className="mb-2 block text-sm font-semibold text-ink-900">
             {m.site}
           </span>
           <select
@@ -342,7 +342,7 @@ export function FilterPanel({ campaigns }: { campaigns: Campaigns }) {
           </select>
         </label>
         <label className="text-sm">
-          <span className="mb-1 block text-[13px] font-semibold text-ink-600">
+          <span className="mb-2 block text-sm font-semibold text-ink-900">
             {m.from}
           </span>
           <input
@@ -354,7 +354,7 @@ export function FilterPanel({ campaigns }: { campaigns: Campaigns }) {
           />
         </label>
         <label className="text-sm">
-          <span className="mb-1 block text-[13px] font-semibold text-ink-600">
+          <span className="mb-2 block text-sm font-semibold text-ink-900">
             {m.to}
           </span>
           <input

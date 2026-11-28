@@ -59,13 +59,13 @@ export default function Account() {
   return (
     <div className="max-w-xl space-y-6">
       <div>
-        <h1 className="text-2xl font-extrabold tracking-tight text-ink-900">
+        <h1 className="text-[28px] font-bold tracking-[-0.01em] text-ink-900 leading-tight">
           {t.account.title}
         </h1>
-        <p className="mt-1 text-sm text-ink-600">{t.account.subtitle}</p>
+        <p className="mt-1 text-base text-ink-600">{t.account.subtitle}</p>
       </div>
 
-      <section className="rounded-3xl border border-ink-100 bg-surface p-5 sm:p-6">
+      <section className="rounded-2xl border border-ink-100 bg-surface p-5 sm:p-6">
         <div className="flex flex-wrap items-baseline justify-between gap-2 py-2">
           <span className="text-sm text-ink-400">{t.account.name}</span>
           <span className="text-sm font-semibold text-ink-900">
@@ -87,7 +87,7 @@ export default function Account() {
 
       <form
         onSubmit={onSubmit}
-        className="rounded-3xl border border-ink-100 bg-surface p-5 sm:p-6"
+        className="rounded-2xl border border-ink-100 bg-surface p-5 sm:p-6"
         noValidate
       >
         <h2 className="text-sm font-bold text-ink-900">
@@ -130,7 +130,7 @@ export default function Account() {
         {error && (
           <p
             role="alert"
-            className="mt-4 rounded-2xl bg-tint px-4 py-3 text-sm font-semibold text-danger"
+            className="mt-4 rounded-2xl bg-danger/10 px-4 py-3 text-sm font-semibold text-danger"
           >
             {error}
           </p>

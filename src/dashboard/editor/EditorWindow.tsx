@@ -50,7 +50,7 @@ export default function EditorWindow() {
           */}
           <Link
             to={dashPath(`/s/${site.id}`)}
-            className="inline-flex items-center gap-1.5 rounded-xl px-2 py-1.5 text-sm font-semibold text-ink-500 transition hover:bg-ink-50 hover:text-ink-900 active:scale-95"
+            className="inline-flex items-center gap-1.5 rounded-lg px-2 py-1.5 text-sm font-semibold text-ink-500 transition hover:bg-ink-50 hover:text-ink-900 motion-safe:active:scale-[0.98]"
           >
             <svg
               viewBox="0 0 24 24"

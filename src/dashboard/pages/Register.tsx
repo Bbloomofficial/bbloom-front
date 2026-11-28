@@ -118,11 +118,11 @@ export default function Register() {
   if (issued || confirming) {
     return (
       <AuthShell>
-        <div className="rounded-3xl border border-ink-100 bg-surface p-6 shadow-xl shadow-bloom-600/5 sm:p-8">
-          <h1 className="text-2xl font-extrabold tracking-tight text-ink-900">
+        <div className="rounded-2xl border border-ink-100 bg-surface p-6 shadow-card sm:p-8">
+          <h1 className="text-[28px] font-bold tracking-[-0.01em] text-ink-900 leading-tight">
             {t.register.confirmTitle}
           </h1>
-          <p className="mt-2 text-sm text-ink-600">
+          <p className="mt-2 text-base text-ink-600">
             {issued ? t.register.confirmBody : t.register.confirmExisting}
           </p>
           <p className="mt-2 text-sm text-ink-600">
@@ -150,7 +150,7 @@ export default function Register() {
           <p className="mt-5 text-center text-sm text-ink-600">
             <AuthSwitch
               to="login"
-              className="font-semibold text-tint-fg hover:underline"
+              className="font-semibold text-ink-900 hover:underline"
             >
               {t.register.signIn}
             </AuthSwitch>
@@ -162,11 +162,11 @@ export default function Register() {
 
   return (
     <AuthShell>
-      <div className="rounded-3xl border border-ink-100 bg-surface p-6 shadow-xl shadow-bloom-600/5 sm:p-8">
-        <h1 className="text-2xl font-extrabold tracking-tight text-ink-900">
+      <div className="rounded-2xl border border-ink-100 bg-surface p-6 shadow-card sm:p-8">
+        <h1 className="text-[28px] font-bold tracking-[-0.01em] text-ink-900 leading-tight">
           {t.register.title}
         </h1>
-        <p className="mt-2 text-sm text-ink-600">{t.register.subtitle}</p>
+        <p className="mt-2 text-base text-ink-600">{t.register.subtitle}</p>
 
         <form onSubmit={onSubmit} className="mt-6 space-y-4" noValidate>
           <div>
@@ -225,7 +225,7 @@ export default function Register() {
           {error && (
             <div
               role="alert"
-              className="rounded-2xl bg-tint px-4 py-3 text-sm font-semibold text-danger"
+              className="rounded-2xl bg-danger/10 px-4 py-3 text-sm font-semibold text-danger"
             >
               {error}
               {/* An account row is written before the address is confirmed, so
@@ -238,7 +238,7 @@ export default function Register() {
                 <button
                   type="button"
                   onClick={() => setConfirming(true)}
-                  className="mt-2 block font-semibold text-tint-fg underline underline-offset-4"
+                  className="mt-2 block font-semibold text-ink-900 underline underline-offset-4"
                 >
                   {t.register.confirmInstead}
                 </button>
@@ -259,7 +259,7 @@ export default function Register() {
           {t.register.haveAccount}{" "}
           <AuthSwitch
             to="login"
-            className="font-semibold text-tint-fg hover:underline"
+            className="font-semibold text-ink-900 hover:underline"
           >
             {t.register.signIn}
           </AuthSwitch>
@@ -277,7 +277,7 @@ export default function Register() {
             href={marketingPage("/privacy")}
             target="_blank"
             rel="noopener noreferrer"
-            className="font-semibold text-tint-fg underline hover:no-underline"
+            className="font-semibold text-ink-900 underline hover:no-underline"
           >
             {t.register.privacy.link}
           </a>

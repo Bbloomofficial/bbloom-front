@@ -6,7 +6,7 @@ import type { SiteDetail, SiteLanguage } from "../api/types";
 import type { EditorStrings } from "./strings";
 
 const inputClass =
-  "mt-1.5 w-full rounded-xl border border-ink-100 bg-sunken px-3 py-2 text-sm text-ink-900 outline-none transition focus:border-bloom-400 focus:ring-2 focus:ring-bloom-200";
+  "field mt-1.5";
 
 /**
  * The address the map is drawn from, edited where the client is actually
@@ -85,7 +85,7 @@ export function LocationPanel({
       <p className="mt-1 text-xs text-ink-400">{t.locationHint}</p>
 
       <label className="mt-3 block">
-        <span className="text-xs font-semibold text-ink-500">
+        <span className="text-sm font-semibold text-ink-900">
           {t.locationAddress}
         </span>
         <input
@@ -99,7 +99,7 @@ export function LocationPanel({
       </label>
 
       <label className="mt-3 block">
-        <span className="text-xs font-semibold text-ink-500">
+        <span className="text-sm font-semibold text-ink-900">
           {t.locationMapUrl}
         </span>
         <input
@@ -122,7 +122,7 @@ export function LocationPanel({
           type="button"
           onClick={() => void submit()}
           disabled={!dirty || saving}
-          className="inline-flex min-h-11 items-center rounded-xl border border-ink-100 bg-surface px-3 py-2 text-sm font-semibold text-ink-900 transition hover:border-bloom-300 hover:text-bloom-600 active:scale-95 disabled:opacity-40 lg:min-h-0"
+          className="inline-flex min-h-11 items-center rounded-lg border border-ink-100 bg-surface px-3 py-2 text-sm font-semibold text-ink-900 transition hover:border-ink-900 motion-safe:active:scale-[0.98] disabled:opacity-40 lg:min-h-0 hover:underline"
         >
           {saving ? t.saving : t.save}
         </button>

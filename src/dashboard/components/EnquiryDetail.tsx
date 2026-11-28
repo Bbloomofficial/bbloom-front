@@ -13,7 +13,7 @@ import { useActiveSite } from "../site";
 function Field({ label, children }: { label: string; children: ReactNode }) {
   return (
     <div>
-      <p className="text-xs font-semibold uppercase tracking-wide text-ink-400">
+      <p className="text-[13px] font-semibold text-ink-600">
         {label}
       </p>
       <div className="mt-1 text-sm text-ink-800">{children}</div>
@@ -98,7 +98,7 @@ export default function EnquiryDetail({
             <TypeBadge type={enquiry.type} />
             <StatusBadge status={enquiry.status} />
           </div>
-          <h2 className="mt-3 truncate text-xl font-extrabold tracking-tight text-ink-900">
+          <h2 className="mt-3 truncate text-xl font-bold tracking-tight text-ink-900">
             {enquiry.name ?? enquiry.email ?? t.types[enquiry.type] ?? enquiry.type}
           </h2>
           <p className="mt-1 text-xs text-ink-400">
@@ -131,7 +131,7 @@ export default function EnquiryDetail({
             {enquiry.email && (
               <a
                 href={`mailto:${enquiry.email}`}
-                className="font-semibold text-tint-fg hover:underline"
+                className="font-semibold text-ink-900 hover:underline"
               >
                 {enquiry.email}
               </a>
@@ -139,7 +139,7 @@ export default function EnquiryDetail({
             {enquiry.phone && (
               <a
                 href={`tel:${enquiry.phone.replace(/\s+/g, "")}`}
-                className="font-semibold text-tint-fg hover:underline"
+                className="font-semibold text-ink-900 hover:underline"
               >
                 {enquiry.phone}
               </a>
@@ -152,7 +152,7 @@ export default function EnquiryDetail({
 
       {(enquiry.reservationDate || enquiry.partySize) && (
         <Field label={t.detail.reservation}>
-          <div className="rounded-2xl bg-tint px-4 py-3 font-semibold text-tint-fg">
+          <div className="rounded-2xl bg-ink-50 px-4 py-3 font-semibold text-ink-900">
             {[
               formatDate(enquiry.reservationDate, locale),
               enquiry.reservationTime?.slice(0, 5),
@@ -191,7 +191,7 @@ export default function EnquiryDetail({
       )}
 
       <div className="border-t border-ink-100 pt-5">
-        <p className="text-xs font-semibold uppercase tracking-wide text-ink-400">
+        <p className="text-[13px] font-semibold text-ink-600">
           {t.detail.status}
         </p>
         <div className="mt-2 flex flex-wrap gap-2">
@@ -201,10 +201,10 @@ export default function EnquiryDetail({
               type="button"
               disabled={saving === "status" || status === enquiry.status}
               onClick={() => void patch({ status }, "status")}
-              className={`rounded-full px-3 py-1.5 text-xs font-semibold transition ${
+              className={`inline-flex h-9 items-center rounded-full border px-4 text-sm font-semibold transition ${
                 status === enquiry.status
-                  ? "bg-bloom-600 text-white"
-                  : "border border-ink-100 bg-surface text-ink-600 hover:border-bloom-300 hover:text-bloom-600"
+                  ? "border-ink-900 bg-ink-900 text-canvas"
+                  : "border-ink-200 bg-control font-medium text-ink-800 hover:border-ink-400"
               } disabled:opacity-60`}
             >
               {t.statuses[status]}

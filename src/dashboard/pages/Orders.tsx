@@ -44,7 +44,7 @@ function FilterPills({
 }) {
   return (
     <div className="flex flex-wrap items-center gap-2">
-      <span className="text-xs font-semibold uppercase tracking-wide text-ink-400">
+      <span className="text-[13px] font-semibold text-ink-600">
         {label}
       </span>
       {["", ...options].map((option) => (
@@ -52,10 +52,10 @@ function FilterPills({
           key={option || "all"}
           type="button"
           onClick={() => onChange(option)}
-          className={`rounded-full px-3 py-1.5 text-xs font-semibold transition ${
+          className={`inline-flex h-9 items-center rounded-full border px-4 text-sm font-semibold transition ${
             option === value
-              ? "bg-ink-900 text-canvas"
-              : "border border-ink-100 bg-surface text-ink-600 hover:border-bloom-300 hover:text-bloom-600"
+              ? "border-ink-900 bg-ink-900 text-canvas"
+              : "border-ink-200 bg-control font-medium text-ink-800 hover:border-ink-400"
           }`}
         >
           {option ? (labels[option] ?? option) : allLabel}
@@ -147,10 +147,10 @@ export default function Orders() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-extrabold tracking-tight text-ink-900 sm:text-3xl">
+          <h1 className="text-[28px] font-bold tracking-[-0.01em] text-ink-900 leading-tight">
             {t.orders.title}
           </h1>
-          <p className="mt-1 text-sm text-ink-600">{t.orders.subtitle}</p>
+          <p className="mt-1 text-base text-ink-600">{t.orders.subtitle}</p>
         </div>
         {canSell && (
           <button
@@ -168,7 +168,7 @@ export default function Orders() {
         ordering.loading ? (
           <p className="text-sm text-ink-400">{t.loading}</p>
         ) : (
-          <div className="rounded-3xl border border-ink-100 bg-surface p-6">
+          <div className="rounded-2xl border border-ink-100 bg-surface p-6">
             <p className="text-base font-bold text-ink-900">
               {t.orders.blockedTitle}
             </p>
@@ -189,8 +189,8 @@ export default function Orders() {
       ) : (
         <>
           {stats.data && (
-            <div className="rounded-3xl border border-ink-100 bg-surface p-4 sm:p-5">
-              <p className="text-xs font-semibold uppercase tracking-wide text-ink-400">
+            <div className="rounded-2xl border border-ink-100 bg-surface p-4 sm:p-5">
+              <p className="text-[13px] font-semibold text-ink-600">
                 {t.orders.statsTitle}
               </p>
               <dl className="mt-3 grid gap-4 sm:grid-cols-3 lg:grid-cols-4">
@@ -217,7 +217,7 @@ export default function Orders() {
                   <div key={label}>
                     <dt className="text-xs text-ink-400">{label}</dt>
                     <dd
-                      className="mt-1 text-lg font-extrabold text-ink-900"
+                      className="mt-1 text-lg font-bold text-ink-900"
                       dir="ltr"
                     >
                       {value}
@@ -231,7 +231,7 @@ export default function Orders() {
             </div>
           )}
 
-          <div className="space-y-3 rounded-3xl border border-ink-100 bg-surface p-4 sm:p-5">
+          <div className="space-y-3 rounded-2xl border border-ink-100 bg-surface p-4 sm:p-5">
             <FilterPills
               label={t.orders.status}
               options={ORDER_STATUSES}
@@ -256,7 +256,7 @@ export default function Orders() {
 
           <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,26rem)]">
             <div className="space-y-4">
-              <div className="overflow-hidden rounded-3xl border border-ink-100 bg-surface">
+              <div className="overflow-hidden rounded-2xl border border-ink-100 bg-surface">
                 {list.loading && !list.data ? (
                   <p className="p-6 text-sm text-ink-400">{t.loading}</p>
                 ) : list.error ? (
@@ -289,13 +289,13 @@ export default function Orders() {
                             type="button"
                             onClick={() => update({ selected: order.id })}
                             className={`flex w-full flex-wrap items-center gap-3 px-5 py-4 text-start transition ${
-                              active ? "bg-tint" : "hover:bg-ink-50"
+                              active ? "bg-ink-50" : "hover:bg-ink-50"
                             }`}
                           >
                             <span
                               className={`h-2 w-2 shrink-0 rounded-full ${
                                 order.fulfilment === "NEW"
-                                  ? "bg-bloom-500"
+                                  ? "bg-ink-800"
                                   : "bg-transparent"
                               }`}
                             />
@@ -372,7 +372,7 @@ export default function Orders() {
             </div>
 
             <aside className="lg:sticky lg:top-24 lg:self-start">
-              <div className="overflow-hidden rounded-3xl border border-ink-100 bg-surface">
+              <div className="overflow-hidden rounded-2xl border border-ink-100 bg-surface">
                 {selected ? (
                   <OrderDetail
                     key={selected.id}
