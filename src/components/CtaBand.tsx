@@ -16,7 +16,7 @@ export default function CtaBand({
         <div className="pointer-events-none absolute -left-24 -top-24 h-64 w-64 rounded-full bg-bloom-600/30 blur-3xl" />
         <div className="pointer-events-none absolute -bottom-28 -right-16 h-72 w-72 rounded-full bg-bloom-400/20 blur-3xl" />
         <div className="relative">
-          <h2 className="mx-auto max-w-2xl text-2xl font-extrabold tracking-tight text-white sm:text-4xl">
+          <h2 className="mx-auto max-w-2xl text-2xl font-bold tracking-tight text-white sm:text-4xl">
             {title ?? t.ctaBand.title}
           </h2>
           <p className="mx-auto mt-4 max-w-xl text-sm leading-relaxed text-white/70 sm:text-base">

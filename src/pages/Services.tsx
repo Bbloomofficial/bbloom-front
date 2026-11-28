@@ -36,7 +36,7 @@ export default function Services() {
                 key={step.number}
                 className="flex gap-5 rounded-3xl border border-ink-100 bg-surface p-6"
               >
-                <span className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-bloom-600 text-sm font-extrabold text-white">
+                <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-ink-900 text-sm font-bold text-canvas">
                   {step.number}
                 </span>
                 <div>

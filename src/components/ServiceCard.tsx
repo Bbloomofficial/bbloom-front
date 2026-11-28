@@ -13,7 +13,7 @@ export default function ServiceCard({ service }: { service: Service }) {
         <Icon className="h-6 w-6" />
       </span>
       <h3 className="mt-5 text-lg font-bold text-ink-900">{service.title}</h3>
-      <p className="mt-1 text-sm font-semibold text-bloom-600 dark:text-bloom-300">
+      <p className="mt-1 text-sm font-medium text-ink-500">
         {service.tagline}
       </p>
       <p className="mt-3 text-sm leading-relaxed text-ink-600">{service.description}</p>

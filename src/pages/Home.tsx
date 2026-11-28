@@ -15,7 +15,7 @@ function HeroShowcase() {
       <div className="pointer-events-none absolute -bottom-12 -left-8 h-48 w-48 rounded-full bg-bloom-600/20 blur-3xl" />
 
       {/* Social post card */}
-      <div className="relative rounded-3xl border border-ink-100 bg-surface p-4 shadow-xl shadow-black/5 sm:p-5">
+      <div className="relative rounded-3xl border border-ink-100 bg-surface p-4 shadow-card sm:p-5">
         <div className="flex items-center gap-3">
           <div className="h-9 w-9 rounded-full bg-gradient-to-br from-bloom-400 to-bloom-600" />
           <div className="min-w-0">
@@ -46,14 +46,14 @@ function HeroShowcase() {
       </div>
 
       {/* Website wireframe card */}
-      <div className="relative mt-5 rounded-3xl border border-ink-100 bg-surface p-4 shadow-xl shadow-black/5 sm:ml-10 sm:p-5">
+      <div className="relative mt-5 rounded-3xl border border-ink-100 bg-surface p-4 shadow-card sm:ml-10 sm:p-5">
         <div className="flex items-center gap-2 rounded-lg bg-ink-50 px-3 py-2">
           <span className="h-2 w-2 rounded-full bg-ink-100" />
           <span className="h-2 w-2 rounded-full bg-ink-100" />
           <span className="h-2 w-2 rounded-full bg-ink-100" />
           <span className="ml-2 truncate text-[11px] text-ink-400">{showcase.siteUrl}</span>
         </div>
-        <p className="mt-3 text-[11px] font-semibold uppercase tracking-wider text-ink-400">
+        <p className="mt-3 text-[13px] font-semibold text-ink-600">
           {showcase.siteLabel}
         </p>
         <div className="mt-3 space-y-2">
@@ -81,7 +81,7 @@ export default function Home() {
         <div className="container-page grid items-center gap-12 py-16 sm:py-20 lg:grid-cols-2 lg:gap-16 lg:py-28">
           <div className="animate-rise">
             <span className="eyebrow">{t.hero.eyebrow}</span>
-            <h1 className="mt-5 text-[2rem] font-extrabold leading-[1.1] tracking-tight text-ink-900 sm:text-5xl lg:text-6xl">
+            <h1 className="mt-5 text-4xl font-bold leading-[1.1] tracking-tight text-ink-900 sm:text-5xl lg:text-[56px]">
               {t.hero.titleLine1}
               <br />
               <span className="text-bloom-600">{t.hero.titleLine2}</span>
@@ -137,7 +137,7 @@ export default function Home() {
         <ol className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {t.steps.map((step) => (
             <li key={step.number} className="card p-6">
-              <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-tint text-sm font-extrabold text-tint-fg">
+              <span className="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-ink-50 text-sm font-bold text-ink-900">
                 {step.number}
               </span>
               <h3 className="mt-4 text-base font-bold text-ink-900">{step.title}</h3>

@@ -82,7 +82,7 @@ export default function AuthModal({
             type="button"
             onClick={close}
             aria-label={t.nav.close}
-            className="absolute -top-2 right-0 z-10 grid h-9 w-9 place-items-center rounded-full bg-surface text-ink-600 shadow-lg transition hover:text-ink-900 sm:-top-3 sm:-right-3"
+            className="absolute -top-2 right-0 z-10 grid h-9 w-9 place-items-center rounded-full bg-surface text-ink-600 shadow-card transition hover:text-ink-900 sm:-top-3 sm:-right-3"
           >
             <svg
               viewBox="0 0 20 20"

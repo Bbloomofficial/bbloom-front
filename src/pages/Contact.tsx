@@ -27,7 +27,7 @@ export default function Contact() {
                   <a
                     href={`mailto:${contact.email}`}
                     dir="ltr"
-                    className="break-words text-base font-semibold text-ink-900 hover:text-tint-fg"
+                    className="break-words text-base font-semibold text-ink-900 hover:underline"
                   >
                     {contact.email}
                   </a>
@@ -40,7 +40,7 @@ export default function Contact() {
                   <a
                     href={`tel:${contact.phoneHref}`}
                     dir="ltr"
-                    className="break-words text-base font-semibold text-ink-900 hover:text-tint-fg"
+                    className="break-words text-base font-semibold text-ink-900 hover:underline"
                   >
                     {contact.phone}
                   </a>
@@ -49,7 +49,7 @@ export default function Contact() {
                     target="_blank"
                     rel="noreferrer"
                     aria-label={t.whatsapp.label}
-                    className="inline-flex min-h-6 items-center gap-1.5 rounded-lg text-sm font-semibold text-ink-600 hover:text-tint-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bloom-500"
+                    className="inline-flex min-h-6 items-center gap-1.5 rounded-lg text-sm font-semibold text-ink-600 hover:text-ink-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink-900"
                   >
                     <WhatsAppIcon className="h-4 w-4" />
                     WhatsApp

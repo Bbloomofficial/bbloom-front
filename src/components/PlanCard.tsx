@@ -49,7 +49,7 @@ function Check() {
   return (
     <svg
       viewBox="0 0 20 20"
-      className="mt-0.5 h-4 w-4 shrink-0 text-bloom-500"
+      className="mt-0.5 h-4 w-4 shrink-0 text-ink-900"
       fill="currentColor"
       aria-hidden="true"
     >
@@ -150,7 +150,7 @@ export function PlanCard({
     <div
       className={`relative flex min-w-0 flex-col break-words rounded-[2rem] border bg-surface p-6 ${
         featured
-          ? "border-bloom-200 shadow-2xl shadow-bloom-600/10 dark:border-bloom-700 lg:-mt-4"
+          ? "border-ink-900 shadow-card lg:-mt-4"
           : soon
             // Dashed reads as provisional at a glance, before any label is
             // read, and does it without dimming a price we want people to see.
@@ -159,7 +159,7 @@ export function PlanCard({
       }`}
     >
       {featured && (
-        <span className="absolute -top-3 start-6 rounded-full bg-bloom-600 px-3 py-1 text-xs font-bold text-white sm:start-8">
+        <span className="absolute -top-3 start-6 rounded-full bg-ink-900 px-3 py-1 text-[13px] font-semibold text-canvas sm:start-8">
           {featuredLabel}
         </span>
       )}
@@ -188,7 +188,7 @@ export function PlanCard({
             </span>
             {offPercent !== undefined && (
               <span
-                className="rounded-full bg-bloom-600 px-2 py-0.5 text-xs font-bold text-white"
+                className="rounded-full bg-ink-900 px-2 py-0.5 text-[13px] font-semibold text-canvas"
                 dir="ltr"
               >
                 −{offPercent}%
@@ -199,7 +199,7 @@ export function PlanCard({
         )}
         <p className="flex flex-wrap items-baseline gap-x-2">
           <span
-            className={`font-extrabold tracking-tight text-ink-900 ${
+            className={`font-bold tracking-tight tabular-nums text-ink-900 ${
               negotiable ? "text-2xl" : "text-3xl sm:text-4xl"
             }`}
             dir={negotiable ? undefined : "ltr"}
@@ -215,7 +215,7 @@ export function PlanCard({
             sent together or not at all. Kept because the alternative to a
             sentence is silence about an offer that is running. */}
         {!asFirstPurchase && firstPurchaseOff !== null && firstPurchase && (
-          <p className="mt-2 inline-flex rounded-full bg-tint px-3 py-1 text-xs font-bold text-tint-fg">
+          <p className="mt-2 inline-flex rounded-full bg-success-soft px-3 py-1 text-[13px] font-semibold text-success-strong">
             {firstPurchase.fallback(firstPurchaseOff)}
           </p>
         )}

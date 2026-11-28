@@ -21,7 +21,7 @@ export default function Footer() {
           <ul className="mt-4 space-y-2.5 text-sm text-ink-600">
             {t.services.slice(0, 4).map((service) => (
               <li key={service.slug}>
-                <Link to="/services" className="hover:text-tint-fg">
+                <Link to="/services" className="hover:text-ink-900 hover:underline">
                   {service.title}
                 </Link>
               </li>
@@ -33,42 +33,42 @@ export default function Footer() {
           <h3 className="text-sm font-bold text-ink-900">{t.footer.companyTitle}</h3>
           <ul className="mt-4 space-y-2.5 text-sm text-ink-600">
             <li>
-              <Link to="/about" className="hover:text-tint-fg">
+              <Link to="/about" className="hover:text-ink-900 hover:underline">
                 {t.footer.about}
               </Link>
             </li>
             <li>
-              <Link to="/pricing" className="hover:text-tint-fg">
+              <Link to="/pricing" className="hover:text-ink-900 hover:underline">
                 {t.footer.pricing}
               </Link>
             </li>
             <li>
-              <Link to="/templates" className="hover:text-tint-fg">
+              <Link to="/templates" className="hover:text-ink-900 hover:underline">
                 {t.footer.templates}
               </Link>
             </li>
             <li>
-              <Link to="/contact" className="hover:text-tint-fg">
+              <Link to="/contact" className="hover:text-ink-900 hover:underline">
                 {t.footer.contact}
               </Link>
             </li>
             <li>
-              <Link to="/privacy" className="hover:text-tint-fg">
+              <Link to="/privacy" className="hover:text-ink-900 hover:underline">
                 {t.footer.privacy}
               </Link>
             </li>
             <li>
-              <Link to="/data-deletion" className="hover:text-tint-fg">
+              <Link to="/data-deletion" className="hover:text-ink-900 hover:underline">
                 {t.footer.dataDeletion}
               </Link>
             </li>
             <li>
-              <AuthLink to="/login" className="hover:text-tint-fg">
+              <AuthLink to="/login" className="hover:text-ink-900 hover:underline">
                 {t.nav.signIn}
               </AuthLink>
             </li>
             <li>
-              <AuthLink to="/register" className="hover:text-tint-fg">
+              <AuthLink to="/register" className="hover:text-ink-900 hover:underline">
                 {t.nav.register}
               </AuthLink>
             </li>
@@ -79,12 +79,12 @@ export default function Footer() {
           <h3 className="text-sm font-bold text-ink-900">{t.footer.contactTitle}</h3>
           <ul className="mt-4 space-y-2.5 text-sm text-ink-600">
             <li>
-              <a href={`mailto:${contact.email}`} className="hover:text-tint-fg" dir="ltr">
+              <a href={`mailto:${contact.email}`} className="hover:text-ink-900 hover:underline" dir="ltr">
                 {contact.email}
               </a>
             </li>
             <li className="flex items-center gap-2">
-              <a href={`tel:${contact.phoneHref}`} className="hover:text-tint-fg" dir="ltr">
+              <a href={`tel:${contact.phoneHref}`} className="hover:text-ink-900 hover:underline" dir="ltr">
                 {contact.phone}
               </a>
               <a
@@ -92,7 +92,7 @@ export default function Footer() {
                 target="_blank"
                 rel="noreferrer"
                 aria-label={t.whatsapp.label}
-                className="inline-flex h-6 w-6 items-center justify-center rounded-lg hover:text-tint-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bloom-500"
+                className="inline-flex h-6 w-6 items-center justify-center rounded-lg hover:text-ink-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink-900"
               >
                 <WhatsAppIcon className="h-4 w-4" />
               </a>

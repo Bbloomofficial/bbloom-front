@@ -50,7 +50,7 @@ export default function Navbar() {
               to={link.to}
               className={({ isActive }) =>
                 `rounded-full px-3 py-2 text-sm font-semibold whitespace-nowrap transition ${
-                  isActive ? 'bg-tint text-tint-fg' : 'text-ink-600 hover:text-ink-900'
+                  isActive ? 'bg-ink-50 text-ink-900' : 'text-ink-600 hover:text-ink-900'
                 }`
               }
             >
@@ -138,7 +138,7 @@ export default function Navbar() {
                 to={link.to}
                 className={({ isActive }) =>
                   `rounded-xl px-4 py-3 text-sm font-semibold ${
-                    isActive ? 'bg-tint text-tint-fg' : 'text-ink-600'
+                    isActive ? 'bg-ink-50 text-ink-900' : 'text-ink-600'
                   }`
                 }
               >
@@ -152,7 +152,7 @@ export default function Navbar() {
               {signedIn ? (
                 <Link
                   to={dashPath()}
-                  className="col-span-2 rounded-xl border border-ink-100 bg-control px-4 py-3 text-center text-sm font-semibold text-ink-600 transition hover:border-bloom-300 hover:bg-tint hover:text-bloom-600 active:scale-95"
+                  className="col-span-2 rounded-lg border border-ink-900 bg-control px-4 py-3 text-center text-[15px] font-semibold text-ink-900 transition hover:bg-ink-50 motion-safe:active:scale-[0.98]"
                 >
                   {t.nav.dashboard}
                 </Link>
@@ -160,13 +160,13 @@ export default function Navbar() {
                 <>
                   <AuthLink
                     to="/login"
-                    className="rounded-xl border border-ink-100 bg-control px-4 py-3 text-center text-sm font-semibold text-ink-600 transition hover:border-bloom-300 hover:bg-tint hover:text-bloom-600 active:scale-95"
+                    className="rounded-lg border border-ink-900 bg-control px-4 py-3 text-center text-[15px] font-semibold text-ink-900 transition hover:bg-ink-50 motion-safe:active:scale-[0.98]"
                   >
                     {t.nav.signIn}
                   </AuthLink>
                   <AuthLink
                     to="/register"
-                    className="rounded-xl border border-ink-100 bg-control px-4 py-3 text-center text-sm font-semibold text-ink-600 transition hover:border-bloom-300 hover:bg-tint hover:text-bloom-600 active:scale-95"
+                    className="rounded-lg border border-ink-900 bg-control px-4 py-3 text-center text-[15px] font-semibold text-ink-900 transition hover:bg-ink-50 motion-safe:active:scale-[0.98]"
                   >
                     {t.nav.register}
                   </AuthLink>

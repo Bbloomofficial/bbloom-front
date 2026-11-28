@@ -18,7 +18,7 @@ export default function FaqAccordion({ items }: { items: Faq[] }) {
             >
               <span className="text-base font-semibold text-ink-900">{item.question}</span>
               <span
-                className={`grid h-8 w-8 shrink-0 place-items-center rounded-full bg-tint text-tint-fg transition ${
+                className={`grid h-8 w-8 shrink-0 place-items-center rounded-full bg-ink-50 text-ink-900 transition ${
                   isOpen ? 'rotate-45' : ''
                 }`}
               >

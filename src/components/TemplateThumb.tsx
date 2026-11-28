@@ -37,9 +37,9 @@ export default function TemplateThumb({
       <div
         role="img"
         aria-label={alt}
-        className="flex h-full w-full items-center justify-center bg-gradient-to-br from-tint to-tint-strong"
+        className="flex h-full w-full items-center justify-center bg-gradient-to-br from-ink-50 to-ink-100"
       >
-        <span aria-hidden className="text-2xl font-extrabold uppercase text-tint-fg/60" dir="ltr">
+        <span aria-hidden className="text-2xl font-bold uppercase text-ink-500" dir="ltr">
           {template.code.slice(0, 2)}
         </span>
       </div>
