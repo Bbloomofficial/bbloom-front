@@ -97,7 +97,7 @@ export default function LanguageSwitcher() {
         title={t.language.label}
         aria-haspopup="listbox"
         aria-expanded={open}
-        className="inline-flex h-10 items-center gap-2 rounded-xl border border-ink-100 bg-surface px-2.5 text-ink-600 transition hover:border-bloom-300 hover:text-bloom-600 sm:px-3"
+        className="inline-flex h-10 items-center gap-2 rounded-full border border-ink-200 bg-control px-2.5 text-ink-800 transition hover:bg-ink-50 hover:text-ink-900 sm:px-3"
       >
         <Flag code={active.code} />
         <span className="text-xs font-semibold tracking-wide">{active.short}</span>
@@ -119,7 +119,7 @@ export default function LanguageSwitcher() {
         <ul
           role="listbox"
           aria-label={t.language.label}
-          className={`absolute z-50 w-44 overflow-hidden rounded-xl border border-ink-100 bg-surface p-1 shadow-lg shadow-black/5 ${
+          className={`absolute z-50 w-44 overflow-hidden rounded-xl border border-ink-100 bg-surface p-1 shadow-card ${
             dropUp ? 'bottom-full mb-2' : 'top-full mt-2'
           } ${alignLeft ? 'left-0' : 'right-0'}`}
         >
@@ -132,7 +132,7 @@ export default function LanguageSwitcher() {
                 onClick={() => choose(item.code)}
                 className={`flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-sm transition ${
                   item.code === locale
-                    ? 'bg-tint text-tint-fg'
+                    ? 'bg-ink-50 text-ink-900'
                     : 'text-ink-600 hover:bg-ink-50 hover:text-ink-900'
                 }`}
               >

@@ -19,7 +19,7 @@ export default function About() {
 
       <section className="container-page py-16 sm:py-20">
         <div className="mx-auto max-w-3xl">
-          <h2 className="text-2xl font-extrabold tracking-tight text-ink-900 sm:text-3xl">
+          <h2 className="text-2xl font-bold tracking-tight text-ink-900 sm:text-3xl">
             {t.aboutPage.storyTitle}
           </h2>
           <div className="mt-6 space-y-5">

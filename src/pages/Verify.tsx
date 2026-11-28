@@ -94,7 +94,7 @@ export default function Verify() {
       </header>
 
       <main className="container-page flex flex-1 items-center justify-center py-10">
-        <div className="w-full max-w-md rounded-3xl border border-ink-100 bg-surface p-6 shadow-xl shadow-bloom-600/5 sm:p-8">
+        <div className="w-full max-w-md rounded-2xl border border-ink-100 bg-surface p-6 shadow-card sm:p-8">
           {state === "checking" ? (
             <p className="text-center text-sm text-ink-400">
               {t.verify.pageChecking}
@@ -111,7 +111,7 @@ export default function Verify() {
                   <path d="M16.7 5.3a1 1 0 0 1 0 1.4l-7.5 7.5a1 1 0 0 1-1.4 0L3.3 9.7a1 1 0 0 1 1.4-1.4l3.8 3.8 6.8-6.8a1 1 0 0 1 1.4 0Z" />
                 </svg>
               </span>
-              <h1 className="mt-4 text-xl font-extrabold tracking-tight text-ink-900">
+              <h1 className="mt-4 text-xl font-bold tracking-tight text-ink-900">
                 {t.verify.pageSuccessTitle}
               </h1>
               <p className="mt-2 text-sm text-ink-600">
@@ -120,7 +120,7 @@ export default function Verify() {
             </div>
           ) : state === "code" ? (
             <>
-              <h1 className="text-xl font-extrabold tracking-tight text-ink-900">
+              <h1 className="text-xl font-bold tracking-tight text-ink-900">
                 {undeliverable
                   ? t.verify.unavailableTitle
                   : t.verify.pageTitle}
@@ -161,7 +161,7 @@ export default function Verify() {
           ) : (
             <div>
               <div className="text-center">
-                <h1 className="text-xl font-extrabold tracking-tight text-ink-900">
+                <h1 className="text-xl font-bold tracking-tight text-ink-900">
                   {t.verify.pageFailedTitle}
                 </h1>
                 <p className="mt-2 text-sm text-ink-600">

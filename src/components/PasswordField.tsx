@@ -52,7 +52,7 @@ export default function PasswordField({ wrapperClassName, ...props }: Props) {
         // centre. Centring on translate rather than `inset-y-0` keeps the
         // 44px target honest on the shorter fields in the editor's save
         // dialog, where the button is taller than the input it sits in.
-        className="absolute end-1 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-xl text-ink-400 transition hover:text-bloom-600 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-tint-strong"
+        className="absolute end-1 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-lg text-ink-500 transition hover:text-ink-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink-900"
       >
         {revealed ? (
           <svg

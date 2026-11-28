@@ -120,15 +120,15 @@ const serviceIcons: Record<string, ServiceIconSpec> = {
     tileClassName: 'text-white',
     tileStyle: { backgroundColor: FACEBOOK_BLUE },
   },
-  websites: { Icon: WebsiteIcon, tileClassName: 'bg-tint text-bloom-600 dark:text-bloom-300' },
-  content: { Icon: ContentIcon, tileClassName: 'bg-tint text-bloom-600 dark:text-bloom-300' },
-  analytics: { Icon: AnalyticsIcon, tileClassName: 'bg-tint text-bloom-600 dark:text-bloom-300' },
-  growth: { Icon: GrowthIcon, tileClassName: 'bg-tint text-bloom-600 dark:text-bloom-300' },
+  websites: { Icon: WebsiteIcon, tileClassName: 'bg-ink-50 text-ink-900' },
+  content: { Icon: ContentIcon, tileClassName: 'bg-ink-50 text-ink-900' },
+  analytics: { Icon: AnalyticsIcon, tileClassName: 'bg-ink-50 text-ink-900' },
+  growth: { Icon: GrowthIcon, tileClassName: 'bg-ink-50 text-ink-900' },
 }
 
 const fallback: ServiceIconSpec = {
   Icon: GrowthIcon,
-  tileClassName: 'bg-tint text-bloom-600 dark:text-bloom-300',
+  tileClassName: 'bg-ink-50 text-ink-900',
 }
 
 export function getServiceIcon(slug: string): ServiceIconSpec {

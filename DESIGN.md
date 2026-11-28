@@ -26,7 +26,7 @@ the old way, and the old values are in that surface's code and `src/index.css`.
 | 1 | The tokens and shared classes in `src/index.css`. This alone restyles every shell at once | Done |
 | 2 | Staff admin: labels, tables, chips, tabs, stat tiles | Done |
 | 3 | Client dashboard | Done |
-| 4 | Marketing site | Not started |
+| 4 | Marketing site | Done |
 | 5 | Anonymous editor | Not started |
 
 **New work follows this file, not the old look.** When a value here and

@@ -18,7 +18,7 @@ function withEmailLinks(text: string): ReactNode {
       {index < parts.length - 1 && (
         <a
           href={`mailto:${contact.email}`}
-          className="font-semibold text-tint-fg hover:underline"
+          className="font-semibold text-ink-900 underline underline-offset-2"
           dir="ltr"
         >
           {contact.email}
@@ -53,7 +53,7 @@ export default function LegalPage({ doc }: { doc: keyof Pick<Legal, 'privacy' | 
   return (
     <article className="container-page py-16 sm:py-20">
       <div className="mx-auto max-w-3xl">
-        <h1 className="text-3xl font-extrabold tracking-tight text-ink-900 sm:text-4xl">
+        <h1 className="text-3xl font-bold tracking-tight text-ink-900 sm:text-4xl">
           {page.title}
         </h1>
         <p className="mt-3 text-sm text-ink-400">
