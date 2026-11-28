@@ -49,7 +49,7 @@ function SiteCard({ site }: { site: AccountSite }) {
   return (
     <Link
       to={dashPath(`/s/${site.id}`)}
-      className="block rounded-3xl border border-ink-100 bg-surface p-5 transition hover:border-bloom-300 hover:shadow-lg hover:shadow-bloom-600/5"
+      className="block rounded-2xl border border-ink-100 bg-surface p-5 transition hover:border-ink-900 hover:shadow-card"
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
@@ -68,7 +68,7 @@ function SiteCard({ site }: { site: AccountSite }) {
       <div className="mt-4 flex flex-wrap items-center gap-2">
         <RoleBadge role={site.role} />
         {site.hasDraftChanges && (
-          <span className="rounded-full bg-tint px-2.5 py-1 text-xs font-semibold text-tint-fg">
+          <span className="rounded-full bg-ink-50 px-2.5 py-1 text-xs font-semibold text-ink-900">
             {t.sites.draftChanges}
           </span>
         )}
@@ -95,11 +95,11 @@ export default function Sites() {
 
   if (sites.length === 0) {
     return (
-      <div className="rounded-3xl border border-ink-100 bg-surface p-8 text-center sm:p-12">
-        <h1 className="text-2xl font-extrabold tracking-tight text-ink-900">
+      <div className="rounded-2xl border border-ink-100 bg-surface p-8 text-center sm:p-12">
+        <h1 className="text-[28px] font-bold tracking-[-0.01em] text-ink-900 leading-tight">
           {t.sites.emptyTitle}
         </h1>
-        <p className="mx-auto mt-3 max-w-md text-sm text-ink-600">
+        <p className="mx-auto mt-3 max-w-md text-base text-ink-600">
           {t.sites.emptyBody}
         </p>
         <Link to={dashPath("/new")} className="btn-primary mt-6 inline-flex">
@@ -113,10 +113,10 @@ export default function Sites() {
     <div>
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-extrabold tracking-tight text-ink-900">
+          <h1 className="text-[28px] font-bold tracking-[-0.01em] text-ink-900 leading-tight">
             {t.sites.title}
           </h1>
-          <p className="mt-1 text-sm text-ink-600">{t.sites.subtitle}</p>
+          <p className="mt-1 text-base text-ink-600">{t.sites.subtitle}</p>
         </div>
         <Link to={dashPath("/new")} className="btn-secondary">
           {t.sites.addAnother}

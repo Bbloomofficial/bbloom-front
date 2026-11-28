@@ -130,7 +130,7 @@ export function PreviewFrame({
       <div
         className={`relative h-full overflow-hidden bg-white shadow-lg shadow-ink-900/5 ${
           device === "phone"
-            ? "w-[390px] max-w-full rounded-3xl border-8 border-ink-900/85"
+            ? "w-[390px] max-w-full rounded-2xl border-8 border-ink-900/85"
             : "w-full rounded-xl border border-ink-100"
         }`}
       >
@@ -144,7 +144,7 @@ export function PreviewFrame({
         {!ready ? (
           <span className="pointer-events-none absolute inset-0 grid place-items-center bg-surface/70">
             <span
-              className="h-6 w-6 animate-spin rounded-full border-2 border-ink-200 border-t-bloom-500"
+              className="h-6 w-6 animate-spin rounded-full border-2 border-ink-200 border-t-ink-900"
               aria-hidden="true"
             />
           </span>

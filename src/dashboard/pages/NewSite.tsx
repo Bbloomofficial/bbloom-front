@@ -90,15 +90,15 @@ export default function NewSite() {
   return (
     <form onSubmit={onSubmit} className="space-y-6" noValidate>
       <div>
-        <h1 className="text-2xl font-extrabold tracking-tight text-ink-900">
+        <h1 className="text-[28px] font-bold tracking-[-0.01em] text-ink-900 leading-tight">
           {first ? t.newSite.firstTitle : t.newSite.title}
         </h1>
-        <p className="mt-1 text-sm text-ink-600">
+        <p className="mt-1 text-base text-ink-600">
           {first ? t.newSite.firstSubtitle : t.newSite.subtitle}
         </p>
       </div>
 
-      <div className="rounded-3xl border border-ink-100 bg-surface p-5 sm:p-6">
+      <div className="rounded-2xl border border-ink-100 bg-surface p-5 sm:p-6">
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
             <label className="label" htmlFor="new-site-name">
@@ -132,7 +132,7 @@ export default function NewSite() {
         </div>
       </div>
 
-      <div className="rounded-3xl border border-ink-100 bg-surface p-5 sm:p-6">
+      <div className="rounded-2xl border border-ink-100 bg-surface p-5 sm:p-6">
         <h2 className="text-sm font-bold text-ink-900">{t.newSite.template}</h2>
         <p className="mt-1 text-xs text-ink-400">{t.newSite.templateHint}</p>
 
@@ -153,7 +153,7 @@ export default function NewSite() {
           {groups.map(({ category, templates: group }) => (
             <div key={category}>
               {groups.length > 1 && (
-                <h3 className="text-xs font-bold uppercase tracking-wide text-ink-400">
+                <h3 className="text-[13px] font-bold text-ink-600">
                   {t.newSite.categories[category] ?? category}
                 </h3>
               )}
@@ -178,7 +178,7 @@ export default function NewSite() {
       {error && (
         <p
           role="alert"
-          className="rounded-2xl bg-tint px-4 py-3 text-sm font-semibold text-danger"
+          className="rounded-2xl bg-danger/10 px-4 py-3 text-sm font-semibold text-danger"
         >
           {error}
         </p>

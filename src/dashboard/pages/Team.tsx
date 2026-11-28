@@ -96,22 +96,22 @@ export default function Team() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-extrabold tracking-tight text-ink-900">
+        <h1 className="text-[28px] font-bold tracking-[-0.01em] text-ink-900 leading-tight">
           {t.team.title}
         </h1>
-        <p className="mt-1 text-sm text-ink-600">{t.team.subtitle}</p>
+        <p className="mt-1 text-base text-ink-600">{t.team.subtitle}</p>
       </div>
 
       {error && (
         <p
           role="alert"
-          className="rounded-2xl bg-tint px-4 py-3 text-sm font-semibold text-danger"
+          className="rounded-2xl bg-danger/10 px-4 py-3 text-sm font-semibold text-danger"
         >
           {error}
         </p>
       )}
 
-      <section className="overflow-hidden rounded-3xl border border-ink-100 bg-surface">
+      <section className="overflow-hidden rounded-2xl border border-ink-100 bg-surface">
         {!isOwner ? (
           <p className="p-5 text-sm text-ink-600">{t.team.ownerOnly}</p>
         ) : loadError ? (
@@ -170,7 +170,7 @@ export default function Team() {
                               : "SITE_OWNER",
                           )
                         }
-                        className="rounded-xl border border-ink-100 px-3 py-1.5 text-xs font-semibold text-ink-600 transition hover:border-bloom-300 disabled:opacity-60"
+                        className="rounded-lg border border-ink-100 px-3 py-1.5 text-xs font-semibold text-ink-600 transition hover:border-ink-900 disabled:opacity-60"
                       >
                         {member.role === "SITE_OWNER"
                           ? t.team.makeEditor
@@ -180,7 +180,7 @@ export default function Team() {
                         type="button"
                         disabled={busy !== null}
                         onClick={() => void remove(member)}
-                        className="rounded-xl border border-ink-100 px-3 py-1.5 text-xs font-semibold text-danger transition hover:border-danger disabled:opacity-60"
+                        className="rounded-lg border border-ink-100 px-3 py-1.5 text-xs font-semibold text-danger transition hover:border-danger disabled:opacity-60"
                       >
                         {t.team.remove}
                       </button>
@@ -196,7 +196,7 @@ export default function Team() {
       {isOwner ? (
         <form
           onSubmit={invite}
-          className="rounded-3xl border border-ink-100 bg-surface p-5 sm:p-6"
+          className="rounded-2xl border border-ink-100 bg-surface p-5 sm:p-6"
           noValidate
         >
           <h2 className="text-sm font-bold text-ink-900">

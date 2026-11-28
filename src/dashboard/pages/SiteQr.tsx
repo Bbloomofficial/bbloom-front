@@ -165,16 +165,16 @@ export default function SiteQr() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-2xl font-extrabold tracking-tight text-ink-900 sm:text-3xl">
+        <h1 className="text-[28px] font-bold tracking-[-0.01em] text-ink-900 leading-tight">
           {t.title}
         </h1>
-        <p className="mt-1 max-w-2xl text-sm text-ink-600">{t.subtitle}</p>
+        <p className="mt-1 max-w-2xl text-base text-ink-600">{t.subtitle}</p>
       </div>
 
       {blocked ? (
         <Locked block={blocked} copy={t.locked[blocked]} siteId={siteId} />
       ) : (
-        <section className="rounded-3xl border border-ink-100 bg-surface p-6 sm:p-7">
+        <section className="rounded-2xl border border-ink-100 bg-surface p-6 sm:p-7">
           <div className="grid gap-8 lg:grid-cols-[minmax(0,20rem)_minmax(0,1fr)]">
             <div>
               {loading ? (
@@ -236,7 +236,7 @@ export default function SiteQr() {
                   <button
                     type="button"
                     onClick={() => setAttempt((value) => value + 1)}
-                    className="mt-2 text-sm font-semibold text-tint-fg hover:underline"
+                    className="mt-2 text-sm font-semibold text-ink-900 hover:underline"
                   >
                     {strings.retry}
                   </button>
@@ -271,8 +271,8 @@ export default function SiteQr() {
                         onClick={() => setCardLang(option)}
                         className={`rounded-xl border px-3 py-2 text-sm font-semibold transition disabled:opacity-60 ${
                           chosen
-                            ? "border-bloom-300 bg-tint text-tint-fg"
-                            : "border-ink-100 bg-control text-ink-600 hover:border-bloom-300 hover:text-bloom-600"
+                            ? "border-ink-900 bg-ink-50 text-ink-900"
+                            : "border-ink-100 bg-control text-ink-600 hover:border-ink-900 hover:text-ink-900"
                         }`}
                       >
                         {t.languages[option]}
@@ -316,7 +316,7 @@ function Locked({
   return (
     <section
       data-testid={`qr-locked-${block}`}
-      className="rounded-3xl border border-ink-100 bg-surface p-6 sm:p-7"
+      className="rounded-2xl border border-ink-100 bg-surface p-6 sm:p-7"
     >
       <p className="text-base font-bold text-ink-900">{copy.title}</p>
       <p className="mt-2 max-w-2xl text-sm text-ink-600">{copy.body}</p>

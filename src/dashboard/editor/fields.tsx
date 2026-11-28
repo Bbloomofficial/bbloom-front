@@ -40,7 +40,7 @@ function hint(field: FieldSchema, lang: SiteLanguage) {
 }
 
 const inputClass =
-  "w-full rounded-xl border border-ink-100 bg-surface px-3 py-2 text-sm text-ink-900 outline-none transition focus:border-bloom-400 focus:ring-2 focus:ring-bloom-200";
+  "field";
 
 function asRecord(value: Json): Record<string, unknown> {
   return value && typeof value === "object" && !Array.isArray(value)
@@ -131,7 +131,7 @@ function ImageField({
           type="button"
           disabled={busy}
           onClick={() => void pick()}
-          className="rounded-lg border border-ink-100 bg-surface px-3 py-1.5 text-xs font-semibold text-ink-600 transition hover:border-bloom-300 hover:text-bloom-600 disabled:opacity-50"
+          className="rounded-lg border border-ink-100 bg-surface px-3 py-1.5 text-xs font-semibold text-ink-600 transition hover:border-ink-900 disabled:opacity-50 hover:text-ink-900"
         >
           {src ? ctx.t.replaceImage : ctx.t.upload}
         </button>
@@ -199,7 +199,7 @@ function ListField({
                 onClick={() => move(index, -1)}
                 disabled={index === 0}
                 aria-label={ctx.t.moveUp}
-                className="rounded-md border border-ink-100 bg-surface px-2 py-1 text-xs text-ink-500 transition hover:text-bloom-600 disabled:opacity-30"
+                className="rounded-md border border-ink-100 bg-surface px-2 py-1 text-xs text-ink-500 transition disabled:opacity-30 hover:text-ink-900"
               >
                 ↑
               </button>
@@ -208,7 +208,7 @@ function ListField({
                 onClick={() => move(index, 1)}
                 disabled={index === items.length - 1}
                 aria-label={ctx.t.moveDown}
-                className="rounded-md border border-ink-100 bg-surface px-2 py-1 text-xs text-ink-500 transition hover:text-bloom-600 disabled:opacity-30"
+                className="rounded-md border border-ink-100 bg-surface px-2 py-1 text-xs text-ink-500 transition disabled:opacity-30 hover:text-ink-900"
               >
                 ↓
               </button>
@@ -240,7 +240,7 @@ function ListField({
       <button
         type="button"
         onClick={() => replace([...items, {}])}
-        className="rounded-lg border border-dashed border-ink-200 px-3 py-1.5 text-xs font-semibold text-ink-500 transition hover:border-bloom-300 hover:text-bloom-600"
+        className="rounded-lg border border-dashed border-ink-200 px-3 py-1.5 text-xs font-semibold text-ink-500 transition hover:border-ink-900 hover:text-ink-900"
       >
         {ctx.t.addItem}
       </button>
@@ -282,7 +282,7 @@ function Field({
           type="checkbox"
           checked={value === true}
           onChange={(event) => set(event.target.checked)}
-          className="mt-0.5 h-4 w-4 rounded border-ink-200 text-bloom-600 focus:ring-bloom-300"
+          className="mt-0.5 h-4 w-4 rounded border-ink-200 text-ink-900 focus:ring-ink-900"
         />
         <span>
           <span className="block text-sm font-semibold text-ink-700">
@@ -300,7 +300,7 @@ function Field({
     <span className="mb-1.5 flex items-baseline gap-2">
       <span className="text-sm font-semibold text-ink-700">{name}</span>
       {field.localized ? (
-        <span className="rounded bg-ink-50 px-1.5 py-0.5 text-[10px] font-bold uppercase text-ink-400">
+        <span className="rounded bg-ink-50 px-1.5 py-0.5 text-[10px] font-bold text-ink-600">
           {ctx.editLang}
         </span>
       ) : null}

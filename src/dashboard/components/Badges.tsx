@@ -2,7 +2,7 @@ import { useI18n } from "../../i18n";
 import { dashboardStrings } from "../strings";
 
 const STATUS_STYLES: Record<string, string> = {
-  NEW: "bg-bloom-100 text-bloom-800 dark:bg-bloom-900/50 dark:text-bloom-200",
+  NEW: "bg-ink-50 text-ink-800",
   CONTACTED: "bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-200",
   HANDLED: "bg-success-soft text-success border border-success-border",
   SPAM: "bg-ink-100 text-ink-600",
@@ -97,7 +97,7 @@ export function RoleBadge({ role }: { role: string }) {
   const { locale } = useI18n();
   const t = dashboardStrings(locale);
   return (
-    <span className={`${base} bg-tint text-tint-fg`}>
+    <span className={`${base} bg-ink-50 text-ink-800`}>
       {t.roles[role] ?? role}
     </span>
   );
@@ -139,7 +139,7 @@ export function OrderStatusBadge({ status }: { status: string }) {
  * waiting to be made and one badge would have to drop one of them.
  */
 const FULFILMENT_STYLES: Record<string, string> = {
-  NEW: "bg-bloom-100 text-bloom-800 dark:bg-bloom-900/50 dark:text-bloom-200",
+  NEW: "bg-ink-50 text-ink-800",
   IN_PROGRESS: "bg-sky-100 text-sky-800 dark:bg-sky-900/40 dark:text-sky-200",
   COMPLETED: "bg-success-soft text-success border border-success-border",
   CANCELLED: "bg-ink-100 text-ink-600",

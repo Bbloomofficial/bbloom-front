@@ -14,7 +14,7 @@ const SOCIAL_KEYS = [
 ] as const;
 
 const inputClass =
-  "mt-1.5 w-full rounded-xl border border-ink-100 bg-sunken px-3 py-2 text-sm text-ink-900 outline-none transition focus:border-bloom-400 focus:ring-2 focus:ring-bloom-200";
+  "field mt-1.5";
 
 /**
  * Phone, email, address, map and social links belong to the site rather than to
@@ -82,14 +82,14 @@ export function ContactSettings({
   }
 
   return (
-    <section className="rounded-3xl border border-ink-100 bg-surface p-6 sm:p-7">
+    <section className="rounded-2xl border border-ink-100 bg-surface p-6 sm:p-7">
       <h2 className="text-lg font-bold text-ink-900">{t.title}</h2>
       <p className="mt-1 text-sm text-ink-600">{t.subtitle}</p>
 
       <form className="mt-5 space-y-4" onSubmit={submit}>
         <div className="grid gap-4 sm:grid-cols-2">
           <label className="block">
-            <span className="text-xs font-semibold text-ink-500">
+            <span className="text-sm font-semibold text-ink-900">
               {t.phone}
             </span>
             <input
@@ -100,7 +100,7 @@ export function ContactSettings({
             />
           </label>
           <label className="block">
-            <span className="text-xs font-semibold text-ink-500">
+            <span className="text-sm font-semibold text-ink-900">
               {t.email}
             </span>
             <input
@@ -114,7 +114,7 @@ export function ContactSettings({
         </div>
 
         <label className="block">
-          <span className="text-xs font-semibold text-ink-500">
+          <span className="text-sm font-semibold text-ink-900">
             {t.address}
           </span>
           <input
@@ -125,7 +125,7 @@ export function ContactSettings({
         </label>
 
         <label className="block">
-          <span className="text-xs font-semibold text-ink-500">
+          <span className="text-sm font-semibold text-ink-900">
             {t.mapUrl}
           </span>
           <input
@@ -139,7 +139,7 @@ export function ContactSettings({
         </label>
 
         <div>
-          <span className="text-xs font-semibold text-ink-500">{t.social}</span>
+          <span className="text-sm font-semibold text-ink-900">{t.social}</span>
           <div className="mt-1.5 grid gap-3 sm:grid-cols-2">
             {SOCIAL_KEYS.map((key) => (
               <label key={key} className="block">

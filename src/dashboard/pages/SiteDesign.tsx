@@ -187,13 +187,13 @@ export default function SiteDesign() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-extrabold tracking-tight text-ink-900">
+        <h1 className="text-[28px] font-bold tracking-[-0.01em] text-ink-900 leading-tight">
           {t.design.title}
         </h1>
-        <p className="mt-1 text-sm text-ink-600">{t.design.subtitle}</p>
+        <p className="mt-1 text-base text-ink-600">{t.design.subtitle}</p>
         <Link
           to={dashPath(`/s/${siteId}`)}
-          className="mt-2 inline-block text-xs font-bold text-bloom-600 hover:underline"
+          className="mt-2 inline-block text-xs font-bold text-ink-900 underline underline-offset-2"
         >
           {t.design.back}
         </Link>
@@ -213,9 +213,9 @@ export default function SiteDesign() {
             currentName,
             pending.name,
           )}
-          className="rounded-3xl border-2 border-bloom-500 bg-surface p-5 sm:p-6"
+          className="rounded-2xl border-2 border-ink-900 bg-surface p-5 sm:p-6"
         >
-          <h2 className="text-lg font-extrabold text-ink-900">
+          <h2 className="text-lg font-bold text-ink-900">
             {t.design.confirmTitle(
               currentName,
               pending.name,
@@ -230,7 +230,7 @@ export default function SiteDesign() {
               it can say no without a refusal, so a design the plan does not
               cover is an offer here rather than an error. */}
           {preview && !preview.allowed && (
-            <div className="mt-4 rounded-2xl bg-tint p-4">
+            <div className="mt-4 rounded-2xl bg-ink-50 p-4">
               <p className="text-sm font-semibold text-ink-900">
                 {t.errors.templateTierRequiresPlan}
               </p>
@@ -244,7 +244,7 @@ export default function SiteDesign() {
             <div className="mt-4 space-y-4">
               {losesOrdering && (
                 <div className="rounded-2xl bg-danger-soft p-4">
-                  <p className="text-sm font-extrabold text-danger">
+                  <p className="text-sm font-bold text-danger">
                     {t.design.ordersHeadline}
                   </p>
                   <p className="mt-1 text-sm text-ink-800">
@@ -362,7 +362,7 @@ export default function SiteDesign() {
         </div>
       )}
 
-      <div className="rounded-3xl border border-ink-100 bg-surface p-5 sm:p-6">
+      <div className="rounded-2xl border border-ink-100 bg-surface p-5 sm:p-6">
         {(detailState.loading || templatesState.loading) && (
           <p className="text-sm text-ink-400">{t.loading}</p>
         )}
@@ -380,7 +380,7 @@ export default function SiteDesign() {
           {groups.map(({ category, templates: group }) => (
             <div key={category}>
               {groups.length > 1 && (
-                <h3 className="text-xs font-bold uppercase tracking-wide text-ink-400">
+                <h3 className="text-[13px] font-bold text-ink-600">
                   {t.newSite.categories[category] ?? category}
                 </h3>
               )}
@@ -428,8 +428,8 @@ function DonePanel({
     ([, fields]) => fields.length > 0,
   );
   return (
-    <div className="rounded-3xl border border-success bg-success-soft p-5 sm:p-6">
-      <h2 className="text-lg font-extrabold text-ink-900">
+    <div className="rounded-2xl border border-success bg-success-soft p-5 sm:p-6">
+      <h2 className="text-lg font-bold text-ink-900">
         {t.design.doneTitle}
       </h2>
       <dl className="mt-3 space-y-1 text-sm text-ink-800">

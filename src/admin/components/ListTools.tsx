@@ -103,7 +103,7 @@ export function ListToolbar({
   return (
     <div className="mt-6 flex flex-wrap items-end gap-3">
       <label className="min-w-60 flex-1 text-sm">
-        <span className="mb-1 block text-[13px] font-semibold text-ink-600">
+        <span className="mb-2 block text-sm font-semibold text-ink-900">
           {t.search}
         </span>
         <input
@@ -149,7 +149,7 @@ export function FilterSelect({
   const t = adminStrings(locale).list;
   return (
     <label className="text-sm">
-      <span className="mb-1 block text-[13px] font-semibold text-ink-600">
+      <span className="mb-2 block text-sm font-semibold text-ink-900">
         {label}
       </span>
       <select

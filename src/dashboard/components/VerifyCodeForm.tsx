@@ -529,7 +529,7 @@ export default function VerifyCodeForm({
             className={
               warning
                 ? "h-12 w-full min-w-0 rounded-xl border border-amber-300 bg-white text-center text-lg font-bold text-amber-900 tabular-nums outline-none transition focus:border-amber-500 focus:ring-2 focus:ring-amber-400/40 disabled:opacity-60 dark:border-amber-800 dark:bg-amber-950/40 dark:text-amber-50"
-                : "h-12 w-full min-w-0 rounded-xl border border-ink-200 bg-surface text-center text-lg font-bold text-ink-900 tabular-nums outline-none transition focus:border-bloom-500 focus:ring-2 focus:ring-bloom-500/30 disabled:opacity-60"
+                : "h-12 w-full min-w-0 rounded-lg border border-ink-400 bg-control text-center text-lg font-bold text-ink-900 tabular-nums outline-none transition focus:border-ink-900 focus:ring-1 focus:ring-ink-900 disabled:opacity-60"
             }
           />
         ))}
@@ -556,7 +556,7 @@ export default function VerifyCodeForm({
             className={
               warning
                 ? "text-sm font-semibold text-amber-900 underline underline-offset-4 disabled:opacity-60 dark:text-amber-100"
-                : "text-sm font-semibold text-bloom-700 underline underline-offset-4 disabled:opacity-60"
+                : "text-sm font-semibold text-ink-900 underline underline-offset-4 disabled:opacity-60"
             }
           >
             {resending
