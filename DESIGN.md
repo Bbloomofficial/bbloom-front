@@ -23,7 +23,7 @@ the old way, and the old values are in that surface's code and `src/index.css`.
 
 | Step | What changes | Status |
 | --- | --- | --- |
-| 1 | The tokens and shared classes in `src/index.css`. This alone restyles every shell at once | Not started |
+| 1 | The tokens and shared classes in `src/index.css`. This alone restyles every shell at once | Done |
 | 2 | Staff admin: labels, tables, chips, tabs, stat tiles | Not started |
 | 3 | Client dashboard | Not started |
 | 4 | Marketing site | Not started |
