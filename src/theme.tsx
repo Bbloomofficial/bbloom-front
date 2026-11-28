@@ -27,7 +27,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     document.documentElement.classList.toggle('dark', theme === 'dark')
     document
       .querySelector('meta[name="theme-color"]')
-      ?.setAttribute('content', theme === 'dark' ? '#0b0e17' : '#ffffff')
+      ?.setAttribute('content', theme === 'dark' ? '#121212' : '#ffffff')
   }, [theme])
 
   // Follow the OS only while the visitor has not made an explicit choice.

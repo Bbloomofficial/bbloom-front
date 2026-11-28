@@ -17,16 +17,18 @@
   --color-bloom-800: #9d174d;
   --color-bloom-900: #831843;
 
-  --color-ink-50: #f6f7f9;
-  --color-ink-100: #eceef2;
-  --color-ink-200: #dfe3ec;
-  --color-ink-300: #c3c9d8;
-  --color-ink-400: #8b93a7;
-  --color-ink-500: #666e83;
-  --color-ink-600: #4b5468;
-  --color-ink-700: #343b4f;
-  --color-ink-800: #232838;
-  --color-ink-900: #12151f;
+  /* Neutral greys with no tint (DESIGN.md, section 2). 400 is for borders,
+     placeholders and icons, not for text anyone has to read: it is 3.03:1. */
+  --color-ink-50: #f7f7f7;
+  --color-ink-100: #ebebeb;
+  --color-ink-200: #dddddd;
+  --color-ink-300: #c4c4c4;
+  --color-ink-400: #949494;
+  --color-ink-500: #6b6b6b;
+  --color-ink-600: #5c5c5c;
+  --color-ink-700: #4a4a4a;
+  --color-ink-800: #3d3d3d;
+  --color-ink-900: #222222;
 
   /* Semantic tokens — these are what flip between light and dark. */
   --color-canvas: #ffffff;
@@ -40,7 +42,7 @@
    * that white panels and inset boxes read against. It is the same colour as
    * `canvas` in the dark theme, where the recession already exists.
    */
-  --color-sunken: #f2f4f9;
+  --color-sunken: #f7f7f7;
   /*
    * The fill of an interactive control, as opposed to `surface`, which is the
    * fill of a panel. They are the same colour in the light theme — a white
@@ -48,7 +50,7 @@
    * not be the same colour in the dark theme. See the note by the rule below.
    */
   --color-control: #ffffff;
-  --color-contrast: #12151f;
+  --color-contrast: #222222;
   --color-tint: #fdf2f8;
   --color-tint-strong: #fce7f3;
   --color-tint-fg: #be185d;
@@ -58,7 +60,15 @@
   --color-success-strong: #047857;
   --color-success-soft: #ecfdf5;
   --color-success-border: #a7f3d0;
-  --color-danger: #dc2626;
+  /* Orange-red rather than red: a red beside the pink brand reads as the
+     same colour, so a delete button looked like a brand button. */
+  --color-danger: #c2410c;
+  /* Text on a `danger` fill. Its own token because `danger` lightens in the
+     dark theme, where white on it no longer passes. */
+  --color-on-danger: #ffffff;
+
+  /* The one shadow, for things that lift: a hovered card, a menu, a dialog. */
+  --shadow-card: 0 1px 2px rgb(0 0 0 / 0.04), 0 4px 12px rgb(0 0 0 / 0.08);
 }
 
 /*
@@ -68,22 +78,22 @@
  * light-on-dark by design.
  */
 .dark {
-  --color-ink-50: #1c2130;
-  --color-ink-100: #2d3447;
-  --color-ink-200: #343b50;
-  --color-ink-300: #5c6379;
-  --color-ink-400: #79809a;
-  --color-ink-500: #8e95ab;
-  --color-ink-600: #a3aabd;
-  --color-ink-700: #c1c7d5;
-  --color-ink-800: #dfe3ec;
-  --color-ink-900: #f6f7fb;
+  --color-ink-50: #242424;
+  --color-ink-100: #2e2e2e;
+  --color-ink-200: #3a3a3a;
+  --color-ink-300: #4a4a4a;
+  --color-ink-400: #7a7a7a;
+  --color-ink-500: #a1a1a1;
+  --color-ink-600: #b0b0b0;
+  --color-ink-700: #c4c4c4;
+  --color-ink-800: #d4d4d4;
+  --color-ink-900: #f5f5f5;
 
-  --color-canvas: #0b0e17;
-  --color-surface: #141826;
-  --color-sunken: #0b0e17;
-  --color-control: #202738;
-  --color-contrast: #05070d;
+  --color-canvas: #121212;
+  --color-surface: #1c1c1c;
+  --color-sunken: #121212;
+  --color-control: #262626;
+  --color-contrast: #0a0a0a;
   --color-tint: #3a1c2e;
   --color-tint-strong: #4a2338;
   --color-tint-fg: #f9a8d4;
@@ -91,7 +101,10 @@
   --color-success-strong: #34d399;
   --color-success-soft: #0f2a21;
   --color-success-border: #14532d;
-  --color-danger: #f87171;
+  --color-danger: #fb923c;
+  --color-on-danger: #1c1c1c;
+
+  --shadow-card: 0 1px 2px rgb(0 0 0 / 0.3), 0 4px 12px rgb(0 0 0 / 0.4);
 
   color-scheme: dark;
 }
@@ -127,20 +140,22 @@
   align-items: center;
   justify-content: center;
   gap: --spacing(2);
-  border-radius: calc(infinity * 1px);
-  /* Georgian labels are long, and a pill that wraps its label onto two or
+  /* Soft, not pill-shaped (DESIGN.md, section 5). */
+  border-radius: var(--radius-lg);
+  /* Georgian labels are long, and a button that wraps its label onto two or
      three lines stops reading as a button. Buttons keep their label on one
      line; where space is tight the surrounding layout wraps instead. */
   white-space: nowrap;
-  padding-inline: --spacing(6);
-  padding-block: --spacing(3);
-  font-size: var(--text-sm);
-  line-height: var(--text-sm--line-height);
+  min-height: --spacing(12);
+  padding-inline: --spacing(5);
+  padding-block: --spacing(2);
+  font-size: 15px;
+  line-height: 1.25;
   font-weight: 600;
   text-align: center;
   transition-property: color, background-color, border-color, box-shadow, transform;
   transition-timing-function: var(--default-transition-timing-function);
-  transition-duration: var(--default-transition-duration);
+  transition-duration: 150ms;
 }
 
 @layer components {
@@ -148,70 +163,62 @@
     @apply mx-auto w-full max-w-6xl px-5 sm:px-8;
   }
 
-  .btn:focus-visible {
-    @apply outline-2 outline-offset-2 outline-bloom-500;
+  /*
+    The button rules below name every button class, not only `btn`. The
+    variants take `btn`'s styles through `@apply`, which copies its
+    declarations but not the class name, so a rule written for `.btn` alone
+    never reached a `btn-primary` or `btn-secondary`: their focus was the
+    browser's default ring, and a disabled one did not fade.
+
+    Focus is ink, not pink: pink is kept for the primary action. `ink-900`
+    re-points, so the ring is dark in light and light in dark.
+  */
+  :is(.btn, .btn-primary, .btn-secondary, .btn-ghost, .btn-danger):focus-visible {
+    @apply outline-2 outline-offset-2 outline-ink-900;
   }
 
   /*
-    Hover lifts, press sinks. Both are deliberately tiny: a pointer device gets
-    a button that answers it, while anything larger starts to read as the page
-    moving rather than the control responding.
+    Buttons answer a pointer by changing colour, not by moving. A press may
+    shrink them very slightly, and faster than the colour change, so it is felt
+    at the moment of clicking.
 
-    Written as `transform` rather than `@apply -translate-y-px scale-95`
-    because Tailwind 4 compiles those utilities to the separate `translate` and
-    `scale` properties, which the `transition-property` above does not name —
-    they would jump instead of easing.
+    Written as `transform` rather than `@apply scale-…` because Tailwind 4
+    compiles that utility to the separate `scale` property, which the
+    `transition-property` above does not name.
   */
-  .btn:hover:not(:disabled) {
-    transform: translateY(-1px);
-  }
-
-  /* Faster than the hover, so the press is felt at the moment of clicking
-     rather than a beat afterwards. */
-  .btn:active:not(:disabled) {
-    transform: scale(0.97);
+  :is(.btn, .btn-primary, .btn-secondary, .btn-ghost, .btn-danger):active:not(:disabled) {
+    transform: scale(0.98);
     transition-duration: 80ms;
   }
 
-  /* Without this a disabled button still lifted and still looked pressable,
-     which is worse than no feedback: it invites the click it will ignore. */
-  .btn:disabled {
+  /* Without this a disabled button still looked pressable, which is worse
+     than no feedback: it invites the click it will ignore. */
+  :is(.btn, .btn-primary, .btn-secondary, .btn-ghost, .btn-danger):disabled {
     @apply cursor-not-allowed opacity-55 shadow-none;
     transform: none;
   }
 
   .btn-primary {
-    @apply btn bg-bloom-600 text-white shadow-lg shadow-bloom-600/20 hover:bg-bloom-700 hover:shadow-bloom-700/25 hover:shadow-xl;
+    @apply btn bg-bloom-600 text-white hover:bg-bloom-700 active:bg-bloom-700;
   }
 
   .btn-secondary {
-    @apply btn border border-ink-100 bg-control text-ink-800 hover:border-bloom-200 hover:bg-tint dark:hover:border-bloom-700;
+    @apply btn border border-ink-900 bg-control text-ink-900 hover:bg-ink-50;
+  }
+
+  .btn-ghost {
+    @apply btn text-ink-900 underline-offset-4 hover:underline;
+  }
+
+  .btn-danger {
+    @apply btn bg-danger text-on-danger hover:opacity-90;
   }
 
   /*
-    The plan buttons on the pricing page. They carry more weight than a button
-    elsewhere — this is the one click the page exists to earn — so they answer a
-    pointer more visibly than the 1px the base gives everything else.
-
-    Still restrained: 3px and a deepened shadow reads as the control rising to
-    meet the cursor. Much beyond that and a grid of four starts twitching as the
-    pointer crosses it.
+    The plan buttons on the pricing page. The arrow is nudged along on hover,
+    so the button reads as leading somewhere. Its box is reserved whether or
+    not it moves, otherwise the label shifts underneath the cursor.
   */
-  .btn-plan:hover:not(:disabled) {
-    transform: translateY(-3px);
-  }
-
-  .btn-plan.btn-primary:hover:not(:disabled) {
-    @apply shadow-2xl shadow-bloom-600/35;
-  }
-
-  .btn-plan.btn-secondary:hover:not(:disabled) {
-    @apply border-bloom-300 shadow-lg shadow-bloom-600/10 dark:border-bloom-600;
-  }
-
-  /* Nudged along on hover, so the button reads as leading somewhere. Its box is
-     reserved whether or not it moves, otherwise the label shifts underneath the
-     cursor as the arrow arrives. */
   .btn-plan svg {
     @apply transition-transform duration-200;
   }
@@ -220,45 +227,45 @@
     transform: translateX(3px);
   }
 
-  /* A pointer gets the lift; a finger does not, because there is no hover to
-     leave and the button would stay raised after the tap. */
   @media (hover: none) {
-    .btn-plan:hover:not(:disabled) {
-      transform: none;
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .btn-plan:hover:not(:disabled),
     .btn-plan:hover:not(:disabled) svg {
       transform: none;
     }
   }
 
-  /* Buttons inside a dense editing panel, where a full-size pill would take
-     more room than the field it belongs to. */
+  /* Buttons inside a dense panel or a table toolbar, where a full-size button
+     would take more room than the field it belongs to. */
   .btn-sm {
-    @apply px-4 py-2 text-xs;
+    @apply min-h-10 px-4 text-sm;
   }
 
+  /* A clickable card lifts by gaining the one shadow; it does not move. */
   .card {
-    @apply rounded-3xl border border-ink-100 bg-surface p-6 break-words transition hover:border-bloom-200 hover:shadow-xl hover:shadow-bloom-600/5 sm:p-7 dark:hover:border-bloom-700;
+    @apply rounded-2xl border border-ink-100 bg-surface p-6 break-words transition hover:shadow-card;
   }
 
+  /* A brand moment above a marketing heading. Sentence case: small capitals
+     do nothing in Georgian, which has none. */
   .eyebrow {
-    @apply inline-flex items-center gap-2 rounded-full bg-tint px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-tint-fg;
+    @apply inline-flex items-center gap-2 rounded-full bg-tint px-3.5 py-1.5 text-sm font-semibold text-tint-fg;
   }
 
+  /*
+    48px tall with 16px text (16px also stops iOS Safari zooming in on focus).
+    The border is `ink-400`, 3.03:1, so the field's edge is visible to people
+    who need it. Focus thickens it to 2px of `ink-900` with a ring rather than
+    a wider border, so the text does not shift.
+  */
   .field {
-    @apply w-full rounded-2xl border border-ink-100 bg-control px-4 py-3 text-sm text-ink-900 outline-none transition placeholder:text-ink-400 focus:border-bloom-400 focus:ring-4 focus:ring-tint-strong;
+    @apply w-full rounded-lg border border-ink-400 bg-control px-3.5 py-[11px] text-base text-ink-900 outline-none transition placeholder:text-ink-400 focus:border-ink-900 focus:ring-1 focus:ring-ink-900;
   }
 
   .label {
-    @apply mb-1.5 block text-sm font-semibold text-ink-800;
+    @apply mb-2 block text-sm font-semibold text-ink-900;
   }
 
   .icon-button {
-    @apply inline-flex h-10 w-10 items-center justify-center rounded-xl border border-ink-100 bg-control text-ink-600 transition hover:border-bloom-300 hover:bg-tint hover:text-bloom-600;
+    @apply inline-flex h-10 w-10 items-center justify-center rounded-full border border-ink-200 bg-control text-ink-800 transition hover:bg-ink-50 hover:text-ink-900;
   }
 
   .icon-button:active:not(:disabled) {
@@ -267,20 +274,20 @@
   }
 
   .icon-button:focus-visible {
-    @apply outline-2 outline-offset-2 outline-bloom-500;
+    @apply outline-2 outline-offset-2 outline-ink-900;
   }
 }
 
 /*
   Movement is decoration here — every one of these controls also changes colour
   — so it is the whole of what gets dropped when someone has asked for less of
-  it. The colour and shadow transitions stay, because losing those would make
-  the buttons look broken rather than calm.
+  it. The colour transitions stay, because losing those would make the buttons
+  look broken rather than calm.
 */
 @media (prefers-reduced-motion: reduce) {
-  .btn:hover:not(:disabled),
-  .btn:active:not(:disabled),
-  .icon-button:active:not(:disabled) {
+  :is(.btn, .btn-primary, .btn-secondary, .btn-ghost, .btn-danger):active:not(:disabled),
+  .icon-button:active:not(:disabled),
+  .btn-plan:hover:not(:disabled) svg {
     transform: none;
   }
 }
