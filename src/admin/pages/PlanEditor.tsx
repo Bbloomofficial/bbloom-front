@@ -436,17 +436,17 @@ export default function PlanEditor() {
     <div>
       <Link
         to={adminPath("/plans")}
-        className="text-sm font-semibold text-ink-600 hover:text-bloom-600"
+        className="text-sm font-semibold text-ink-600 hover:text-ink-900"
       >
         {t.plans.back}
       </Link>
 
-      <h1 className="mt-3 text-2xl font-extrabold text-balance tracking-tight text-ink-900 sm:text-3xl">
+      <h1 className="mt-3 text-[28px] font-bold text-balance tracking-[-0.01em] text-ink-900 leading-tight">
         {isNew ? t.plans.newTitle : t.plans.editTitle}
       </h1>
 
       <form onSubmit={save} className="mt-6 space-y-6">
-        <section className="rounded-3xl border border-ink-100 bg-surface p-6">
+        <section className="rounded-2xl border border-ink-100 bg-surface p-6">
           <div className="grid gap-5 sm:grid-cols-2">
             <div>
               <label className="label" htmlFor="plan-code">
@@ -566,7 +566,7 @@ export default function PlanEditor() {
                  pricing page entirely, so there is nowhere for the announcement
                  to appear. Legitimate while a tier is being drafted, so it is a
                  note rather than a rule. */
-              <p className="rounded-2xl bg-tint px-4 py-3 text-sm text-ink-600">
+              <p className="rounded-2xl bg-ink-50 px-4 py-3 text-sm text-ink-600">
                 {t.plans.comingSoonHidden}
               </p>
             )}
@@ -575,14 +575,14 @@ export default function PlanEditor() {
                  "most popular" rather than the coming-soon badge. Better said
                  here than discovered by staring at a pricing page wondering
                  which of two switches is being ignored. */
-              <p className="rounded-2xl bg-tint px-4 py-3 text-sm text-ink-600">
+              <p className="rounded-2xl bg-ink-50 px-4 py-3 text-sm text-ink-600">
                 {t.plans.comingSoonBeatsFeatured}
               </p>
             )}
           </div>
         </section>
 
-        <section className="rounded-3xl border border-ink-100 bg-surface p-6">
+        <section className="rounded-2xl border border-ink-100 bg-surface p-6">
           <h2 className="text-lg font-bold text-ink-900">
             {t.plans.entitlements}
           </h2>
@@ -625,7 +625,7 @@ export default function PlanEditor() {
                   choose "Modern" and picture a plan that offers one design.
                   Listing what the choice actually grants answers that without
                   anybody needing to know the tiers are a ladder. */}
-              <p className="mt-2 rounded-2xl bg-tint px-4 py-2.5 text-xs font-semibold text-tint-fg">
+              <p className="mt-2 rounded-2xl bg-ink-50 px-4 py-2.5 text-xs font-semibold text-ink-900">
                 {form.maxTemplateTier
                   ? t.plans.maxTemplateTierIncludes(
                       t.tiers[form.maxTemplateTier] ?? form.maxTemplateTier,
@@ -707,7 +707,7 @@ export default function PlanEditor() {
           </fieldset>
         </section>
 
-        <section className="rounded-3xl border border-ink-100 bg-surface p-6">
+        <section className="rounded-2xl border border-ink-100 bg-surface p-6">
           <h2 className="text-lg font-bold text-ink-900">{t.plans.discount}</h2>
           <p className="mt-1 text-sm text-ink-600">{t.plans.discountHint}</p>
 
@@ -716,7 +716,7 @@ export default function PlanEditor() {
                and the API refuses one rather than saving a setting that would
                show up nowhere. Saying so is kinder than a disabled field with
                no explanation. */
-            <p className="mt-4 rounded-2xl bg-tint px-4 py-3 text-sm text-ink-600">
+            <p className="mt-4 rounded-2xl bg-ink-50 px-4 py-3 text-sm text-ink-600">
               {t.plans.discountNotPurchasable}
             </p>
           ) : (
@@ -808,7 +808,7 @@ export default function PlanEditor() {
             </>
           )}
         </section>
-        <section className="rounded-3xl border border-ink-100 bg-surface p-6">
+        <section className="rounded-2xl border border-ink-100 bg-surface p-6">
           <h2 className="text-lg font-bold text-ink-900">{t.plans.translations}</h2>
           <p className="mt-1 text-sm text-ink-600">{t.plans.translationsHint}</p>
 
@@ -820,8 +820,8 @@ export default function PlanEditor() {
                 onClick={() => setLanguage(code)}
                 className={
                   code === language
-                    ? "rounded-full bg-bloom-600 px-4 py-1.5 text-sm font-semibold text-white"
-                    : "rounded-full border border-ink-100 px-4 py-1.5 text-sm font-semibold text-ink-600 hover:text-bloom-600"
+                    ? "rounded-full bg-ink-900 px-4 py-1.5 text-sm font-semibold text-canvas"
+                    : "rounded-full border border-ink-100 px-4 py-1.5 text-sm font-semibold text-ink-600 hover:text-ink-900"
                 }
               >
                 {t.plans.languageNames[code] ?? code}

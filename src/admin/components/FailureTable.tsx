@@ -19,7 +19,7 @@ export default function FailureTable({ rows }: { rows: MailFailure[] }) {
   return (
     <div className="mt-5 overflow-x-auto">
       <table className="w-full text-start text-sm">
-        <thead className="border-b border-ink-100 text-xs uppercase tracking-wide text-ink-400">
+        <thead className="border-b border-ink-100 text-[13px] text-ink-600 font-semibold">
           <tr>
             <th className="px-3 py-3 text-start font-semibold">
               {t.system.colTime}

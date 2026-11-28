@@ -103,7 +103,7 @@ export function ListToolbar({
   return (
     <div className="mt-6 flex flex-wrap items-end gap-3">
       <label className="min-w-60 flex-1 text-sm">
-        <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-ink-400">
+        <span className="mb-1 block text-[13px] font-semibold text-ink-600">
           {t.search}
         </span>
         <input
@@ -122,7 +122,7 @@ export function ListToolbar({
           <button
             type="button"
             onClick={onClear}
-            className="whitespace-nowrap font-semibold text-tint-fg hover:underline"
+            className="whitespace-nowrap font-semibold text-ink-900 hover:underline"
           >
             {t.clear}
           </button>
@@ -149,7 +149,7 @@ export function FilterSelect({
   const t = adminStrings(locale).list;
   return (
     <label className="text-sm">
-      <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-ink-400">
+      <span className="mb-1 block text-[13px] font-semibold text-ink-600">
         {label}
       </span>
       <select
@@ -194,7 +194,7 @@ export function SortTh<S extends string>({
       <button
         type="button"
         onClick={() => list.sortBy(column, first)}
-        className={`inline-flex items-center gap-1 uppercase tracking-wide hover:text-ink-900 ${
+        className={`inline-flex items-center gap-1 hover:text-ink-900 ${
           active ? "text-ink-900" : ""
         }`}
       >

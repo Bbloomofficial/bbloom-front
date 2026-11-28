@@ -106,7 +106,7 @@ export default function Plans() {
     <div>
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-extrabold text-balance tracking-tight text-ink-900 sm:text-3xl">
+          <h1 className="text-[28px] font-bold text-balance tracking-[-0.01em] text-ink-900 leading-tight">
             {t.plans.title}
           </h1>
           <p className="mt-1 text-sm text-ink-600">{t.plans.subtitle}</p>
@@ -146,7 +146,7 @@ export default function Plans() {
       </ListToolbar>
 
       {error && (
-        <div className="mt-6 rounded-3xl border border-ink-100 bg-surface p-6 text-center">
+        <div className="mt-6 rounded-2xl border border-ink-100 bg-surface p-6 text-center">
           <p className="text-sm font-semibold text-danger">{error.message}</p>
           <button type="button" onClick={reload} className="btn-secondary mt-4">
             {t.retry}
@@ -161,15 +161,15 @@ export default function Plans() {
       )}
 
       {data && plans.length === 0 && (
-        <p className="mt-8 rounded-3xl border border-ink-100 bg-surface p-8 text-center text-sm text-ink-600">
+        <p className="mt-8 rounded-2xl border border-ink-100 bg-surface p-8 text-center text-sm text-ink-600">
           {all.length === 0 ? t.plans.empty : t.list.noneMatching}
         </p>
       )}
 
       {plans.length > 0 && (
-        <div className="mt-6 overflow-hidden rounded-3xl border border-ink-100 bg-surface">
+        <div className="mt-6 overflow-hidden rounded-2xl border border-ink-100 bg-surface">
           <table className="w-full text-start text-sm">
-            <thead className="border-b border-ink-100 text-xs uppercase tracking-wide text-ink-400">
+            <thead className="border-b border-ink-100 text-[13px] text-ink-600 font-semibold">
               <tr>
                 <SortTh column="name" label={t.plans.name} list={list} />
                 <SortTh
@@ -201,12 +201,12 @@ export default function Plans() {
                     <td className="px-5 py-4">
                       <Link
                         to={adminPath(`/plans/${plan.id}`)}
-                        className="font-semibold text-ink-900 hover:text-bloom-600"
+                        className="font-semibold text-ink-900 hover:underline"
                       >
                         {nameOf(plan)}
                       </Link>
                       {plan.featured && (
-                        <span className="ms-2 inline-flex items-center rounded-full bg-tint px-2 py-0.5 text-xs font-semibold text-tint-fg">
+                        <span className="ms-2 inline-flex items-center rounded-full bg-ink-50 px-2 py-0.5 text-xs font-semibold text-ink-900">
                           {t.plans.featured}
                         </span>
                       )}
@@ -230,7 +230,7 @@ export default function Plans() {
                               locale,
                             )}
                           </span>
-                          <span className="ms-2 inline-flex items-center rounded-full bg-tint px-2 py-0.5 text-xs font-semibold text-tint-fg">
+                          <span className="ms-2 inline-flex items-center rounded-full bg-ink-50 px-2 py-0.5 text-xs font-semibold text-ink-900">
                             −{plan.discountPercent}%
                           </span>
                         </>
@@ -264,7 +264,7 @@ export default function Plans() {
                       <div className="flex items-center justify-end gap-3">
                         <Link
                           to={adminPath(`/plans/${plan.id}`)}
-                          className="text-sm font-semibold text-ink-600 hover:text-bloom-600"
+                          className="text-sm font-semibold text-ink-600 hover:text-ink-900"
                         >
                           {t.plans.edit}
                         </Link>

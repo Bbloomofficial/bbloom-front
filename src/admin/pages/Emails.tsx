@@ -101,7 +101,7 @@ export default function Emails() {
     <div>
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-extrabold text-balance tracking-tight text-ink-900 sm:text-3xl">
+          <h1 className="text-[28px] font-bold text-balance tracking-[-0.01em] text-ink-900 leading-tight">
             {e.title}
           </h1>
           <p className="mt-1 max-w-3xl text-sm text-ink-600">{e.subtitle}</p>
@@ -154,17 +154,17 @@ export default function Emails() {
           {problem && <p role="alert" className="mt-4 text-sm font-semibold text-danger">{problem}</p>}
 
           {all.length === 0 ? (
-            <p className="mt-6 rounded-3xl border border-ink-100 bg-surface p-8 text-center text-sm text-ink-600">
+            <p className="mt-6 rounded-2xl border border-ink-100 bg-surface p-8 text-center text-sm text-ink-600">
               {e.owedEmpty}
             </p>
           ) : rows.length === 0 ? (
-            <p className="mt-6 rounded-3xl border border-ink-100 bg-surface p-8 text-center text-sm text-ink-600">
+            <p className="mt-6 rounded-2xl border border-ink-100 bg-surface p-8 text-center text-sm text-ink-600">
               {t.list.noneMatching}
             </p>
           ) : (
-            <div className="mt-6 overflow-x-auto rounded-3xl border border-ink-100 bg-surface">
+            <div className="mt-6 overflow-x-auto rounded-2xl border border-ink-100 bg-surface">
               <table className="w-full min-w-[48rem] text-start text-sm">
-                <thead className="border-b border-ink-100 text-xs uppercase tracking-wide text-ink-400">
+                <thead className="border-b border-ink-100 text-[13px] text-ink-600 font-semibold">
                   <tr>
                     <SortTh column="recipient" label={e.colRecipient} list={list} />
                     <SortTh column="subject" label={e.colSubject} list={list} />

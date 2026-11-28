@@ -49,9 +49,9 @@ export default function Login() {
 
       <main className="container-page flex flex-1 items-center justify-center py-10">
         <div className="w-full max-w-md">
-          <div className="rounded-3xl border border-ink-100 bg-surface p-6 shadow-xl shadow-bloom-600/5 sm:p-8">
+          <div className="rounded-2xl border border-ink-100 bg-surface p-6 shadow-card sm:p-8">
             <span className="eyebrow">{t.brand}</span>
-            <h1 className="mt-4 text-2xl font-extrabold text-balance tracking-tight text-ink-900">
+            <h1 className="mt-4 text-[28px] font-bold text-balance tracking-[-0.01em] text-ink-900 leading-tight">
               {t.login.title}
             </h1>
             <p className="mt-2 text-sm text-ink-600">{t.login.subtitle}</p>
@@ -94,7 +94,7 @@ export default function Login() {
               {error && (
                 <p
                   role="alert"
-                  className="rounded-2xl bg-tint px-4 py-3 text-sm font-semibold text-danger"
+                  className="rounded-2xl bg-danger/10 px-4 py-3 text-sm font-semibold text-danger"
                 >
                   {error}
                 </p>

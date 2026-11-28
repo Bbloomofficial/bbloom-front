@@ -135,12 +135,12 @@ export default function NewSite() {
     <form onSubmit={onSubmit} noValidate>
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-extrabold text-balance tracking-tight text-ink-900 sm:text-3xl">
+          <h1 className="text-[28px] font-bold text-balance tracking-[-0.01em] text-ink-900 leading-tight">
             {t.wizard.title}
           </h1>
           <p className="mt-1 text-sm text-ink-600">{t.wizard.subtitle}</p>
         </div>
-        <Link to={adminPath()} className="text-sm font-semibold text-ink-600 hover:text-bloom-600">
+        <Link to={adminPath()} className="text-sm font-semibold text-ink-600 hover:text-ink-900">
           {t.cancel}
         </Link>
       </div>
@@ -159,7 +159,7 @@ export default function NewSite() {
                 className={[
                   "flex items-center gap-2 rounded-xl px-3 py-2 font-semibold transition",
                   active
-                    ? "bg-tint text-tint-fg"
+                    ? "bg-ink-50 text-ink-900"
                     : done
                       ? "text-ink-600 hover:bg-ink-50"
                       : "text-ink-400",
@@ -169,7 +169,7 @@ export default function NewSite() {
                   className={[
                     "flex h-6 w-6 items-center justify-center rounded-full text-xs",
                     active || done
-                      ? "bg-bloom-600 text-white"
+                      ? "bg-ink-900 text-canvas"
                       : "bg-ink-100 text-ink-400",
                   ].join(" ")}
                 >
@@ -190,7 +190,7 @@ export default function NewSite() {
       {error && (
         <p
           role="alert"
-          className="mt-6 rounded-2xl bg-tint px-4 py-3 text-sm font-semibold text-danger"
+          className="mt-6 rounded-2xl bg-danger/10 px-4 py-3 text-sm font-semibold text-danger"
         >
           {error}
         </p>
@@ -208,7 +208,7 @@ export default function NewSite() {
               <p className="mt-6 text-sm text-ink-400">{t.loading}</p>
             )}
             {templatesState.error && (
-              <div className="mt-6 rounded-3xl border border-ink-100 bg-surface p-6 text-center">
+              <div className="mt-6 rounded-2xl border border-ink-100 bg-surface p-6 text-center">
                 <p className="text-sm font-semibold text-danger">
                   {templatesState.error.message}
                 </p>
@@ -359,14 +359,14 @@ export default function NewSite() {
                         className={[
                           "flex items-center gap-3 rounded-2xl border px-4 py-3 transition",
                           checked
-                            ? "border-bloom-200 bg-tint/50"
+                            ? "border-ink-900 bg-ink-50"
                             : "border-ink-100 bg-surface",
                         ].join(" ")}
                       >
                         <input
                           type="checkbox"
                           id={`language-${language}`}
-                          className="h-4 w-4 accent-bloom-600"
+                          className="h-4 w-4 accent-ink-900"
                           checked={checked}
                           onChange={() => toggleLanguage(language)}
                         />
@@ -378,7 +378,7 @@ export default function NewSite() {
                         </label>
 
                         {checked && index === 0 && (
-                          <span className="rounded-full bg-bloom-600 px-2.5 py-1 text-[11px] font-semibold text-white">
+                          <span className="rounded-full bg-ink-900 px-2.5 py-1 text-[11px] font-semibold text-canvas">
                             {t.detail.primary}
                           </span>
                         )}
@@ -386,7 +386,7 @@ export default function NewSite() {
                           <button
                             type="button"
                             onClick={() => makeDefault(language)}
-                            className="text-xs font-semibold text-bloom-600 hover:text-bloom-700"
+                            className="text-xs font-semibold text-ink-900 underline underline-offset-2"
                           >
                             {t.wizard.moveUp}
                           </button>
@@ -405,7 +405,7 @@ export default function NewSite() {
                     {t.wizard.needOneLanguage}
                   </p>
                 ) : (
-                  <p className="mt-3 rounded-2xl bg-tint px-4 py-3 text-sm font-semibold text-tint-fg">
+                  <p className="mt-3 rounded-2xl bg-ink-50 px-4 py-3 text-sm font-semibold text-ink-900">
                     {t.wizard.opensIn(
                       t.languageAdverbs[languages[0]] ?? languages[0],
                     )}
@@ -477,7 +477,7 @@ export default function NewSite() {
               <label className="flex cursor-pointer items-start gap-3 rounded-2xl border border-ink-100 bg-surface p-4">
                 <input
                   type="checkbox"
-                  className="mt-0.5 h-4 w-4 accent-bloom-600"
+                  className="mt-0.5 h-4 w-4 accent-ink-900"
                   checked={includeSampleContent}
                   onChange={(event) =>
                     setIncludeSampleContent(event.target.checked)
@@ -504,7 +504,7 @@ export default function NewSite() {
             <p className="mt-1 text-sm text-ink-600">{t.wizard.reviewHint}</p>
 
             {template && (
-              <div className="mt-5 overflow-hidden rounded-3xl border border-ink-100 bg-surface">
+              <div className="mt-5 overflow-hidden rounded-2xl border border-ink-100 bg-surface">
                 <div className="aspect-[4/3] bg-ink-50">
                   <TemplatePreview
                     template={template}
@@ -513,7 +513,7 @@ export default function NewSite() {
                 </div>
                 <div className="flex items-baseline justify-between gap-2 p-4">
                   <div>
-                    <p className="text-[11px] uppercase tracking-wide text-ink-400">
+                    <p className="text-[13px] text-ink-600 font-semibold">
                       {t.wizard.selectedTemplate}
                     </p>
                     <p className="font-bold text-ink-900">
@@ -526,7 +526,7 @@ export default function NewSite() {
                         href={demoHref(template) as string}
                         target="_blank"
                         rel="noreferrer"
-                        className="text-sm font-semibold text-bloom-600 hover:underline"
+                        className="text-sm font-semibold text-ink-900 underline underline-offset-2"
                       >
                         {t.wizard.demo}
                       </a>
@@ -534,7 +534,7 @@ export default function NewSite() {
                     <button
                       type="button"
                       onClick={() => setStep(0)}
-                      className="text-sm font-semibold text-bloom-600 hover:underline"
+                      className="text-sm font-semibold text-ink-900 underline underline-offset-2"
                     >
                       {t.wizard.slugEdit}
                     </button>
@@ -543,7 +543,7 @@ export default function NewSite() {
               </div>
             )}
 
-            <dl className="mt-5 divide-y divide-ink-100 rounded-3xl border border-ink-100 bg-surface px-5">
+            <dl className="mt-5 divide-y divide-ink-100 rounded-2xl border border-ink-100 bg-surface px-5">
               {[
                 [t.wizard.businessName, businessName],
                 [t.wizard.slug, `${effectiveSlug}.bbloom.ge`],
@@ -574,7 +574,7 @@ export default function NewSite() {
               ))}
             </dl>
 
-            <p className="mt-3 rounded-2xl bg-tint px-4 py-3 text-sm font-semibold text-tint-fg">
+            <p className="mt-3 rounded-2xl bg-ink-50 px-4 py-3 text-sm font-semibold text-ink-900">
               {t.wizard.opensIn(
                 t.languageAdverbs[languages[0]] ?? languages[0],
               )}

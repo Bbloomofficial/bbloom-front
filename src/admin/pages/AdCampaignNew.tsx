@@ -58,7 +58,7 @@ function AllowanceNote({ allowance }: { allowance: AdAllowance | null }) {
 
   return (
     <div className="mt-4 rounded-2xl border border-ink-100 bg-ink-50 p-4">
-      <h3 className="text-xs font-semibold uppercase tracking-wide text-ink-400">
+      <h3 className="text-[13px] font-semibold text-ink-600">
         {t.allowanceTitle}
       </h3>
       {allowance.allowed ? (
@@ -265,7 +265,7 @@ export default function AdCampaignNew() {
     <div>
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-extrabold text-balance tracking-tight text-ink-900 sm:text-3xl">
+          <h1 className="text-[28px] font-bold text-balance tracking-[-0.01em] text-ink-900 leading-tight">
             {f.title}
           </h1>
           <p className="mt-1 max-w-2xl text-sm text-ink-600">{f.subtitle}</p>
@@ -277,7 +277,7 @@ export default function AdCampaignNew() {
 
       <form
         onSubmit={submit}
-        className="mt-6 max-w-3xl rounded-3xl border border-ink-100 bg-surface p-6"
+        className="mt-6 max-w-3xl rounded-2xl border border-ink-100 bg-surface p-6"
       >
         <label className="block text-sm">
           <span className="mb-1 block font-semibold text-ink-800">
@@ -494,7 +494,7 @@ export default function AdCampaignNew() {
         {error && <p role="alert" className="mt-4 text-sm font-semibold text-danger">{error}</p>}
 
         <div className="mt-5 flex flex-wrap items-center gap-3">
-          <button type="submit" className="rounded-xl bg-danger px-4 py-3 text-sm font-semibold text-white dark:text-contrast transition hover:opacity-90 motion-safe:active:scale-95 disabled:opacity-40" disabled={submitting}>
+          <button type="submit" className="rounded-lg bg-danger px-4 py-3 text-sm font-semibold transition hover:opacity-90 motion-safe:active:scale-95 disabled:opacity-40 text-on-danger" disabled={submitting}>
             {submitting ? f.creating : f.create}
           </button>
           <Link to="/ads" className="btn-secondary">

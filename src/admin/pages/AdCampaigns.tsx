@@ -192,7 +192,7 @@ export default function AdCampaigns() {
         <button
           type="button"
           onClick={() => sortBy(column)}
-          className={`inline-flex items-center gap-1 uppercase tracking-wide hover:text-ink-900 ${
+          className={`inline-flex items-center gap-1 hover:text-ink-900 ${
             active ? "text-ink-900" : ""
           }`}
         >
@@ -209,7 +209,7 @@ export default function AdCampaigns() {
     <div>
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-extrabold text-balance tracking-tight text-ink-900 sm:text-3xl">
+          <h1 className="text-[28px] font-bold text-balance tracking-[-0.01em] text-ink-900 leading-tight">
             {m.title}
           </h1>
           <p className="mt-1 max-w-2xl text-sm text-ink-600">{m.subtitle}</p>
@@ -250,7 +250,7 @@ export default function AdCampaigns() {
 
       <LoadState list={list}>
           {/* The list */}
-          <section className="mt-6 rounded-3xl border border-ink-100 bg-surface p-6">
+          <section className="mt-6 rounded-2xl border border-ink-100 bg-surface p-6">
             <h2 className="text-lg font-bold text-ink-900">
               {m.listTitle(sorted.length, all.length)}
             </h2>
@@ -330,7 +330,7 @@ export default function AdCampaigns() {
               <div className="mt-4 overflow-x-auto">
                 <table className="w-full min-w-[72rem] text-sm">
                   <thead>
-                    <tr className="text-left text-xs font-semibold uppercase tracking-wide text-ink-400">
+                    <tr className="text-left text-[13px] font-semibold text-ink-600">
                       <th className="w-8 pb-2 pr-3">
                         <input
                           type="checkbox"
@@ -338,7 +338,7 @@ export default function AdCampaigns() {
                           title={m.selectAll}
                           checked={allVisibleChosen}
                           onChange={toggleVisible}
-                          className="h-4 w-4 accent-bloom-600"
+                          className="h-4 w-4 accent-ink-900"
                         />
                       </th>
                       <SortHeader column="name" label={c.colName} />
@@ -366,7 +366,7 @@ export default function AdCampaigns() {
                             aria-label={m.selectRow(campaign.name)}
                             checked={selected.has(campaign.id)}
                             onChange={() => toggleRow(campaign.id)}
-                            className="mt-0.5 h-4 w-4 accent-bloom-600"
+                            className="mt-0.5 h-4 w-4 accent-ink-900"
                           />
                         </td>
                         <td className="py-3 pr-4">

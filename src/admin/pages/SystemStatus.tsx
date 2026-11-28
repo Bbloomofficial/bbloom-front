@@ -48,7 +48,7 @@ export default function SystemStatus() {
     <div>
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-extrabold text-balance tracking-tight text-ink-900 sm:text-3xl">
+          <h1 className="text-[28px] font-bold text-balance tracking-[-0.01em] text-ink-900 leading-tight">
             {t.system.title}
           </h1>
           <p className="mt-1 text-sm text-ink-600">{t.system.subtitle}</p>
@@ -134,7 +134,7 @@ export default function SystemStatus() {
             )}
           </section>
 
-          <section className="mt-6 rounded-3xl border border-ink-100 bg-surface p-6 sm:p-7">
+          <section className="mt-6 rounded-2xl border border-ink-100 bg-surface p-6 sm:p-7">
             {mail.recentFailures.length === 0 ? (
               <p className="text-sm text-ink-600">{t.system.noneWaiting}</p>
             ) : (
@@ -157,7 +157,7 @@ export default function SystemStatus() {
               the successful send that turns the light green is usually the
               admin's own test probe, fired the moment they came looking. */}
           {mail.unresolved && mail.unresolved.length > 0 && (
-            <section className="mt-6 rounded-3xl border border-amber-300/60 bg-amber-50 p-6 sm:p-7 dark:border-amber-900/60 dark:bg-amber-950/25">
+            <section className="mt-6 rounded-2xl border border-amber-300/60 bg-amber-50 p-6 sm:p-7 dark:border-amber-900/60 dark:bg-amber-950/25">
               <h2 className="text-lg font-bold text-ink-900">
                 {t.system.owedTitle(peopleOwed(mail))}
               </h2>

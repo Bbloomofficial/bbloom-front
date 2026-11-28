@@ -165,7 +165,7 @@ export function PostLinks({
   const instagram = onInstagram ? campaign.metaInstagramPostUrl : undefined;
   if (!facebook && !instagram && (compact || !onInstagram)) return null;
   const link = compact
-    ? "text-xs font-semibold text-bloom-600 hover:underline"
+    ? "text-xs font-semibold text-ink-900 underline underline-offset-2"
     : "btn-secondary";
   return (
     <span className={`flex flex-wrap items-center ${compact ? "gap-x-3 gap-y-1" : "gap-2"}`}>

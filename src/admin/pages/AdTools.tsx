@@ -136,7 +136,7 @@ function TestTool({
     outcome === "LAUNCHED" ? "good" : outcome === "FAILED" ? "bad" : "neutral";
 
   return (
-    <section className="mt-6 rounded-3xl border border-ink-100 bg-surface p-6 sm:p-7">
+    <section className="mt-6 rounded-2xl border border-ink-100 bg-surface p-6 sm:p-7">
       <h2 className="text-lg font-bold text-ink-900">{t.title}</h2>
       <p className="mt-2 text-sm text-ink-600">{t.body}</p>
 
@@ -165,7 +165,7 @@ function TestTool({
                   onClick={() => toggle(channel)}
                   className={`rounded-full border px-4 py-2 text-sm font-semibold transition disabled:opacity-40 ${
                     on
-                      ? "border-bloom-600 bg-bloom-600 text-white"
+                      ? "border-ink-900 bg-ink-900 text-canvas"
                       : "border-ink-100 bg-surface text-ink-600 hover:text-ink-900"
                   }`}
                 >
@@ -204,7 +204,7 @@ function TestTool({
           <button
             type="submit"
             disabled={pending || channels.length === 0}
-            className="rounded-xl bg-danger px-4 py-3 text-sm font-semibold text-white dark:text-contrast transition hover:opacity-90 motion-safe:active:scale-95 disabled:opacity-40"
+            className="rounded-lg bg-danger px-4 py-3 text-sm font-semibold transition hover:opacity-90 motion-safe:active:scale-95 disabled:opacity-40 text-on-danger"
           >
             {pending ? t.launching : t.launch}
           </button>
@@ -356,7 +356,7 @@ function TestCampaigns({
   }
 
   return (
-    <section className="mt-6 rounded-3xl border border-ink-100 bg-surface p-6 sm:p-7">
+    <section className="mt-6 rounded-2xl border border-ink-100 bg-surface p-6 sm:p-7">
       <h2 className="text-lg font-bold text-ink-900">{t.title}</h2>
       <p className="mt-2 text-sm text-ink-600">{t.body}</p>
 
@@ -375,7 +375,7 @@ function TestCampaigns({
         <div className="mt-4 overflow-x-auto">
           <table className="w-full min-w-[42rem] text-start text-sm">
             <thead>
-              <tr className="text-xs font-semibold uppercase tracking-wide text-ink-400">
+              <tr className="text-[13px] font-semibold text-ink-600">
                 <th className="py-2 text-start font-semibold">{t.colWhen}</th>
                 <th className="py-2 text-start font-semibold">{t.colName}</th>
                 <th className="py-2 text-start font-semibold">
@@ -437,7 +437,7 @@ function TestCampaigns({
                           type="button"
                           onClick={() => void remove(campaign)}
                           disabled={busyId === campaign.id}
-                          className="rounded-xl bg-danger px-3 py-2 text-xs font-semibold text-white dark:text-contrast transition hover:opacity-90 motion-safe:active:scale-95 disabled:opacity-40"
+                          className="rounded-lg bg-danger px-3 py-2 text-xs font-semibold transition hover:opacity-90 motion-safe:active:scale-95 disabled:opacity-40 text-on-danger"
                         >
                           {busyId === campaign.id ? t.deleting : t.delete}
                         </button>
@@ -478,7 +478,7 @@ export default function AdTools() {
     <div>
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-extrabold text-balance tracking-tight text-ink-900 sm:text-3xl">
+          <h1 className="text-[28px] font-bold text-balance tracking-[-0.01em] text-ink-900 leading-tight">
             {t.tools}
           </h1>
           <p className="mt-1 text-sm text-ink-600">{t.test.body}</p>

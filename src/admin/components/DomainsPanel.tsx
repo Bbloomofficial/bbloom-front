@@ -75,7 +75,7 @@ export default function DomainsPanel({
                 {domain.hostname}
               </span>
               {domain.primaryDomain && (
-                <span className="rounded-full bg-bloom-600 px-2 py-0.5 text-[11px] font-semibold text-white">
+                <span className="rounded-full bg-ink-900 px-2 py-0.5 text-[11px] font-semibold text-canvas">
                   {t.detail.primary}
                 </span>
               )}
@@ -120,7 +120,7 @@ export default function DomainsPanel({
         <label className="flex items-center gap-2 text-sm text-ink-600">
           <input
             type="checkbox"
-            className="h-4 w-4 accent-bloom-600"
+            className="h-4 w-4 accent-ink-900"
             checked={primary}
             onChange={(event) => setPrimary(event.target.checked)}
           />

@@ -35,12 +35,12 @@ function Tile({
   note?: string;
 }) {
   return (
-    <div className="rounded-2xl border border-ink-100 bg-surface p-4">
-      <p className="text-xs font-semibold uppercase tracking-wide text-ink-400">
+    <div className="rounded-2xl border border-ink-100 bg-surface p-6">
+      <p className="text-sm font-medium text-ink-500">
         {label}
       </p>
-      <p className="mt-1.5 text-xl font-extrabold text-ink-900">{children}</p>
-      {note && <p className="mt-1 text-xs text-ink-500">{note}</p>}
+      <p className="mt-1 break-words text-[44px] font-bold leading-[1.1] tracking-tight tabular-nums text-ink-900">{children}</p>
+      {note && <p className="mt-1.5 text-sm text-ink-500">{note}</p>}
     </div>
   );
 }
@@ -75,7 +75,7 @@ function Breakdown({
   const max = Math.max(...rows.map((r) => measure(r.bucket)), 0);
 
   return (
-    <section className="rounded-3xl border border-ink-100 bg-surface p-5">
+    <section className="rounded-2xl border border-ink-100 bg-surface p-5">
       <h3 className="text-sm font-bold text-ink-900">{title}</h3>
       {rows.length === 0 ? (
         <p className="mt-3 text-sm text-ink-400">—</p>
@@ -83,7 +83,7 @@ function Breakdown({
         <div className="mt-3 overflow-x-auto">
           <table className="w-full min-w-[26rem] text-sm">
             <thead>
-              <tr className="text-left text-xs font-semibold uppercase tracking-wide text-ink-400">
+              <tr className="text-left text-[13px] font-semibold text-ink-600">
                 <th className="pb-2 pr-3" />
                 <th className="pb-2 pr-3 text-right">{labels.campaigns}</th>
                 <th className="pb-2 pr-3 text-right">{labels.impressions}</th>
@@ -103,7 +103,7 @@ function Breakdown({
                         className="mt-1 h-1.5 rounded-full bg-ink-100"
                       >
                         <div
-                          className="h-1.5 rounded-full bg-bloom-500"
+                          className="h-1.5 rounded-full bg-ink-800"
                           style={{ width: `${share}%` }}
                         />
                       </div>
@@ -154,7 +154,7 @@ export default function AdAnalytics() {
     <div>
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-extrabold text-balance tracking-tight text-ink-900 sm:text-3xl">
+          <h1 className="text-[28px] font-bold text-balance tracking-[-0.01em] text-ink-900 leading-tight">
             {a.title}
           </h1>
           <p className="mt-1 max-w-2xl text-sm text-ink-600">{a.subtitle}</p>

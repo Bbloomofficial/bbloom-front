@@ -176,17 +176,17 @@ export default function PromoCodeEditor() {
     <div>
       <Link
         to={adminPath("/promo-codes")}
-        className="text-sm font-semibold text-ink-600 hover:text-bloom-600"
+        className="text-sm font-semibold text-ink-600 hover:text-ink-900"
       >
         {t.promoCodes.back}
       </Link>
 
-      <h1 className="mt-3 text-2xl font-extrabold text-balance tracking-tight text-ink-900 sm:text-3xl">
+      <h1 className="mt-3 text-[28px] font-bold text-balance tracking-[-0.01em] text-ink-900 leading-tight">
         {isNew ? t.promoCodes.newTitle : t.promoCodes.editTitle}
       </h1>
 
       <form onSubmit={save} className="mt-6 space-y-6">
-        <section className="rounded-3xl border border-ink-100 bg-surface p-6">
+        <section className="rounded-2xl border border-ink-100 bg-surface p-6">
           <div className="grid gap-5 sm:grid-cols-2">
             <div>
               <label className="label" htmlFor="promo-code">
@@ -296,7 +296,7 @@ export default function PromoCodeEditor() {
           {derived && (
             <dl className="mt-6 grid gap-4 border-t border-ink-100 pt-5 text-sm sm:grid-cols-3">
               <div>
-                <dt className="text-xs uppercase tracking-wide text-ink-400">
+                <dt className="text-[13px] text-ink-600 font-semibold">
                   {t.promoCodes.used}
                 </dt>
                 {/* Counted from payments rather than stored, so an outstanding
@@ -309,7 +309,7 @@ export default function PromoCodeEditor() {
                 </dd>
               </div>
               <div>
-                <dt className="text-xs uppercase tracking-wide text-ink-400">
+                <dt className="text-[13px] text-ink-600 font-semibold">
                   {t.promoCodes.status}
                 </dt>
                 <dd
@@ -323,7 +323,7 @@ export default function PromoCodeEditor() {
                 </dd>
               </div>
               <div>
-                <dt className="text-xs uppercase tracking-wide text-ink-400">
+                <dt className="text-[13px] text-ink-600 font-semibold">
                   {t.promoCodes.created}
                 </dt>
                 <dd className="mt-1 text-ink-600">
@@ -334,7 +334,7 @@ export default function PromoCodeEditor() {
           )}
         </section>
 
-        <section className="rounded-3xl border border-ink-100 bg-surface p-6">
+        <section className="rounded-2xl border border-ink-100 bg-surface p-6">
           <h2 className="text-lg font-bold text-ink-900">
             {t.promoCodes.appliesTo}
           </h2>
@@ -343,7 +343,7 @@ export default function PromoCodeEditor() {
           </p>
 
           {form.planCodes.length === 0 && (
-            <p className="mt-4 rounded-2xl bg-tint px-4 py-3 text-sm font-semibold text-tint-fg">
+            <p className="mt-4 rounded-2xl bg-ink-50 px-4 py-3 text-sm font-semibold text-ink-900">
               {t.promoCodes.allPlansNotice}
             </p>
           )}

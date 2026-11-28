@@ -52,7 +52,7 @@ export default function TemplatePicker({
 
         return (
           <section key={category}>
-            <h3 className="text-sm font-bold uppercase tracking-wide text-ink-400">
+            <h3 className="text-sm font-bold text-ink-600">
               {t.categories[category] ?? category}
             </h3>
 
@@ -65,10 +65,10 @@ export default function TemplatePicker({
                   <div
                     key={template.code}
                     className={[
-                      "group relative overflow-hidden rounded-3xl border bg-surface transition",
+                      "group relative overflow-hidden rounded-2xl border bg-surface transition",
                       active
-                        ? "border-bloom-400 shadow-xl shadow-bloom-600/10 ring-4 ring-tint-strong"
-                        : "border-ink-100 hover:border-bloom-200 hover:shadow-lg hover:shadow-bloom-600/5",
+                        ? "border-ink-900 shadow-card ring-1 ring-ink-900"
+                        : "border-ink-100 hover:border-ink-300 hover:shadow-card",
                     ].join(" ")}
                   >
                     <button
@@ -92,7 +92,7 @@ export default function TemplatePicker({
                       <div className="p-4">
                         <div className="flex items-start justify-between gap-2">
                           <h4 className="font-bold text-ink-900">{text.name}</h4>
-                          <span className="shrink-0 rounded-full bg-tint px-2 py-0.5 text-[11px] font-semibold text-tint-fg">
+                          <span className="shrink-0 rounded-full bg-ink-50 px-2 py-0.5 text-[11px] font-semibold text-ink-900">
                             {t.tiers[template.tier] ?? template.tier}
                           </span>
                         </div>

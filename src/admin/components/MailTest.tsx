@@ -120,7 +120,7 @@ export default function MailTest() {
   const cleared = result?.clearedFailures ?? [];
 
   return (
-    <section className="mt-6 rounded-3xl border border-ink-100 bg-surface p-6 sm:p-7">
+    <section className="mt-6 rounded-2xl border border-ink-100 bg-surface p-6 sm:p-7">
       <h2 className="text-lg font-bold text-ink-900">{t.title}</h2>
       <p className="mt-2 text-sm text-ink-600">{t.body}</p>
 
@@ -157,7 +157,7 @@ export default function MailTest() {
                 onClick={() => setLanguage(code)}
                 className={`rounded-full border px-4 py-2 text-sm font-semibold transition ${
                   language === code
-                    ? "border-bloom-600 bg-bloom-600 text-white"
+                    ? "border-ink-900 bg-ink-900 text-canvas"
                     : "border-ink-100 bg-surface text-ink-600 hover:text-ink-900"
                 }`}
               >
@@ -235,12 +235,12 @@ export default function MailTest() {
               job in that state is to stop the search. */}
           {result.reference && outcome !== "NOT_CONFIGURED" ? (
             <div className="mt-4 rounded-2xl border border-ink-100 bg-surface p-4">
-              <p className="text-xs font-semibold uppercase tracking-wide text-ink-400">
+              <p className="text-[13px] font-semibold text-ink-600">
                 {t.reference}
               </p>
               <p
                 dir="ltr"
-                className="mt-1 font-mono text-xl font-extrabold tracking-widest text-ink-900"
+                className="mt-1 font-mono text-xl font-bold tracking-widest text-ink-900"
               >
                 {result.reference}
               </p>
